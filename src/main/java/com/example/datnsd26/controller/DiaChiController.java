@@ -37,17 +37,40 @@ public class DiaChiController {
     }
 
     @PostMapping("/dia-chi/them")
-    public String themDiaChi(@Valid DiaChi diaChi, BindingResult result) {
+    public String themDiaChi(@Valid DiaChi diaChi,
+                             BindingResult result,
+                             RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             return "/admin/diachi/themdiachi";
         }
-        diaChiService.save(diaChi);
+        redirectAttributes.addFlashAttribute("message", "Thêm địa chỉ thành công!");
+        diaChiService.saveOrUpdate(diaChi);
         return "redirect:/dia-chi/hien-thi";
     }
     @GetMapping("/dia-chi/xoa/{id}")
-    public String deletePhongBan(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
+    public String deletePhongBan(@PathVariable("id") Integer id,
+                                 RedirectAttributes redirectAttributes) {
         diaChiService.delete(id);
         redirectAttributes.addFlashAttribute("message", "Xóa địa chỉ thành công!");
+        return "redirect:/dia-chi/hien-thi";
+    }
+
+    @GetMapping("/dia-chi/hien-thi-sua/{id}")
+    public String hienThiSuadiaChi(@PathVariable("id") Integer id,
+                            Model model) {
+        model.addAttribute("diaChi", diaChiService.getById(id));
+        return "/admin/diachi/suadiachi";
+    }
+
+    @PostMapping("/dia-chi/sua/{id}")
+    public String suaDiaChi(@Valid @ModelAttribute("diaChi") DiaChi diaChi,
+                            BindingResult result,
+                            RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "/admin/diachi/suadiachi";
+        }
+        redirectAttributes.addFlashAttribute("message", "Sửa địa chỉ thành công!");
+        diaChiService.saveOrUpdate(diaChi);
         return "redirect:/dia-chi/hien-thi";
     }
 }

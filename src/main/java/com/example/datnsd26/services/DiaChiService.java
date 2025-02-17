@@ -16,11 +16,19 @@ public class DiaChiService {
         return diaChiRepository.findAll();
     }
 
-    public void save(DiaChi diaChi) {
-        diaChiRepository.save(diaChi);
-    }
-
     public void delete(Integer id) {
         diaChiRepository.deleteById(id);
+    }
+
+    public DiaChi getById(Integer id) {
+        return diaChiRepository.findById(id).orElse(null);
+    }
+
+    public DiaChi saveOrUpdate(DiaChi diaChi) {
+        if (diaChi.getId() != null && diaChiRepository.existsById(diaChi.getId())) {
+            return diaChiRepository.save(diaChi);
+        } else {
+            return diaChiRepository.save(diaChi);
+        }
     }
 }

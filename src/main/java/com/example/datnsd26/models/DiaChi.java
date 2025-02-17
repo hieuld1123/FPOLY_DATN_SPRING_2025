@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDateTime;
 
 @Setter
@@ -37,15 +39,15 @@ public class DiaChi {
     @NotBlank(message = "Không được để trống")
     private String xa;
 
-    @Column(name = "QuocGia")
-    @NotBlank(message = "Không được để trống")
-    private String quocGia;
+    @Column(name = "GhiChu")
+    private String ghiChu;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
+
     @Column(nullable = false, updatable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime ngayTao;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(nullable = false)
     private LocalDateTime ngayCapNhat;
 
