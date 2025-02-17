@@ -23,6 +23,9 @@
                 th:field="*{tinh}">
             <option value="" selected>Chọn Tỉnh/Thành phố</option>
         </select>
+        <div th:if="${#fields.hasErrors('tinh')}" class="error">
+            <i th:errors="*{tinh}" class="text-danger"></i>
+        </div>
     </div>
 
     <div class="form-floating">
@@ -30,6 +33,9 @@
                 th:field="*{huyen}">
             <option value="" selected>Chọn Quận/Huyện</option>
         </select>
+        <div th:if="${#fields.hasErrors('huyen')}" class="error">
+            <i th:errors="*{huyen}" class="text-danger"></i>
+        </div>
     </div>
 
     <div class="form-floating">
@@ -37,6 +43,9 @@
                 th:field="*{xa}">
             <option value="" selected>Chọn Phường/Xã</option>
         </select>
+        <div th:if="${#fields.hasErrors('xa')}" class="error">
+            <i th:errors="*{xa}" class="text-danger"></i>
+        </div>
     </div>
 
     <div class="form-floating mb-3">
