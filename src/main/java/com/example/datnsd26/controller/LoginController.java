@@ -1,6 +1,7 @@
 package com.example.datnsd26.controller;
 
 import com.example.datnsd26.models.TaiKhoan;
+import com.example.datnsd26.repository.SanPhamChiTietRepository;
 import com.example.datnsd26.repository.TaiKhoanRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,10 +14,12 @@ import java.util.List;
 @RequiredArgsConstructor
 @Controller
 public class LoginController {
+    private final SanPhamChiTietRepository sanPhamChiTietRepository;
     private final TaiKhoanRepository taiKhoanRepository;
 
     @GetMapping("/shop")
-    public String shopPage() {
+    public String shopPage(Model model) {
+        model.addAttribute("productDetailsList", sanPhamChiTietRepository.findAll());
         return "/shop/shop";
     }
 
