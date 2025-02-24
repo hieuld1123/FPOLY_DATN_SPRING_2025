@@ -57,7 +57,7 @@
     </div>
 
     <div class="form-floating">
-        <input type="text" class="form-control" th:field="*{ghiChu}" id="ghiChu"  placeholder="Quốc gia">
+        <input type="text" class="form-control" th:field="*{ghiChu}" id="ghiChu"  placeholder="">
         <label for="ghiChu">Ghi chú</label>
         <div th:if="${#fields.hasErrors('ghiChu')}" class="error">
             <i th:errors="*{ghiChu}" class="text-danger"></i>

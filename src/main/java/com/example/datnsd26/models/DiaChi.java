@@ -23,6 +23,9 @@ public class DiaChi {
     @Column(name = "DiaChiID")
     private Integer id;
 
+    @ManyToOne
+    @JoinColumn(name = "KhachHangID", referencedColumnName = "KhachHangID")
+    private KhachHang khachHang;
     @Column(name = "DiaChiCuThe")
     @NotBlank(message = "Không được để trống")
     private String diaChiCuThe;
@@ -38,9 +41,6 @@ public class DiaChi {
     @Column(name = "XaPhuong")
     @NotBlank(message = "Không được để trống")
     private String xa;
-
-    @Column(name = "GhiChu")
-    private String ghiChu;
 
 
     @Column(nullable = false, updatable = false)

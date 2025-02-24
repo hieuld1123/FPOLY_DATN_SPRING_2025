@@ -6,7 +6,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.sql.Date;
+import java.sql.Timestamp;
+
+
 
 @Setter
 @Getter
@@ -20,9 +23,9 @@ public class NhanVien {
     @Column(name = "NhanVienID")
     private Integer id;
 
-    @ManyToOne
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "TaiKhoanID")
-    private TaiKhoan idTaiKhoan;
+    private TaiKhoan TaiKhoan;
 
     @Column(name = "MaNhanVien")
     private String maNhanvien;
@@ -30,9 +33,20 @@ public class NhanVien {
     @Column(name = "HoTen")
     private String tenNhanVien;
 
-
     @Column(name = "DiaChi")
-    private String diaChi;
+    private String diaChiCuThe;
+
+    @Column(name = "Phuong")
+    private String phuong;
+
+    @Column(name = "Quan")
+    private String quan;
+
+    @Column(name = "Tinh")
+    private String tinh;
+
+    @Column(name = "Cccd")
+    private String cccd;
 
     @Column(name = "GioiTinh")
     private Boolean gioiTinh;
@@ -41,16 +55,17 @@ public class NhanVien {
     private String hinhAnh;
 
     @Column(name = "NgaySinh")
+    @Temporal(TemporalType.DATE)
     private Date ngaySinh;
 
     @Column(name = "TrangThai")
     private Boolean trangThai;
 
     @Column(name = "NgayTao")
-    private Date ngayTao;
+    private Timestamp ngayTao;
 
     @Column(name = "NgayCapNhat")
-    private Date ngayCapNhat;
+    private Timestamp ngayCapNhat;
 
 
 

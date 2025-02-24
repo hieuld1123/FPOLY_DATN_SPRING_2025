@@ -47,13 +47,6 @@
         </div>
     </div>
 
-    <div class="form-floating">
-        <input type="text" class="form-control" th:field="*{ghiChu}" id="ghiChu"  placeholder="Quốc gia">
-        <label for="ghiChu">Ghi chú</label>
-        <div th:if="${#fields.hasErrors('ghiChu')}" class="error">
-            <i th:errors="*{ghiChu}" class="text-danger"></i>
-        </div>
-    </div>
 
     <button type="submit" class="btn btn-success btn-sm"
             onclick="return confirm('Bạn có chắc muốn sửa địa chỉ này?');">Lưu</button>
