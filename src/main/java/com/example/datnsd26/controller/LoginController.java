@@ -17,11 +17,11 @@ public class LoginController {
     private final SanPhamChiTietRepository sanPhamChiTietRepository;
     private final TaiKhoanRepository taiKhoanRepository;
 
-    @GetMapping("/shop")
-    public String shopPage(Model model) {
-        model.addAttribute("productDetailsList", sanPhamChiTietRepository.findAll());
-        return "/shop/shop";
-    }
+//    @GetMapping("/shop")
+//    public String shopPage(Model model) {
+//        model.addAttribute("productDetailsList", sanPhamChiTietRepository.findAll());
+//        return "/shop/shop";
+//    }
 
     @GetMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")
