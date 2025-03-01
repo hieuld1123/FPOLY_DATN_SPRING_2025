@@ -19,6 +19,7 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
+
                             <form th:action="@{/nhan-vien/tim-kiem}" id="searchForm" method="get">
                                 <h3 class="card-title" style="font-weight: bold">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
@@ -29,6 +30,7 @@
                                 </h3>
                                 <br>
                                 <hr class="border border-danger border opacity-50">
+
                                 <div class="row g-3">
                                     <div class=" align-items-center col-lg-6 col-md-6">
                                         <div class="col-auto">
@@ -37,28 +39,51 @@
                                         <div class="col-auto">
                                             <input th:value="${searchInput}" name="searchInput" id="searchInput"
                                                    type="text" class="form-control"
-                                                   placeholder="Nhập tên/sđt/mã nhân viên">
+                                                   placeholder="">
                                         </div>
-                                    </div>
-                                    <div class="align-items-center col-lg-6 col-md-6">
-                                        <div class="col-auto">
-                                            <label class="col-form-label">Trạng thái:</label>
+                                        <!--                                    Theo trạng thái -->
+                                        <div class="align-items-center col-lg-6 col-md-6">
+                                            <div class="col-auto">
+                                                <label class="col-form-label">Trạng thái:</label>
+                                            </div>
+                                            <div class="col-auto">
+                                                <select class="form-control" th:value="${statusOption}"
+                                                        name="statusOption" id="statusOption"
+                                                        style="color: rgb(249,72,42);font-weight: bold">
+                                                    <option th:selected="${statusOption == null}"
+                                                            value="">Tất cả
+                                                    </option>
+                                                    <option th:selected="${statusOption == true}"
+                                                            value="true">Làm việc
+                                                    </option>
+                                                    <option th:selected="${statusOption == false}"
+                                                            value="false">Nghỉ làm
+                                                    </option>
+                                                </select>
+                                            </div>
                                         </div>
-                                        <div class="col-auto">
-                                            <select class="form-control" th:value="${searchOption}"
-                                                    name="searchOption" id="searchOption"
-                                                    style="color: rgb(249,72,42);font-weight: bold">
-                                                <option th:selected="${searchOption == '' ? 'true' : 'false'}"
-                                                        value="">Tất cả
-                                                </option>
-                                                <option th:selected="${searchOption == true ? 'true' : 'false'}"
-                                                        value="true">Làm việc
-                                                </option>
-                                                <option th:selected="${searchOption == false ? 'true' : 'false'}"
-                                                        value="false">Nghỉ làm
-                                                </option>
-                                            </select>
+                                        <!--Theo vai trò-->
+                                        <div class="align-items-center col-lg-6 col-md-6">
+                                            <div class="col-auto">
+                                                <label class="col-form-label">Vai trò:</label>
+                                            </div>
+
+                                            <div class="col-auto">
+                                                <select class="form-control" th:value="${roleOption}" name="roleOption"
+                                                        id="roleOption"
+                                                        style="color: rgb(249,72,42); font-weight: bold">
+                                                    <option th:selected="${roleOption == null}" value="">Tất cả
+                                                    </option>
+                                                    <option th:selected="${roleOption == 'Admin'}" value="Admin">
+                                                        Quản lý nhân viên
+                                                    </option>
+                                                    <option th:selected="${roleOption == 'EMPLOYEE'}"
+                                                            value="EMPLOYEE">Nhân viên
+                                                    </option>
+                                                </select>
+                                            </div>
                                         </div>
+
                                     </div>
 
                                 </div>
@@ -67,20 +92,18 @@
                                 <div class="d-flex justify-content-between buttons"
                                      style="margin-right: 35%; margin-left: 35%;">
                                     <button type="submit" id="searchButton"
-                                            style="background-color: rgb(249,72,42);color: white" class="btn">Tìm
+                                            style="background-color:black;color: white" class="btn">Tìm
                                         kiếm
                                     </button>
                                     <a type="reset" class="btn btn-dark"
-                                           th:href="@{/nhan-vien/hien-thi}">Làm mới
+                                       th:href="@{/nhan-vien/hien-thi}">Làm mới
                                     </a>
                                 </div>
                             </form>
-
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
     </section>
     <br>
     <!--  ------------------------------NỘI DUNG (DANH SÁCH NHÂN VIÊN)------------------------------>
@@ -110,20 +133,16 @@
                         <!-- /.card-header -->
                         <div class="card-body">
                             <table id="example2" style="width: 100%" class="table-bordered table-hover text-center">
-                                <thead style="background-color:rgb(249,72,42);height: 50px;color: white">
+                                <thead style="background-color: dimgrey;height: 50px;color: white">
                                 <tr>
                                     <th>STT</th>
                                     <th style="white-space: nowrap;">Mã nhân viên</th>
                                     <th style="white-space: nowrap;">Tên nhân viên</th>
                                     <th style="white-space: nowrap;">Số điện thoại</th>
-                                    <th style="white-space: nowrap;">Ngày sinh</th>
-                                    <th style="white-space: nowrap;">Địa chỉ</th>
                                     <th style="white-space: nowrap;">Email</th>
                                     <th style="white-space: nowrap;">Giới tính</th>
-                                    <th>Vai trò</th>
+                                    <th style="white-space: nowrap;">Vai trò</th>
                                     <th style="white-space: nowrap;">Trạng thái</th>
-                                    <th style="white-space: nowrap;">Ngày tạo</th>
-                                    <th style="white-space: nowrap;">Ngày cập nhật</th>
                                     <th style=" white-space: nowrap;">Thao tác</th>
                                 </tr>
                                 </thead>
@@ -132,34 +151,69 @@
                                     <td th:text="${indexStat.index+1}"></td>
                                     <td th:text="${nv.maNhanvien}"></td>
                                     <td th:text="${nv.tenNhanVien}"></td>
-                                    <td th:text="${nv.taiKhoan != null ? nv.taiKhoan.sdt : 'Không có'}"></td>
-                                    <td th:text="${#dates.format(nv.ngaySinh,'dd-MM-yyyy')}"></td>
-                                    <td th:text="${#strings.substring(nv.diaChiCuThe + '' + nv.phuong+''+nv.quan+''+nv.tinh, 0, 20)} + '...'"></td>
-                                    <td th:text="${nv.taiKhoan != null ? nv.taiKhoan.email : 'Không có'}"></td>
+                                    <td th:text="${nv.idTaiKhoan.sdt}"></td>
+                                    <td th:text="${nv.idTaiKhoan.email}"></td>
                                     <td th:text="${nv.gioiTinh ? 'Nam' : 'Nữ'}"></td>
-                                    <td th:text="${nv.taiKhoan != null ? nv.taiKhoan.vaiTro : 'Không có'}"></td>
-                                    <td th:text="${nv.trangThai ? 'Đang làm' : 'Đã nghỉ'}"></td>
-                                    <td th:text="${#dates.format(nv.ngayTao,'dd-MM-yyyy HH:mm:ss')}"></td>
-                                    <td th:text="${#dates.format(nv.ngayCapNhat,'dd-MM-yyyy HH:mm:ss')}"></td>
+                                    <td th:text="${nv.idTaiKhoan.vaiTro.getDisplayName()}"></td>
+                                    <td th:text="${nv.trangThai ? 'Làm việc' : 'Nghỉ làm'}"></td>
                                     <td>
                                         <a th:href="@{/nhan-vien/hien-thi/{id}(id=${nv.id})}"
-                                           style="color:rgb(249,72,42); padding: 10px 0 10px 0">
+                                           style="padding: 10px 0 10px 0">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25"
                                                  fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
                                                 <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
                                                 <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
-                                            </svg >
+                                            </svg>
                                         </a>
-<!--                                        <a th:href="@{/nhan-vien/xoa/{id}(id=${nv.id})}"-->
-<!--                                           style="color:rgb(249,72,42); padding: 10px 0 10px 0" onclick="deleteNhanVien(123)">-->
-<!--                                            <img width="24" height="24" src="https://img.icons8.com/material-sharp/24/filled-trash.png" alt="filled-trash"/>-->
-<!--                                        </a>-->
+
                                     </td>
                                 </tr>
                                 </tbody>
 
 
                             </table>
+                            <div class="d-flex justify-content-center">
+                                <!-- Phân trang -->
+                                <div th:if="${nhanVien.totalPages > 0}" class="d-flex justify-content-between">
+                                    <nav aria-label="...">
+                                        <ul class="pagination">
+                                            <!-- Nút về trang đầu tiên -->
+                                            <li class="page-item"
+                                                th:class="${nhanVien.first} ? 'page-item disabled' : 'page-item'">
+                                                <a class="page-link" th:href="@{/nhan-vien/hien-thi(page=0)}"><<</a>
+                                            </li>
+
+                                            <!-- Nút về trang trước -->
+                                            <li class="page-item"
+                                                th:class="${nhanVien.first} ? 'page-item disabled' : 'page-item'">
+                                                <a class="page-link"
+                                                   th:href="@{/nhan-vien/hien-thi(page=${nhanVien.number - 1})}"><</a>
+                                            </li>
+
+                                            <!-- Hiển thị số trang hiện tại -->
+                                            <li class="page-item active">
+                                                <a class="page-link"
+                                                   th:text="${nhanVien.number + 1 + '/' + nhanVien.totalPages}"></a>
+                                            </li>
+
+                                            <!-- Nút đến trang tiếp theo -->
+                                            <li class="page-item"
+                                                th:class="${nhanVien.last} ? 'page-item disabled' : 'page-item'">
+                                                <a class="page-link"
+                                                   th:href="@{/nhan-vien/hien-thi(page=${nhanVien.number + 1})}">></a>
+                                            </li>
+
+                                            <!-- Nút đến trang cuối cùng -->
+                                            <li class="page-item"
+                                                th:class="${nhanVien.last} ? 'page-item disabled' : 'page-item'">
+                                                <a class="page-link"
+                                                   th:href="@{/nhan-vien/hien-thi(page=${nhanVien.totalPages - 1})}">>></a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>

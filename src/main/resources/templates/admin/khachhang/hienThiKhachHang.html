@@ -18,10 +18,11 @@
             <p><strong>Ngày sinh:</strong> <span th:text="${khachHangDto.ngaySinh}"></span></p>
             <p><strong>Email:</strong> <span th:text="${khachHangDto.email}"></span></p>
             <p><strong>Số điện thoại:</strong> <span th:text="${khachHangDto.sdt}"></span></p>
-            <p><strong>Trạng thái:</strong> <span th:text="${khachHangDto.trangThai} ? 'Làm việc' : 'Nghỉ làm'"></span></p>
+            <p><strong>Trạng thái:</strong> <span th:text="${khachHangDto.trangThai} ? 'Làm việc' : 'Nghỉ làm'"></span>
+            </p>
             <p><strong>Ngày tạo:</strong> <span th:text="${khachHangDto.ngayTao}"></span></p>
             <p><strong>Ngày cập nhật gần nhất:</strong> <span th:text="${khachHangDto.ngayCapNhat}"></span></p>
-
+            <a>Cập nhật khách hàng</a>
         </div>
     </div>
 
@@ -38,6 +39,7 @@
                     <th>Xã/Phường</th>
                     <th>Địa chỉ cụ thể</th>
                     <th></th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -50,6 +52,7 @@
                         <span th:if="${diaChi.trangThai}" class="badge bg-success">Mặc định</span>
                         <span th:unless="${diaChi.trangThai}" class="badge bg-secondary"></span>
                     </td>
+                    <td><a>Sửa</a></td>
                 </tr>
                 </tbody>
             </table>

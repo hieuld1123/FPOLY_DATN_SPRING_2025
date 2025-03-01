@@ -7,8 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
             crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11">
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body class="hold-transition sidebar-mini" style="font-family: 'Bahnschrift'">
@@ -107,21 +106,6 @@
                                         <div class="d-flex">
                                             <div class="align-items-center col-lg-6 col-md-6">
                                                 <div class="col-auto">
-                                                    <label class="col-form-label"><span style="color: red">* </span>Căn
-                                                        cước công dân:</label>
-                                                </div>
-                                                <div class="col-auto">
-                                                    <input class="form-control" placeholder="Căn cước công dân"
-                                                           id="inputCCCD" name="citizenID" th:field="*{cccd}"
-                                                           th:errorclass="is-invalid"
-                                                           th:attr="data-original=${nhanVien.cccd}, data-id=${nhanVien.id}">
-                                                </div>
-                                                <div class="col-auto">
-                                                    <p style="color: red; font-weight: initial;" id="errorCCCD"></p>
-                                                </div>
-                                            </div>
-                                            <div class="align-items-center col-lg-6 col-md-6">
-                                                <div class="col-auto">
                                                     <label class="col-form-label"><span style="color: red">* </span>Giới
                                                         tính:</label>
                                                 </div>
@@ -188,7 +172,7 @@
                                                 </div>
                                                 <div class="col-auto">
                                                     <select class="form-control form-select form-select-sm mb-3"
-                                                            id="district" th:field="*{quan}"
+                                                            id="district" th:field="*{xa}"
                                                             aria-label=".form-select-sm">
                                                         <option value="" selected>Chọn quận huyện</option>
                                                     </select>
@@ -206,7 +190,7 @@
                                                 </div>
                                                 <div class="col-auto">
                                                     <select class="form-control form-select form-select-sm"
-                                                            id="ward" th:field="*{phuong}"
+                                                            id="ward" th:field="*{huyen}"
                                                             aria-label=".form-select-sm">
                                                         <option value="" selected>Chọn phường xã</option>
                                                     </select>
@@ -241,8 +225,7 @@
                                                 </div>
                                                 <div class="col-auto">
                                                     <input type="radio" value="ADMIN" id="radioVaitro"
-                                                           th:field="*{vaiTro}" style="margin-top: 10px"
-                                                           checked>Quản lý
+                                                           th:field="*{vaiTro}" style="margin-top: 10px">Quản lý nhân viên
                                                     <input type="radio" value="EMPLOYEE"
                                                            th:field="*{vaiTro}"
                                                            style="margin-left: 10px;margin-top: 10px">Nhân viên
@@ -256,11 +239,32 @@
                                                 <div class="col-auto">
                                                     <select class="form-control form-select form-select-sm"
                                                             th:field="*{trangThai}" aria-label=".form-select-sm">
-                                                        <option value="true" selected>Làm việc</option>
-                                                        <option value="false">Nghỉ làm</option>
+                                                        <option th:selected="*{trangThai == true}" value="true">Làm việc</option>
+                                                        <option th:selected="*{trangThai == false}" value="false">Nghỉ làm</option>
                                                     </select>
                                                 </div>
+                                            </div>
+                                        </div>
 
+                                        <div class="d-flex">
+                                            <div class="align-items-center col-lg-6 col-md-6">
+                                                <div class="col-auto">
+                                                    <label class="col-form-label"> <span
+                                                            style="color: red">* </span>Ngày tạo:</label>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <input class="form-control" th:field="*{ngayTao}" placeholder="Ngày tạo" disabled>
+                                                </div>
+                                            </div>
+
+                                            <div class="align-items-center col-lg-6 col-md-6">
+                                                <div class="col-auto">
+                                                    <label class="col-form-label"> <span
+                                                            style="color: red">* </span>Ngày cập nhật:</label>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <input class="form-control" th:field="*{ngayCapNhat}" placeholder="Ngày tạo" disabled>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -354,10 +358,6 @@
 <!--check validate-->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Đặt giá trị radio button mặc định
-        document.getElementById("radioGT").checked = true;
-        document.getElementById("radioVaitro").checked = true;
-
         var errorAnh = document.getElementById("errorAnh");
         var fileInput = document.getElementById('fileInput');
         var imgElement = document.getElementById('uploadedImage');
@@ -399,25 +399,6 @@
         });
     });
 
-
-    function checkTrungCccd() {
-        var cccdInput = document.getElementById('inputCCCD').value.trim();
-        var originalCccd = document.getElementById('inputCCCD').getAttribute("data-original") || "";
-        var currentId = document.getElementById('inputCCCD').getAttribute("data-id");
-        console.log("CCCD nhập vào:", cccdInput);
-        console.log("CCCD ban đầu:", originalCccd);
-        console.log("ID hiện tại:", currentId);
-
-        if (cccdInput === originalCccd) {
-            console.log("✅ CCCD không thay đổi, hợp lệ!");
-            return true; // Không thay đổi thì hợp lệ ngay
-        }
-
-        return !listNV.some(nv => nv.cccd === cccdInput && nv.id !== currentId);
-        console.log("Kết quả kiểm tra trùng CCCD:", isDuplicate ? "❌ Trùng" : "✅ Không trùng");
-
-    }
-
     function checkTrungSdt() {
         var sdtInput = document.getElementById('inputSdt').value.trim();
         var originalSdt = document.getElementById('inputSdt').getAttribute("data-original") || "";
@@ -454,7 +435,6 @@
         // Lấy giá trị từ input
         let tenNhanVien = document.getElementById("inputTen").value.trim();
         let ngaySinh = document.getElementById("inputNgSinh").value;
-        let cccd = document.getElementById("inputCCCD").value.trim();
         let email = document.getElementById("inputEmail").value.trim();
         let sdt = document.getElementById("inputSdt").value;
         let city = document.getElementById("city").value;
@@ -496,20 +476,6 @@
             document.getElementById("errorNgSinh").innerText = "";
         }
 
-        // Kiểm tra CCCD
-        let regexCCCD = /^[0-9]{12}$/; // CCCD gồm 12 chữ số
-        if (cccd === "") {
-            document.getElementById("errorCCCD").innerText = "CCCD không được để trống!";
-            isValid = false;
-        } else if (!regexCCCD.test(cccd)) {
-            document.getElementById("errorCCCD").innerText = "CCCD phải gồm 12 chữ số!";
-            isValid = false;
-        } else if (!checkTrungCccd()) {
-            document.getElementById("errorCCCD").innerText = "CCCD đã tồn tại!";
-            isValid = false;
-        } else {
-            document.getElementById("errorCCCD").innerText = ""; // Xóa thông báo lỗi nếu hợp lệ
-        }
 
         // Kiểm tra Email
         let regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
