@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+</head>
+<body>
+<div th:replace="components/navbar :: navbar"></div>
+<div class="container py-5">
+
+<h2>Thanh toán</h2>
+<!-- Danh sách sản phẩm đã chọn -->
+<table border="1">
+    <thead>
+    <tr>
+        <th>Sản phẩm</th>
+        <th>Số lượng</th>
+        <th>Giá</th>
+        <th>Thành tiền</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${cart}">
+        <td th:text="${item.sanPhamChiTiet.tenSanPhamChiTiet}"></td>
+        <td th:text="${item.soLuong}"></td>
+        <td th:text="${item.sanPhamChiTiet.giaBanSauGiam}"></td>
+        <td th:text="${item.soLuong * item.sanPhamChiTiet.giaBanSauGiam}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- Hiển thị tổng tiền -->
+<p><strong>Tổng tiền: </strong> <span th:text="${tongTamTinh}"></span> VND</p>
+
+<!-- Form nhập thông tin đặt hàng -->
+<form th:action="@{/shop/place-order}" method="post" th:object="${hoaDon}">
+    <label>Họ và tên:</label>
+    <input type="text" th:field="*{tenNguoiNhan}" required> <br>
+
+    <label>Số điện thoại:</label>
+    <input type="text" th:field="*{sdtNguoiNhan}" required> <br>
+
+    <label>Địa chỉ nhận hàng:</label>
+    <input type="text" th:field="*{diaChiNguoiNhan}" required> <br>
+
+    <button type="submit">Đặt hàng</button>
+</form>
+
+</body>
+</html>
+
+</body>
+</html>
