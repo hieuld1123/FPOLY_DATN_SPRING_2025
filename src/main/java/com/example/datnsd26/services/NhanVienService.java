@@ -6,6 +6,8 @@ import com.example.datnsd26.models.TaiKhoan;
 import com.example.datnsd26.repository.NhanVienRepository;
 import com.example.datnsd26.repository.TaiKhoanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -25,7 +27,11 @@ public class NhanVienService {
     private static final String PASSWORD_ALLOW_BASE = CHAR_LOWER + CHAR_UPPER + NUMBER;
     private static final SecureRandom random = new SecureRandom();
 
-    public List<NhanVien> getAll() {
+    public Page<NhanVien> findAll(Pageable pageable) {
+        return nhanVienRepository.findAll(pageable);
+    }
+
+    public List<NhanVien> getAll(){
         return nhanVienRepository.findAll();
     }
 
@@ -69,17 +75,16 @@ public class NhanVienService {
         String maNV = "NV" + chuoiNgauNhien;
         nv.setTenNhanVien(nhanVien.getTenNhanVien());
         nv.setMaNhanvien(maNV);
-        nv.setCccd(nhanVien.getCccd());
         nv.setHinhAnh(nhanVien.getHinhAnh());
-        nv.setQuan(nhanVien.getQuan());
-        nv.setPhuong(nhanVien.getPhuong());
+        nv.setXa(nhanVien.getXa());
+        nv.setHuyen(nhanVien.getHuyen());
         nv.setTinh(nhanVien.getTinh());
         nv.setDiaChiCuThe(nhanVien.getDiaChiCuThe());
         nv.setNgaySinh(nhanVien.getNgaySinh());
         nv.setGioiTinh(nhanVien.getGioiTinh());
         nv.setNgayTao(new Timestamp(new Date().getTime()));
         nv.setNgayCapNhat(new Timestamp(new Date().getTime()));
-        nv.setTaiKhoan(taiKhoan);
+        nv.setIdTaiKhoan(taiKhoan);
         nv.setTrangThai(true);
 
         return nhanVienRepository.save(nv);
@@ -88,10 +93,9 @@ public class NhanVienService {
     public NhanVien update(NhanVienTKDto nhanVien, Integer id) {
         NhanVien existingNhanVien = nhanVienRepository.getById(nhanVien.getId());
         existingNhanVien.setTenNhanVien(nhanVien.getTenNhanVien());
-        existingNhanVien.setCccd(nhanVien.getCccd());
         existingNhanVien.setHinhAnh(nhanVien.getHinhAnh());
-        existingNhanVien.setQuan(nhanVien.getQuan());
-        existingNhanVien.setPhuong(nhanVien.getPhuong());
+        existingNhanVien.setXa(nhanVien.getXa());
+        existingNhanVien.setHuyen(nhanVien.getHuyen());
         existingNhanVien.setTinh(nhanVien.getTinh());
         existingNhanVien.setDiaChiCuThe(nhanVien.getDiaChiCuThe());
         existingNhanVien.setNgaySinh(nhanVien.getNgaySinh());
@@ -100,7 +104,7 @@ public class NhanVienService {
         existingNhanVien.setNgayCapNhat(new Timestamp(new Date().getTime()));
 
 
-        TaiKhoan existingTaiKhoan = existingNhanVien.getTaiKhoan();
+        TaiKhoan existingTaiKhoan = existingNhanVien.getIdTaiKhoan();
         existingTaiKhoan.setSdt(nhanVien.getSdt());
         existingTaiKhoan.setEmail(nhanVien.getEmail());
         existingTaiKhoan.setTrangThai(nhanVien.getTrangThai());
@@ -114,17 +118,19 @@ public class NhanVienService {
 
     }
 
-    public List<NhanVien> findByTenSdtMaTT(String tenSdtMa, Boolean trangthai) {
-        return nhanVienRepository.searchByTenOrSdtOrTrangThai(tenSdtMa, trangthai);
+    public Page<NhanVien> findByTenSdtMaTT(String tenSdtMa,Boolean trangthai, String role,Pageable pageable) {
+        // Chuyển đổi từ String sang Enum
+        TaiKhoan.Role vaiTro = null;
+        if (role != null && !role.isEmpty()) {
+            try {
+                vaiTro = TaiKhoan.Role.valueOf(role.toUpperCase()); // Chuyển String thành Enum
+            } catch (IllegalArgumentException e) {
+                vaiTro = null; // Nếu không thể chuyển đổi được thì để null
+            }
+        }
+
+        return nhanVienRepository.searchByTenOrSdtOrTrangThai(tenSdtMa,trangthai,vaiTro,pageable);
     }
-//    public String delete(Integer id) {
-//        if (nhanVienRepository.existsById(id)) {
-//            nhanVienRepository.deactivateNhanVien(id);
-//            return "Nhân viên đã được vô hiệu hóa!";
-//        } else {
-//            return "Không tìm thấy nhân viên!";
-//        }
-//    }
 
 }
 

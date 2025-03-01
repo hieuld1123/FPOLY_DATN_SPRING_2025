@@ -10,25 +10,9 @@ import java.util.List;
 @Service
 public class DiaChiService {
     @Autowired
-    private DiaChiRepository diaChiRepository;
+    DiaChiRepository diaChiRepository;
 
-    public List<DiaChi> getAll() {
-        return diaChiRepository.findAll();
-    }
-
-    public void delete(Integer id) {
-        diaChiRepository.deleteById(id);
-    }
-
-    public DiaChi getById(Integer id) {
-        return diaChiRepository.findById(id).orElse(null);
-    }
-
-    public DiaChi saveOrUpdate(DiaChi diaChi) {
-        if (diaChi.getId() != null && diaChiRepository.existsById(diaChi.getId())) {
-            return diaChiRepository.save(diaChi);
-        } else {
-            return diaChiRepository.save(diaChi);
-        }
+    public List<DiaChi> findByKhachHangId(Integer id) {
+        return diaChiRepository.findByKhachHangId(id);
     }
 }

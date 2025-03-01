@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -15,56 +16,53 @@ import java.sql.Timestamp;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "NhanVien")
+@Table(name = "nhan_vien")
 @Entity
 public class NhanVien {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "NhanVienID")
+    @Column(name = "id")
     private Integer id;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "TaiKhoanID")
-    private TaiKhoan TaiKhoan;
+    @JoinColumn(name = "id_tai_khoan")
+    private TaiKhoan idTaiKhoan;
 
-    @Column(name = "MaNhanVien")
+    @Column(name = "ma_nhan_vien")
     private String maNhanvien;
 
-    @Column(name = "HoTen")
+    @Column(name = "ho_ten")
     private String tenNhanVien;
 
-    @Column(name = "DiaChi")
+    @Column(name = "dia_chi_cu_the")
     private String diaChiCuThe;
 
-    @Column(name = "Phuong")
-    private String phuong;
-
-    @Column(name = "Quan")
-    private String quan;
-
-    @Column(name = "Tinh")
+    @Column(name = "tinh_thanh_pho")
     private String tinh;
 
-    @Column(name = "Cccd")
-    private String cccd;
+    @Column(name = "quan_huyen")
+    private String huyen;
 
-    @Column(name = "GioiTinh")
+    @Column(name = "xa_phường")
+    private String xa;
+
+    @Column(name = "gioi_tinh")
     private Boolean gioiTinh;
 
-    @Column(name = "HinhAnh")
+    @Column(name = "hinh_anh")
     private String hinhAnh;
 
-    @Column(name = "NgaySinh")
+    @Column(name = "ngay_sinh")
     @Temporal(TemporalType.DATE)
     private Date ngaySinh;
 
-    @Column(name = "TrangThai")
+    @Column(name = "trang_thai")
     private Boolean trangThai;
 
-    @Column(name = "NgayTao")
+    @Column(name = "ngay_tao")
     private Timestamp ngayTao;
 
-    @Column(name = "NgayCapNhat")
+    @Column(name = "ngay_cap_nhat")
     private Timestamp ngayCapNhat;
 
 

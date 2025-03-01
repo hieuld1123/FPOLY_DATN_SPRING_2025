@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
+</head>
+
+<body class="hold-transition sidebar-mini" style="font-family: 'Bahnschrift'">
+<div class="wrapper">
+
+    <!-- -----------------------------------------BỘ LỌC------------------------------------------>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+
+                            <form th:action="@{/nhan-vien/tim-kiem}" id="searchForm" method="get">
+                                <h3 class="card-title" style="font-weight: bold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                                         class="bi bi-funnel" viewBox="0 0 16 16">
+                                        <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"/>
+                                    </svg>
+                                    Bộ lọc
+                                </h3>
+                                <br>
+                                <hr class="border border-danger border opacity-50">
+
+                                <div class="row g-3">
+                                    <div class=" align-items-center col-lg-6 col-md-6">
+                                        <div class="col-auto">
+                                            <label class="col-form-label">Tìm kiếm:</label>
+                                        </div>
+                                        <div class="col-auto">
+                                            <input th:value="${searchInput}" name="searchInput" id="searchInput"
+                                                   type="text" class="form-control"
+                                                   placeholder="">
+                                        </div>
+                                        <!--                                    Theo trạng thái -->
+                                        <div class="align-items-center col-lg-6 col-md-6">
+                                            <div class="col-auto">
+                                                <label class="col-form-label">Trạng thái:</label>
+                                            </div>
+                                            <div class="col-auto">
+                                                <select class="form-control" th:value="${statusOption}"
+                                                        name="statusOption" id="statusOption"
+                                                        style="color: rgb(249,72,42);font-weight: bold">
+                                                    <option th:selected="${statusOption == null}"
+                                                            value="">Tất cả
+                                                    </option>
+                                                    <option th:selected="${statusOption == true}"
+                                                            value="true">Làm việc
+                                                    </option>
+                                                    <option th:selected="${statusOption == false}"
+                                                            value="false">Nghỉ làm
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <!--Theo vai trò-->
+                                        <div class="align-items-center col-lg-6 col-md-6">
+                                            <div class="col-auto">
+                                                <label class="col-form-label">Vai trò:</label>
+                                            </div>
+
+                                            <div class="col-auto">
+                                                <select class="form-control" th:value="${roleOption}" name="roleOption"
+                                                        id="roleOption"
+                                                        style="color: rgb(249,72,42); font-weight: bold">
+                                                    <option th:selected="${roleOption == null}" value="">Tất cả
+                                                    </option>
+                                                    <option th:selected="${roleOption == 'Admin'}" value="Admin">
+                                                        Quản lý nhân viên
+                                                    </option>
+                                                    <option th:selected="${roleOption == 'EMPLOYEE'}"
+                                                            value="EMPLOYEE">Nhân viên
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                                <br>
+                                <ul class="notifications"></ul>
+                                <div class="d-flex justify-content-between buttons"
+                                     style="margin-right: 35%; margin-left: 35%;">
+                                    <button type="submit" id="searchButton"
+                                            style="background-color:black;color: white" class="btn">Tìm
+                                        kiếm
+                                    </button>
+                                    <a type="reset" class="btn btn-dark"
+                                       th:href="@{/nhan-vien/hien-thi}">Làm mới
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </section>
+    <br>
+    <!--  ------------------------------NỘI DUNG (DANH SÁCH NHÂN VIÊN)------------------------------>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title" style="font-weight: bold">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                                     class="bi bi-card-list" viewBox="0 0 16 16">
+                                    <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
+                                    <path d="M5 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 5 8m0-2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0 5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-1-5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0M4 8a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m0 2.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/>
+                                </svg>
+                                Danh sách nhân viên
+                            </h3>
+                            <a th:href="@{/nhan-vien/them}" class="card-title btn"
+                               style="margin-left: 850px;background-color:green;color: white">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                     class="bi bi-plus" viewBox="0 0 16 16">
+                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                                </svg>
+                                Thêm nhân viên</a>
+                        </div>
+
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <table id="example2" style="width: 100%" class="table-bordered table-hover text-center">
+                                <thead style="background-color: dimgrey;height: 50px;color: white">
+                                <tr>
+                                    <th>STT</th>
+                                    <th style="white-space: nowrap;">Mã nhân viên</th>
+                                    <th style="white-space: nowrap;">Tên nhân viên</th>
+                                    <th style="white-space: nowrap;">Số điện thoại</th>
+                                    <th style="white-space: nowrap;">Email</th>
+                                    <th style="white-space: nowrap;">Giới tính</th>
+                                    <th style="white-space: nowrap;">Vai trò</th>
+                                    <th style="white-space: nowrap;">Trạng thái</th>
+                                    <th style=" white-space: nowrap;">Thao tác</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="nv,indexStat : ${nhanVien}">
+                                    <td th:text="${indexStat.index+1}"></td>
+                                    <td th:text="${nv.maNhanvien}"></td>
+                                    <td th:text="${nv.tenNhanVien}"></td>
+                                    <td th:text="${nv.idTaiKhoan.sdt}"></td>
+                                    <td th:text="${nv.idTaiKhoan.email}"></td>
+                                    <td th:text="${nv.gioiTinh ? 'Nam' : 'Nữ'}"></td>
+                                    <td th:text="${nv.idTaiKhoan.vaiTro.getDisplayName()}"></td>
+                                    <td th:text="${nv.trangThai ? 'Làm việc' : 'Nghỉ làm'}"></td>
+                                    <td>
+                                        <a th:href="@{/nhan-vien/hien-thi/{id}(id=${nv.id})}"
+                                           style="padding: 10px 0 10px 0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25"
+                                                 fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                                <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                                                <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                                            </svg>
+                                        </a>
+
+                                    </td>
+                                </tr>
+                                </tbody>
+
+
+                            </table>
+                            <div class="d-flex justify-content-center">
+                                <!-- Phân trang -->
+                                <div th:if="${nhanVien.totalPages > 0}" class="d-flex justify-content-between">
+                                    <nav aria-label="...">
+                                        <ul class="pagination">
+                                            <!-- Nút về trang đầu tiên -->
+                                            <li class="page-item"
+                                                th:class="${nhanVien.first} ? 'page-item disabled' : 'page-item'">
+                                                <a class="page-link" th:href="@{/nhan-vien/hien-thi(page=0)}"><<</a>
+                                            </li>
+
+                                            <!-- Nút về trang trước -->
+                                            <li class="page-item"
+                                                th:class="${nhanVien.first} ? 'page-item disabled' : 'page-item'">
+                                                <a class="page-link"
+                                                   th:href="@{/nhan-vien/hien-thi(page=${nhanVien.number - 1})}"><</a>
+                                            </li>
+
+                                            <!-- Hiển thị số trang hiện tại -->
+                                            <li class="page-item active">
+                                                <a class="page-link"
+                                                   th:text="${nhanVien.number + 1 + '/' + nhanVien.totalPages}"></a>
+                                            </li>
+
+                                            <!-- Nút đến trang tiếp theo -->
+                                            <li class="page-item"
+                                                th:class="${nhanVien.last} ? 'page-item disabled' : 'page-item'">
+                                                <a class="page-link"
+                                                   th:href="@{/nhan-vien/hien-thi(page=${nhanVien.number + 1})}">></a>
+                                            </li>
+
+                                            <!-- Nút đến trang cuối cùng -->
+                                            <li class="page-item"
+                                                th:class="${nhanVien.last} ? 'page-item disabled' : 'page-item'">
+                                                <a class="page-link"
+                                                   th:href="@{/nhan-vien/hien-thi(page=${nhanVien.totalPages - 1})}">>></a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+</body>
+
+

@@ -7,12 +7,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
             crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"> </script>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body class="hold-transition sidebar-mini" style="font-family: 'Bahnschrift'">
-
 <!--Nội dung -->
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -26,7 +24,7 @@
                             <path fill-rule="evenodd"
                                   d="M2 15.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5M6 6a.5.5 0 0 0 0 1h4a.5.5 0 0 0 0-1z"/>
                         </svg>
-                        THÊM NHÂN VIÊN
+                        SỬA NHÂN VIÊN
                     </h1>
 
                 </div>
@@ -45,8 +43,9 @@
                         <div class="card-body">
                             <section class="content">
                                 <div class="container">
-                                    <form th:method="post" id="addForm" th:object="${nhanVienDto}"
-                                          th:action="@{/nhan-vien/them}" enctype="multipart/form-data"
+                                    <form th:method="post" id="addForm" th:object="${nhanVien}"
+                                          th:action="@{/nhan-vien/sua/{id}(id=${nhanVien.id})}"
+                                          enctype="multipart/form-data"
                                           onsubmit="return validate(event);">
 
                                         <section class="content">
@@ -57,7 +56,7 @@
                                                 <!-- Ảnh đại diện căn giữa -->
                                                 <div class="text-center">
                                                     <img id="uploadedImage"
-                                                         th:src="@{/uploads/{imageName}(imageName=${nhanVienDto.hinhAnh})}"
+                                                         th:src="@{/uploads/{imageName}(imageName=${nhanVien.hinhAnh})}"
                                                          class="img-fluid rounded-circle mx-auto d-block"
                                                          style="width: 150px; height: 150px; object-fit: cover; display: none;">
                                                 </div>
@@ -90,7 +89,7 @@
                                             </div>
                                             <div class="align-items-center col-lg-6 col-md-6">
                                                 <div class="col-auto">
-                                                    <label class="col-form-label"><span style="color: red">* </span>Ngày
+                                                    <label class="col-form-label"><span style="color: #ffffff">* </span>Ngày
                                                         sinh:</label>
                                                 </div>
                                                 <div class="col-auto">
@@ -118,7 +117,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                         <div class="d-flex">
                                             <div class="align-items-center col-lg-6 col-md-6">
                                                 <div class="col-auto">
@@ -127,7 +125,8 @@
                                                 </div>
                                                 <div class="col-auto">
                                                     <input class="form-control" id="inputEmail" placeholder="Email"
-                                                           th:field="*{email}" th:errorclass="is-invalid">
+                                                           th:field="*{email}" th:errorclass="is-invalid"
+                                                           th:attr="data-original=${nhanVien.email}, data-id=${nhanVien.email}">
                                                 </div>
                                                 <div class="col-auto">
                                                     <p style="color: red; font-weight: initial;"
@@ -142,7 +141,8 @@
                                                 <div class="col-auto">
                                                     <input class="form-control" id="inputSdt"
                                                            placeholder="Số điện thoại" th:field="*{sdt}"
-                                                           th:errorclass="is-invalid">
+                                                           th:errorclass="is-invalid"
+                                                           th:attr="data-original=${nhanVien.sdt}, data-id=${nhanVien.sdt}">
                                                 </div>
                                                 <div class="col-auto">
                                                     <p style="color: red; font-weight: initial;" id="errorSdt"></p>
@@ -225,8 +225,7 @@
                                                 </div>
                                                 <div class="col-auto">
                                                     <input type="radio" value="ADMIN" id="radioVaitro"
-                                                           th:field="*{vaiTro}" style="margin-top: 10px"
-                                                           checked>Quản lý
+                                                           th:field="*{vaiTro}" style="margin-top: 10px">Quản lý nhân viên
                                                     <input type="radio" value="EMPLOYEE"
                                                            th:field="*{vaiTro}"
                                                            style="margin-left: 10px;margin-top: 10px">Nhân viên
@@ -238,13 +237,34 @@
                                                             style="color: red">* </span>Trạng thái:</label>
                                                 </div>
                                                 <div class="col-auto">
-                                                    <select disabled class="form-control form-select form-select-sm"
+                                                    <select class="form-control form-select form-select-sm"
                                                             th:field="*{trangThai}" aria-label=".form-select-sm">
-                                                        <option value="true" selected>Làm việc</option>
-                                                        <option value="false">Nghỉ làm</option>
+                                                        <option th:selected="*{trangThai == true}" value="true">Làm việc</option>
+                                                        <option th:selected="*{trangThai == false}" value="false">Nghỉ làm</option>
                                                     </select>
                                                 </div>
+                                            </div>
+                                        </div>
 
+                                        <div class="d-flex">
+                                            <div class="align-items-center col-lg-6 col-md-6">
+                                                <div class="col-auto">
+                                                    <label class="col-form-label"> <span
+                                                            style="color: red">* </span>Ngày tạo:</label>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <input class="form-control" th:field="*{ngayTao}" placeholder="Ngày tạo" disabled>
+                                                </div>
+                                            </div>
+
+                                            <div class="align-items-center col-lg-6 col-md-6">
+                                                <div class="col-auto">
+                                                    <label class="col-form-label"> <span
+                                                            style="color: red">* </span>Ngày cập nhật:</label>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <input class="form-control" th:field="*{ngayCapNhat}" placeholder="Ngày tạo" disabled>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -268,12 +288,11 @@
         </div>
 
     </section>
+
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
 
-
-<!--Chọn tỉnh/huyện/xã-->
 <script>
     var citis = document.getElementById("city");
     var districts = document.getElementById("district");
@@ -330,19 +349,15 @@
 </script>
 
 <script th:inline="javascript">
-    var listNV = /*[[${nhanVien}]]*/ '[]';
-    var listTK = /*[[${taiKhoan}]]*/ '[]';
+    var listNV = /*[[${listNV}]]*/ '[]';
+    var listTK = /*[[${listTK}]]*/ '[]';
     console.log("Dữ liệu nhân viên:", listNV);
     console.log("Dữ liệu tài khoản:", listTK);
 </script>
 
-
+<!--check validate-->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Đặt giá trị radio button mặc định
-        document.getElementById("radioGT").checked = true;
-        document.getElementById("radioVaitro").checked = true;
-
         var errorAnh = document.getElementById("errorAnh");
         var fileInput = document.getElementById('fileInput');
         var imgElement = document.getElementById('uploadedImage');
@@ -384,35 +399,44 @@
         });
     });
 
-    <!--check validate-->
     function checkTrungSdt() {
-        var sdt = document.getElementById('inputSdt').value.trim();
-        for (var i = 0; i < listTK.length; i++) {
-            if (sdt.toLowerCase() === listTK[i].sdt.toLowerCase()) {
-                return false; // Trùng
-            }
+        var sdtInput = document.getElementById('inputSdt').value.trim();
+        var originalSdt = document.getElementById('inputSdt').getAttribute("data-original") || "";
+        var currentId = document.getElementById('inputSdt').getAttribute("data-id");
+
+        if (sdtInput === originalSdt) {
+            return true;
         }
-        return true; // Không trùng
+
+        return !listTK.some(tk => tk.sdt === sdtInput && tk.id !== currentId);
     }
 
     function checkTrungEmail() {
-        var email = document.getElementById('inputEmail').value.trim();
-        for (var i = 0; i < listTK.length; i++) {
-            if (email.toLowerCase() === listTK[i].email.toLowerCase()) {
-                return false; // Trùng CCCD
-            }
+        var emailInput = document.getElementById('inputEmail').value.trim();
+        var originalEmail = document.getElementById('inputEmail').getAttribute("data-original") || "";
+        var currentId = document.getElementById('inputEmail').getAttribute("data-id");
+        console.log("email nhập vào:", emailInput);
+        console.log("email ban đầu:", originalEmail);
+        console.log("email hiện tại:", currentId);
+        if (emailInput === originalEmail) {
+            console.log("✅ email không thay đổi, hợp lệ!");
+            return true;
         }
-        return true; // Không trùng
+
+        return !listTK.some(tk => tk.email.toLowerCase() === emailInput && tk.id !== currentId);
+        console.log("Kết quả kiểm tra trùng email:", isDuplicate ? "❌ Trùng" : "✅ Không trùng");
     }
 
     function validate(event) {
+        console.log("ID nhân viên hiện tại:", document.getElementById('inputCCCD').getAttribute("data-id"));
+
         let isValid = true;
 
         // Lấy giá trị từ input
         let tenNhanVien = document.getElementById("inputTen").value.trim();
         let ngaySinh = document.getElementById("inputNgSinh").value;
         let email = document.getElementById("inputEmail").value.trim();
-        let sdt = document.getElementById("inputSdt").value.trim();
+        let sdt = document.getElementById("inputSdt").value;
         let city = document.getElementById("city").value;
         let district = document.getElementById("district").value;
         let ward = document.getElementById("ward").value;
@@ -440,7 +464,7 @@
             isValid = false;
         }
         // Kiểm tra tháng và ngày để đảm bảo đủ 18 tuổi
-       else if (
+        if (
             today.getMonth() < ns.getMonth() ||
             (today.getMonth() === ns.getMonth() && today.getDate() < ns.getDate())
         ) {
@@ -451,6 +475,7 @@
         } else {
             document.getElementById("errorNgSinh").innerText = "";
         }
+
 
         // Kiểm tra Email
         let regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -468,7 +493,7 @@
         }
 
         // Kiểm tra Số điện thoại
-        let regexSdt = /^(0[3|5|7|8|9])+([0-9]{8})$/; // Số điện thoại Việt Nam
+        let regexSdt = /^(0[35789])\d{8}$/;// Số điện thoại Việt Nam
         if (sdt === "") {
             document.getElementById("errorSdt").innerText = "Số điện thoại không được để trống!";
             isValid = false;
@@ -527,7 +552,7 @@
             return false;
         } else {
             Swal.fire({
-                title: 'Bạn có muốn thêm không?',
+                title: 'Bạn có muốn cập nhật không?',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: 'Có',
@@ -556,6 +581,5 @@
         return false;
     }
 </script>
-
 
 </body>

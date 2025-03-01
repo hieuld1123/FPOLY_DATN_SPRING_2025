@@ -8,15 +8,17 @@ import com.example.datnsd26.services.FileLoadService;
 import com.example.datnsd26.services.NhanVienService;
 import com.example.datnsd26.services.TaiKhoanService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
 @RequestMapping("/nhan-vien")
 @Controller
@@ -32,21 +34,48 @@ public class NhanVienController {
 
 
     @GetMapping("/hien-thi")
-    public String hienThiNhanVien(Model model) {
-        List<NhanVien> listNV = nhanVienService.getAll();
+    public String hienThiNhanVien(Model model,
+                                  @RequestParam("page") Optional<Integer> pageParam) {
+        int page = (Integer) pageParam.orElse(0);
+        Pageable p = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, new String[]{"id"}));
+        Page<NhanVien> listNV = nhanVienService.findAll(p);
         model.addAttribute("nhanVien", listNV);
-        return "/admin/nhanvien/quanlynhanvien";
+        return "/admin/nhanvien/quanLyNhanVien";
     }
 
     @GetMapping("/tim-kiem")
-    public String timKiemNV(@RequestParam(value = "searchInput", required = false) String tenSdtMa,
-                            @RequestParam(value = "searchOption", required = false) Boolean trangThai,
+    public String timKiemNV(@RequestParam("page") Optional<Integer> pageParam,
+                            @RequestParam(value = "searchInput", required = false) String tenSdtMaE,
+                            @RequestParam(value = "statusOption", required = false) Boolean trangThai,
+                            @RequestParam(value = "roleOption", required = false) String role,
                             Model model) {
-        List<NhanVien> listNV = nhanVienService.findByTenSdtMaTT(tenSdtMa, trangThai);
+        int page = pageParam.orElse(0);
+        Pageable p = PageRequest.of(page, 5);
+
+        // Nếu search là null hoặc rỗng, gán giá trị mặc định
+        if (tenSdtMaE == null || tenSdtMaE.trim().isEmpty()) {
+            tenSdtMaE = "";  // Chỉ tìm kiếm tất cả
+        } else {
+            // Loại bỏ khoảng trắng ở đầu và cuối chuỗi, và thay thế khoảng trắng liên tiếp bằng một khoảng trắng duy nhất
+            tenSdtMaE = tenSdtMaE.trim().replaceAll("\\s+", " ");
+        }
+
+        // Nếu vai trò được truyền vào, chuyển nó thành kiểu Enum
+        TaiKhoan.Role vaiTro = null;
+        if (role != null && !role.isEmpty()) {
+            try {
+                vaiTro = TaiKhoan.Role.valueOf(role.toUpperCase()); // Chuyển String thành enum
+            } catch (IllegalArgumentException e) {
+                // Nếu không chuyển đổi được, có thể dùng giá trị mặc định hoặc để null
+                vaiTro = null;
+            }
+        }
+        Page<NhanVien> listNV = nhanVienService.findByTenSdtMaTT(tenSdtMaE,trangThai,String.valueOf(vaiTro),p);
         model.addAttribute("nhanVien", listNV);
-        model.addAttribute("searchInput", tenSdtMa);
-        model.addAttribute("searchOption", trangThai);
-        return "/admin/nhanvien/quanlynhanvien";
+        model.addAttribute("searchInput", tenSdtMaE);
+        model.addAttribute("statusOption", trangThai);
+        model.addAttribute("roleOption", role);
+        return "/admin/nhanvien/quanLyNhanVien";
     }
 
     @GetMapping("/them")
@@ -54,7 +83,7 @@ public class NhanVienController {
         model.addAttribute("nhanVien", nhanVienService.getAll());
         model.addAttribute("taiKhoan", taiKhoanService.getAll());
         model.addAttribute("nhanVienDto", new NhanVienTKDto());
-        return "/admin/nhanvien/themnhanvien";
+        return"/admin/nhanvien/themNhanVien";
     }
 
     @PostMapping("/them")
@@ -82,26 +111,26 @@ public class NhanVienController {
         NhanVien nhanVien = nhanVienService.getById(id);
         NhanVienTKDto nhanVienTKDto = new NhanVienTKDto();
         nhanVienTKDto.setHinhAnh(nhanVien.getHinhAnh());
-        nhanVienTKDto.setMaNhanVien(nhanVien.getMaNhanvien());
+        nhanVienTKDto.setMaNhanvien(nhanVien.getMaNhanvien());
         nhanVienTKDto.setTenNhanVien(nhanVien.getTenNhanVien());
-        nhanVienTKDto.setEmail(nhanVien.getTaiKhoan().getEmail());
+        nhanVienTKDto.setEmail(nhanVien.getIdTaiKhoan().getEmail());
         nhanVienTKDto.setId(nhanVien.getId());
         nhanVienTKDto.setDiaChiCuThe(nhanVien.getDiaChiCuThe());
         nhanVienTKDto.setGioiTinh(nhanVien.getGioiTinh());
-        nhanVienTKDto.setPhuong(nhanVien.getPhuong());
-        nhanVienTKDto.setQuan(nhanVien.getQuan());
+        nhanVienTKDto.setXa(nhanVien.getXa());
+        nhanVienTKDto.setHuyen(nhanVien.getHuyen());
         nhanVienTKDto.setTinh(nhanVien.getTinh());
-        nhanVienTKDto.setCccd(nhanVien.getCccd());
         nhanVienTKDto.setHinhAnh(nhanVien.getHinhAnh());
         nhanVienTKDto.setNgaySinh(nhanVien.getNgaySinh());
         nhanVienTKDto.setNgayCapNhat(nhanVien.getNgayCapNhat());
         nhanVienTKDto.setNgayTao(nhanVien.getNgayTao());
-        nhanVienTKDto.setSdt(nhanVien.getTaiKhoan().getSdt());
-        nhanVienTKDto.setVaiTro(nhanVien.getTaiKhoan().getVaiTro());
+        nhanVienTKDto.setSdt(nhanVien.getIdTaiKhoan().getSdt());
+        nhanVienTKDto.setVaiTro(nhanVien.getIdTaiKhoan().getVaiTro());
+        nhanVienTKDto.setTrangThai(nhanVien.getTrangThai());
         model.addAttribute("nhanVien", nhanVienTKDto);
         model.addAttribute("listNV", nhanVienService.getAll());
         model.addAttribute("listTK", taiKhoanService.getAll());
-        return "/admin/nhanvien/suanhanvien";
+        return "/admin/nhanvien/suaNhanVien";
     }
 
     @PostMapping("/sua/{id}")
@@ -115,12 +144,5 @@ public class NhanVienController {
         nhanVienService.update(nhanVienTKDto, id);
         return "redirect:/nhan-vien/hien-thi";
     }
-
-//    @GetMapping("/xoa/{id}")
-//    private String xoaNV(@PathVariable("id") Integer id){
-//         nhanVienService.delete(id);
-//        return "redirect:/nhan-vien/hien-thi";
-//    }
-
 
 }
