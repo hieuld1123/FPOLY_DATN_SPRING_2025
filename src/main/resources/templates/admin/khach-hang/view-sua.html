@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý nhân viên</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+</head>
+<style>
+    .img-preview {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 50%;
+        display: block;
+        margin: auto;
+        border: 3px solid #ddd;
+    }
+</style>
+<body>
+<div th:replace="components/admin-sidebar :: sidebar"></div>
+<div class="page-wrapper">
+    <div class="container-xl">
+        <div class="my-5">
+            <div class="page-pretitle">Admin</div>
+            <h2 class="page-title">Quản lý khách hàng</h2>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Chỉnh sửa khách hàng</h3>
+            </div>
+            <div class="card-body">
+                <form th:method="post" id="addForm" th:object="${khachHang}"
+                      th:action="@{/khach-hang/sua/{id}(id=${khachHang.id})}"
+                      enctype="multipart/form-data" onsubmit="return validate(event);">
+                    <div class="row">
+                        <!-- Cột bên trái: Ảnh-->
+                        <div class="col-md-4 text-center" style="margin-top: 50px">
+                            <div>
+                                <img id="uploadedImage" class="img-preview"
+                                     th:src="@{/uploads/{imageName}(imageName=${khachHang.hinhAnh})}">
+                            </div>
+                            <input type="file" class="form-control mt-3" name="anh" id="fileInput"
+                                   accept="image/png, image/jpeg"/>
+
+
+                        </div>
+
+                        <!-- Cột bên phải: Thông tin -->
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Tên khách hàng</label>
+                                    <input type="text" class="form-control" th:field="*{tenKhachHang}"
+                                           id="inputTen" th:errorclass="is-invalid"
+                                           placeholder="Nhập tên khách hàng">
+                                    <p style="color: red; font-weight: initial;" id="errorTen"></p>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Ngày sinh</label>
+                                    <input type="date" class="form-control" th:field="*{ngaySinh}"
+                                           id="inputNgSinh" th:errorclass="is-invalid">
+                                    <p style="color: red; font-weight: initial;" id="errorNgSinh"></p>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Giới tính</label>
+                                    <div class="d-flex">
+                                        <input class="form-check-input" type="radio" th:field="*{gioiTinh}" id="radioGT"
+                                               style="margin-right: 5px" value="true"> Nam
+                                        <input class="form-check-input ms-3" type="radio" th:field="*{gioiTinh}"
+                                               style="margin-right:5px" value="false"> Nữ
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" th:field="*{email}"
+                                           id="inputEmail" th:errorclass="is-invalid"
+                                           placeholder="Nhập email">
+                                    <p style="color: red; font-weight: initial;" id="errorEmail"></p>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Số điện thoại</label>
+                                    <input type="text" class="form-control" th:field="*{sdt}"
+                                           th:errorclass="is-invalid" id="inputSdt"
+                                           placeholder="Nhập số điện thoại">
+                                    <p style="color: red; font-weight: initial;" id="errorSdt"></p>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Trạng thái</label>
+                                    <select class="form-select" th:field="*{trangThai}">
+                                        <option th:selected="*{trangThai == true}" value="true">Hoạt động</option>
+                                        <option th:selected="*{trangThai == false}" value="false">Ngừng hoạt động
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <!-- Địa chỉ -->
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3>Danh sách địa chỉ</h3>
+                        <button type="button" id="add-address" class="btn btn-outline-primary">
+                            <i class="bi bi-plus-circle"></i> Thêm Địa Chỉ
+                        </button>
+                    </div>
+
+                    <div id="address-list">
+                        <div class="card p-3">
+                            <div class="address-item" th:each="diaChi, index : *{listDiaChi}">
+                                <div class="row">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <div>
+                                            <input type="radio" name="diaChiMacDinhId"
+                                                   class="form-check-input"
+                                                   th:field="*{listDiaChi[__${index.index}__].trangThai}"
+                                                   th:value="${index.index}">
+                                            <label class="ms-2">Mặc định</label>
+                                        </div>
+                                        <button type="button" class="btn btn-danger btn-sm remove-address">Xóa</button>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Tỉnh/Thành phố</label>
+                                        <select class="form-control form-select province"
+                                                name="listDiaChi[0].tinh"
+                                                th:field="*{listDiaChi[__${index.index}__].tinh}">
+                                            <option value="" selected>Chọn tỉnh thành</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Quận/Huyện</label>
+                                        <select class="form-control form-select district"
+                                                name="listDiaChi[0].huyen"
+                                                th:field="*{listDiaChi[__${index.index}__].huyen}">
+                                            <option value="" selected>Chọn quận huyện</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Xã/Phường</label>
+                                        <select class="form-control form-select ward"
+                                                name="listDiaChi[0].xa"
+                                                th:field="*{listDiaChi[__${index.index}__].xa}">
+                                            <option value="" selected>Chọn phường xã</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Địa chỉ cụ thể</label>
+                                    <input type="text" class="form-control"
+                                           name="listDiaChi[0].diaChiCuThe"
+                                           th:field="*{listDiaChi[__${index.index}__].diaChiCuThe}"
+                                           id="inputDuong" th:errorclass="is-invalid" placeholder="Nhập địa chỉ cụ thể">
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                    </div>
+
+
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                        <a th:href="@{/khach-hang/hien-thi}"
+                           class="btn btn-primary btn-secondary ms-2 me-2">Quay lại</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    let addressIndex = 0;
+    let provincesData = [];
+
+    $(document).ready(function () {
+        // Lấy danh sách tỉnh/huyện/xã từ API
+        $.getJSON("https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json", function (data) {
+            provincesData = data;
+            loadProvinces();
+        });
+
+        function loadProvinces() {
+            $(".province").each(function () {
+                let select = $(this);
+                if (select.children("option").length === 1) { // Tránh lặp dữ liệu khi thêm mới
+                    $.each(provincesData, function (index, province) {
+                        select.append('<option value="' + province.Name + '">' + province.Name + '</option>');
+                    });
+                }
+            });
+        }
+
+        $(document).on("change", ".province", function () {
+            let provinceName = $(this).val();
+            let parent = $(this).closest('.address-item');
+            let districtSelect = parent.find(".district");
+            let wardSelect = parent.find(".ward");
+
+            districtSelect.html('<option value="">Chọn huyện</option>');
+            wardSelect.html('<option value="">Chọn xã</option>');
+
+            let province = provincesData.find(p => p.Name === provinceName);
+            if (province) {
+                $.each(province.Districts, function (index, district) {
+                    districtSelect.append('<option value="' + district.Name + '">' + district.Name + '</option>');
+                });
+            }
+        });
+
+        $(document).on("change", ".district", function () {
+            let districtName = $(this).val();
+            let parent = $(this).closest('.address-item');
+            let provinceName = parent.find(".province").val();
+            let wardSelect = parent.find(".ward");
+
+            wardSelect.html('<option value="">Chọn xã</option>');
+
+            let province = provincesData.find(p => p.Name === provinceName);
+            if (province) {
+                let district = province.Districts.find(d => d.Name === districtName);
+                if (district) {
+                    $.each(district.Wards, function (index, ward) {
+                        wardSelect.append('<option value="' + ward.Name + '">' + ward.Name + '</option>');
+                    });
+                }
+            }
+        });
+
+        // Sự kiện khi bấm "Thêm địa chỉ"
+        $("#add-address").click(function () {
+            addressIndex++;
+            let newAddress = `
+                <div class="address-item border p-3 mb-3">
+               <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <input type="radio" class="form-check-input" name="diaChiMacDinhId" value="${addressIndex}">
+            <label class="ms-2">Mặc định</label>
+        </div>
+        <button type="button" class="btn btn-danger btn-sm remove-address">
+            <i class="bi bi-trash"></i> Xóa
+        </button>
+    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label class="form-label">Tỉnh/Thành phố</label>
+                            <select class="form-control form-select province" name="listDiaChi[${addressIndex}].tinh">
+                                <option value="">Chọn tỉnh thành</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Quận/Huyện</label>
+                            <select class="form-control form-select district" name="listDiaChi[${addressIndex}].huyen">
+                                <option value="">Chọn quận huyện</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Xã/Phường</label>
+                            <select class="form-control form-select ward" name="listDiaChi[${addressIndex}].xa">
+                                <option value="">Chọn phường xã</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <label class="form-label">Địa chỉ cụ thể</label>
+                        <input type="text" class="form-control" name="listDiaChi[${addressIndex}].diaChiCuThe" placeholder="Nhập địa chỉ cụ thể">
+                    </div>
+                </div>`;
+
+            $("#address-list").append(newAddress);
+            loadProvinces(); // Load lại danh sách tỉnh cho dropdown mới
+        });
+
+        $(document).on("click", ".remove-address", function () {
+            $(this).closest(".address-item").remove();
+        });
+    });
+
+    $(document).on("change", "input[type='radio'][name^='listDiaChi']", function () {
+        let name = $(this).attr("name"); // Lấy name của radio được chọn
+
+        // Bỏ checked tất cả radio khác có cùng pattern name (listDiaChi[*].trangThai)
+        $("input[type='radio'][name^='listDiaChi']").not(this).prop("checked", false);
+    });
+
+
+</script>
+</body>
+</html>

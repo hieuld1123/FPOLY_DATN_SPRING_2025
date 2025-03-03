@@ -22,7 +22,6 @@ public class TaiKhoan {
     private String email;
 
     private String sdt;
-
     private String matKhau;
 
     @Enumerated(EnumType.STRING)
@@ -31,6 +30,16 @@ public class TaiKhoan {
     private Boolean trangThai;
 
     public enum Role {
-        ADMIN, EMPLOYEE, CUSTOMER
+        ADMIN, EMPLOYEE, CUSTOMER;
+        public String getDisplayName() {
+            switch (this) {
+                case ADMIN:
+                    return "Quản lý nhân viên";
+                case EMPLOYEE:
+                    return "Nhân viên";
+                default:
+                    return "Khách hàng";
+            }
+        }
     }
 }
