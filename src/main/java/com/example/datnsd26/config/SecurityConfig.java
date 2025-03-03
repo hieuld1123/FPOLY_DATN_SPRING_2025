@@ -18,7 +18,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF if using REST API
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/shop/**")) // Bỏ qua CSRF cho tất cả URL bắt đầu với /shop/
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/shop/**", "/error/**", "/**").permitAll()  // Public access
                         .requestMatchers("/admin/**").hasAnyRole("ADMIN", "EMPLOYEE")  // Requires authentication

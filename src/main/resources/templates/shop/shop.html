@@ -10,12 +10,14 @@
 <div th:replace="components/navbar :: navbar"></div>
 <div class="container">
     <h2>Danh sách sản phẩm</h2>
+    <p th:if="${errorMessage}" style="color: red;" th:text="${errorMessage}"></p>
     <div th:each="sp : ${productDetailsList}">
         <p>Tên: <span th:text="${sp.tenSanPhamChiTiet}"></span></p>
         <p>Giá: <span th:text="${sp.giaBan}"></span></p>
         <form action="/shop/add-to-cart" method="post">
             <input type="hidden" name="productId" th:value="${sp.id}" />
             <input type="number" name="quantity" value="1" min="1" required />
+            <div class="error-message"></div> <!-- Chỗ hiển thị thông báo lỗi -->
             <button type="submit">Thêm vào giỏ</button>
         </form>
     </div>
@@ -24,5 +26,28 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".add-to-cart-form").forEach(form => {
+            form.addEventListener("submit", function (event) {
+                event.preventDefault(); // Ngăn form submit mặc định
+
+                let inputQuantity = form.querySelector(".quantity-input");
+                let maxQuantity = parseInt(inputQuantity.getAttribute("data-max")); // Lấy số lượng tồn kho từ attribute
+                let quantity = parseInt(inputQuantity.value);
+
+                let errorMessage = form.querySelector(".error-message");
+
+                if (quantity > maxQuantity) {
+                    errorMessage.innerHTML = `<p>Hiện sản phẩm chỉ còn <strong>${maxQuantity}</strong> sản phẩm.
+                Nếu bạn đặt hàng với số lượng lớn, hãy liên hệ với chúng tôi qua 0397818716 để được hỗ trợ tốt nhất.</p>`;
+                    errorMessage.style.color = "red";
+                } else {
+                    this.submit(); // Nếu hợp lệ, submit form
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>
