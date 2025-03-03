@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý nhân viên</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+</head>
+<style>
+    .img-preview {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 50%;
+        display: block;
+        margin: auto;
+        border: 3px solid #ddd;
+    }
+</style>
+<body>
+<div th:replace="components/admin-sidebar :: sidebar"></div>
+<div class="page-wrapper">
+    <div class="container-xl">
+            <div class="my-5">
+                <div class="page-pretitle">Admin</div>
+                <h2 class="page-title">Quản lý nhân viên</h2>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Thêm nhân viên</h3>
+                </div>
+                <div class="card-body">
+                    <form th:method="post" id="addForm" th:object="${nhanVienDto}" th:action="@{/nhan-vien/them}"
+                          enctype="multipart/form-data" onsubmit="return validate(event);">
+                        <div class="row">
+                            <!-- Cột bên trái: Ảnh nhân viên -->
+                            <div class="col-md-4 text-center" style="margin-top: 50px">
+                                <div>
+                                    <img id="uploadedImage" class="img-preview"
+                                         th:src="@{/uploads/{imageName}(imageName=${nhanVienDto.hinhAnh})}">
+                                </div>
+                                <input type="file" class="form-control mt-3" name="anh" id="fileInput"
+                                       accept="image/png, image/jpeg"/>
+
+
+                            </div>
+
+                            <!-- Cột bên phải: Thông tin nhân viên -->
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Tên nhân viên</label>
+                                        <input type="text" class="form-control" th:field="*{tenNhanVien}"
+                                               id="inputTen" th:errorclass="is-invalid"
+                                               placeholder="Nhập tên nhân viên">
+                                        <p style="color: red; font-weight: initial;" id="errorTen"></p>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Ngày sinh</label>
+                                        <input type="date" class="form-control" th:field="*{ngaySinh}"
+                                               id="inputNgSinh" th:errorclass="is-invalid">
+                                        <p style="color: red; font-weight: initial;" id="errorNgSinh"></p>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Giới tính</label>
+                                        <div class="d-flex">
+                                            <input class="form-check-input" type="radio" th:field="*{gioiTinh}" id="radioGT"
+                                                   style="margin-right: 5px" value="true"> Nam
+                                            <input class="form-check-input ms-3" type="radio" th:field="*{gioiTinh}"
+                                                   style="margin-right:5px" value="false"> Nữ
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-control" th:field="*{email}"
+                                               id="inputEmail" th:errorclass="is-invalid"
+                                               placeholder="Nhập email">
+                                        <p style="color: red; font-weight: initial;" id="errorEmail"></p>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Số điện thoại</label>
+                                        <input type="text" class="form-control" th:field="*{sdt}"
+                                               th:errorclass="is-invalid" id="inputSdt"
+                                               placeholder="Nhập số điện thoại">
+                                        <p style="color: red; font-weight: initial;" id="errorSdt"></p>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Vai trò</label>
+                                        <select class="form-select" th:field="*{vaiTro}">
+                                            <option value="ADMIN">Quản lý nhân viên</option>
+                                            <option value="EMPLOYEE">Nhân viên</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <!-- Địa chỉ -->
+                        <h3>Địa chỉ</h3>
+                        <div class="card p-3">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Tỉnh/Thành phố</label>
+                                <select class="form-control form-select" id="city" th:field="*{tinh}">
+                                    <option value="" selected>Chọn tỉnh thành</option>
+                                </select>
+                                <p style="color: red; font-weight: initial;" id="errorTinh"></p>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Quận/Huyện</label>
+                                <select class="form-control form-select" id="district" th:field="*{huyen}">
+                                    <option value="" selected>Chọn quận huyện</option>
+                                </select>
+                                <p style="color: red; font-weight: initial;" id="errorQuan"></p>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Xã/Phường</label>
+                                <select class="form-control form-select" id="ward" th:field="*{xa}">
+                                    <option value="" selected>Chọn phường xã</option>
+                                </select>
+                                <p style="color: red; font-weight: initial;"id="errorPhuong"></p>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Địa chỉ cụ thể</label>
+                            <input type="text" class="form-control" th:field="*{diaChiCuThe}"
+                                   id="inputDuong" th:errorclass="is-invalid" placeholder="Nhập địa chỉ cụ thể">
+                            <p style="color: red; font-weight: initial;" id="errorDuong"></p>
+                        </div>
+                        </div>
+<!--                        Hết địa chỉ-->
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary">Lưu</button>
+                            <a th:href="@{/nhan-vien/hien-thi}"
+                               class="btn btn-primary btn-secondary ms-2 me-2">Quay lại</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+
+
+<!--Chọn tỉnh/huyện/xã-->
+<script>
+    var citis = document.getElementById("city");
+    var districts = document.getElementById("district");
+    var wards = document.getElementById("ward");
+    var Parameter = {
+        url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
+        method: "GET",
+        responseType: "application/json",
+    };
+    var promise = axios(Parameter);
+    promise.then(function (result) {
+        renderCity(result.data);
+    });
+
+    function renderCity(data) {
+        for (const x of data) {
+            var opt = document.createElement('option');
+            opt.value = x.Name;
+            opt.text = x.Name;
+            opt.setAttribute('data-id', x.Id);
+            citis.options.add(opt);
+        }
+        citis.onchange = function () {
+            districts.length = 1;
+            wards.length = 1;
+            if (this.options[this.selectedIndex].dataset.id != "") {
+                const result = data.filter(n => n.Id === this.options[this.selectedIndex].dataset.id);
+
+                for (const k of result[0].Districts) {
+                    var opt = document.createElement('option');
+                    opt.value = k.Name;
+                    opt.text = k.Name;
+                    opt.setAttribute('data-id', k.Id);
+                    districts.options.add(opt);
+                }
+            }
+        };
+        districts.onchange = function () {
+            wards.length = 1;
+            const dataCity = data.filter((n) => n.Id === citis.options[citis.selectedIndex].dataset.id);
+            if (this.options[this.selectedIndex].dataset.id != "") {
+                const dataWards = dataCity[0].Districts.filter(n => n.Id === this.options[this.selectedIndex].dataset.id)[0].Wards;
+
+                for (const w of dataWards) {
+                    var opt = document.createElement('option');
+                    opt.value = w.Name;
+                    opt.text = w.Name;
+                    opt.setAttribute('data-id', w.Id);
+                    wards.options.add(opt);
+                }
+            }
+        };
+    }
+</script>
+
+<script th:inline="javascript">
+    var listNV = /*[[${nhanVien}]]*/ '[]';
+    var listTK = /*[[${taiKhoan}]]*/ '[]';
+    console.log("Dữ liệu nhân viên:", listNV);
+    console.log("Dữ liệu tài khoản:", listTK);
+</script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Đặt giá trị radio button mặc định
+        document.getElementById("radioGT").checked = true;
+
+        var errorAnh = document.getElementById("errorAnh");
+        var fileInput = document.getElementById('fileInput');
+        var imgElement = document.getElementById('uploadedImage');
+
+        fileInput.addEventListener('change', function (event) {
+            var file = event.target.files[0];
+
+            // 🔹 Reset trạng thái mỗi lần chọn ảnh mới
+            var isAnhValid = true;
+            errorAnh.innerText = "";
+            imgElement.style.display = 'none';
+
+
+            if (file) {
+                // ✅ Kiểm tra kích thước tệp (dưới 1MB)
+                const maxSize = 1024 * 1024; // 1MB
+                if (file.size > maxSize) {
+                    errorAnh.innerText = "Ảnh nhân viên không được quá 1MB!";
+                    isAnhValid = false;
+                }
+
+                // ✅ Kiểm tra định dạng tệp (chỉ PNG hoặc JPG)
+                const validFormats = ['image/png', 'image/jpeg'];
+                if (!validFormats.includes(file.type)) {
+                    errorAnh.innerText = "Ảnh nhân viên chỉ nhận định dạng PNG và JPG!";
+                    isAnhValid = false;
+                }
+
+                // ✅ Nếu ảnh hợp lệ, hiển thị ngay lập tức
+                if (isAnhValid) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        imgElement.src = e.target.result;
+                        imgElement.style.display = 'block'; // Hiển thị hình ảnh
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+    });
+
+    <!--check validate-->
+    function checkTrungSdt() {
+        var sdt = document.getElementById('inputSdt').value.trim();
+        for (var i = 0; i < listTK.length; i++) {
+            if (sdt.toLowerCase() === listTK[i].sdt.toLowerCase()) {
+                return false; // Trùng
+            }
+        }
+        return true; // Không trùng
+    }
+
+    function checkTrungEmail() {
+        var email = document.getElementById('inputEmail').value.trim();
+        for (var i = 0; i < listTK.length; i++) {
+            if (email.toLowerCase() === listTK[i].email.toLowerCase()) {
+                return false; // Trùng CCCD
+            }
+        }
+        return true; // Không trùng
+    }
+
+    function validate(event) {
+        let isValid = true;
+
+        // Lấy giá trị từ input
+        let tenNhanVien = document.getElementById("inputTen").value.trim();
+        let ngaySinh = document.getElementById("inputNgSinh").value;
+        let email = document.getElementById("inputEmail").value.trim();
+        let sdt = document.getElementById("inputSdt").value.trim();
+        let city = document.getElementById("city").value;
+        let district = document.getElementById("district").value;
+        let ward = document.getElementById("ward").value;
+        let diaChiCuThe = document.getElementById("inputDuong").value.trim();
+        let anh = document.getElementById("fileInput").value;
+
+        // Kiểm tra tên nhân viên
+        let nameRegex = /^[A-Za-zÀ-ỹ\s]{2,50}$/; //cho phép tiếng Việt, dấu cách, không có ký tự đặc biệt
+        if (tenNhanVien === "") {
+            document.getElementById("errorTen").innerText = "Tên nhân viên không được để trống!";
+            isValid = false;
+        } else if (!nameRegex.test(tenNhanVien)) {
+            document.getElementById("errorTen").innerText = "Tên nhân viên phải từ 2 đến 50 ký tự và không chứa ký tự đặc biệt!";
+            isValid = false;
+        } else {
+            document.getElementById("errorTen").innerText = ""; // Xóa thông báo lỗi nếu hợp lệ
+        }
+
+        // Kiểm tra ngày sinh
+        let ns = new Date(ngaySinh);
+        let today = new Date();
+        let tuoi = today.getFullYear() - ns.getFullYear();
+        if (ngaySinh === "") {
+            document.getElementById("errorNgSinh").innerText = "Vui lòng chọn ngày sinh!";
+            isValid = false;
+        } else if (
+            today.getMonth() < ns.getMonth() ||
+            (today.getMonth() === ns.getMonth() && today.getDate() < ns.getDate())
+        ) {
+            tuoi--;
+        } else if (tuoi < 18) {
+            document.getElementById("errorNgSinh").innerText = "Nhân viên phải đủ 18 tuổi!";
+            return false;
+        } else {
+            document.getElementById("errorNgSinh").innerText = "";
+        }
+
+        // Kiểm tra Email
+        let regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (email === "") {
+            document.getElementById("errorEmail").innerText = "Email không được để trống!";
+            isValid = false;
+        } else if (!regexEmail.test(email)) {
+            document.getElementById("errorEmail").innerText = "Email không hợp lệ!";
+            isValid = false;
+        } else if (!checkTrungEmail()) {
+            document.getElementById("errorEmail").innerText = "Email đã tồn tại!";
+            isValid = false;
+        } else {
+            document.getElementById("errorEmail").innerText = ""; // Xóa thông báo lỗi nếu hợp lệ
+        }
+
+        // Kiểm tra Số điện thoại
+        let regexSdt = /^(0[3|5|7|8|9])+([0-9]{8})$/; // Số điện thoại Việt Nam
+        if (sdt === "") {
+            document.getElementById("errorSdt").innerText = "Số điện thoại không được để trống!";
+            isValid = false;
+        } else if (!regexSdt.test(sdt)) {
+            document.getElementById("errorSdt").innerText = "Số điện thoại không hợp lệ!";
+            isValid = false;
+        } else if (!checkTrungSdt()) {
+            document.getElementById("errorSdt").innerText = "Số điện thoại đã tồn tại!";
+            isValid = false;
+        } else {
+            document.getElementById("errorSdt").innerText = ""; // Xóa thông báo lỗi nếu hợp lệ
+        }
+
+        // Kiểm tra Tỉnh/Thành phố
+        if (city === "") {
+            document.getElementById("errorTinh").innerText = "Vui lòng chọn Tỉnh/Thành phố!";
+            isValid = false;
+        } else {
+            document.getElementById("errorTinh").innerText = ""; // Xóa thông báo lỗi nếu hợp lệ
+        }
+
+
+        // Kiểm tra Quận/Huyện
+        if (district === "") {
+            document.getElementById("errorQuan").innerText = "Vui lòng chọn Quận/Huyện!";
+            isValid = false;
+        } else {
+            document.getElementById("errorQuan").innerText = ""; // Xóa thông báo lỗi nếu hợp lệ
+        }
+
+        // Kiểm tra Xã/Phường
+        if (ward === "") {
+            document.getElementById("errorPhuong").innerText = "Vui lòng chọn Xã/Phường!";
+            isValid = false;
+        } else {
+            document.getElementById("errorPhuong").innerText = ""; // Xóa thông báo lỗi nếu hợp lệ
+        }
+
+        // Kiểm tra địa chỉ cụ thể
+        if (diaChiCuThe === "") {
+            document.getElementById("errorDuong").innerText = "Vui lòng nhập địa chỉ cụ thể!";
+            isValid = false;
+        } else {
+            document.getElementById("errorDuong").innerText = ""; // Xóa thông báo lỗi nếu hợp lệ
+        }
+
+        // Kiểm tra ảnh đại diện
+        // if (anh === "") {
+        //     document.getElementById("errorAnh").innerText = "Vui lòng chọn ảnh đại diện!";
+        //     isValid = false;
+        // }
+
+        // Nếu có lỗi, ngăn form gửi đi
+        if (!isValid) {
+            event.preventDefault();
+            return false;
+        } else {
+            Swal.fire({
+                title: 'Bạn có muốn thêm không?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Có',
+                cancelButtonText: 'Không'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Nếu người dùng nhấn Có, hiển thị thông báo thành công và chuyển hướng sau một khoảng thời gian
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                    });
+
+                    setTimeout(function () {
+                        document.getElementById("addForm").submit();
+                    }, 500);
+                }
+            });
+        }
+        return false;
+    }
+</script>
+
+</body>
+</html>

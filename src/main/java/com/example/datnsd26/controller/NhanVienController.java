@@ -40,7 +40,7 @@ public class NhanVienController {
         Pageable p = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, new String[]{"id"}));
         Page<NhanVien> listNV = nhanVienService.findAll(p);
         model.addAttribute("nhanVien", listNV);
-        return "/admin/nhanvien/quanLyNhanVien";
+        return "/admin/nhan-vien/danh-sach-nhan-vien";
     }
 
     @GetMapping("/tim-kiem")
@@ -52,38 +52,34 @@ public class NhanVienController {
         int page = pageParam.orElse(0);
         Pageable p = PageRequest.of(page, 5);
 
-        // Nếu search là null hoặc rỗng, gán giá trị mặc định
-        if (tenSdtMaE == null || tenSdtMaE.trim().isEmpty()) {
-            tenSdtMaE = "";  // Chỉ tìm kiếm tất cả
-        } else {
-            // Loại bỏ khoảng trắng ở đầu và cuối chuỗi, và thay thế khoảng trắng liên tiếp bằng một khoảng trắng duy nhất
-            tenSdtMaE = tenSdtMaE.trim().replaceAll("\\s+", " ");
-        }
+        tenSdtMaE = (tenSdtMaE == null || tenSdtMaE.trim().isEmpty()) ? "" : tenSdtMaE.trim().replaceAll("\\s+", " ");
 
-        // Nếu vai trò được truyền vào, chuyển nó thành kiểu Enum
         TaiKhoan.Role vaiTro = null;
         if (role != null && !role.isEmpty()) {
             try {
-                vaiTro = TaiKhoan.Role.valueOf(role.toUpperCase()); // Chuyển String thành enum
+                vaiTro = TaiKhoan.Role.valueOf(role.toUpperCase());
             } catch (IllegalArgumentException e) {
-                // Nếu không chuyển đổi được, có thể dùng giá trị mặc định hoặc để null
                 vaiTro = null;
             }
         }
-        Page<NhanVien> listNV = nhanVienService.findByTenSdtMaTT(tenSdtMaE,trangThai,String.valueOf(vaiTro),p);
+
+        Page<NhanVien> listNV = nhanVienService.findByTenSdtMaTT(tenSdtMaE, trangThai, vaiTro == null ? null : vaiTro.name(), p);
+
         model.addAttribute("nhanVien", listNV);
         model.addAttribute("searchInput", tenSdtMaE);
         model.addAttribute("statusOption", trangThai);
         model.addAttribute("roleOption", role);
-        return "/admin/nhanvien/quanLyNhanVien";
+
+        return "admin/nhan-vien/danh-sach-nhan-vien :: #nhanVienTable";
     }
+
 
     @GetMapping("/them")
     public String hienThiThemNhanVien(Model model) {
         model.addAttribute("nhanVien", nhanVienService.getAll());
         model.addAttribute("taiKhoan", taiKhoanService.getAll());
         model.addAttribute("nhanVienDto", new NhanVienTKDto());
-        return"/admin/nhanvien/themNhanVien";
+        return"/admin/nhan-vien/view-them";
     }
 
     @PostMapping("/them")
@@ -93,20 +89,13 @@ public class NhanVienController {
         if (fileName != null) {
             nhanVienTKDto.setHinhAnh(fileName);
         }
-//        String to = a.getEmail();
-//        String subject = "Chúc mừng đã trở thành nhân viên của T&T shop";
-//        String mailType = "";
-//        String mailContent = "Tài khoản của bạn là: " + a.getEmail() +"\nMật khẩu của bạn là: "+ matKhau;
-//        taiKhoan.sendEmail(to, subject, mailType, mailContent);
-//        checkthem=1;
-//        session.setAttribute("themthanhcong",checkthem);
         nhanVienService.save(nhanVienTKDto);
         return "redirect:/nhan-vien/hien-thi";
     }
 
 
-    @GetMapping("/hien-thi/{id}")
-    public String hienThiSuaNhanVien(@PathVariable("id") Integer id,
+    @GetMapping("/chi-tiet/{id}")
+    public String chiTietNhanVien(@PathVariable("id") Integer id,
                                      Model model) {
         NhanVien nhanVien = nhanVienService.getById(id);
         NhanVienTKDto nhanVienTKDto = new NhanVienTKDto();
@@ -130,7 +119,34 @@ public class NhanVienController {
         model.addAttribute("nhanVien", nhanVienTKDto);
         model.addAttribute("listNV", nhanVienService.getAll());
         model.addAttribute("listTK", taiKhoanService.getAll());
-        return "/admin/nhanvien/suaNhanVien";
+        return "/admin/nhan-vien/view-chi-tiet";
+    }
+    @GetMapping("/hien-thi-sua/{id}")
+    public String hienThiSuaNhanVien(@PathVariable("id") Integer id,
+                                     Model model) {
+        NhanVien nhanVien = nhanVienService.getById(id);
+        NhanVienTKDto nhanVienTKDto = new NhanVienTKDto();
+        nhanVienTKDto.setHinhAnh(nhanVien.getHinhAnh());
+        nhanVienTKDto.setMaNhanvien(nhanVien.getMaNhanvien());
+        nhanVienTKDto.setTenNhanVien(nhanVien.getTenNhanVien());
+        nhanVienTKDto.setEmail(nhanVien.getIdTaiKhoan().getEmail());
+        nhanVienTKDto.setId(nhanVien.getId());
+        nhanVienTKDto.setDiaChiCuThe(nhanVien.getDiaChiCuThe());
+        nhanVienTKDto.setGioiTinh(nhanVien.getGioiTinh());
+        nhanVienTKDto.setXa(nhanVien.getXa());
+        nhanVienTKDto.setHuyen(nhanVien.getHuyen());
+        nhanVienTKDto.setTinh(nhanVien.getTinh());
+        nhanVienTKDto.setHinhAnh(nhanVien.getHinhAnh());
+        nhanVienTKDto.setNgaySinh(nhanVien.getNgaySinh());
+        nhanVienTKDto.setNgayCapNhat(nhanVien.getNgayCapNhat());
+        nhanVienTKDto.setNgayTao(nhanVien.getNgayTao());
+        nhanVienTKDto.setSdt(nhanVien.getIdTaiKhoan().getSdt());
+        nhanVienTKDto.setVaiTro(nhanVien.getIdTaiKhoan().getVaiTro());
+        nhanVienTKDto.setTrangThai(nhanVien.getTrangThai());
+        model.addAttribute("nhanVienDto", nhanVienTKDto);
+        model.addAttribute("listNV", nhanVienService.getAll());
+        model.addAttribute("listTK", taiKhoanService.getAll());
+        return "/admin/nhan-vien/view-sua";
     }
 
     @PostMapping("/sua/{id}")

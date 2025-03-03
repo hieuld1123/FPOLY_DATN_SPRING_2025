@@ -11,6 +11,8 @@ import com.example.datnsd26.repository.KhachHangRepository;
 import com.example.datnsd26.repository.TaiKhoanRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -59,8 +61,10 @@ public class KhachHangService {
         return password.toString();
     }
 
-    @Transactional
+
     public void save(KhachHangDto khachHangDto) {
+        System.out.println("Số lượng địa chỉ: " + khachHangDto.getListDiaChi().size());
+
         // Tạo và lưu tài khoản
         TaiKhoan taiKhoan = new TaiKhoan();
         taiKhoan.setSdt(khachHangDto.getSdt());
@@ -68,7 +72,7 @@ public class KhachHangService {
         taiKhoan.setEmail(khachHangDto.getEmail());
         taiKhoan.setTrangThai(true);
         taiKhoan.setVaiTro(TaiKhoan.Role.CUSTOMER);
-        taiKhoan = taiKhoanRepository.save(taiKhoan); // Lưu tài khoản vào DB
+        taiKhoan = taiKhoanRepository.save(taiKhoan);
 
         // Tạo khách hàng
         KhachHang khachHang = new KhachHang();
@@ -81,33 +85,21 @@ public class KhachHangService {
         khachHang.setTrangThai(true);
         khachHang.setTaiKhoan(taiKhoan);
 
-        khachHang = khachHangRepository.save(khachHang); // Lưu khách hàng trước
+        khachHang = khachHangRepository.save(khachHang);
 
-        // Lưu danh sách địa chỉ
-        if (khachHangDto.getListDiaChi() != null && !khachHangDto.getListDiaChi().isEmpty()) {
-            boolean macDinh = false;
-            for (DiaChiDTO diaChiDTO : khachHangDto.getListDiaChi()) {
-                DiaChi diaChi = new DiaChi();
-                diaChi.setTinh(diaChiDTO.getTinh());
-                diaChi.setHuyen(diaChiDTO.getHuyen());
-                diaChi.setXa(diaChiDTO.getXa());
-                diaChi.setDiaChiCuThe(diaChiDTO.getDiaChiCuThe());
-                diaChi.setNgayTao(new Timestamp(System.currentTimeMillis()));
-                diaChi.setNgayCapNhat(new Timestamp(System.currentTimeMillis()));
-                // Nếu chưa có địa chỉ mặc định, đặt cái đầu tiên làm mặc định
-                if (!macDinh) {
-                    diaChi.setTrangThai(true); // Địa chỉ mặc định
-                    macDinh = true; // Đánh dấu đã có địa chỉ mặc định
-                } else {
-                    diaChi.setTrangThai(false); // Các địa chỉ còn lại không mặc định
-                }
-                diaChi.setKhachHang(khachHang);
-                diaChiRepository.save(diaChi);
-            }
-        } else {
-            System.out.println("listDiaChi của khachHangDto bị null hoặc rỗng!");
+        for (DiaChiDTO diaChiDTO : khachHangDto.getListDiaChi()) {
+            DiaChi diaChi = new DiaChi();
+            diaChi.setTinh(diaChiDTO.getTinh());
+            diaChi.setHuyen(diaChiDTO.getHuyen());
+            diaChi.setXa(diaChiDTO.getXa());
+            diaChi.setDiaChiCuThe(diaChiDTO.getDiaChiCuThe());
+            diaChi.setNgayTao(new Timestamp(System.currentTimeMillis()));
+            diaChi.setNgayCapNhat(new Timestamp(System.currentTimeMillis()));
+            diaChi.setTrangThai(diaChiDTO.getTrangThai());
+            diaChi.setKhachHang(khachHang);
+            diaChiRepository.save(diaChi);
         }
-        khachHangRepository.save(khachHang); // Lưu lại khách hàng với danh sách địa chỉ
+
     }
 
 
@@ -116,7 +108,7 @@ public class KhachHangService {
         return khachHangRepository.findById(id).orElse(null);
     }
 
-    public KhachHang update(KhachHangDto khachHangDto,Integer id) {
+    public KhachHang update(KhachHangDto khachHangDto, Integer id) {
         KhachHang khachHang = khachHangRepository.getById(id);
         khachHang.setHinhAnh(khachHangDto.getHinhAnh());
         khachHang.setMaKhachHang(khachHangDto.getMaKhachHang());
@@ -127,7 +119,8 @@ public class KhachHangService {
         khachHang.setNgayCapNhat(new Timestamp(new Date().getTime()));
 
         TaiKhoan existingTaiKhoan = khachHang.getTaiKhoan();
-        existingTaiKhoan.setSdt(khachHangDto.getSdt());;
+        existingTaiKhoan.setSdt(khachHangDto.getSdt());
+        ;
         existingTaiKhoan.setEmail(khachHangDto.getEmail());
         existingTaiKhoan.setTrangThai(khachHangDto.getTrangThai());
         existingTaiKhoan.setVaiTro(khachHangDto.getVaiTro());
@@ -153,4 +146,11 @@ public class KhachHangService {
         return khachHangRepository.save(khachHang);
     }
 
+    public Page<KhachHang> findAll(Pageable p) {
+        return khachHangRepository.findAll(p);
+    }
+
+    public Page<KhachHang> findByTenSdtMaTT(String tenSdtMaE, Boolean trangThai, Pageable p) {
+        return khachHangRepository.findByTenSdtMaTT(tenSdtMaE, trangThai, p);
+    }
 }

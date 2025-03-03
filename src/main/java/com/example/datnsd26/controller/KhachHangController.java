@@ -5,17 +5,24 @@ import com.example.datnsd26.Dto.KhachHangDto;
 import com.example.datnsd26.Dto.NhanVienTKDto;
 import com.example.datnsd26.models.DiaChi;
 import com.example.datnsd26.models.KhachHang;
+import com.example.datnsd26.models.NhanVien;
+import com.example.datnsd26.models.TaiKhoan;
 import com.example.datnsd26.repository.KhachHangRepository;
 import com.example.datnsd26.services.DiaChiService;
 import com.example.datnsd26.services.KhachHangService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -31,27 +38,64 @@ public class KhachHangController {
     KhachHangRepository khachHangRepository;
 
     @GetMapping("/hien-thi")
-    public String hienThiKhachHang(Model model) {
-        model.addAttribute("listKH", khachHangService.getAll());
-        return "/admin/khachhang/quanLyKhachHang";
+    public String hienThiKhachHang(@RequestParam("page") Optional<Integer> pageParam,
+                                   Model model) {
+        int page = (Integer) pageParam.orElse(0);
+        Pageable p = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, new String[]{"id"}));
+        Page<KhachHang> listKH = khachHangService.findAll(p);
+        model.addAttribute("listKH", listKH);
+        return "/admin/khach-hang/danh-sach";
+    }
+
+    @GetMapping("/tim-kiem")
+    public String timKiemNV(@RequestParam("page") Optional<Integer> pageParam,
+                            @RequestParam(value = "searchInput", required = false) String tenSdtMaE,
+                            @RequestParam(value = "statusOption", required = false) Boolean trangThai,
+                            Model model) {
+        int page = pageParam.orElse(0);
+        Pageable p = PageRequest.of(page, 5);
+
+        tenSdtMaE = (tenSdtMaE == null || tenSdtMaE.trim().isEmpty()) ? "" : tenSdtMaE.trim().replaceAll("\\s+", " ");
+
+        Page<KhachHang> listKH = khachHangService.findByTenSdtMaTT(tenSdtMaE, trangThai, p);
+
+        model.addAttribute("listKH", listKH);
+        model.addAttribute("searchInput", tenSdtMaE);
+        model.addAttribute("statusOption", trangThai);
+
+        return "/admin/khach-hang/danh-sach :: #khachHangTable";
     }
 
     @GetMapping("/them")
     public String hienThithemKhachHang(Model model) {
         KhachHangDto khachHangDto = new KhachHangDto();
-        khachHangDto.setListDiaChi(new ArrayList<>());
+
+        if (khachHangDto.getListDiaChi() == null) {
+            khachHangDto.setListDiaChi(new ArrayList<>());
+        }
         model.addAttribute("khachHangDto", khachHangDto);
-        return "/admin/khachhang/themKhachHang";
+        return "/admin/khach-hang/view-them";
     }
 
     @PostMapping("/them")
-    public String themKhachHang(@ModelAttribute("khachHangDto") KhachHangDto khachHangDto) {
+    public String themKhachHang(@ModelAttribute("khachHangDto") KhachHangDto khachHangDto,
+                                @RequestParam("diaChiMacDinhId") Integer diaChiMacDinhIndex) {
+
+        for (int i = 0; i < khachHangDto.getListDiaChi().size(); i++) {
+            khachHangDto.getListDiaChi().get(i).setTrangThai(false);
+        }
+
+        if (diaChiMacDinhIndex != null && diaChiMacDinhIndex >= 0 &&
+                diaChiMacDinhIndex < khachHangDto.getListDiaChi().size()) {
+            khachHangDto.getListDiaChi().get(diaChiMacDinhIndex).setTrangThai(true);
+        }
         khachHangService.save(khachHangDto);
         return "redirect:/khach-hang/hien-thi";
     }
-    @GetMapping("/hien-thi/{id}")
+
+    @GetMapping("/chi-tiet/{id}")
     public String hienThiKhachHang(@PathVariable("id") Integer id,
-                                     Model model) {
+                                   Model model) {
         KhachHang khachHang = khachHangService.getById(id);
         KhachHangDto khachHangDto = new KhachHangDto();
         khachHangDto.setHinhAnh(khachHang.getHinhAnh());
@@ -82,14 +126,15 @@ public class KhachHangController {
         model.addAttribute("khachHangDto", khachHangDto);
         model.addAttribute("listDiaChi", listDiaChiDTO);
 
-        return "/admin/khachhang/hienThiKhachHang";
+        return "/admin/khach-hang/view-chi-tiet";
     }
 
-    @GetMapping("/hien-thi-sua/{id}")
+    @GetMapping("/sua/{id}")
     public String hienThiSuaKhachHang(@PathVariable("id") Integer id,
-                                   Model model) {
+                                      Model model) {
         KhachHang khachHang = khachHangService.getById(id);
         KhachHangDto khachHangDto = new KhachHangDto();
+        khachHangDto.setId(khachHang.getId());
         khachHangDto.setHinhAnh(khachHang.getHinhAnh());
         khachHangDto.setMaKhachHang(khachHang.getMaKhachHang());
         khachHangDto.setTenKhachHang(khachHang.getTenKhachHang());
@@ -116,13 +161,14 @@ public class KhachHangController {
         }).collect(Collectors.toList());
         khachHangDto.setListDiaChi(listDiaChiDTO);
 
-        model.addAttribute("khachHangDto", khachHangDto);
-        return "/admin/khachhang/suaKhachHang";
+        model.addAttribute("khachHang", khachHangDto);
+        return "/admin/khach-hang/view-sua";
     }
+
     @PostMapping("/sua/{id}")
     public String suaKhachHang(@ModelAttribute("khachHangDto") KhachHangDto khachHangDto,
                                @PathVariable Integer id) {
-        khachHangService.update(khachHangDto,id);
+        khachHangService.update(khachHangDto, id);
         return "redirect:/khach-hang/hien-thi";
     }
 }

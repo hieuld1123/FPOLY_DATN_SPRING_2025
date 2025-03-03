@@ -39,4 +39,6 @@ public class KhachHangDto {
     private Timestamp ngayTao;
     private Timestamp ngayCapNhat;
 
+
+
 }

@@ -32,10 +32,7 @@ public interface NhanVienRepository extends JpaRepository<NhanVien, Integer> {
                                                Pageable pageable);
 
 
-    @Modifying
-    @Transactional
-    @Query("UPDATE NhanVien n SET n.trangThai = false WHERE n.id = :id")
-    void deactivateNhanVien(@Param("id") Integer id);
+
 
 
 }
