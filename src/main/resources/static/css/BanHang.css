@@ -92,3 +92,60 @@
 .product-table .remove-btn:hover {
     text-decoration: underline;
 }
+/*///*/
+.suggestions {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    width: 80%;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.suggestion-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.suggestion-item:hover {
+    background-color: #f0f0f0;
+}
+
+.suggestion-item img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    object-fit: cover;
+}
+
+.suggestion-item .product-info {
+    flex: 1;
+}
+
+.suggestion-item .product-info small {
+    display: block;
+    color: #888;
+    font-size: 12px;
+}
+
+.suggestion-item .quantity {
+    font-size: 14px;
+    color: #555;
+    margin-left: 10px;
+    min-width: 30px;
+    text-align: right;
+}
+
+.suggestion-item .price {
+    font-size: 14px;
+    color: #333;
+    margin-left: 10px;
+    min-width: 80px;
+    text-align: right;
+}
