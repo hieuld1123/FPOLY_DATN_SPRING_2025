@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8"/>
+    <title>Bán hàng</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="/css/BanHang.css">
+</head>
+
+<body>
+<div th:replace="~{components/admin-sidebar :: sidebar}"></div>
+<div class="page-wrapper">
+    <div class="container-xl">
+        <div class="row">
+            <div class="col-12 my-5">
+                <div class="page-pretitle">
+                    Admin
+                </div>
+                <h2 class="page-title">Bán hàng</h2>
+                <button class="btn btn-primary mt-3" id="createInvoiceBtn">Tạo đơn hàng</button>
+            </div>
+        </div>
+
+        <div class="row row-equal-height">
+            <div class="col-9">
+                <div class="card equal-height">
+                    <div class="card-header">
+                        <h3 class="card-title">Thông tin khách hàng</h3>
+                    </div>
+                    <div class="card-body border-bottom py-3">
+                        <input type="text"
+                               class="form-control"
+                               name="search-customer"
+                               placeholder="Tìm theo tên, SĐT, mã khách hàng..."
+                        >
+                        <div class="text-center p-3">
+                            <span>Chưa có thông tin khách hàng</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-3">
+                <div class="card equal-height">
+                    <div class="card-header">
+                        <h3 class="card-title">Danh sách hóa đơn</h3>
+                    </div>
+                    <div class="card-body border-bottom py-3">
+                        <div class="mb-3">
+                            <div id="invoices"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Thông tin sản phẩm</h3>
+                    </div>
+                    <div class="card-body border-bottom py-3">
+                        <input type="search"
+                               class="form-control"
+                               id="search-product"
+                               name="search-product"
+                               placeholder="Tìm theo tên sản phẩm..."
+                               disabled
+                        >
+                        <div id="suggestions" class="suggestions"></div>
+                        <div class="table-responsive mt-3">
+                            <table class="product-table">
+                                <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Ảnh</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Số lượng</th>
+                                    <th>Đơn giá</th>
+                                    <th>Thành tiền</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="7" class="text-center">Chưa có sản phẩm nào được thêm</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-header">
+                        <h3 class="card-title">Thông tin thanh toán</h3>
+                    </div>
+                    <div class="card-body financial-info">
+                        <div class="row financial-info-row">
+                            <div class="col-9">
+                                <div class="mb-3">
+                                    <label class="form-label">Ghi chú đơn hàng</label>
+                                    <textarea class="form-control" rows="3"
+                                              placeholder="VD: Hàng tăng cổ riêng"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="col-3">
+                                <div class="row">
+                                    <div class="col-8">Tổng tiền (<span id="count-product">X</span> sản phẩm)</div>
+                                    <div class="col-4" id="tongTien">X</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-8 text-muted">Phí giao hàng</div>
+                                    <div class="col-4 text-muted">0</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-8 text-muted">Mã giảm giá</div>
+                                    <div class="col-4 text-muted">0</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-8">Tổng</div>
+                                    <div class="col-4"  id="tong">X</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Đóng gói và giao hàng</h3>
+                    </div>
+                    <div class="m-3">
+                        <label class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="radios-inline" checked/>
+                            <span class="form-check-label">Khách nhận tại cửa hàng</span>
+                        </label>
+                        <label class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="radios-inline"/>
+                            <span class="form-check-label">Giao hàng</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-3 mb-3 d-flex align-items-center justify-content-end">
+            <button class="btn btn-danger me-2" id="btnCancel" disabled>Hủy đơn</button>
+            <button class="btn btn-primary" id="btnPayment" onclick="handlePayment()" disabled>Thanh toán</button>
+        </div>
+
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
+<script src="/js/BanHang.js"></script>
+</body>
+
+</html>
