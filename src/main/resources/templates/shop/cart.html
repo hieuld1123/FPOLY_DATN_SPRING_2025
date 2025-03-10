@@ -2,102 +2,140 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8"/>
+    <meta charset="UTF-8" />
     <title>Title</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
-</head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
 
+</head>
 <body>
 <div th:replace="components/navbar :: navbar"></div>
-<div class="container py-5">
-    <h1 class="mt-5 mb-3">Giỏ hàng</h1>
-    <div class="row">
-        <div class="col-lg-8">
-            <!-- Cart Items -->
-            <div class="card mb-4">
-                <div class="card-body">
-                    <div class="row cart-item mb-3" th:each="item : ${cart}">
-                        <div class="col-3">
-                            <img src="" alt="Product 1" class="img-fluid rounded"/>
-                        </div>
-                        <div class="col-6">
-                            <h5 class="card-title" th:text="${item.sanPhamChiTiet.tenSanPhamChiTiet}"></h5>
-                            <p class="text-muted">
-                                Giá:
-                                <span class="text-decoration-line-through"
-                                      th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
-                                <span  th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
-                            </p>
-                            <div class="row">
-                                <div class="col-6">
-                                    <label class="form-label">Kích thước</label>
-                                    <input style="max-width: 100px" type="text"
-                                           class="form-control form-control-sm text-center quantity-input"
-                                           th:value="${item.soLuong}"/>
-                                </div>
-                                <div class="col-6">
-                                    <label class="form-label">Số lượng</label>
-                                    <input style="max-width: 100px" type="text"
-                                           class="form-control form-control-sm text-center quantity-input"
-                                           th:value="${item.soLuong}"/>
+    <div class="container py-5">
+        <h1 class="mt-5 mb-3">Giỏ hàng</h1>
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Cart Items -->
+                <div th:if="${errorMessage}" class="alert alert-warning">
+                    <p th:text="${errorMessage}"></p>
+                </div>
+                <div th:if="${errorMessages}" class="alert alert-danger">
+                    <ul>
+                        <li th:each="msg : ${errorMessages}" th:text="${msg}"></li>
+                    </ul>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row cart-item mb-3" th:each="item : ${cart}">
+                            <div class="col-3">
+                                <img src="" alt="Product 1" class="img-fluid rounded" />
+                            </div>
+                            <div class="col-6">
+                                <h5 class="card-title" th:text="${item.sanPhamChiTiet.tenSanPhamChiTiet}"></h5>
+                                <p class="text-muted">
+                                    Giá:
+                                    <span class="text-decoration-line-through"
+                                        th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+                                    <span
+                                        th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+                                </p>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label class="form-label">Kích thước</label>
+                                        <input style="max-width: 100px" type="text"
+                                            class="form-control form-control-sm text-center quantity-input"
+                                            th:value="${item.soLuong}" />
+                                    </div>
+                                    <div class="col-6 d-flex flex-row">
+                                        <!-- Nút giảm số lượng -->
+                                        <form method="post" th:action="@{/shop/update-cart}">
+                                            <input type="hidden" name="productId" th:value="${item.sanPhamChiTiet.id}" />
+                                            <input type="hidden" name="action" value="decrease" />
+                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                            <button class="btn btn-sm btn-outline-secondary quantity-decrease"
+                                                    th:disabled="${item.soLuong == 1}">-</button>
+                                        </form>
+
+                                        <!-- Số lượng hiển thị -->
+                                        <span class="mx-2 fw-bold" th:text="${item.soLuong}"></span>
+
+                                        <!-- Nút tăng số lượng -->
+                                        <form method="post" th:action="@{/shop/update-cart}">
+                                            <input type="hidden" name="productId" th:value="${item.sanPhamChiTiet.id}" />
+                                            <input type="hidden" name="action" value="increase" />
+                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                            <button class="btn btn-sm btn-outline-secondary quantity-increase">+</button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="col-md-3 text-end">
+                                <p class="fw-bold">
+                                    <span th:id="'total-price-' + ${item.sanPhamChiTiet.id}"
+                                        th:data-total-price="${item.soLuong * item.sanPhamChiTiet.giaBanSauGiam}"
+                                        th:text="${#numbers.formatDecimal(item.soLuong * item.sanPhamChiTiet.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')}"></span>
+                                    VND
+                                </p>
+                                <div th:text="${item.soLuong == 0 ? 'Hết hàng' : 'Còn hàng'}" class="mb-3"></div>
+                                <form action="/shop/remove-from-cart" method="post">
+                                    <input type="hidden" name="productId" th:value="${item.sanPhamChiTiet.id}" />
+                                    <button type="submit" class="btn btn-sm btn-danger px-2 py-1"><svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg> Xóa</button>
+                                </form>
+                            </div>
                         </div>
-                        <div class="col-md-3 text-end">
-                            <p class="fw-bold"><span th:text="${#numbers.formatDecimal(item.soLuong * item.sanPhamChiTiet.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')}"></span> VND</p>
-                            <form action="/shop/remove-from-cart" method="post">
-                                <input type="hidden" name="productId" th:value="${item.sanPhamChiTiet.id}" />
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
-                            </form>
-                        </div>
+                        <hr />
                     </div>
-                    <hr/>
+                </div>
+                <!-- Continue Shopping Button -->
+                <div class="text-start mb-4">
+                    <a th:href="@{/shop}" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-left me-2"></i>Continue Shopping
+                    </a>
                 </div>
             </div>
-            <!-- Continue Shopping Button -->
-            <div class="text-start mb-4">
-                <a th:href="@{/shop}" class="btn btn-outline-primary">
-                    <i class="bi bi-arrow-left me-2"></i>Continue Shopping
-                </a>
-            </div>
-        </div>
-        <div class="col-lg-4">
-            <!-- Cart Summary -->
-            <div class="card cart-summary">
-                <div class="card-body">
-                    <h5 class="card-title mb-4">Order Summary</h5>
-                    <div class="d-flex justify-content-between mb-3">
-                        <span>Tạm tính</span>
-                        <span><span th:text="${#numbers.formatDecimal(tongTamTinh, 0, 'COMMA', 0, 'POINT')}"></span> VND</span>
+            <div class="col-lg-4">
+                <!-- Cart Summary -->
+                <div class="card cart-summary">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Order Summary</h5>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Tạm tính</span>
+                            <span>
+                                <span class="cart-total-price" th:data-total-price="${tongTamTinh}"
+                                    th:text="${#numbers.formatDecimal(tongTamTinh, 0, 'COMMA', 0, 'POINT')}"></span> VND
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Giảm giá</span>
+                            <span>0</span>
+                        </div>
+                        <hr />
+                        <div class="d-flex justify-content-between mb-4">
+                            <strong>Tạm tính</strong>
+                            <strong>
+                                <span class="cart-total-price" th:data-total-price="${tongTamTinh}"
+                                    th:text="${#numbers.formatDecimal(tongTamTinh, 0, 'COMMA', 0, 'POINT')}"></span> VND
+                            </strong>
+                        </div>
+
+                        <a class="btn btn-primary w-100" th:href="@{/shop/checkout}">Tiến hành thanh toán</a>
                     </div>
-                    <div class="d-flex justify-content-between mb-3">
-                        <span>Giảm giá</span>
-                        <span>0</span>
-                    </div>
-                    <hr/>
-                    <div class="d-flex justify-content-between mb-4">
-                        <strong>Tạm tính</strong>
-                        <strong><span th:text="${#numbers.formatDecimal(tongTamTinh, 0, 'COMMA', 0, 'POINT')}"></span> VND</strong>
-                    </div>
-                    <a class="btn btn-primary w-100" th:href="@{/shop/checkout}">Tiến hành thanh toán</a>
                 </div>
-            </div>
-            <!-- Promo Code -->
-            <div class="card mt-4">
-                <form class="card-body">
-                    <h5 class="card-title mb-3">Nhập mã giảm giá</h5>
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Enter promo code"/>
-                        <button class="btn btn-outline-secondary" type="submit">
-                            Áp dụng
-                        </button>
-                    </div>
-                </form>
+                <!-- Promo Code -->
+                <div class="card mt-4">
+                    <form class="card-body">
+                        <h5 class="card-title mb-3">Nhập mã giảm giá</h5>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="Enter promo code" />
+                            <button class="btn btn-outline-secondary" type="submit">
+                                Áp dụng
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
 </body>
 
 </html>
