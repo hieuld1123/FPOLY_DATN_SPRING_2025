@@ -75,7 +75,7 @@
                                             <span th:text="${nhanVien.diaChiCuThe + ', ' + nhanVien.xa + ', ' + nhanVien.huyen + ', ' + nhanVien.tinh}"></span>
                                         </p>
                                         <p><strong>Trạng thái:</strong>
-                                            <span class="badge px-2 py-1"
+                                            <span class="badge px-2 py-1" style="color: white"
                                                   th:classappend="${nhanVien.trangThai} ? 'bg-success' : 'bg-danger'"
                                                   th:text="${nhanVien.trangThai} ? 'Đang làm việc' : 'Đã nghỉ'"></span>
                                         </p>

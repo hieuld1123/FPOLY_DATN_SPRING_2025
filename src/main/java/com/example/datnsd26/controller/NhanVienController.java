@@ -7,6 +7,7 @@ import com.example.datnsd26.models.TaiKhoan;
 import com.example.datnsd26.services.FileLoadService;
 import com.example.datnsd26.services.NhanVienService;
 import com.example.datnsd26.services.TaiKhoanService;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -76,27 +77,31 @@ public class NhanVienController {
 
     @GetMapping("/them")
     public String hienThiThemNhanVien(Model model) {
-        model.addAttribute("nhanVien", nhanVienService.getAll());
         model.addAttribute("taiKhoan", taiKhoanService.getAll());
         model.addAttribute("nhanVienDto", new NhanVienTKDto());
-        return"/admin/nhan-vien/view-them";
+        return "/admin/nhan-vien/view-them";
     }
 
     @PostMapping("/them")
     public String themNhanVien(@ModelAttribute("nhanVienDto") NhanVienTKDto nhanVienTKDto,
-                               @RequestParam(name = "anh") MultipartFile anh) {
-        String fileName = fileLoadService.uploadFile(anh);
-        if (fileName != null) {
-            nhanVienTKDto.setHinhAnh(fileName);
+                               @RequestParam(name = "anh", required = false) MultipartFile anh) throws MessagingException {
+        if (anh != null && !anh.isEmpty()) {
+            String fileName = fileLoadService.uploadFile(anh);
+            nhanVienTKDto.setHinhAnh(fileName != null ? fileName : "default.jpg");
+        } else {
+            nhanVienTKDto.setHinhAnh("default.jpg");
         }
+
         nhanVienService.save(nhanVienTKDto);
         return "redirect:/nhan-vien/hien-thi";
     }
 
 
+
+
     @GetMapping("/chi-tiet/{id}")
     public String chiTietNhanVien(@PathVariable("id") Integer id,
-                                     Model model) {
+                                  Model model) {
         NhanVien nhanVien = nhanVienService.getById(id);
         NhanVienTKDto nhanVienTKDto = new NhanVienTKDto();
         nhanVienTKDto.setHinhAnh(nhanVien.getHinhAnh());
@@ -121,6 +126,7 @@ public class NhanVienController {
         model.addAttribute("listTK", taiKhoanService.getAll());
         return "/admin/nhan-vien/view-chi-tiet";
     }
+
     @GetMapping("/hien-thi-sua/{id}")
     public String hienThiSuaNhanVien(@PathVariable("id") Integer id,
                                      Model model) {
@@ -152,10 +158,13 @@ public class NhanVienController {
     @PostMapping("/sua/{id}")
     private String suaNhanVien(@ModelAttribute("nhanVien") NhanVienTKDto nhanVienTKDto,
                                @PathVariable Integer id,
+                               @RequestParam("oldImage") String oldImage,
                                @RequestParam(name = "anh") MultipartFile anh) {
         if (!anh.isEmpty()) {
             String fileName = fileLoadService.uploadFile(anh);
             nhanVienTKDto.setHinhAnh(fileName);
+        } else {
+            nhanVienTKDto.setHinhAnh(oldImage);
         }
         nhanVienService.update(nhanVienTKDto, id);
         return "redirect:/nhan-vien/hien-thi";

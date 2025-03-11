@@ -5,9 +5,11 @@ import com.example.datnsd26.models.NhanVien;
 import com.example.datnsd26.models.TaiKhoan;
 import com.example.datnsd26.repository.NhanVienRepository;
 import com.example.datnsd26.repository.TaiKhoanRepository;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -20,6 +22,11 @@ public class NhanVienService {
     NhanVienRepository nhanVienRepository;
     @Autowired
     TaiKhoanRepository taiKhoanRepository;
+    @Autowired
+    EmailService emailService;
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     private static final String CHAR_LOWER = "abcdefghijklmnopqrstuvwxyz";
     private static final String CHAR_UPPER = CHAR_LOWER.toUpperCase();
 
@@ -31,7 +38,7 @@ public class NhanVienService {
         return nhanVienRepository.findAll(pageable);
     }
 
-    public List<NhanVien> getAll(){
+    public List<NhanVien> getAll() {
         return nhanVienRepository.findAll();
     }
 
@@ -60,14 +67,16 @@ public class NhanVienService {
     }
 
 
-    public NhanVien save(NhanVienTKDto nhanVien) {
+    public NhanVien save(NhanVienTKDto nhanVien) throws MessagingException {
         TaiKhoan taiKhoan = new TaiKhoan();
         String matKhau = generateRandomPassword(10);
+        String encoderMatKhau = passwordEncoder.encode(matKhau);
+        taiKhoan.setMatKhau(encoderMatKhau);
         taiKhoan.setSdt(nhanVien.getSdt());
-        taiKhoan.setMatKhau(matKhau);
         taiKhoan.setEmail(nhanVien.getEmail());
         taiKhoan.setTrangThai(true);
         taiKhoan.setVaiTro(nhanVien.getVaiTro());
+        taiKhoanRepository.save(taiKhoan);
 
         NhanVien nv = new NhanVien();
 
@@ -86,8 +95,10 @@ public class NhanVienService {
         nv.setNgayCapNhat(new Timestamp(new Date().getTime()));
         nv.setIdTaiKhoan(taiKhoan);
         nv.setTrangThai(true);
-
-        return nhanVienRepository.save(nv);
+        nv = nhanVienRepository.save(nv);
+        // Gửi email chứa thông tin tài khoản
+        emailService.sendNewEmployeeAccountEmail(nhanVien.getEmail(), matKhau);
+        return nv;
     }
 
     public NhanVien update(NhanVienTKDto nhanVien, Integer id) {
@@ -107,7 +118,6 @@ public class NhanVienService {
         TaiKhoan existingTaiKhoan = existingNhanVien.getIdTaiKhoan();
         existingTaiKhoan.setSdt(nhanVien.getSdt());
         existingTaiKhoan.setEmail(nhanVien.getEmail());
-        existingTaiKhoan.setTrangThai(nhanVien.getTrangThai());
         existingTaiKhoan.setVaiTro(nhanVien.getVaiTro());
         if (existingNhanVien.getTrangThai() == false) {
             existingTaiKhoan.setTrangThai(false);
@@ -118,7 +128,7 @@ public class NhanVienService {
 
     }
 
-    public Page<NhanVien> findByTenSdtMaTT(String tenSdtMa,Boolean trangthai, String role,Pageable pageable) {
+    public Page<NhanVien> findByTenSdtMaTT(String tenSdtMa, Boolean trangthai, String role, Pageable pageable) {
         // Chuyển đổi từ String sang Enum
         TaiKhoan.Role vaiTro = null;
         if (role != null && !role.isEmpty()) {
@@ -129,7 +139,7 @@ public class NhanVienService {
             }
         }
 
-        return nhanVienRepository.searchByTenOrSdtOrTrangThai(tenSdtMa,trangthai,vaiTro,pageable);
+        return nhanVienRepository.searchByTenOrSdtOrTrangThai(tenSdtMa, trangthai, vaiTro, pageable);
     }
 
 }

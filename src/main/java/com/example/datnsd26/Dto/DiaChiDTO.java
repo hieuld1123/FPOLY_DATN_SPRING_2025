@@ -17,8 +17,7 @@ public class DiaChiDTO {
     private String tinh;
     private String huyen;
     private String xa;
-    private Timestamp ngayTao;
-    private Timestamp ngayCapNhat;
     private Boolean trangThai;
     private Integer idKhachHang;
+
 }

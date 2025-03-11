@@ -4,106 +4,106 @@
     <meta charset="UTF-8">
     <title>Quản lý nhân viên</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+
 </head>
 <style>
     .img-preview {
         width: 150px;
         height: 150px;
-        object-fit: cover;
         border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #ddd;
         display: block;
-        margin: auto;
-        border: 3px solid #ddd;
+        margin: 0 auto;
     }
 </style>
 <body>
 <div th:replace="components/admin-sidebar :: sidebar"></div>
 <div class="page-wrapper">
     <div class="container-xl">
-            <div class="my-5">
-                <div class="page-pretitle">Admin</div>
-                <h2 class="page-title">Quản lý nhân viên</h2>
+        <div class="my-5">
+            <div class="page-pretitle">Admin</div>
+            <h2 class="page-title">Quản lý nhân viên</h2>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Thêm nhân viên</h3>
             </div>
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Thêm nhân viên</h3>
-                </div>
-                <div class="card-body">
-                    <form th:method="post" id="addForm" th:object="${nhanVienDto}" th:action="@{/nhan-vien/them}"
-                          enctype="multipart/form-data" onsubmit="return validate(event);">
-                        <div class="row">
-                            <!-- Cột bên trái: Ảnh nhân viên -->
-                            <div class="col-md-4 text-center" style="margin-top: 50px">
-                                <div>
-                                    <img id="uploadedImage" class="img-preview"
-                                         th:src="@{/uploads/{imageName}(imageName=${nhanVienDto.hinhAnh})}">
+            <div class="card-body">
+                <form th:method="post" id="addForm" th:object="${nhanVienDto}" th:action="@{/nhan-vien/them}"
+                      enctype="multipart/form-data" onsubmit="return validate(event);">
+                    <div class="row">
+                        <!-- Cột bên trái: Ảnh nhân viên -->
+                        <div class="col-md-4 text-center" style="margin-top: 50px">
+                            <div>
+                                <img id="uploadedImage" class="img-preview rounded-circle"
+                                     th:src="@{/uploads/{imageName}(imageName=${nhanVienDto.hinhAnh != null ? nhanVienDto.hinhAnh : 'default.jpg'})}">
+                            </div>
+                            <input type="file" class="form-control mt-3" name="anh" id="fileInput"
+                                   accept="image/png, image/jpeg"/>
+                        </div>
+                        <!-- Cột bên phải: Thông tin nhân viên -->
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Tên nhân viên</label>
+                                    <input type="text" class="form-control" th:field="*{tenNhanVien}"
+                                           id="inputTen" th:errorclass="is-invalid"
+                                           placeholder="Nhập tên nhân viên">
+                                    <p style="color: red; font-weight: initial;" id="errorTen"></p>
                                 </div>
-                                <input type="file" class="form-control mt-3" name="anh" id="fileInput"
-                                       accept="image/png, image/jpeg"/>
 
-
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Ngày sinh</label>
+                                    <input type="date" class="form-control" th:field="*{ngaySinh}"
+                                           id="inputNgSinh" th:errorclass="is-invalid">
+                                    <p style="color: red; font-weight: initial;" id="errorNgSinh"></p>
+                                </div>
                             </div>
 
-                            <!-- Cột bên phải: Thông tin nhân viên -->
-                            <div class="col-md-8">
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Tên nhân viên</label>
-                                        <input type="text" class="form-control" th:field="*{tenNhanVien}"
-                                               id="inputTen" th:errorclass="is-invalid"
-                                               placeholder="Nhập tên nhân viên">
-                                        <p style="color: red; font-weight: initial;" id="errorTen"></p>
-                                    </div>
-
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Ngày sinh</label>
-                                        <input type="date" class="form-control" th:field="*{ngaySinh}"
-                                               id="inputNgSinh" th:errorclass="is-invalid">
-                                        <p style="color: red; font-weight: initial;" id="errorNgSinh"></p>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Giới tính</label>
+                                    <div class="d-flex">
+                                        <input class="form-check-input" type="radio" th:field="*{gioiTinh}" id="radioGT"
+                                               style="margin-right: 5px" value="true"> Nam
+                                        <input class="form-check-input ms-3" type="radio" th:field="*{gioiTinh}"
+                                               style="margin-right:5px" value="false"> Nữ
                                     </div>
                                 </div>
-
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Giới tính</label>
-                                        <div class="d-flex">
-                                            <input class="form-check-input" type="radio" th:field="*{gioiTinh}" id="radioGT"
-                                                   style="margin-right: 5px" value="true"> Nam
-                                            <input class="form-check-input ms-3" type="radio" th:field="*{gioiTinh}"
-                                                   style="margin-right:5px" value="false"> Nữ
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Email</label>
-                                        <input type="email" class="form-control" th:field="*{email}"
-                                               id="inputEmail" th:errorclass="is-invalid"
-                                               placeholder="Nhập email">
-                                        <p style="color: red; font-weight: initial;" id="errorEmail"></p>
-                                    </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" th:field="*{email}"
+                                           id="inputEmail" th:errorclass="is-invalid"
+                                           placeholder="Nhập email">
+                                    <p style="color: red; font-weight: initial;" id="errorEmail"></p>
                                 </div>
+                            </div>
 
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Số điện thoại</label>
-                                        <input type="text" class="form-control" th:field="*{sdt}"
-                                               th:errorclass="is-invalid" id="inputSdt"
-                                               placeholder="Nhập số điện thoại">
-                                        <p style="color: red; font-weight: initial;" id="errorSdt"></p>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Vai trò</label>
-                                        <select class="form-select" th:field="*{vaiTro}">
-                                            <option value="ADMIN">Quản lý nhân viên</option>
-                                            <option value="EMPLOYEE">Nhân viên</option>
-                                        </select>
-                                    </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Số điện thoại</label>
+                                    <input type="text" class="form-control" th:field="*{sdt}"
+                                           th:errorclass="is-invalid" id="inputSdt"
+                                           placeholder="Nhập số điện thoại">
+                                    <p style="color: red; font-weight: initial;" id="errorSdt"></p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Vai trò</label>
+                                    <select class="form-select" th:field="*{vaiTro}">
+                                        <option value="ADMIN">Admin</option>
+                                        <option value="EMPLOYEE">Nhân viên</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
-                        <hr>
-                        <!-- Địa chỉ -->
-                        <h3>Địa chỉ</h3>
-                        <div class="card p-3">
+                    </div>
+                    <hr>
+                    <!-- Địa chỉ -->
+                    <h3>Địa chỉ</h3>
+                    <div class="card p-3">
                         <div class="row">
                             <div class="col-md-4 mb-3">
                                 <label class="form-label">Tỉnh/Thành phố</label>
@@ -124,7 +124,7 @@
                                 <select class="form-control form-select" id="ward" th:field="*{xa}">
                                     <option value="" selected>Chọn phường xã</option>
                                 </select>
-                                <p style="color: red; font-weight: initial;"id="errorPhuong"></p>
+                                <p style="color: red; font-weight: initial;" id="errorPhuong"></p>
                             </div>
                         </div>
                         <div class="mb-3">
@@ -133,21 +133,21 @@
                                    id="inputDuong" th:errorclass="is-invalid" placeholder="Nhập địa chỉ cụ thể">
                             <p style="color: red; font-weight: initial;" id="errorDuong"></p>
                         </div>
-                        </div>
-<!--                        Hết địa chỉ-->
-                        <div class="d-flex justify-content-end">
-                            <button type="submit" class="btn btn-primary">Lưu</button>
-                            <a th:href="@{/nhan-vien/hien-thi}"
-                               class="btn btn-primary btn-secondary ms-2 me-2">Quay lại</a>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+                    <!--                        Hết địa chỉ-->
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                        <a th:href="@{/nhan-vien/hien-thi}"
+                           class="btn btn-primary btn-secondary ms-2 me-2">Quay lại</a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
+</div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+
 
 
 <!--Chọn tỉnh/huyện/xã-->
@@ -207,9 +207,7 @@
 </script>
 
 <script th:inline="javascript">
-    var listNV = /*[[${nhanVien}]]*/ '[]';
     var listTK = /*[[${taiKhoan}]]*/ '[]';
-    console.log("Dữ liệu nhân viên:", listNV);
     console.log("Dữ liệu tài khoản:", listTK);
 </script>
 
@@ -219,46 +217,40 @@
         // Đặt giá trị radio button mặc định
         document.getElementById("radioGT").checked = true;
 
-        var errorAnh = document.getElementById("errorAnh");
-        var fileInput = document.getElementById('fileInput');
-        var imgElement = document.getElementById('uploadedImage');
+        let fileInput = document.getElementById("fileInput");
+        let uploadedImage = document.getElementById("uploadedImage");
 
-        fileInput.addEventListener('change', function (event) {
-            var file = event.target.files[0];
+        if (!fileInput || !uploadedImage) {
+            console.error("Không tìm thấy phần tử fileInput hoặc uploadedImage!");
+            return;
+        }
 
-            // 🔹 Reset trạng thái mỗi lần chọn ảnh mới
-            var isAnhValid = true;
-            errorAnh.innerText = "";
-            imgElement.style.display = 'none';
-
+        fileInput.addEventListener("change", function (event) {
+            let file = event.target.files[0]; // Lấy file được chọn
 
             if (file) {
-                // ✅ Kiểm tra kích thước tệp (dưới 1MB)
-                const maxSize = 1024 * 1024; // 1MB
-                if (file.size > maxSize) {
-                    errorAnh.innerText = "Ảnh nhân viên không được quá 1MB!";
-                    isAnhValid = false;
+                console.log("Ảnh mới được chọn:", file.name); // Kiểm tra có nhận file không
+                console.log("Loại file:", file.type);
+
+                // Kiểm tra xem file có phải ảnh không
+                if (!file.type.startsWith("image/")) {
+                    console.error("File không phải là ảnh!");
+                    return;
                 }
 
-                // ✅ Kiểm tra định dạng tệp (chỉ PNG hoặc JPG)
-                const validFormats = ['image/png', 'image/jpeg'];
-                if (!validFormats.includes(file.type)) {
-                    errorAnh.innerText = "Ảnh nhân viên chỉ nhận định dạng PNG và JPG!";
-                    isAnhValid = false;
-                }
-
-                // ✅ Nếu ảnh hợp lệ, hiển thị ngay lập tức
-                if (isAnhValid) {
-                    var reader = new FileReader();
-                    reader.onload = function (e) {
-                        imgElement.src = e.target.result;
-                        imgElement.style.display = 'block'; // Hiển thị hình ảnh
-                    };
-                    reader.readAsDataURL(file);
-                }
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    console.log("Ảnh preview URL:", e.target.result);
+                    uploadedImage.src = e.target.result; // Cập nhật ảnh preview
+                };
+                reader.readAsDataURL(file);
+            } else {
+                console.warn("Không có ảnh nào được chọn.");
             }
         });
     });
+
+
 
     <!--check validate-->
     function checkTrungSdt() {
@@ -310,21 +302,36 @@
         // Kiểm tra ngày sinh
         let ns = new Date(ngaySinh);
         let today = new Date();
+        today.setHours(0, 0, 0, 0); // Loại bỏ giờ để so sánh chính xác
+        ns.setHours(0, 0, 0, 0);
+
         let tuoi = today.getFullYear() - ns.getFullYear();
+
+        // Kiểm tra ngày sinh có bị để trống không
         if (ngaySinh === "") {
             document.getElementById("errorNgSinh").innerText = "Vui lòng chọn ngày sinh!";
             isValid = false;
-        } else if (
-            today.getMonth() < ns.getMonth() ||
-            (today.getMonth() === ns.getMonth() && today.getDate() < ns.getDate())
-        ) {
-            tuoi--;
-        } else if (tuoi < 18) {
-            document.getElementById("errorNgSinh").innerText = "Nhân viên phải đủ 18 tuổi!";
-            return false;
-        } else {
-            document.getElementById("errorNgSinh").innerText = "";
         }
+       // Kiểm tra ngày sinh có lớn hơn ngày hiện tại không
+        else if (ns >= today) {
+            document.getElementById("errorNgSinh").innerText = "Ngày sinh không hợp lệ!";
+            isValid = false;
+        }
+        // Kiểm tra nếu chưa đến sinh nhật trong năm hiện tại thì trừ tuổi đi 1
+        else {
+            if (today.getMonth() < ns.getMonth() ||
+                (today.getMonth() === ns.getMonth() && today.getDate() < ns.getDate())) {
+                tuoi--;
+            }
+
+            if (tuoi < 18) {
+                document.getElementById("errorNgSinh").innerText = "Nhân viên phải đủ 18 tuổi!";
+                isValid = false;
+            } else {
+                document.getElementById("errorNgSinh").innerText = "";
+            }
+        }
+
 
         // Kiểm tra Email
         let regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -389,17 +396,12 @@
             document.getElementById("errorDuong").innerText = ""; // Xóa thông báo lỗi nếu hợp lệ
         }
 
-        // Kiểm tra ảnh đại diện
-        // if (anh === "") {
-        //     document.getElementById("errorAnh").innerText = "Vui lòng chọn ảnh đại diện!";
-        //     isValid = false;
-        // }
-
-        // Nếu có lỗi, ngăn form gửi đi
         if (!isValid) {
             event.preventDefault();
             return false;
         } else {
+            event.preventDefault();
+
             Swal.fire({
                 title: 'Bạn có muốn thêm không?',
                 icon: 'question',
@@ -408,28 +410,33 @@
                 cancelButtonText: 'Không'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Nếu người dùng nhấn Có, hiển thị thông báo thành công và chuyển hướng sau một khoảng thời gian
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: "top-end",
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thêm thành công!',
+                        text: 'Nhân viên đã được thêm vào hệ thống.',
                         showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        didOpen: (toast) => {
-                            toast.onmouseenter = Swal.stopTimer;
-                            toast.onmouseleave = Swal.resumeTimer;
-                        }
+                        timer: 1500
+                    }).then(() => {
+                        document.getElementById("addForm").submit(); // Gửi form sau khi hiển thị thông báo
                     });
-
-                    setTimeout(function () {
-                        document.getElementById("addForm").submit();
-                    }, 500);
                 }
             });
         }
         return false;
     }
 </script>
-
+<!--thêm ảnh-->
+<script>
+    document.getElementById("fileInput").addEventListener("change", function (event) {
+        let file = event.target.files[0]; // Lấy file được chọn
+        if (file) {
+            let reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById("uploadedImage").src = e.target.result; // Hiển thị ảnh
+            };
+            reader.readAsDataURL(file); // Đọc file ảnh
+        }
+    });
+</script>
 </body>
 </html>
