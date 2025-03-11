@@ -31,19 +31,19 @@ public class NhanVien {
     @Column(name = "ma_nhan_vien")
     private String maNhanvien;
 
-    @Column(name = "ho_ten")
+    @Column(name = "ho_ten", columnDefinition = "NVARCHAR(255)")
     private String tenNhanVien;
 
-    @Column(name = "dia_chi_cu_the")
+    @Column(name = "dia_chi_cu_the", columnDefinition = "NVARCHAR(255)")
     private String diaChiCuThe;
 
-    @Column(name = "tinh_thanh_pho")
+    @Column(name = "tinh_thanh_pho", columnDefinition = "NVARCHAR(255)")
     private String tinh;
 
-    @Column(name = "quan_huyen")
+    @Column(name = "quan_huyen", columnDefinition = "NVARCHAR(255)")
     private String huyen;
 
-    @Column(name = "xa_phường")
+    @Column(name = "xa_phường", columnDefinition = "NVARCHAR(255)")
     private String xa;
 
     @Column(name = "gioi_tinh")

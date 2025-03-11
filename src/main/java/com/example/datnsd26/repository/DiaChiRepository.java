@@ -17,4 +17,10 @@ public interface DiaChiRepository extends JpaRepository<DiaChi,Integer> {
     @Query("UPDATE DiaChi d SET d.trangThai = false WHERE d.khachHang.id = :khachHangId")
     void updateAllToNonDefault(@Param("khachHangId") Integer khachHangId);
 
+    void deleteById(Integer id);
+
+    @Modifying
+    @Query("DELETE FROM DiaChi d WHERE d.khachHang.id = :khachHangId")
+    void deleteAllByKhachHangId(@Param("khachHangId") Integer khachHangId);
+
 }

@@ -9,18 +9,18 @@ import com.example.datnsd26.models.TaiKhoan;
 import com.example.datnsd26.repository.DiaChiRepository;
 import com.example.datnsd26.repository.KhachHangRepository;
 import com.example.datnsd26.repository.TaiKhoanRepository;
+import jakarta.mail.MessagingException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +31,10 @@ public class KhachHangService {
     TaiKhoanRepository taiKhoanRepository;
     @Autowired
     DiaChiRepository diaChiRepository;
+    @Autowired
+    PasswordEncoder passwordEncoder;
+    @Autowired
+    EmailService emailService;
     private static final String CHAR_LOWER = "abcdefghijklmnopqrstuvwxyz";
     private static final String CHAR_UPPER = CHAR_LOWER.toUpperCase();
 
@@ -62,24 +66,23 @@ public class KhachHangService {
     }
 
 
-    public void save(KhachHangDto khachHangDto) {
-        System.out.println("Số lượng địa chỉ: " + khachHangDto.getListDiaChi().size());
-
-        // Tạo và lưu tài khoản
+    public void save(KhachHangDto khachHangDto) throws MessagingException {
         TaiKhoan taiKhoan = new TaiKhoan();
         taiKhoan.setSdt(khachHangDto.getSdt());
-        taiKhoan.setMatKhau(generateRandomPassword(10));
+        String matKhau = generateRandomPassword(10);
+        String encoderMatKhau = passwordEncoder.encode(matKhau);
+        taiKhoan.setMatKhau(encoderMatKhau);
         taiKhoan.setEmail(khachHangDto.getEmail());
         taiKhoan.setTrangThai(true);
         taiKhoan.setVaiTro(TaiKhoan.Role.CUSTOMER);
         taiKhoan = taiKhoanRepository.save(taiKhoan);
 
-        // Tạo khách hàng
         KhachHang khachHang = new KhachHang();
         khachHang.setMaKhachHang("KH" + taoChuoiNgauNhien(7, "0123456789"));
         khachHang.setTenKhachHang(khachHangDto.getTenKhachHang());
         khachHang.setGioiTinh(khachHangDto.getGioiTinh());
         khachHang.setNgaySinh(khachHangDto.getNgaySinh());
+        khachHang.setHinhAnh(khachHangDto.getHinhAnh());
         khachHang.setNgayTao(new Timestamp(System.currentTimeMillis()));
         khachHang.setNgayCapNhat(new Timestamp(System.currentTimeMillis()));
         khachHang.setTrangThai(true);
@@ -93,13 +96,12 @@ public class KhachHangService {
             diaChi.setHuyen(diaChiDTO.getHuyen());
             diaChi.setXa(diaChiDTO.getXa());
             diaChi.setDiaChiCuThe(diaChiDTO.getDiaChiCuThe());
-            diaChi.setNgayTao(new Timestamp(System.currentTimeMillis()));
-            diaChi.setNgayCapNhat(new Timestamp(System.currentTimeMillis()));
             diaChi.setTrangThai(diaChiDTO.getTrangThai());
             diaChi.setKhachHang(khachHang);
             diaChiRepository.save(diaChi);
         }
-
+        // Gửi email chứa thông tin tài khoản
+        emailService.sendNewCustomerAccountEmail(khachHangDto.getEmail(), matKhau);
     }
 
 
@@ -108,10 +110,12 @@ public class KhachHangService {
         return khachHangRepository.findById(id).orElse(null);
     }
 
+    @Transactional
     public KhachHang update(KhachHangDto khachHangDto, Integer id) {
-        KhachHang khachHang = khachHangRepository.getById(id);
+        KhachHang khachHang = khachHangRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khách hàng với ID: " + id));
+
         khachHang.setHinhAnh(khachHangDto.getHinhAnh());
-        khachHang.setMaKhachHang(khachHangDto.getMaKhachHang());
         khachHang.setTenKhachHang(khachHangDto.getTenKhachHang());
         khachHang.setTrangThai(khachHangDto.getTrangThai());
         khachHang.setGioiTinh(khachHangDto.getGioiTinh());
@@ -120,30 +124,34 @@ public class KhachHangService {
 
         TaiKhoan existingTaiKhoan = khachHang.getTaiKhoan();
         existingTaiKhoan.setSdt(khachHangDto.getSdt());
-        ;
         existingTaiKhoan.setEmail(khachHangDto.getEmail());
-        existingTaiKhoan.setTrangThai(khachHangDto.getTrangThai());
-        existingTaiKhoan.setVaiTro(khachHangDto.getVaiTro());
+        if (khachHang.getTrangThai() == false) {
+            existingTaiKhoan.setTrangThai(false);
+        } else {
+            existingTaiKhoan.setTrangThai(true);
+        }
         taiKhoanRepository.save(existingTaiKhoan);
+        khachHang = khachHangRepository.save(khachHang);
 
-        List<DiaChi> danhSachDiaChi = diaChiRepository.findByKhachHangId(id);
-        List<DiaChiDTO> listDiaChiDTO = khachHangDto.getListDiaChi();
+        diaChiRepository.deleteAllByKhachHangId(id);
+        khachHang.getDiaChi().clear();
 
-        for (int i = 0; i < danhSachDiaChi.size(); i++) {
-            DiaChi diaChi = danhSachDiaChi.get(i);
-            DiaChiDTO diaChiDTO = listDiaChiDTO.get(i);
+        Integer diaChiMacDinhId = khachHangDto.getDiaChiMacDinhId();
+        List<DiaChi> diaChiList = new ArrayList<>();
 
-            diaChi.setId(diaChiDTO.getId());
+        for (DiaChiDTO diaChiDTO : khachHangDto.getListDiaChi()) {
+            DiaChi diaChi = new DiaChi();
+            diaChi.setKhachHang(khachHang);
             diaChi.setTinh(diaChiDTO.getTinh());
             diaChi.setHuyen(diaChiDTO.getHuyen());
             diaChi.setXa(diaChiDTO.getXa());
             diaChi.setDiaChiCuThe(diaChiDTO.getDiaChiCuThe());
-            diaChi.setTrangThai(diaChiDTO.getTrangThai());
-
-            diaChiRepository.save(diaChi);
+            diaChi.setTrangThai(diaChiDTO.getId() != null && diaChiDTO.getId().equals(diaChiMacDinhId));
+            diaChiList.add(diaChi);
         }
-
-        return khachHangRepository.save(khachHang);
+        diaChiRepository.saveAll(diaChiList);
+        khachHang.setDiaChi(diaChiList);
+        return khachHang;
     }
 
     public Page<KhachHang> findAll(Pageable p) {

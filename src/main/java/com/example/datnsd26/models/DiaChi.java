@@ -20,23 +20,17 @@ public class DiaChi {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "dia_chi_cu_the")
+    @Column(name = "dia_chi_cu_the", columnDefinition = "NVARCHAR(255)")
     private String diaChiCuThe;
 
-    @Column(name = "tinh_thanh_pho")
+    @Column(name = "tinh_thanh_pho", columnDefinition = "NVARCHAR(255)")
     private String tinh;
 
-    @Column(name = "quan_huyen")
+    @Column(name = "quan_huyen", columnDefinition = "NVARCHAR(255)")
     private String huyen;
 
-    @Column(name = "xa_phường")
+    @Column(name = "xa_phuong", columnDefinition = "NVARCHAR(255)")
     private String xa;
-
-    @Column(name = "ngay_tao",nullable = true)
-    private Timestamp ngayTao;
-
-    @Column(name = "ngay_cap_nhat",nullable = true)
-    private Timestamp ngayCapNhat;
 
     @Column(name = "trang_thai")
     private Boolean trangThai;
@@ -44,10 +38,6 @@ public class DiaChi {
     @ManyToOne
     @JoinColumn(name = "id_khach_hang", nullable = false)
     private KhachHang khachHang;
-
-    @Column(name = "is_default")
-    private Boolean isDefault; // Đánh dấu địa chỉ mặc định
-
 
 }
 
