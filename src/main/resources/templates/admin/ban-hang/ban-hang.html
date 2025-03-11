@@ -100,7 +100,7 @@
                             <div class="col-9">
                                 <div class="mb-3">
                                     <label class="form-label">Ghi chú đơn hàng</label>
-                                    <textarea class="form-control" rows="3"
+                                    <textarea class="form-control" rows="3" id="input-note" disabled
                                               placeholder="VD: Hàng tăng cổ riêng"></textarea>
                                 </div>
                             </div>
@@ -137,11 +137,11 @@
                     </div>
                     <div class="m-3">
                         <label class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="radios-inline" checked/>
+                            <input class="form-check-input radio-order-type" value="Offline" type="radio" name="radios-inline" checked/>
                             <span class="form-check-label">Khách nhận tại cửa hàng</span>
                         </label>
                         <label class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="radios-inline"/>
+                            <input class="form-check-input radio-order-type" value="Có giao hàng" type="radio" name="radios-inline"/>
                             <span class="form-check-label">Giao hàng</span>
                         </label>
                     </div>

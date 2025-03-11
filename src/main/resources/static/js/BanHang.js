@@ -1,13 +1,80 @@
 let formData = {
     invoiceId: null,
-    message: null
+    totalInvoice: 0,
+    totalItem: 0,
+    note: null,
+    type: null
 }
 
-const handlePayment = () => {
-    alert(`Thanh toán hoa hóa đơn ${formData}`);
+const clearData = async () => {
+    formData = {
+        invoiceId: null,
+        totalInvoice: 0,
+        totalItem: 0,
+        note: null,
+        type: null
+    }
+    document.getElementById("search-product").disabled = true;
+    document.getElementById("search-product").value = "";
+    document.getElementById("btnPayment").disabled = true;
+    document.getElementById("btnCancel").disabled = true;
+    document.getElementById("input-note").disabled = true;
+    document.getElementById("input-note").value = "";
+    document.getElementById("count-product").innerHTML = "X";
+    document.getElementById("tongTien").innerHTML = "X";
+    document.getElementById("tong").innerHTML = "X";
+
+    await loadInvoices();
+    const productTableBody = document.querySelector('.product-table tbody');
+    productTableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center">Chưa có sản phẩm nào được thêm</td>
+                </tr>
+            `;
+}
+
+const enableElement = () => {
+    document.getElementById("search-product").disabled = false;
+    document.getElementById("input-note").disabled = false;
+    document.getElementById("btnPayment").disabled = false;
+    document.getElementById("btnCancel").disabled = false;
+}
+
+const handlePayment = async () => {
+    if (formData.totalItem < 1) {
+        alert("Chưa có sản phẩm để thanh toán!")
+        return;
+    }
+    const data = {
+        invoiceId: formData.invoiceId,
+        customerId: null,
+        employeeId: null,
+        type: formData.type == null ? 'Offline' : formData.type
+    }
+
+    const confirm = window.confirm("Xác nhận thanh toán");
+    if (!confirm) {
+        return;
+    }
+
+    await fetch('http://localhost:8080/api/v1/ban-hang/payment', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    }).then(response => response.json()).then(res => {
+        if (res.status === 202) {
+            clearData();
+        }
+    })
 };
 
 const createInvoice = async () => {
+    if (formData.totalInvoice >= 4) {
+        alert("Chỉ có thể tạo tối đa 5 hóa đơn!")
+        return;
+    }
     try {
         const response = await fetch('http://localhost:8080/api/v1/ban-hang/hoa-don', {
             method: 'POST',
@@ -18,16 +85,7 @@ const createInvoice = async () => {
         });
         const result = await response.json();
         if (result.status === 200) {
-            document.getElementById("search-product").disabled = true;
-            document.getElementById("btnPayment").disabled = true;
-            document.getElementById("btnCancel").disabled = true;
-            await loadInvoices();
-            const productTableBody = document.querySelector('.product-table tbody');
-            productTableBody.innerHTML = `
-                <tr>
-                    <td colspan="7" class="text-center">Chưa có sản phẩm nào được thêm</td>
-                </tr>
-            `;
+            clearData();
         }
     } catch (error) {
         console.error('Error creating invoice:', error);
@@ -44,6 +102,7 @@ async function loadInvoices() {
         });
 
         const invoices = await response.json();
+        formData.totalInvoice = invoices.data.length;
 
         const invoiceContainer = document.getElementById('invoices');
 
@@ -56,7 +115,7 @@ async function loadInvoices() {
         invoices.data.forEach((invoice) => {
             htmlContent += `
                 <label class="form-check">
-                    <input class="form-check-input" type="radio" name="radios" value="${invoice.id}" />
+                    <input class="form-check-input radio-invoice" type="radio" name="radios" value="${invoice.id}" />
                     <span class="form-check-label">${invoice.maHoaDon} - ${invoice.tranThai}</span>
                 </label>
             `;
@@ -64,20 +123,17 @@ async function loadInvoices() {
 
         invoiceContainer.innerHTML = htmlContent;
 
-        document.querySelectorAll('.form-check-input').forEach(input => {
+        document.querySelectorAll('.radio-invoice').forEach(input => {
             input.addEventListener('change', () => handleInvoiceChange(input.value));
         });
     } catch (error) {
         console.error('Error loading invoices:', error);
-        alert('Không thể tải danh sách hóa đơn!');
     }
 }
 
 async function handleInvoiceChange(id) {
     formData.invoiceId = id;
-    document.getElementById("search-product").disabled = false;
-    document.getElementById("btnPayment").disabled = false;
-    document.getElementById("btnCancel").disabled = false;
+    enableElement();
     const tongTienElement = document.getElementById('tongTien');
     const tongElement = document.getElementById('tong');
     const countProductElement = document.getElementById('count-product');
@@ -92,12 +148,14 @@ async function handleInvoiceChange(id) {
         });
 
         const invoice = await response.json();
+        document.getElementById('input-note').value = invoice.data.ghiChu;
         countProductElement.innerHTML = invoice.data.listSanPham.length;
         tongTienElement.innerHTML = invoice.data.tongTien.toLocaleString("vi-VN") + " VNĐ";
         tongElement.innerHTML = invoice.data.tongTien.toLocaleString("vi-VN") + " VNĐ";
 
         productTableBody.innerHTML = '';
 
+        formData.totalItem = invoice.data.listSanPham.length;
         if (!invoice.data.listSanPham || invoice.data.listSanPham.length === 0) {
             productTableBody.innerHTML = `
                 <tr>
@@ -117,9 +175,9 @@ async function handleInvoiceChange(id) {
                         <input 
                             type="number" 
                             min="1"
-                            max="${sanPham.soLuongTonKho}" 
+                            max="${sanPham.soLuongTonKho + sanPham.soLuong}" 
                             value="${sanPham.soLuong}" 
-                            class="quantity-input"
+                            class="quantity-input form-control"
                             data-product-id="${sanPham.id}"
                         />
                     </td>
@@ -140,12 +198,10 @@ async function handleInvoiceChange(id) {
         }
 
         const debouncedHandleQuantityChange = debounce((invoiceDetailId, quantity) => {
-            console.log(`Product ID: ${invoiceDetailId}, Quantity: ${quantity}`);
             handleQuantityChange(invoiceDetailId, quantity);
         }, 2000);
 
         async function handleQuantityChange(invoiceDetailId, quantity) {
-            console.log(invoiceDetailId, quantity, formData.invoiceId)
             try {
                 await fetch(`http://localhost:8080/api/v1/ban-hang/update-quantity/${invoiceDetailId}/${quantity}`, {
                     method: "PUT",
@@ -183,6 +239,10 @@ async function handleInvoiceChange(id) {
 }
 
 async function removeProduct(itemId) {
+    const confirm = window.confirm("Xác nhận xóa?");
+    if (!confirm) {
+        return;
+    }
     await fetch(`http://localhost:8080/api/v1/ban-hang/delete-item/${itemId}`, {
         method: "DELETE",
         headers: {
@@ -294,5 +354,45 @@ $(document).ready(function () {
     }
 });
 
+function debounce(func, delay) {
+    let timer;
+    return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => func.apply(this, args), delay);
+    };
+}
+
+const handleInput = async (e) => {
+    await fetch(`http://localhost:8080/api/v1/ban-hang/update-note/${formData.invoiceId}`, {
+        method: "PATCH",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: e.target.value.length === 0 ? " " : e.target.value
+    });
+
+};
+document.getElementById('input-note').addEventListener('input', debounce(handleInput, 2000));
+
+document.querySelectorAll('.radio-order-type').forEach(input => {
+    input.addEventListener('change', () => formData.type = input.value);
+});
 document.addEventListener('DOMContentLoaded', loadInvoices);
 document.getElementById('createInvoiceBtn').addEventListener('click', createInvoice);
+document.getElementById("btnCancel").addEventListener('click', async () => {
+    const confirm = window.confirm("Xác nhận hủy hóa đơn?");
+    if (!confirm) {
+        return;
+    }
+    console.log("cancel invoice ", formData.invoiceId)
+    await fetch(`http://localhost:8080/api/v1/ban-hang/cancel-invoice/${formData.invoiceId}`, {
+        method: "DELETE",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    }).then(response => {
+        if (response.status === 200) {
+            clearData();
+        }
+    })
+})
