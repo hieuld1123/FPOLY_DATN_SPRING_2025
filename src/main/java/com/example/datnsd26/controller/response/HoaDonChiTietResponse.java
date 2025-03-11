@@ -10,5 +10,7 @@ import java.util.List;
 public class HoaDonChiTietResponse {
     private float tongTien;
 
+    private String ghiChu;
+
     private List<SanPhamResponse> listSanPham;
 }

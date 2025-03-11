@@ -1,8 +1,10 @@
 package com.example.datnsd26.controller.api;
 
+import com.example.datnsd26.controller.request.PaymentRequest;
 import com.example.datnsd26.controller.response.ApiResponse;
 import com.example.datnsd26.services.BanHangService;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -72,6 +74,33 @@ public class BanHangApiController {
         return ApiResponse.builder()
                 .status(HttpStatus.ACCEPTED.value())
                 .message("Xóa thành công")
+                .build();
+    }
+
+    @PatchMapping("update-note/{invoiceId}")
+    public ApiResponse updateNote( @PathVariable Integer invoiceId, @RequestBody String note) {
+        this.banHangService.updateNote(invoiceId, note);
+        return ApiResponse.builder()
+                .status(HttpStatus.ACCEPTED.value())
+                .message("Cập nhật thành công")
+                .build();
+    }
+
+    @PutMapping("/payment")
+    public ApiResponse payment(@RequestBody PaymentRequest paymentRequest) {
+        this.banHangService.payment(paymentRequest);
+        return ApiResponse.builder()
+                .status(HttpStatus.ACCEPTED.value())
+                .message("Thanh toán thành công")
+                .build();
+    }
+
+    @DeleteMapping("/cancel-invoice/{invoiceId}")
+    public ApiResponse cancelInvoice(@PathVariable Integer invoiceId) {
+        this.banHangService.cancelInvoice(invoiceId);
+        return ApiResponse.builder()
+                .status(HttpStatus.NO_CONTENT.value())
+                .message("Hủy hóa đơn thành công")
                 .build();
     }
 }

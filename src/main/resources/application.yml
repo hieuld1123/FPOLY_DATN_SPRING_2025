@@ -10,7 +10,7 @@ spring:
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-      ddl-auto:
+      ddl-auto: update
   mail:
     host: smtp.gmail.com
     port: 587

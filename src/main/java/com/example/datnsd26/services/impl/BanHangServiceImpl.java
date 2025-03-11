@@ -1,5 +1,6 @@
 package com.example.datnsd26.services.impl;
 
+import com.example.datnsd26.controller.request.PaymentRequest;
 import com.example.datnsd26.controller.response.HoaDonChiTietResponse;
 import com.example.datnsd26.controller.response.HoaDonResponse;
 import com.example.datnsd26.controller.response.SanPhamResponse;
@@ -33,7 +34,7 @@ public class BanHangServiceImpl implements BanHangService {
 
     @Override
     public List<HoaDonResponse> getHoaDon() {
-        return this.hoaDonRepository.findAll().stream().map(s -> HoaDonResponse.builder()
+        return this.hoaDonRepository.findAllInvoiceByStatus("Đang chờ").stream().map(s -> HoaDonResponse.builder()
                 .id(s.getId())
                 .maHoaDon(s.getMaHoaDon())
                 .tranThai(s.getTrangThai())
@@ -53,9 +54,10 @@ public class BanHangServiceImpl implements BanHangService {
                         .soLuongTonKho(sp.getSanPhamChiTiet().getSoLuong())
                         .hinhAnh("https://th.bing.com/th/id/OIP.8tQmmY_ccVpcxBxu0Z0mzwHaE8?rs=1&pid=ImgDetMain") // TODO
                         .build()
-                ).toList();
+        ).toList();
         return HoaDonChiTietResponse.builder()
                 .tongTien(hoaDon.getTongTien())
+                .ghiChu(hoaDon.getGhiChu() == null ? null : hoaDon.getGhiChu().trim())
                 .listSanPham(listSanPham)
                 .build();
     }
@@ -106,6 +108,7 @@ public class BanHangServiceImpl implements BanHangService {
         }
         log.info("addToCart invoice id: {}", invoiceId);
         HoaDonChiTiet hoaDonChiTiet = HoaDonChiTiet.builder()
+                .giaTienSauGiam(product.getGiaBan())
                 .sanPhamChiTiet(product)
                 .hoaDon(hoaDon)
                 .soLuong(1)
@@ -115,22 +118,38 @@ public class BanHangServiceImpl implements BanHangService {
     }
 
     @Override
-    public void updateSoLuong(int invoiceId,int quantity) {
-        Optional<HoaDonChiTiet> invoice = this.hoaDonChiTietRepository.findById(invoiceId);
-        if (invoice.isPresent()) {
-            log.info("update invoice id: {}", invoiceId);
-            HoaDonChiTiet hoaDonChiTiet = invoice.get();
-            hoaDonChiTiet.setSoLuong(quantity);
-            HoaDonChiTiet hoaDonChiTietSave = hoaDonChiTietRepository.save(hoaDonChiTiet);
+    public void updateSoLuong(int invoiceDetailId, int newQuantity) {
+        Optional<HoaDonChiTiet> invoiceDetailOpt = this.hoaDonChiTietRepository.findById(invoiceDetailId);
 
-            HoaDon hoaDon = hoaDonChiTietSave.getHoaDon();
-            hoaDon.setTongTien((float) hoaDon.getDanhSachSanPham()
-                    .stream()
-                    .mapToDouble(sp -> sp.getSoLuong() * sp.getSanPhamChiTiet().getGiaBan())
-                    .sum());
-            hoaDonRepository.save(hoaDon);
+        if (invoiceDetailOpt.isPresent()) {
+            HoaDonChiTiet hoaDonChiTiet = invoiceDetailOpt.get();
+            SanPhamChiTiet sanPhamChiTiet = findSanPhamChiTietById(hoaDonChiTiet.getSanPhamChiTiet().getId());
+
+            int currentStock = sanPhamChiTiet.getSoLuong();
+            int oldQuantity = hoaDonChiTiet.getSoLuong();
+
+            if (newQuantity > (currentStock + oldQuantity)) {
+                throw new IllegalArgumentException("Số lượng vượt quá số lượng tồn kho!");
+            }
+
+            sanPhamChiTiet.setSoLuong(currentStock + oldQuantity - newQuantity);
+            sanPhamChiTietRepository.save(sanPhamChiTiet);
+
+            hoaDonChiTiet.setSoLuong(newQuantity);
+            hoaDonChiTietRepository.save(hoaDonChiTiet);
+
+            HoaDon hoaDon = hoaDonChiTiet.getHoaDon();
+            if (hoaDon != null) {
+                float newTotalPrice = (float) hoaDon.getDanhSachSanPham()
+                        .stream()
+                        .mapToDouble(sp -> sp.getSoLuong() * sp.getSanPhamChiTiet().getGiaBan())
+                        .sum();
+                hoaDon.setTongTien(newTotalPrice);
+                hoaDonRepository.save(hoaDon);
+            }
         }
     }
+
 
     @Override
     public void deleteItem(int itemId) {
@@ -145,6 +164,38 @@ public class BanHangServiceImpl implements BanHangService {
                 .mapToDouble(sp -> sp.getSoLuong() * sp.getSanPhamChiTiet().getGiaBan())
                 .sum());
         hoaDonRepository.save(hoaDon);
+    }
+
+    @Override
+    public void updateNote(int invoiceId, String note) {
+        HoaDon hoaDon = findHoaDonById(invoiceId);
+        hoaDon.setGhiChu(note);
+        hoaDonRepository.save(hoaDon);
+    }
+
+    @Override
+    public void payment(PaymentRequest paymentRequest) {
+        HoaDon hoaDon = findHoaDonById(paymentRequest.getInvoiceId());
+        hoaDon.setHinhThucMuaHang(paymentRequest.getType());
+        // TODO Customer, Employee
+        hoaDon.setTrangThai("Thành công");
+        hoaDon.setHinhThucMuaHang(paymentRequest.getType());
+        hoaDon.setPhiVanChuyen(0f);
+        hoaDon.setNgayCapNhat(new Date());
+        this.hoaDonRepository.save(hoaDon);
+    }
+
+    @Override
+    @Transactional(rollbackOn = Exception.class)
+    public void cancelInvoice(int invoiceId) {
+        HoaDon hoaDon = findHoaDonById(invoiceId);
+        hoaDon.getDanhSachSanPham().forEach(hdct -> {
+            SanPhamChiTiet spct = findSanPhamChiTietById(hdct.getSanPhamChiTiet().getId());
+            spct.setSoLuong(spct.getSoLuong() + hdct.getSoLuong());
+            this.sanPhamChiTietRepository.save(spct);
+            this.hoaDonChiTietRepository.delete(hdct);
+        });
+        this.hoaDonRepository.delete(hoaDon);
     }
 
     private HoaDonChiTiet findHoaDonChiTietById(int id) {
