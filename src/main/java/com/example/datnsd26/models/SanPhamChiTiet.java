@@ -1,9 +1,21 @@
 package com.example.datnsd26.models;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
 
 @Entity
 @Getter
@@ -11,51 +23,78 @@ import java.util.Date;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "san_pham_chi_tiet")
+@Table(name = "sanphamchitiet")
 public class SanPhamChiTiet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "id_san_pham", referencedColumnName = "id")
-    private SanPham sanPham;
+    String qrcode;
 
-    @ManyToOne
-    @JoinColumn(name = "id_mau_sac", referencedColumnName = "id")
-    private MauSac mauSac;
+    String masanphamchitiet;
 
-    @ManyToOne
-    @JoinColumn(name = "id_kich_thuoc", referencedColumnName = "id")
-    private KichThuoc kichThuoc;
+    String mota;
 
-    @Column(name = "ma_san_pham_chi_tiet", columnDefinition = "NVARCHAR(255)")
-    private String maSanPhamChiTiet;
+    Boolean gioitinh;
 
-    @Column(name = "ten_san_pham_chi_tiet", columnDefinition = "NVARCHAR(255)")
-    private String tenSanPhamChiTiet;
+    Integer soluong;
 
-    @Column(name = "so_luong")
-    private Integer soLuong;
-
-    @Column(name = "gia_ban")
-    private Float giaBan;
+    BigDecimal giatien;
 
     @Column(name = "gia_ban_sau_giam")
     private Float giaBanSauGiam;
 
-    @Column(name = "ghi_chu", columnDefinition = "NVARCHAR(255)")
-    private String ghiChu;
-
-    @Column(name = "ngay_tao")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayTao;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime ngaytao;
 
-    @Column(name = "ngay_cap_nhat")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayCapNhat;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime ngaycapnhat;
 
-    @Column(name = "trang_thai")
-    private Boolean trangThai;
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    Boolean trangthai;
 
+
+    @ManyToOne
+    @JoinColumn(name = "idsanpham")
+    SanPham sanpham;
+
+    @ManyToOne
+    @JoinColumn(name = "idkichco")
+    KichCo kichco;
+
+    @ManyToOne
+    @JoinColumn(name = "idmausac")
+    MauSac mausac;
+
+    @ManyToOne
+    @JoinColumn(name = "idchatlieu")
+    ChatLieu chatlieu;
+
+    @ManyToOne
+    @JoinColumn(name = "idthuonghieu")
+    ThuongHieu thuonghieu;
+
+    @ManyToOne
+    @JoinColumn(name = "iddegiay")
+    DeGiay degiay;
+
+    @OneToMany(mappedBy = "sanphamchitiet", fetch = FetchType.EAGER)
+    List<Anh> anh;
+    @OneToMany(mappedBy = "sanphamchitiet", fetch = FetchType.EAGER)
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SanPhamChiTiet that = (SanPhamChiTiet) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

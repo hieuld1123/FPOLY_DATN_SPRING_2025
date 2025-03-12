@@ -2,7 +2,9 @@ package com.example.datnsd26.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -11,7 +13,7 @@ import java.util.Date;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "chat_lieu")
+@Table(name = "chatlieu")
 public class ChatLieu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,14 +22,13 @@ public class ChatLieu {
     @Column(name = "ten", columnDefinition = "NVARCHAR(255)")
     private String ten;
 
-    @Column(name = "ngay_tao")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayTao;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime ngaytao;
 
-    @Column(name = "ngay_cap_nhat")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayCapNhat;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime ngaycapnhat;
 
-    @Column(name = "trang_thai")
-    private Boolean trangThai;
+    Boolean trangthai;
 }

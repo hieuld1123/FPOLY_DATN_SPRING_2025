@@ -13,22 +13,26 @@ import java.util.Date;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "thuonghieu")
-public class ThuongHieu {
+@Table(name = "anh")
+public class Anh {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    Integer id;
 
-    @Column(name = "ten", columnDefinition = "NVARCHAR(255)")
-    private String ten;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime ngaycapnhat;
+    String tenanh;
 
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime ngaytao;
 
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime ngaycapnhat;
+
     Boolean trangthai;
+
+    @ManyToOne
+    @JoinColumn(name = "idsanphamchitiet")
+    SanPhamChiTiet sanphamchitiet;
 }
