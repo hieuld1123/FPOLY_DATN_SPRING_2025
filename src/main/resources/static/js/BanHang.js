@@ -3,7 +3,11 @@ let formData = {
     totalInvoice: 0,
     totalItem: 0,
     note: null,
-    type: null
+    type: null,
+    province: null,
+    district: null,
+    ward: null,
+    addressDetail: null
 }
 
 const clearData = async () => {
@@ -28,7 +32,10 @@ const clearData = async () => {
     const productTableBody = document.querySelector('.product-table tbody');
     productTableBody.innerHTML = `
                 <tr>
-                    <td colspan="7" class="text-center">Chưa có sản phẩm nào được thêm</td>
+                    <td colspan="7" class="text-center text-secondary">
+                        <img class="mt-3" src="/icon/empty_box_icon.png" alt="Empty Box Icon">
+                        <div class="mt-3">Chưa có sản phẩm nào được thêm</div>
+                    </td>
                 </tr>
             `;
 }
@@ -41,6 +48,8 @@ const enableElement = () => {
 }
 
 const handlePayment = async () => {
+    console.log(formData)
+    return;
     if (formData.totalItem < 1) {
         alert("Chưa có sản phẩm để thanh toán!")
         return;
@@ -71,8 +80,8 @@ const handlePayment = async () => {
 };
 
 const createInvoice = async () => {
-    if (formData.totalInvoice >= 4) {
-        alert("Chỉ có thể tạo tối đa 5 hóa đơn!")
+    if (formData.totalInvoice > 5) {
+        alert("Chỉ có thể tạo tối đa 6 hóa đơn!")
         return;
     }
     try {
@@ -107,18 +116,22 @@ async function loadInvoices() {
         const invoiceContainer = document.getElementById('invoices');
 
         if (!invoices.data || invoices.data.length === 0) {
-            invoiceContainer.innerHTML = '<p>Không tìm thấy hóa đơn nào.</p>';
+            invoiceContainer.innerHTML = `
+                <div class="text-center text-secondary p-3">
+                    <img style="width: 50px" class="mt-3" src="/icon/invoice_icon.png" alt="Invoice Icon">
+                    <div class="mt-3">Không tìm thấy hóa đơn nào</div>
+                </div>`;
             return;
         }
 
         let htmlContent = '';
         invoices.data.forEach((invoice) => {
             htmlContent += `
-                <label class="form-check">
-                    <input class="form-check-input radio-invoice" type="radio" name="radios" value="${invoice.id}" />
-                    <span class="form-check-label">${invoice.maHoaDon} - ${invoice.tranThai}</span>
+                <label class="form-selectgroup-item">
+                    <input type="radio" name="name" value="${invoice.id}" class="form-selectgroup-input radio-invoice" />
+                    <span class="form-selectgroup-label">${invoice.maHoaDon} - ${invoice.tranThai}</span>
                 </label>
-            `;
+            `
         });
 
         invoiceContainer.innerHTML = htmlContent;
@@ -183,7 +196,7 @@ async function handleInvoiceChange(id) {
                     </td>
                     <td class="text-right">${sanPham.gia.toLocaleString("vi-VN")}</td>
                     <td class="text-right">${(sanPham.soLuong * sanPham.gia).toLocaleString("vi-VN")}</td>
-                    <td class="text-center"><span class="remove-btn" onclick="removeProduct(${sanPham.id})">X</span></td>
+                    <td class="text-center"><img src="/icon/delete_icon.png" class="remove-btn" onclick="removeProduct(${sanPham.id})"/></td>
                 </tr>
             `;
             productTableBody.insertAdjacentHTML('beforeend', row);
@@ -375,7 +388,14 @@ const handleInput = async (e) => {
 document.getElementById('input-note').addEventListener('input', debounce(handleInput, 2000));
 
 document.querySelectorAll('.radio-order-type').forEach(input => {
-    input.addEventListener('change', () => formData.type = input.value);
+    input.addEventListener('change', () => {
+        formData.type = input.value;
+        if (input.value !== 'Offline') {
+            document.getElementById('div-address').style.display = 'block';
+        } else {
+            document.getElementById('div-address').style.display = 'none';
+        }
+    });
 });
 document.addEventListener('DOMContentLoaded', loadInvoices);
 document.getElementById('createInvoiceBtn').addEventListener('click', createInvoice);
@@ -396,3 +416,83 @@ document.getElementById("btnCancel").addEventListener('click', async () => {
         }
     })
 })
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const provinceSelect = document.getElementById("province");
+    const districtSelect = document.getElementById("district");
+    const wardSelect = document.getElementById("ward");
+
+    // Gọi API lấy danh sách tỉnh/thành
+    fetch("https://provinces.open-api.vn/api/?depth=3")
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(province => {
+                let option = document.createElement("option");
+                option.value = province.code; // Sử dụng code thay vì name
+                option.textContent = province.name;
+                provinceSelect.appendChild(option);
+            });
+            // Lưu dữ liệu vào localStorage để dùng lại
+            localStorage.setItem("provinceData", JSON.stringify(data));
+        });
+
+    // Xử lý khi chọn tỉnh/thành
+    provinceSelect.addEventListener("change", function () {
+        let selectedProvinceCode = this.value;
+        districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+        wardSelect.innerHTML = '<option value="">Chọn xã/phường</option>';
+        districtSelect.disabled = true;
+        wardSelect.disabled = true;
+
+        if (selectedProvinceCode) {
+            let provinceData = JSON.parse(localStorage.getItem("provinceData"));
+            let selectedProvince = provinceData.find(p => p.code == selectedProvinceCode);
+            formData.province = selectedProvince.name;
+            if (selectedProvince) {
+                selectedProvince.districts.forEach(district => {
+                    let option = document.createElement("option");
+                    option.value = district.code;
+                    option.textContent = district.name;
+                    districtSelect.appendChild(option);
+                });
+
+                districtSelect.disabled = false;
+            }
+        }
+    });
+
+    // Xử lý khi chọn quận/huyện
+    districtSelect.addEventListener("change", function () {
+        let selectedDistrictCode = this.value;
+        wardSelect.innerHTML = '<option value="">Chọn xã/phường</option>';
+        wardSelect.disabled = true;
+
+        if (selectedDistrictCode) {
+            let provinceData = JSON.parse(localStorage.getItem("provinceData"));
+            let selectedProvince = provinceData.find(p =>
+                p.districts.some(d => d.code == selectedDistrictCode)
+            );
+
+            if (selectedProvince) {
+                let selectedDistrict = selectedProvince.districts.find(d => d.code == selectedDistrictCode);
+                if (selectedDistrict) {
+                    formData.district = selectedDistrict.name;
+                    selectedDistrict.wards.forEach(ward => {
+                        let option = document.createElement("option");
+                        option.value = ward.name;
+                        option.textContent = ward.name;
+                        wardSelect.appendChild(option);
+                    });
+                    wardSelect.disabled = false;
+                }
+            }
+        }
+    });
+    document.getElementById('ward').addEventListener('change', (e) => {
+        formData.ward = e.target.value;
+    })
+    document.getElementById('address-detail').addEventListener('input', (e) => {
+        formData.addressDetail = e.target.value;
+    })
+});
