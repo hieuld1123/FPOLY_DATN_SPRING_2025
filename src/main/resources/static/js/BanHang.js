@@ -49,7 +49,7 @@ const enableElement = () => {
 
 const handlePayment = async () => {
     console.log(formData)
-    return;
+    // return;
     if (formData.totalItem < 1) {
         alert("Chưa có sản phẩm để thanh toán!")
         return;

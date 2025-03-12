@@ -43,7 +43,7 @@ public class NhanVien {
     @Column(name = "quan_huyen", columnDefinition = "NVARCHAR(255)")
     private String huyen;
 
-    @Column(name = "xa_phường", columnDefinition = "NVARCHAR(255)")
+    @Column(name = "xa_phuong", columnDefinition = "NVARCHAR(255)")
     private String xa;
 
     @Column(name = "gioi_tinh")
