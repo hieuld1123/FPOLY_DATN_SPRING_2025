@@ -34,7 +34,7 @@ public class TaiKhoan {
         public String getDisplayName() {
             switch (this) {
                 case ADMIN:
-                    return "Quản lý nhân viên";
+                    return "Admin";
                 case EMPLOYEE:
                     return "Nhân viên";
                 default:

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Quản lý nhân viên</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 
 <body>
@@ -19,14 +21,14 @@
                 <h3 class="card-title">Sửa nhân viên</h3>
             </div>
             <div class="card-body">
-                <form th:method="post" id="addForm" th:object="${nhanVienDto}" th:action="@{/nhan-vien/sua/{id}(id=${nhanVienDto.id})}"
+                <form th:method="post" id="addForm" th:object="${nhanVienDto}"
+                      th:action="@{/nhan-vien/sua/{id}(id=${nhanVienDto.id})}"
                       enctype="multipart/form-data" onsubmit="return validate(event);">
                     <div class="row">
                         <!-- Cột bên trái: Ảnh nhân viên -->
                         <div class="col-md-4 text-center">
                             <div class="avatar avatar-xl mb-3" style="margin-top: 70px">
-                                <img id="uploadedImage"
-                                     class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;"
+                                <img id="uploadedImage" ,style="width: 150px; height: 150px; object-fit: cover;"
                                      th:src="@{/uploads/{imageName}(imageName=${nhanVienDto.hinhAnh})}">
                             </div>
                             <input type="file" class="form-control" name="anh" id="fileInput"
@@ -88,7 +90,7 @@
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Vai trò</label>
                                     <select class="form-select" th:field="*{vaiTro}">
-                                        <option value="ADMIN">Quản lý nhân viên</option>
+                                        <option value="ADMIN">Admin</option>
                                         <option value="EMPLOYEE">Nhân viên</option>
                                     </select>
                                 </div>
@@ -112,23 +114,26 @@
                         <div class="col-md-4 mb-3">
                             <label class="form-label">Tỉnh/Thành phố</label>
                             <select class="form-control form-select" id="city" th:field="*{tinh}">
-                                <option value="" selected>Chọn tỉnh thành</option>
+                                <option th:value="${nhanVienDto.tinh}" selected
+                                        th:text="${nhanVienDto.tinh}"></option>
                             </select>
                             <p style="color: red; font-weight: initial;" id="errorTinh"></p>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label">Quận/Huyện</label>
                             <select class="form-control form-select" id="district" th:field="*{huyen}">
-                                <option value="" selected>Chọn quận huyện</option>
+                                <option th:value="${nhanVienDto.huyen}" selected
+                                        th:text="${nhanVienDto.huyen}"></option>
                             </select>
                             <p style="color: red; font-weight: initial;" id="errorQuan"></p>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label">Xã/Phường</label>
                             <select class="form-control form-select" id="ward" th:field="*{xa}">
-                                <option value="" selected>Chọn phường xã</option>
+                                <option th:value="${nhanVienDto.xa}" selected
+                                        th:text="${nhanVienDto.xa}"></option>
                             </select>
-                            <p style="color: red; font-weight: initial;"id="errorPhuong"></p>
+                            <p style="color: red; font-weight: initial;" id="errorPhuong"></p>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -318,20 +323,34 @@
         // Kiểm tra ngày sinh
         let ns = new Date(ngaySinh);
         let today = new Date();
+        today.setHours(0, 0, 0, 0); // Loại bỏ giờ để so sánh chính xác
+        ns.setHours(0, 0, 0, 0);
+
         let tuoi = today.getFullYear() - ns.getFullYear();
+
+        // Kiểm tra ngày sinh có bị để trống không
         if (ngaySinh === "") {
             document.getElementById("errorNgSinh").innerText = "Vui lòng chọn ngày sinh!";
             isValid = false;
-        } else if (
-            today.getMonth() < ns.getMonth() ||
-            (today.getMonth() === ns.getMonth() && today.getDate() < ns.getDate())
-        ) {
-            tuoi--;
-        } else if (tuoi < 18) {
-            document.getElementById("errorNgSinh").innerText = "Nhân viên phải đủ 18 tuổi!";
-            return false;
-        } else {
-            document.getElementById("errorNgSinh").innerText = "";
+        }
+        // Kiểm tra ngày sinh có lớn hơn ngày hiện tại không
+        else if (ns >= today) {
+            document.getElementById("errorNgSinh").innerText = "Ngày sinh không hợp lệ!";
+            isValid = false;
+        }
+        // Kiểm tra nếu chưa đến sinh nhật trong năm hiện tại thì trừ tuổi đi 1
+        else {
+            if (today.getMonth() < ns.getMonth() ||
+                (today.getMonth() === ns.getMonth() && today.getDate() < ns.getDate())) {
+                tuoi--;
+            }
+
+            if (tuoi < 18) {
+                document.getElementById("errorNgSinh").innerText = "Nhân viên phải đủ 18 tuổi!";
+                isValid = false;
+            } else {
+                document.getElementById("errorNgSinh").innerText = "";
+            }
         }
 
         // Kiểm tra Email
@@ -409,29 +428,22 @@
             return false;
         } else {
             Swal.fire({
-                title: 'Bạn có muốn thêm không?',
+                title: 'Bạn có muốn sửa không?',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: 'Có',
                 cancelButtonText: 'Không'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Nếu người dùng nhấn Có, hiển thị thông báo thành công và chuyển hướng sau một khoảng thời gian
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: "top-end",
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sửa thành công!',
+                        text: 'Nhân viên đã được sửa trong hệ thống.',
                         showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        didOpen: (toast) => {
-                            toast.onmouseenter = Swal.stopTimer;
-                            toast.onmouseleave = Swal.resumeTimer;
-                        }
+                        timer: 1500
+                    }).then(() => {
+                        document.getElementById("addForm").submit(); // Gửi form sau khi hiển thị thông báo
                     });
-
-                    setTimeout(function () {
-                        document.getElementById("addForm").submit();
-                    }, 500);
                 }
             });
         }

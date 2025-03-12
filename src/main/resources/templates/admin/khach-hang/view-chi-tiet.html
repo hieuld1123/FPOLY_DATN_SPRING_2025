@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý nhân viên</title>
+    <title>Quản lý khách hàng</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css">
     <style>
         .profile-img {
@@ -70,9 +70,13 @@
                                     </div>
                                     <div class="col-6">
                                         <p><strong>Số điện thoại:</strong> <span th:text="${khachHangDto.sdt}"></span></p>
+                                        <p><strong>Địa chỉ mặc định:</strong>
+                                            <span th:each="diaChi : ${listDiaChi}"
+                                                  th:text="${diaChi.diaChiCuThe + ', ' + diaChi.xa + ', ' + diaChi.huyen + ', ' + diaChi.tinh}"></span>
+                                        </p>
                                         <p><strong>Trạng thái:</strong>
-                                            <span th:if="${khachHangDto.trangThai}" th:text="'Hoạt động'" class="badge bg-success me-1"></span>
-                                            <span th:unless="${khachHangDto.trangThai}" class="badge bg-danger me-1" th:text="'Ngừng hoạt động'"></span>
+                                            <span th:if="${khachHangDto.trangThai}" th:text="'Hoạt động'" class="badge bg-success me-1" style="color: white"></span>
+                                            <span th:unless="${khachHangDto.trangThai}" class="badge bg-danger me-1" th:text="'Ngừng hoạt động'" style="color: white"></span>
 
                                         </p>
 
@@ -112,31 +116,6 @@
                                 </div>
                             </div>
                         </div>
-                        <hr>
-                        <h4 class="mt-4 ms-2">Danh sách địa chỉ</h4>
-                        <div class="card-body">
-                            <table class="table table-bordered table-hover">
-                                <thead class="text-center">
-                                <tr>
-                                    <th>STT</th>
-                                    <th>Địa chỉ</th>
-                                    <th></th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr th:each="diaChi, iterStat:${listDiaChi}">
-                                    <td th:text="${iterStat.index + 1}"></td>
-                                    <td th:text="${diaChi.diaChiCuThe + ', ' + diaChi.xa + ', '+ diaChi.huyen +', '+ diaChi.tinh}"></td>
-                                    <td>
-                                            <span class="badge px-2 py-1"
-                                                  th:classappend="${diaChi.trangThai} ? 'bg-success' : ''"
-                                                  th:text="${diaChi.trangThai} ? 'Mặc định' : ''"></span>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <hr>
 
                         <!-- Nút hành động -->
                         <div class="d-flex justify-content-end">

@@ -35,5 +35,6 @@ public class NhanVienTKDto {
     private String matKhau;
     private TaiKhoan.Role vaiTro;
     private Boolean trangThaiTK;
+    private String resetToken;
 
 }

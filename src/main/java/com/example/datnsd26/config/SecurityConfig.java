@@ -24,6 +24,8 @@ public class SecurityConfig {
                         .requestMatchers("/shop/**", "/error/**", "/**", "/api/**").permitAll()  // Public access
                         .requestMatchers("/admin/**").hasAnyRole("ADMIN", "EMPLOYEE")  // Requires authentication
                         .requestMatchers("/admin/ban-hang").hasRole("EMPLOYEE") // Only Employee role
+                        .requestMatchers("/doi-mat-khau").permitAll() // Cho phép đổi mật khẩu mà không cần đăng nhập
+
                         .anyRequest().authenticated() // All other pages require login
                 )
                 .formLogin(form -> form

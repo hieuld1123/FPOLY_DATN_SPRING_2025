@@ -26,9 +26,9 @@ public class KhachHang {
     @OneToOne
     @JoinColumn(name = "id_tai_khoan")
     private TaiKhoan taiKhoan;
-    @OneToMany(mappedBy = "khachHang", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "khachHang", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<DiaChi> diaChi = new ArrayList<>();
-    @Column(name = "ho_ten")
+    @Column(name = "ho_ten", columnDefinition = "NVARCHAR(255)")
     private String tenKhachHang;
 
     @Column(name = "ma_khach_hang")
