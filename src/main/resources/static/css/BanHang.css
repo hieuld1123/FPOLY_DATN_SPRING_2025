@@ -84,6 +84,7 @@
 }
 
 .product-table .remove-btn {
+    width: 15px;
     color: #dc3545;
     cursor: pointer;
     text-decoration: none;
