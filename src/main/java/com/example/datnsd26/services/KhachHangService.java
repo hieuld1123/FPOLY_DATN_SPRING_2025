@@ -133,7 +133,8 @@ public class KhachHangService {
         }
         taiKhoanRepository.save(existingTaiKhoan);
 
-        khachHang.getDiaChi().clear(); // Xóa danh sách cũ
+        diaChiRepository.deleteAllByKhachHangId(id);
+        khachHang.getDiaChi().clear();
 
         List<DiaChi> diaChiList = new ArrayList<>();
         for (DiaChiDTO diaChiDTO : khachHangDto.getListDiaChi()) {
@@ -145,10 +146,11 @@ public class KhachHangService {
             diaChi.setDiaChiCuThe(diaChiDTO.getDiaChiCuThe());
             diaChi.setTrangThai(diaChiDTO.getTrangThai());
 
-            diaChiList.add(diaChi);
+            khachHang.getDiaChi().add(diaChi);
+            System.out.println("Khách hàng ID trước khi lưu: " + khachHang.getId());
+
         }
 
-        // Chỉ giữ lại một địa chỉ mặc định
         if (diaChiList.stream().noneMatch(DiaChi::getTrangThai) && !diaChiList.isEmpty()) {
             diaChiList.get(0).setTrangThai(true);
         }
