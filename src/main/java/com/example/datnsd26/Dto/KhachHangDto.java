@@ -38,7 +38,7 @@ public class KhachHangDto {
     private TaiKhoan.Role vaiTro;
     private Timestamp ngayTao;
     private Timestamp ngayCapNhat;
-
+    private Integer diaChiMacDinhId;
 
 
 }
