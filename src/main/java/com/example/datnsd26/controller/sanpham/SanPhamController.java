@@ -474,7 +474,7 @@ public class SanPhamController {
                 hinhAnh.setTenAnh(anhUrl);
                 hinhAnh.setNgayTao(currentTime);
                 hinhAnh.setSanPhamChiTiet(spct);
-                hinhAnh.setTrangthai(true);
+                hinhAnh.setTrangThai(true);
                 hinhAnh.setNgayCapNhat(currentTime);
                 hinhAnhRepository.save(hinhAnh);
             }

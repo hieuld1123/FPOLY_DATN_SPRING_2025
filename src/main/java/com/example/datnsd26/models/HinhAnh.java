@@ -35,7 +35,7 @@ public class HinhAnh {
     private LocalDateTime ngayCapNhat;
 
     @Column(name = "trang_thai", columnDefinition = "BIT DEFAULT 1")
-    private Boolean trangthai;
+    private Boolean trangThai;
 
     @ManyToOne
     @JoinColumn(name = "id_san_pham_chi_tiet")

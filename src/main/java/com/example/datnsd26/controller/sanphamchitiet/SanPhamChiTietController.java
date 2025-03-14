@@ -296,7 +296,7 @@ public class SanPhamChiTietController {
                         String anhUrl = saveImage(anhFile);
                         HinhAnh hinhAnh = new HinhAnh();
                         hinhAnh.setTenAnh(anhUrl);
-                        hinhAnh.setTrangthai(true);
+                        hinhAnh.setTrangThai(true);
                         hinhAnh.setNgayTao(currentTime);
                         hinhAnh.setNgayCapNhat(currentTime);
                         hinhAnh.setSanPhamChiTiet(spct);
@@ -355,7 +355,7 @@ public class SanPhamChiTietController {
                         String anhUrl = saveImage(anhFile);
                         HinhAnh hinhAnh = new HinhAnh();
                         hinhAnh.setTenAnh(anhUrl);
-                        hinhAnh.setTrangthai(true);
+                        hinhAnh.setTrangThai(true);
                         hinhAnh.setNgayTao(currentTime);
                         hinhAnh.setNgayCapNhat(currentTime);
                         hinhAnh.setSanPhamChiTiet(spct);
