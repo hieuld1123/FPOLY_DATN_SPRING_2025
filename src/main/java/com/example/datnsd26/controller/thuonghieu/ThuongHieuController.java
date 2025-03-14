@@ -28,15 +28,15 @@ public class ThuongHieuController {
         List<ThuongHieu> list;
         String trimmedKey = (info.getKey() != null) ? info.getKey().trim().replaceAll("\\s+", " ") : null;
         boolean isKeyEmpty = (trimmedKey == null || trimmedKey.isEmpty());
-        boolean isTrangthaiNull = (info.getTrangthai() == null);
+        boolean isTrangthaiNull = (info.getTrangThai() == null);
         if (isKeyEmpty && isTrangthaiNull) {
-            list = thuongHieuRepository.findAllByOrderByNgaytaoDesc();
+            list = thuongHieuRepository.findAllByOrderByNgayTaoDesc();
         } else {
-            list = thuongHieuRepository.findByTenAndTrangthai("%" + trimmedKey + "%", info.getTrangthai());
+            list = thuongHieuRepository.findByTenAndTrangThai("%" + trimmedKey + "%", info.getTrangThai());
         }
         model.addAttribute("page", list);
         model.addAttribute("fillSearch", info.getKey());
-        model.addAttribute("fillTrangThai", info.getTrangthai());
+        model.addAttribute("fillTrangThai", info.getTrangThai());
         return "admin/qlthuonghieu";
     }
 
@@ -44,7 +44,7 @@ public class ThuongHieuController {
     public String updateTrangThaiThuongHieu(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         ThuongHieu existingThuongHieu = thuongHieuRepository.findById(id).orElse(null);
         if (existingThuongHieu != null) {
-            existingThuongHieu.setTrangthai(!existingThuongHieu.getTrangthai());
+            existingThuongHieu.setTrangThai(!existingThuongHieu.getTrangThai());
             thuongHieuRepository.save(existingThuongHieu);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái thành công!");
         }
@@ -64,9 +64,9 @@ public class ThuongHieuController {
                 : null;
         LocalDateTime currentTime = LocalDateTime.now();
         thuongHieu.setTen(trimmedTenThuongHieu);
-        thuongHieu.setTrangthai(true);
-        thuongHieu.setNgaytao(currentTime);
-        thuongHieu.setNgaycapnhat(currentTime);
+        thuongHieu.setTrangThai(true);
+        thuongHieu.setNgayTao(currentTime);
+        thuongHieu.setNgayCapNhat(currentTime);
         thuongHieuImp.add(thuongHieu);
         return "redirect:/listthuonghieu";
     }
@@ -80,9 +80,9 @@ public class ThuongHieuController {
                 : null;
         LocalDateTime currentTime = LocalDateTime.now();
         thuongHieu.setTen(trimmedTenThuongHieu);
-        thuongHieu.setTrangthai(true);
-        thuongHieu.setNgaytao(currentTime);
-        thuongHieu.setNgaycapnhat(currentTime);
+        thuongHieu.setTrangThai(true);
+        thuongHieu.setNgayTao(currentTime);
+        thuongHieu.setNgayCapNhat(currentTime);
         thuongHieuImp.add(thuongHieu);
         return "redirect:/viewaddSPGET";
     }
@@ -95,9 +95,9 @@ public class ThuongHieuController {
                 : null;
         LocalDateTime currentTime = LocalDateTime.now();
         thuongHieu.setTen(trimmedTenThuongHieu);
-        thuongHieu.setTrangthai(true);
-        thuongHieu.setNgaytao(currentTime);
-        thuongHieu.setNgaycapnhat(currentTime);
+        thuongHieu.setTrangThai(true);
+        thuongHieu.setNgayTao(currentTime);
+        thuongHieu.setNgayCapNhat(currentTime);
         thuongHieuImp.add(thuongHieu);
         return "redirect:/updateCTSP/" + spctId;
     }
@@ -110,9 +110,9 @@ public class ThuongHieuController {
                 : null;
         LocalDateTime currentTime = LocalDateTime.now();
         thuongHieu.setTen(trimmedTenThuongHieu);
-        thuongHieu.setTrangthai(true);
-        thuongHieu.setNgaytao(currentTime);
-        thuongHieu.setNgaycapnhat(currentTime);
+        thuongHieu.setTrangThai(true);
+        thuongHieu.setNgayTao(currentTime);
+        thuongHieu.setNgayCapNhat(currentTime);
         thuongHieuImp.add(thuongHieu);
         return "redirect:/updateAllCTSP/" + spctId;
     }

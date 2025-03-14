@@ -17,28 +17,30 @@ import java.util.List;
 @Controller
 public class DeGiayController {
     @Autowired
-    DeGiayRepository deGiayRepository;
-    @Autowired
-    DeGiayImp deGiayImp;
+    private DeGiayRepository deGiayRepository;
 
+    @Autowired
+    private DeGiayImp deGiayImp;
 
     @GetMapping("/listdegiay")
-    public String listdegiay(Model model, @ModelAttribute("degiay") DeGiay deGiay, @ModelAttribute("tim") ThuocTinhInfo info) {
+    public String listDeGiay(Model model, @ModelAttribute("degiay") DeGiay deGiay, @ModelAttribute("tim") ThuocTinhInfo info) {
         List<DeGiay> list;
         String trimmedKey = (info.getKey() != null) ? info.getKey().trim().replaceAll("\\s+", " ") : null;
         boolean isKeyEmpty = (trimmedKey == null || trimmedKey.isEmpty());
-        boolean isTrangthaiNull = (info.getTrangthai() == null);
-        if (isKeyEmpty && isTrangthaiNull) {
-            list = deGiayRepository.findAllByOrderByNgaytaoDesc();
+        boolean isTrangThaiNull = (info.getTrangThai() == null);
+
+        if (isKeyEmpty && isTrangThaiNull) {
+            list = deGiayRepository.findAllByOrderByNgayTaoDesc();
         } else {
-            list = deGiayRepository.findByTenAndTrangthai("%" + trimmedKey + "%", info.getTrangthai());
+            list = deGiayRepository.findByTenAndTrangThai("%" + trimmedKey + "%", info.getTrangThai());
         }
+
         List<DeGiay> listAll = deGiayRepository.findAll();
         model.addAttribute("listAll", listAll);
-        //dùng listAll để validate
         model.addAttribute("list", list);
         model.addAttribute("fillSearch", trimmedKey);
-        model.addAttribute("fillTrangThai", info.getTrangthai());
+        model.addAttribute("fillTrangThai", info.getTrangThai());
+
         return "admin/qldegiay";
     }
 
@@ -46,77 +48,57 @@ public class DeGiayController {
     public String updateTrangThaiDeGiay(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         DeGiay existingDeGiay = deGiayRepository.findById(id).orElse(null);
         if (existingDeGiay != null) {
-            existingDeGiay.setTrangthai(!existingDeGiay.getTrangthai());
+            existingDeGiay.setTrangThai(!existingDeGiay.getTrangThai());
             deGiayRepository.save(existingDeGiay);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái thành công!");
         }
         return "redirect:/listdegiay";
     }
 
-
     @PostMapping("/addSave")
-    public String addSave(@ModelAttribute("degiay") DeGiay deGiay, HttpSession session) {
-
-        String trimmedTenDeGiay = (deGiay.getTen() != null)
-                ? deGiay.getTen().trim().replaceAll("\\s+", " ")
-                : null;
+    public String addSave(@ModelAttribute("degiay") DeGiay deGiay) {
+        String trimmedTenDeGiay = (deGiay.getTen() != null) ? deGiay.getTen().trim().replaceAll("\\s+", " ") : null;
         LocalDateTime currentTime = LocalDateTime.now();
+
         deGiay.setTen(trimmedTenDeGiay);
-        deGiay.setTrangthai(true);
-        deGiay.setNgaytao(currentTime);
-        deGiay.setNgaycapnhat(currentTime);
+        deGiay.setTrangThai(true);
+        deGiay.setNgayTao(currentTime);
+        deGiay.setNgayCapNhat(currentTime);
         deGiayImp.add(deGiay);
+
         return "redirect:/listdegiay";
     }
 
-
     @PostMapping("/addDeGiayModal")
-    public String addDeGiayModal(@ModelAttribute("degiay") DeGiay deGiay, HttpSession session) {
-
-        String trimmedTenDeGiay = (deGiay.getTen() != null)
-                ? deGiay.getTen().trim().replaceAll("\\s+", " ")
-                : null;
-        LocalDateTime currentTime = LocalDateTime.now();
-        deGiay.setTen(trimmedTenDeGiay);
-        deGiay.setTrangthai(true);
-        deGiay.setNgaytao(currentTime);
-        deGiay.setNgaycapnhat(currentTime);
-        deGiayImp.add(deGiay);
-        return "redirect:/viewaddSPGET";
+    public String addDeGiayModal(@ModelAttribute("degiay") DeGiay deGiay) {
+        return processDeGiay(deGiay, "redirect:/viewaddSPGET");
     }
 
     @PostMapping("/addDeGiaySua")
-    public String addDeGiaySua(@ModelAttribute("degiay") DeGiay deGiay, @RequestParam("spctId") Integer spctId, HttpSession session) {
-
-        String trimmedTenDeGiay = (deGiay.getTen() != null)
-                ? deGiay.getTen().trim().replaceAll("\\s+", " ")
-                : null;
-        LocalDateTime currentTime = LocalDateTime.now();
-        deGiay.setTen(trimmedTenDeGiay);
-        deGiay.setTrangthai(true);
-        deGiay.setNgaytao(currentTime);
-        deGiay.setNgaycapnhat(currentTime);
-        deGiayImp.add(deGiay);
-        return "redirect:/updateCTSP/" + spctId;
+    public String addDeGiaySua(@ModelAttribute("degiay") DeGiay deGiay, @RequestParam("spctId") Integer spctId) {
+        return processDeGiay(deGiay, "redirect:/updateCTSP/" + spctId);
     }
 
     @PostMapping("/addDeGiaySuaAll")
-    public String addDeGiaySuaAll(@ModelAttribute("degiay") DeGiay deGiay, @RequestParam("spctId") Integer spctId, HttpSession session) {
+    public String addDeGiaySuaAll(@ModelAttribute("degiay") DeGiay deGiay, @RequestParam("spctId") Integer spctId) {
+        return processDeGiay(deGiay, "redirect:/updateAllCTSP/" + spctId);
+    }
 
-        String trimmedTenDeGiay = (deGiay.getTen() != null)
-                ? deGiay.getTen().trim().replaceAll("\\s+", " ")
-                : null;
+    private String processDeGiay(DeGiay deGiay, String redirectUrl) {
+        String trimmedTenDeGiay = (deGiay.getTen() != null) ? deGiay.getTen().trim().replaceAll("\\s+", " ") : null;
         LocalDateTime currentTime = LocalDateTime.now();
+
         deGiay.setTen(trimmedTenDeGiay);
-        deGiay.setTrangthai(true);
-        deGiay.setNgaytao(currentTime);
-        deGiay.setNgaycapnhat(currentTime);
+        deGiay.setTrangThai(true);
+        deGiay.setNgayTao(currentTime);
+        deGiay.setNgayCapNhat(currentTime);
         deGiayImp.add(deGiay);
-        return "redirect:/updateAllCTSP/" + spctId;
+
+        return redirectUrl;
     }
 
     @ModelAttribute("dsdg")
-    public List<DeGiay> getDS() {
+    public List<DeGiay> getDanhSachDeGiay() {
         return deGiayImp.findAll();
     }
 }

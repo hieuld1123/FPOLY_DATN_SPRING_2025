@@ -235,8 +235,8 @@
                                         <td class="tdSameWidth">
                                             <form name="updateTrangThaiForm" th:action="@{/thuonghieu/updateTrangThai/{id}(id=${th.id})}" method="post" onsubmit="return confirmUpdateThuongHieu(this);">
                                                 <button type="submit" style=" border: none;"
-                                                        th:classappend="${th.trangthai == true ? 'badge badge-success' : 'badge badge-danger'}">
-                                                    <span th:text="${th.trangthai == true ? 'Đang kinh doanh' : 'Ngừng kinh doanh'}"></span>
+                                                        th:classappend="${th.trangThai == true ? 'badge badge-success' : 'badge badge-danger'}">
+                                                    <span th:text="${th.trangThai == true ? 'Đang kinh doanh' : 'Ngừng kinh doanh'}"></span>
                                                 </button>
                                             </form>
                                         </td>

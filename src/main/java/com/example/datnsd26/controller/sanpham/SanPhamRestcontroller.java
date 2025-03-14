@@ -44,8 +44,8 @@ public class SanPhamRestcontroller {
         List<SanPham> lstSP = sanPhamRepositoty.findAll();
         for (SanPham sp : lstSP) {
             for (SanPhamChiTiet spct : sp.getSpct()) {
-                if (spct.getSoluong() == 0 && sp.getTrangthai()) {
-                    sp.setTrangthai(false);
+                if (spct.getSoLuong() == 0 && sp.getTrangThai()) {
+                    sp.setTrangThai(false);
                     sanPhamRepositoty.save(sp);
                 }
             }
@@ -85,7 +85,7 @@ public class SanPhamRestcontroller {
         if (existingSanPham == null || updatedSanPham == null) {
             return ResponseEntity.notFound().build();
         }
-        existingSanPham.setTensanpham(updatedSanPham.getTensanpham());
+        existingSanPham.setTenSanPham(updatedSanPham.getTenSanPham());
         sanPhamRepositoty.save(existingSanPham);
         return ResponseEntity.ok("redirect:/listsanpham");
     }
@@ -93,7 +93,7 @@ public class SanPhamRestcontroller {
 
     @GetMapping("/checkTenSanPham")
     public ResponseEntity<Boolean> checkTenSanPham(@RequestParam String ten) {
-        boolean exists = sanPhamRepositoty.existsByTensanpham(ten);
+        boolean exists = sanPhamRepositoty.existsByTenSanPham(ten);
         return ResponseEntity.ok(exists);
     }
 

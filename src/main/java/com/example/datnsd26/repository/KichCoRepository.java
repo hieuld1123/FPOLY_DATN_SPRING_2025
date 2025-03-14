@@ -12,29 +12,29 @@ import java.util.List;
 public interface KichCoRepository extends JpaRepository<KichCo,Integer> {
 
     @Query( value = """
-            SELECT kc FROM KichCo kc WHERE (kc.ten LIKE?1) AND (?2 IS NULL OR kc.trangthai=?2)
+            SELECT kc FROM KichCo kc WHERE (kc.ten LIKE?1) AND (?2 IS NULL OR kc.trangThai=?2)
             """)
-    List<KichCo> findByTenAndTrangthai(String ten, Boolean trangthai);
+    List<KichCo> findByTenAndTrangThai(String ten, Boolean trangThai);
 
     boolean existsByTen(String ten);
 
-    List<KichCo> getKichCoByTenOrTrangthai(String ten, Boolean trangthai);
+    List<KichCo> getKichCoByTenOrTrangThai(String ten, Boolean trangThai);
 
-    List<KichCo> findAllByOrderByNgaytaoDesc();
+    List<KichCo> findAllByOrderByNgayTaoDesc();
 
     KichCo findByTen(String ten);
 
-    @Query("SELECT kc FROM KichCo kc WHERE kc.ten = :ten AND kc.trangthai = true ")
+    @Query("SELECT kc FROM KichCo kc WHERE kc.ten = :ten AND kc.trangThai = true ")
     List<KichCo> findKichCoByTenAndTrangThaiFalse(@Param("ten") String ten);
 
     @Query(nativeQuery = true, value = """
-            SELECT * FROM KichCo Where TrangThai=1
-            ORDER BY NgayTao DESC
+            SELECT * FROM kich_co Where trang_thai=1
+            ORDER BY ngay_tao DESC
              """)
     List<KichCo> getAll();
 
     @Modifying
     @Transactional
-    @Query("UPDATE KichCo kc SET kc.trangthai = false WHERE kc.id = :id")
+    @Query("UPDATE KichCo kc SET kc.trangThai = false WHERE kc.id = :id")
     void updateTrangThaiToFalseById(Integer id);
 }

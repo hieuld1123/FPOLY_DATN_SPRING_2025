@@ -253,8 +253,8 @@
                                                   th:action="@{/chatlieu/updateTrangThai/{id}(id=${cl.id})}"
                                                   method="post" onsubmit="return confirmUpdateChatLieu(this);">
                                                 <button type="submit" style=" border: none;"
-                                                        th:classappend="${cl.trangthai == true ? 'badge badge-success' : 'badge badge-danger'}">
-                                                    <span th:text="${cl.trangthai == true ? 'Đang kinh doanh' : 'Ngừng kinh doanh'}"></span>
+                                                        th:classappend="${cl.trangThai == true ? 'badge badge-success' : 'badge badge-danger'}">
+                                                    <span th:text="${cl.trangThai == true ? 'Đang kinh doanh' : 'Ngừng kinh doanh'}"></span>
                                                 </button>
                                             </form>
                                         </td>

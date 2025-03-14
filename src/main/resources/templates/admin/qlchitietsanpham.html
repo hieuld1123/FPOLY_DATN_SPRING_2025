@@ -362,7 +362,7 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr th:each="spct, stt : ${sanphamchitiet}">
+                                    <tr th:each="spct, stt : ${sanPhamChiTiet}">
                                         <td style="padding-left: 20px;padding-bottom: 25px">
                                             <input type="checkbox" class="form-check-input checkbox checkbox-red"
                                                    th:value="${spct.id}" onchange="toggleRowHighlight(this)"
@@ -371,15 +371,15 @@
                                         <td>
                                             <span style="margin-left: 7px" th:text="${stt.index+1}"></span>
                                         </td>
-                                        <th th:text="${spct.masanphamchitiet}"></th>
+                                        <th th:text="${spct.maSanPhamChiTiet}"></th>
                                         <td>
                                             <div th:id="'carouselExample' + ${spct.id}" class="carousel">
                                                 <div class="carousel-inner">
-                                                    <th:block th:each="anhs, index : ${spct.anh}">
+                                                    <th:block th:each="anhs, index : ${spct.hinhAnh}">
                                                         <div th:classappend="${index.index == 0} ? 'carousel-item active' : 'carousel-item'">
                                                             <!-- Hình ảnh carousel -->
-                                                            <img th:if="${anhs.tenanh != null}"
-                                                                 th:src="@{'/upload' + ${anhs.tenanh.substring(anhs.tenanh.lastIndexOf('upload') + 6)}}"
+                                                            <img th:if="${anhs.tenAnh != null}"
+                                                                 th:src="@{'/upload' + ${anhs.tenAnh.substring(anhs.tenAnh.lastIndexOf('upload') + 6)}}"
                                                                  class="d-block w-100 carousel-img rounded-3" alt="Ảnh">
                                                         </div>
                                                     </th:block>
@@ -399,21 +399,21 @@
                                             </div>
                                         </td>
 
-                                        <td th:text="${spct.soluong}"></td>
+                                        <td th:text="${spct.soLuong}"></td>
                                         <td style="text-align: center;">
         <span style="color: red; font-weight: bold"
-              th:text="${#numbers.formatDecimal(spct.giatien, 0, 'COMMA', 0, 'POINT') + '&#x20ab;'}"></span>
+              th:text="${#numbers.formatDecimal(spct.giaBan, 0, 'COMMA', 0, 'POINT') + '&#x20ab;'}"></span>
                                             </span>
                                             <br/>
                                         </td>
-                                        <td th:text="${spct.thuonghieu.ten}"></td>
+                                        <td th:text="${spct.thuongHieu.ten}"></td>
                                         <!--                                        <td th:text="${spct.chatlieu.ten}"></td>-->
                                         <!--                                        <td th:text="${spct.degiay.ten}"></td>-->
-                                        <td th:text="${spct.kichco.ten}"></td>
+                                        <td th:text="${spct.kichCo.ten}"></td>
                                         <!--                                        <td th:text="${spct.mausac.ten}"></td>-->
 
                                         <td>
-                                            <input type="color" th:value="${spct.mausac.ten}" class="form-control"
+                                            <input type="color" th:value="${spct.mauSac.ten}" class="form-control"
                                                    disabled>
                                             <!--                                            <p th:text="${spct.mausac.ten}" style="color: red">-->
                                         </td>
@@ -423,8 +423,8 @@
                                                   method="post"
                                                   onsubmit="return confirmUpdateKichCo(this);">
                                                 <button type="submit" style=" border: none;"
-                                                        th:classappend="${spct.trangthai == true ? 'badge badge-success' : 'badge badge-danger'}">
-                                                    <span th:text="${spct.trangthai == true ? 'Đang kinh doanh' : 'Ngừng kinh doanh'}"></span>
+                                                        th:classappend="${spct.trangThai == true ? 'badge badge-success' : 'badge badge-danger'}">
+                                                    <span th:text="${spct.trangThai == true ? 'Đang kinh doanh' : 'Ngừng kinh doanh'}"></span>
                                                 </button>
                                             </form>
                                         </td>

@@ -58,10 +58,10 @@ public class SanPhamChiTietController {
     ChatLieuImp chatLieuImp;
 
     @Autowired
-    AnhImp anhImp;
+    HinhAnhImp anhImp;
 
     @Autowired
-    AnhRepository anhRepository;
+    HinhAnhRepository hinhAnhRepository;
 
     //Cập nhật trạng thái sản phẩm chi tiết
 
@@ -69,34 +69,34 @@ public class SanPhamChiTietController {
     public String updateTrangThaiCTSP(@PathVariable Integer id) {
         SanPhamChiTiet spct = sanPhamChiTietRepository.findById(id).orElse(null);
         if (spct != null) {
-            spct.setTrangthai(!spct.getTrangthai());
+            spct.setTrangThai(!spct.getTrangThai());
             sanPhamChiTietRepository.save(spct);
         }
-        List<SanPhamChiTiet> listSPCT = sanPhamChiTietRepository.findBySanPhamId(spct.getSanpham().getId());
+        List<SanPhamChiTiet> listSPCT = sanPhamChiTietRepository.findBySanPhamId(spct.getSanPham().getId());
         int check = 1;
         for (SanPhamChiTiet spct1 : listSPCT) {
-            if (spct1.getTrangthai() == false) {
+            if (spct1.getTrangThai() == false) {
                 check = 2;
             }
-            if (spct1.getTrangthai() == true) {
+            if (spct1.getTrangThai() == true) {
                 check = 1;
             }
         }
         if (check == 2) {
-            SanPham sanPham = sanPhamRepositoty.findById(spct.getSanpham().getId()).orElse(null);
+            SanPham sanPham = sanPhamRepositoty.findById(spct.getSanPham().getId()).orElse(null);
             if (sanPham != null) {
-                sanPham.setTrangthai(false);
+                sanPham.setTrangThai(false);
                 sanPhamRepositoty.save(sanPham);
             }
         }
         if (check == 1) {
-            SanPham sanPham = sanPhamRepositoty.findById(spct.getSanpham().getId()).orElse(null);
+            SanPham sanPham = sanPhamRepositoty.findById(spct.getSanPham().getId()).orElse(null);
             if (sanPham != null) {
-                sanPham.setTrangthai(true);
+                sanPham.setTrangThai(true);
                 sanPhamRepositoty.save(sanPham);
             }
         }
-        return "redirect:/detailsanpham/" + spct.getSanpham().getId();
+        return "redirect:/detailsanpham/" + spct.getSanPham().getId();
     }
 
 
@@ -112,8 +112,8 @@ public class SanPhamChiTietController {
                         info.getIdKichCo() == null &&
                         info.getIdMauSac() == null &&
                         info.getIdThuongHieu() == null &&
-                        info.getGioitinh() == null &&
-                        info.getTrangthai() == null
+                        info.getGioiTinh() == null &&
+                        info.getTrangThai() == null
         );
         if (isAllFiltersNull) {
             list = sanPhamChiTietRepository.findAll();
@@ -126,8 +126,8 @@ public class SanPhamChiTietController {
                     info.getIdKichCo(),
                     info.getIdMauSac(),
                     info.getIdChatLieu(),
-                    info.getGioitinh(),
-                    info.getTrangthai()
+                    info.getGioiTinh(),
+                    info.getTrangThai()
             );
         }
         List<SanPham> listSanPham = sanPhamImp.findAll();
@@ -151,8 +151,8 @@ public class SanPhamChiTietController {
         model.addAttribute("fillKichCo", info.getIdKichCo());
         model.addAttribute("fillMauSac", info.getIdMauSac());
         model.addAttribute("fillChatLieu", info.getIdChatLieu());
-        model.addAttribute("fillGioiTinh", info.getGioitinh());
-        model.addAttribute("fillTrangThai", info.getTrangthai());
+        model.addAttribute("fillGioiTinh", info.getGioiTinh());
+        model.addAttribute("fillTrangThai", info.getTrangThai());
         return "admin/allchitietsanpham";
     }
 
@@ -186,7 +186,7 @@ public class SanPhamChiTietController {
         List<KichCo> listKichCo = kichCoRepository.getAll();
         List<DeGiay> listDeGiay = deGiayRepository.getAll();
         List<ChatLieu> listChatLieu = chatLieuRepository.getAll();
-        List<Anh> listAnh = anhImp.findAll();
+        List<HinhAnh> listHinhAnh = anhImp.findAll();
         model.addAttribute("sp", listSanPham);
         model.addAttribute("spct", listSPCT);
         model.addAttribute("th", listThuongHieu);
@@ -194,12 +194,12 @@ public class SanPhamChiTietController {
         model.addAttribute("kc", listKichCo);
         model.addAttribute("dg", listDeGiay);
         model.addAttribute("cl", listChatLieu);
-        model.addAttribute("a", listAnh);
+        model.addAttribute("a", listHinhAnh);
         model.addAttribute("hehe", sanPhamChiTietImp.findById(id));
 
         SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietImp.findById(id);
 
-        BigDecimal giagoc = sanPhamChiTiet.getGiatien();
+        BigDecimal giagoc = sanPhamChiTiet.getGiaBan();
         model.addAttribute("hehe", sanPhamChiTiet);
         return "admin/detailCTSP";
     }
@@ -234,7 +234,7 @@ public class SanPhamChiTietController {
         List<KichCo> listKichCo = kichCoRepository.getAll();
         List<DeGiay> listDeGiay = deGiayRepository.getAll();
         List<ChatLieu> listChatLieu = chatLieuRepository.getAll();
-        List<Anh> listAnh = anhImp.findAll();
+        List<HinhAnh> listHinhAnh = anhImp.findAll();
         model.addAttribute("sp", listSanPham);
         model.addAttribute("spct", listSPCT);
         model.addAttribute("th", listThuongHieu);
@@ -242,11 +242,11 @@ public class SanPhamChiTietController {
         model.addAttribute("kc", listKichCo);
         model.addAttribute("dg", listDeGiay);
         model.addAttribute("cl", listChatLieu);
-        model.addAttribute("a", listAnh);
+        model.addAttribute("a", listHinhAnh);
         model.addAttribute("AllCTSP", sanPhamChiTietImp.findById(id));
 
         SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietImp.findById(id);
-        BigDecimal giagoc = sanPhamChiTiet.getGiatien();
+        BigDecimal giagoc = sanPhamChiTiet.getGiaBan();
         model.addAttribute("hehe", sanPhamChiTiet);
         return "admin/ViewAllCTSP";
     }
@@ -259,33 +259,33 @@ public class SanPhamChiTietController {
                              RedirectAttributes redirectAttributes, HttpSession session) {
 
         LocalDateTime currentTime = LocalDateTime.now();
-        SanPham sanPham = sanPhamRepositoty.findById(sanPhamChiTiet.getSanpham().getId())
+        SanPham sanPham = sanPhamRepositoty.findById(sanPhamChiTiet.getSanPham().getId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm"));
-        ThuongHieu thuongHieu = thuongHieuRepository.findById(sanPhamChiTiet.getThuonghieu().getId())
+        ThuongHieu thuongHieu = thuongHieuRepository.findById(sanPhamChiTiet.getThuongHieu().getId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy thương hiệu"));
-        ChatLieu chatLieu = chatLieuRepository.findById(sanPhamChiTiet.getChatlieu().getId())
+        ChatLieu chatLieu = chatLieuRepository.findById(sanPhamChiTiet.getChatLieu().getId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy chất liệu"));
-        DeGiay deGiay = deGiayRepository.findById(sanPhamChiTiet.getDegiay().getId())
+        DeGiay deGiay = deGiayRepository.findById(sanPhamChiTiet.getDeGiay().getId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy đế giày"));
-        MauSac mauSac = mauSacRepository.findById(sanPhamChiTiet.getMausac().getId())
+        MauSac mauSac = mauSacRepository.findById(sanPhamChiTiet.getMauSac().getId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy màu sắc"));
-        KichCo kichCo = kichCoRepository.findById(sanPhamChiTiet.getKichco().getId())
+        KichCo kichCo = kichCoRepository.findById(sanPhamChiTiet.getKichCo().getId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy kích cỡ"));
         SanPhamChiTiet existingSanPhamChiTiet = sanPhamChiTietRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm chi tiết"));
 
-        existingSanPhamChiTiet.setSanpham(sanPham);
-        existingSanPhamChiTiet.setThuonghieu(thuongHieu);
-        existingSanPhamChiTiet.setChatlieu(chatLieu);
-        existingSanPhamChiTiet.setDegiay(deGiay);
-        existingSanPhamChiTiet.setMausac(mauSac);
-        existingSanPhamChiTiet.setKichco(kichCo);
-        existingSanPhamChiTiet.setNgaycapnhat(currentTime);
-        existingSanPhamChiTiet.setSoluong(sanPhamChiTiet.getSoluong());
-        existingSanPhamChiTiet.setGiatien(sanPhamChiTiet.getGiatien());
-        existingSanPhamChiTiet.setMota(sanPhamChiTiet.getMota());
-        existingSanPhamChiTiet.setTrangthai(sanPhamChiTiet.getTrangthai());
-        existingSanPhamChiTiet.setGioitinh(sanPhamChiTiet.getGioitinh());
+        existingSanPhamChiTiet.setSanPham(sanPham);
+        existingSanPhamChiTiet.setThuongHieu(thuongHieu);
+        existingSanPhamChiTiet.setChatLieu(chatLieu);
+        existingSanPhamChiTiet.setDeGiay(deGiay);
+        existingSanPhamChiTiet.setMauSac(mauSac);
+        existingSanPhamChiTiet.setKichCo(kichCo);
+        existingSanPhamChiTiet.setNgayCapNhat(currentTime);
+        existingSanPhamChiTiet.setSoLuong(sanPhamChiTiet.getSoLuong());
+        existingSanPhamChiTiet.setGiaBan(sanPhamChiTiet.getGiaBan());
+        existingSanPhamChiTiet.setMoTa(sanPhamChiTiet.getMoTa());
+        existingSanPhamChiTiet.setTrangThai(sanPhamChiTiet.getTrangThai());
+        existingSanPhamChiTiet.setGioiTinh(sanPhamChiTiet.getGioiTinh());
 
         sanPhamChiTietRepository.save(existingSanPhamChiTiet);
         if (anhFiles != null && !anhFiles.isEmpty()) {
@@ -294,18 +294,18 @@ public class SanPhamChiTietController {
                 for (MultipartFile anhFile : anhFiles) {
                     if (!anhFile.isEmpty()) {
                         String anhUrl = saveImage(anhFile);
-                        Anh anh = new Anh();
-                        anh.setTenanh(anhUrl);
-                        anh.setTrangthai(true);
-                        anh.setNgaytao(currentTime);
-                        anh.setNgaycapnhat(currentTime);
-                        anh.setSanphamchitiet(spct);
-                        anhRepository.save(anh);
+                        HinhAnh hinhAnh = new HinhAnh();
+                        hinhAnh.setTenAnh(anhUrl);
+                        hinhAnh.setTrangthai(true);
+                        hinhAnh.setNgayTao(currentTime);
+                        hinhAnh.setNgayCapNhat(currentTime);
+                        hinhAnh.setSanPhamChiTiet(spct);
+                        hinhAnhRepository.save(hinhAnh);
                     }
                 }
             }
         }
-        Integer firstProductId = sanPhamChiTiet.getSanpham().getId();
+        Integer firstProductId = sanPhamChiTiet.getSanPham().getId();
         redirectAttributes.addFlashAttribute("success", true);
         return "redirect:/detailsanpham/" + firstProductId;
     }
@@ -318,33 +318,33 @@ public class SanPhamChiTietController {
                                 RedirectAttributes redirectAttributes, HttpSession session) {
 
         LocalDateTime currentTime = LocalDateTime.now();
-        SanPham sanPham = sanPhamRepositoty.findById(sanPhamChiTiet.getSanpham().getId())
+        SanPham sanPham = sanPhamRepositoty.findById(sanPhamChiTiet.getSanPham().getId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm"));
-        ThuongHieu thuongHieu = thuongHieuRepository.findById(sanPhamChiTiet.getThuonghieu().getId())
+        ThuongHieu thuongHieu = thuongHieuRepository.findById(sanPhamChiTiet.getThuongHieu().getId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy thương hiệu"));
-        ChatLieu chatLieu = chatLieuRepository.findById(sanPhamChiTiet.getChatlieu().getId())
+        ChatLieu chatLieu = chatLieuRepository.findById(sanPhamChiTiet.getChatLieu().getId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy chất liệu"));
-        DeGiay deGiay = deGiayRepository.findById(sanPhamChiTiet.getDegiay().getId())
+        DeGiay deGiay = deGiayRepository.findById(sanPhamChiTiet.getDeGiay().getId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy đế giày"));
-        MauSac mauSac = mauSacRepository.findById(sanPhamChiTiet.getMausac().getId())
+        MauSac mauSac = mauSacRepository.findById(sanPhamChiTiet.getMauSac().getId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy màu sắc"));
-        KichCo kichCo = kichCoRepository.findById(sanPhamChiTiet.getKichco().getId())
+        KichCo kichCo = kichCoRepository.findById(sanPhamChiTiet.getKichCo().getId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy kích cỡ"));
         SanPhamChiTiet existingSanPhamChiTiet = sanPhamChiTietRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm chi tiết"));
 
-        existingSanPhamChiTiet.setSanpham(sanPham);
-        existingSanPhamChiTiet.setThuonghieu(thuongHieu);
-        existingSanPhamChiTiet.setChatlieu(chatLieu);
-        existingSanPhamChiTiet.setDegiay(deGiay);
-        existingSanPhamChiTiet.setMausac(mauSac);
-        existingSanPhamChiTiet.setKichco(kichCo);
-        existingSanPhamChiTiet.setNgaycapnhat(currentTime);
-        existingSanPhamChiTiet.setSoluong(sanPhamChiTiet.getSoluong());
-        existingSanPhamChiTiet.setGiatien(sanPhamChiTiet.getGiatien());
-        existingSanPhamChiTiet.setMota(sanPhamChiTiet.getMota());
-        existingSanPhamChiTiet.setTrangthai(sanPhamChiTiet.getTrangthai());
-        existingSanPhamChiTiet.setGioitinh(sanPhamChiTiet.getGioitinh());
+        existingSanPhamChiTiet.setSanPham(sanPham);
+        existingSanPhamChiTiet.setThuongHieu(thuongHieu);
+        existingSanPhamChiTiet.setChatLieu(chatLieu);
+        existingSanPhamChiTiet.setDeGiay(deGiay);
+        existingSanPhamChiTiet.setMauSac(mauSac);
+        existingSanPhamChiTiet.setKichCo(kichCo);
+        existingSanPhamChiTiet.setNgayCapNhat(currentTime);
+        existingSanPhamChiTiet.setSoLuong(sanPhamChiTiet.getSoLuong());
+        existingSanPhamChiTiet.setGiaBan(sanPhamChiTiet.getGiaBan());
+        existingSanPhamChiTiet.setMoTa(sanPhamChiTiet.getMoTa());
+        existingSanPhamChiTiet.setTrangThai(sanPhamChiTiet.getTrangThai());
+        existingSanPhamChiTiet.setGioiTinh(sanPhamChiTiet.getGioiTinh());
 
         sanPhamChiTietRepository.save(existingSanPhamChiTiet);
         if (anhFiles != null && !anhFiles.isEmpty()) {
@@ -353,13 +353,13 @@ public class SanPhamChiTietController {
                 for (MultipartFile anhFile : anhFiles) {
                     if (!anhFile.isEmpty()) {
                         String anhUrl = saveImage(anhFile);
-                        Anh anh = new Anh();
-                        anh.setTenanh(anhUrl);
-                        anh.setTrangthai(true);
-                        anh.setNgaytao(currentTime);
-                        anh.setNgaycapnhat(currentTime);
-                        anh.setSanphamchitiet(spct);
-                        anhRepository.save(anh);
+                        HinhAnh hinhAnh = new HinhAnh();
+                        hinhAnh.setTenAnh(anhUrl);
+                        hinhAnh.setTrangthai(true);
+                        hinhAnh.setNgayTao(currentTime);
+                        hinhAnh.setNgayCapNhat(currentTime);
+                        hinhAnh.setSanPhamChiTiet(spct);
+                        hinhAnhRepository.save(hinhAnh);
                     }
                 }
             }

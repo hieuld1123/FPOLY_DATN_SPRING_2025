@@ -18,40 +18,39 @@ import java.util.List;
 @Controller
 public class KichCoController {
     @Autowired
-    KichCoImp kichCoImp;
+    private KichCoImp kichCoImp;
 
     @Autowired
-    KichCoRepository kichCoRepository;
-
+    private KichCoRepository kichCoRepository;
 
     @GetMapping("/listKichCo")
     public String listKichCo(Model model, @ModelAttribute("kichco") KichCo kichCo, @ModelAttribute("tim") ThuocTinhInfo info) {
         List<KichCo> list;
         String trimmedKey = (info.getKey() != null) ? info.getKey().trim().replaceAll("\\s+", " ") : null;
         boolean isKeyEmpty = (trimmedKey == null || trimmedKey.isEmpty());
-        boolean isTrangthaiNull = (info.getTrangthai() == null);
+        boolean isTrangThaiNull = (info.getTrangThai() == null);
 
-        if (isKeyEmpty && isTrangthaiNull) {
-            list = kichCoRepository.findAllByOrderByNgaytaoDesc();
+        if (isKeyEmpty && isTrangThaiNull) {
+            list = kichCoRepository.findAllByOrderByNgayTaoDesc();
         } else {
-            list = kichCoRepository.findByTenAndTrangthai("%" + trimmedKey + "%", info.getTrangthai());
+            list = kichCoRepository.findByTenAndTrangThai("%" + trimmedKey + "%", info.getTrangThai());
         }
         model.addAttribute("fillSearch", info.getKey());
-        model.addAttribute("fillTrangThai", info.getTrangthai());
+        model.addAttribute("fillTrangThai", info.getTrangThai());
         model.addAttribute("list", list);
         return "admin/qlkichco";
     }
+
     @PostMapping("/kichco/updateTrangThai/{id}")
     public String updateTrangThaiKichCo(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         KichCo existingKichCo = kichCoRepository.findById(id).orElse(null);
         if (existingKichCo != null) {
-            existingKichCo.setTrangthai(!existingKichCo.getTrangthai());
+            existingKichCo.setTrangThai(!existingKichCo.getTrangThai());
             kichCoRepository.save(existingKichCo);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái thành công!");
         }
         return "redirect:/listKichCo";
     }
-
 
     @PostMapping("/updateKichCo/{id}")
     public String updateKichCo(@PathVariable Integer id) {
@@ -61,61 +60,49 @@ public class KichCoController {
 
     @PostMapping("/addSaveKichCo")
     @CacheEvict(value = "kichcoCache", allEntries = true)
-    public String addSave(@ModelAttribute("kichco") KichCo kichCo, @ModelAttribute("kc") ThuocTinhInfo info, Model model, HttpSession session) {
-
-        String trimmedTenKichCo = (kichCo.getTen() != null)
-                ? kichCo.getTen().trim().replaceAll("\\s+", " ")
-                : null;
+    public String addSave(@ModelAttribute("kichco") KichCo kichCo, Model model) {
+        String trimmedTenKichCo = (kichCo.getTen() != null) ? kichCo.getTen().trim().replaceAll("\\s+", " ") : null;
         LocalDateTime currentTime = LocalDateTime.now();
         kichCo.setTen(trimmedTenKichCo);
-        kichCo.setTrangthai(true);
-        kichCo.setNgaytao(currentTime);
-        kichCo.setNgaycapnhat(currentTime);
+        kichCo.setTrangThai(true);
+        kichCo.setNgayTao(currentTime);
+        kichCo.setNgayCapNhat(currentTime);
         kichCoRepository.save(kichCo);
         return "redirect:/listKichCo";
     }
 
     @PostMapping("/addKichCoModal")
-    public String addKichCoModal(@ModelAttribute("kichco") KichCo kichCo, HttpSession session) {
-
-        String trimmedTenKichCo = (kichCo.getTen() != null)
-                ? kichCo.getTen().trim().replaceAll("\\s+", " ")
-                : null;
+    public String addKichCoModal(@ModelAttribute("kichco") KichCo kichCo) {
+        String trimmedTenKichCo = (kichCo.getTen() != null) ? kichCo.getTen().trim().replaceAll("\\s+", " ") : null;
         LocalDateTime currentTime = LocalDateTime.now();
         kichCo.setTen(trimmedTenKichCo);
-        kichCo.setTrangthai(true);
-        kichCo.setNgaytao(currentTime);
-        kichCo.setNgaycapnhat(currentTime);
+        kichCo.setTrangThai(true);
+        kichCo.setNgayTao(currentTime);
+        kichCo.setNgayCapNhat(currentTime);
         kichCoImp.addKichCo(kichCo);
         return "redirect:/viewaddSPGET";
     }
 
     @PostMapping("/addKichCoSua")
-    public String addKichCoSua(@ModelAttribute("kichco") KichCo kichCo, @RequestParam("spctId") Integer spctId, HttpSession session) {
-
-        String trimmedTenKichCo = (kichCo.getTen() != null)
-                ? kichCo.getTen().trim().replaceAll("\\s+", " ")
-                : null;
+    public String addKichCoSua(@ModelAttribute("kichco") KichCo kichCo, @RequestParam("spctId") Integer spctId) {
+        String trimmedTenKichCo = (kichCo.getTen() != null) ? kichCo.getTen().trim().replaceAll("\\s+", " ") : null;
         LocalDateTime currentTime = LocalDateTime.now();
         kichCo.setTen(trimmedTenKichCo);
-        kichCo.setTrangthai(true);
-        kichCo.setNgaytao(currentTime);
-        kichCo.setNgaycapnhat(currentTime);
+        kichCo.setTrangThai(true);
+        kichCo.setNgayTao(currentTime);
+        kichCo.setNgayCapNhat(currentTime);
         kichCoImp.addKichCo(kichCo);
         return "redirect:/updateCTSP/" + spctId;
     }
 
     @PostMapping("/addKichCoSuaAll")
-    public String addKichCoSuaAll(@ModelAttribute("kichco") KichCo kichCo, @RequestParam("spctId") Integer spctId, HttpSession session) {
-
-        String trimmedTenKichCo = (kichCo.getTen() != null)
-                ? kichCo.getTen().trim().replaceAll("\\s+", " ")
-                : null;
+    public String addKichCoSuaAll(@ModelAttribute("kichco") KichCo kichCo, @RequestParam("spctId") Integer spctId) {
+        String trimmedTenKichCo = (kichCo.getTen() != null) ? kichCo.getTen().trim().replaceAll("\\s+", " ") : null;
         LocalDateTime currentTime = LocalDateTime.now();
         kichCo.setTen(trimmedTenKichCo);
-        kichCo.setTrangthai(true);
-        kichCo.setNgaytao(currentTime);
-        kichCo.setNgaycapnhat(currentTime);
+        kichCo.setTrangThai(true);
+        kichCo.setNgayTao(currentTime);
+        kichCo.setNgayCapNhat(currentTime);
         kichCoImp.addKichCo(kichCo);
         return "redirect:/updateAllCTSP/" + spctId;
     }

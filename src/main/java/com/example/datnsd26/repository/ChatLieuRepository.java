@@ -14,30 +14,30 @@ import java.util.List;
 public interface ChatLieuRepository extends JpaRepository<ChatLieu, Integer> {
     boolean existsByTen(String ten);
     @Query(value = """
-            SELECT cl FROM ChatLieu cl WHERE (cl.ten LIKE?1) AND (?2 IS NULL OR cl.trangthai=?2)
+            SELECT cl FROM ChatLieu cl WHERE (cl.ten LIKE?1) AND (?2 IS NULL OR cl.trangThai=?2)
             """)
-    List<ChatLieu> findByTenAndTrangthai(String ten, Boolean trangthai);
+    List<ChatLieu> findByTenAndTrangThai(String ten, Boolean trangThai);
 
-    @Query("SELECT c FROM ChatLieu c WHERE c.ten LIKE %?1% OR c.trangthai = ?2")
-    List<ChatLieu> findByTenVaTrangThai(String ten, Boolean trangthai);
+    @Query("SELECT c FROM ChatLieu c WHERE c.ten LIKE %?1% OR c.trangThai = ?2")
+    List<ChatLieu> findByTenVaTrangThai(String ten, Boolean trangThai);
 
-    List<ChatLieu> getChatLieuByTenOrTrangthai(String ten, Boolean trangthai);
+    List<ChatLieu> getChatLieuByTenOrTrangThai(String ten, Boolean trangThai);
 
-    List<ChatLieu> findAllByOrderByNgaytaoDesc();
+    List<ChatLieu> findAllByOrderByNgayTaoDesc();
 
 
-    @Query("SELECT cl FROM ChatLieu cl WHERE cl.ten = :ten AND cl.trangthai = true ")
+    @Query("SELECT cl FROM ChatLieu cl WHERE cl.ten = :ten AND cl.trangThai = true ")
     List<ChatLieu> findChatLieuByTenAndTrangThaiFalse(@Param("ten") String ten);
 
     @Query(nativeQuery = true, value = """
-            SELECT * FROM ChatLieu Where TrangThai=1
-            ORDER BY NgayTao DESC
+            SELECT * FROM chat_lieu Where trang_thai=1
+            ORDER BY ngay_tao DESC
              """)
     List<ChatLieu> getAll();
 
     @Modifying
     @Transactional
-    @Query("UPDATE ChatLieu cl SET cl.trangthai = false WHERE cl.id = :id")
+    @Query("UPDATE ChatLieu cl SET cl.trangThai = false WHERE cl.id = :id")
     void updateTrangThaiToFalseById(Integer id);
 
 }

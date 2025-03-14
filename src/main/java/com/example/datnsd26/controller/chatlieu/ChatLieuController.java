@@ -26,14 +26,14 @@ public class ChatLieuController {
         List<ChatLieu> list;
         String trimmedKey = (info.getKey() != null) ? info.getKey().trim().replaceAll("\\s+", " ") : null;
         boolean isKeyEmpty = (trimmedKey == null || trimmedKey.trim().isEmpty());
-        boolean isTrangthaiNull = (info.getTrangthai() == null);
-        if (isKeyEmpty && isTrangthaiNull) {
-            list = chatLieuRepository.findAllByOrderByNgaytaoDesc();
+        boolean isTrangThaiNull = (info.getTrangThai() == null);
+        if (isKeyEmpty && isTrangThaiNull) {
+            list = chatLieuRepository.findAllByOrderByNgayTaoDesc();
         } else {
-            list = chatLieuRepository.findByTenAndTrangthai("%" + trimmedKey + "%", info.getTrangthai());
+            list = chatLieuRepository.findByTenAndTrangThai("%" + trimmedKey + "%", info.getTrangThai());
         }
         model.addAttribute("fillSearch", info.getKey());
-        model.addAttribute("fillTrangThai", info.getTrangthai());
+        model.addAttribute("fillTrangThai", info.getTrangThai());
         model.addAttribute("lstChatLieu", list);
         return "admin/qlchatlieu";
     }
@@ -42,13 +42,12 @@ public class ChatLieuController {
     public String updateTrangThaiChatLieu(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         ChatLieu existingChatLieu = chatLieuRepository.findById(id).orElse(null);
         if (existingChatLieu != null) {
-            existingChatLieu.setTrangthai(!existingChatLieu.getTrangthai());
+            existingChatLieu.setTrangThai(!existingChatLieu.getTrangThai());
             chatLieuRepository.save(existingChatLieu);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái thành công!");
         }
         return "redirect:/chatlieu";
     }
-
 
     @PostMapping("/updateChatLieu/{id}")
     public String updateChatLieu(@PathVariable Integer id) {
@@ -58,60 +57,56 @@ public class ChatLieuController {
 
     @PostMapping("/add")
     public String add(Model model, @ModelAttribute("chatlieu") ChatLieu chatLieu, HttpSession session) {
-
         String trimmedTenChatLieu = (chatLieu.getTen() != null)
                 ? chatLieu.getTen().trim().replaceAll("\\s+", " ")
                 : null;
         LocalDateTime currentTime = LocalDateTime.now();
         chatLieu.setTen(trimmedTenChatLieu);
-        chatLieu.setTrangthai(true);
-        chatLieu.setNgaytao(currentTime);
-        chatLieu.setNgaycapnhat(currentTime);
+        chatLieu.setTrangThai(true);
+        chatLieu.setNgayTao(currentTime);
+        chatLieu.setNgayCapNhat(currentTime);
         chatLieuService.add(chatLieu);
         return "redirect:/chatlieu";
     }
 
     @PostMapping("/addChatLieuModal")
     public String addChatLieuModal(Model model, @ModelAttribute("chatlieu") ChatLieu chatLieu, HttpSession session) {
-
         String trimmedTenChatLieu = (chatLieu.getTen() != null)
                 ? chatLieu.getTen().trim().replaceAll("\\s+", " ")
                 : null;
         LocalDateTime currentTime = LocalDateTime.now();
         chatLieu.setTen(trimmedTenChatLieu);
-        chatLieu.setTrangthai(true);
-        chatLieu.setNgaytao(currentTime);
-        chatLieu.setNgaycapnhat(currentTime);
+        chatLieu.setTrangThai(true);
+        chatLieu.setNgayTao(currentTime);
+        chatLieu.setNgayCapNhat(currentTime);
         chatLieuService.add(chatLieu);
         return "redirect:/viewaddSPGET";
     }
 
     @PostMapping("/addChatLieuSua")
     public String addChatLieuSua(Model model, @ModelAttribute("chatlieu") ChatLieu chatLieu, @RequestParam("spctId") Integer spctId, HttpSession session) {
-
         String trimmedTenChatLieu = (chatLieu.getTen() != null)
                 ? chatLieu.getTen().trim().replaceAll("\\s+", " ")
                 : null;
         LocalDateTime currentTime = LocalDateTime.now();
         chatLieu.setTen(trimmedTenChatLieu);
-        chatLieu.setTrangthai(true);
-        chatLieu.setNgaytao(currentTime);
-        chatLieu.setNgaycapnhat(currentTime);
+        chatLieu.setTrangThai(true);
+        chatLieu.setNgayTao(currentTime);
+        chatLieu.setNgayCapNhat(currentTime);
         chatLieuService.add(chatLieu);
         return "redirect:/updateCTSP/" + spctId;
     }
 
     @PostMapping("/addChatLieuSuaAll")
     public String addChatLieuSuaAll(Model model, @ModelAttribute("chatlieu") ChatLieu chatLieu, @RequestParam("spctId") Integer spctId, HttpSession session) {
-
         String trimmedTenChatLieu = (chatLieu.getTen() != null)
                 ? chatLieu.getTen().trim().replaceAll("\\s+", " ")
                 : null;
         LocalDateTime currentTime = LocalDateTime.now();
         chatLieu.setTen(trimmedTenChatLieu);
-        chatLieu.setTrangthai(true);
-        chatLieu.setNgaytao(currentTime);
-        chatLieu.setNgaycapnhat(currentTime);
+        chatLieu.setTrangThai(true);
+        chatLieu.setNgayTao(currentTime);
+        chatLieu.setNgayCapNhat(currentTime);
         chatLieuService.add(chatLieu);
         return "redirect:/updateAllCTSP/" + spctId;
     }

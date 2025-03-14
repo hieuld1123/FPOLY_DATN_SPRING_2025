@@ -276,15 +276,15 @@
                                     <tbody>
                                     <tr th:each="spct, stt : ${listAllCTSP}">
                                         <td th:text="${stt.index + 1}"></td>
-                                        <th th:text="${spct.masanphamchitiet}"></th>
+                                        <th th:text="${spct.maSanPhamChiTiet}"></th>
                                         <td>
                                             <div th:id="'carouselExample' + ${spct.id}" class="carousel">
                                                 <div class="carousel-inner">
-                                                    <th:block th:each="anhs, index : ${spct.anh}">
+                                                    <th:block th:each="anhs, index : ${spct.hinhAnh}">
                                                         <div th:classappend="${index.index == 0} ? 'carousel-item active' : 'carousel-item'">
                                                             <!-- Hình ảnh carousel -->
-                                                            <img th:if="${anhs.tenanh != null}"
-                                                                 th:src="@{'/upload' + ${anhs.tenanh.substring(anhs.tenanh.lastIndexOf('upload') + 6)}}"
+                                                            <img th:if="${anhs.tenAnh != null}"
+                                                                 th:src="@{'/upload' + ${anhs.tenAnh.substring(anhs.tenAnh.lastIndexOf('upload') + 6)}}"
                                                                  class="d-block w-100 carousel-img rounded-3" alt="Ảnh">
 
                                                         </div>
@@ -304,21 +304,21 @@
                                                 </button>
                                             </div>
                                         </td>
-                                        <td th:text="${spct.soluong}"></td>
+                                        <td th:text="${spct.soLuong}"></td>
                                         <td style="text-align: center;">
         <!-- Nếu có ít nhất một đợt giảm giá, hiển thị giá tiền mới -->
-        <span th:text="${#numbers.formatDecimal(spct.giatien, 0, 'COMMA', 0, 'POINT') + '&#x20ab;'}"
+        <span th:text="${#numbers.formatDecimal(spct.giaBan, 0, 'COMMA', 0, 'POINT') + '&#x20ab;'}"
              style="color: red; font-weight: bold"></span>
         <br/>
     </span>
                                         </td>
-                                        <td th:text="${spct.thuonghieu.ten}"></td>
-                                        <td th:text="${spct.chatlieu.ten}"></td>
-                                        <td th:text="${spct.degiay.ten}"></td>
-                                        <td th:text="${spct.kichco.ten}"></td>
+                                        <td th:text="${spct.thuongHieu.ten}"></td>
+                                        <td th:text="${spct.chatLieu.ten}"></td>
+                                        <td th:text="${spct.deGiay.ten}"></td>
+                                        <td th:text="${spct.kichCo.ten}"></td>
 <!--                                        <td th:text="${spct.mausac.ten}"></td>-->
                                         <td>
-                                            <input type="color" th:value="${spct.mausac.ten}" class="form-control" disabled>
+                                            <input type="color" th:value="${spct.mauSac.ten}" class="form-control" disabled>
                                             <!--                                            <p th:text="${spct.mausac.ten}" style="color: red">-->
                                         </td>
                                         <td>

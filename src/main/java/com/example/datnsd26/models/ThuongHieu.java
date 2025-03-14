@@ -5,7 +5,6 @@ import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Getter
@@ -13,7 +12,7 @@ import java.util.Date;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "thuonghieu")
+@Table(name = "thuong_hieu")
 public class ThuongHieu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,13 +21,16 @@ public class ThuongHieu {
     @Column(name = "ten", columnDefinition = "NVARCHAR(255)")
     private String ten;
 
+    @Column(name = "ngay_cap_nhat")
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime ngaycapnhat;
+    private LocalDateTime ngayCapNhat;
 
+    @Column(name = "ngay_tao")
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime ngaytao;
+    private LocalDateTime ngayTao;
 
-    Boolean trangthai;
+    @Column(name = "trang_thai", columnDefinition = "BIT DEFAULT 1")
+    private Boolean trangThai;
 }

@@ -19,24 +19,24 @@ import java.util.List;
 public class MauSacController {
     @Autowired
     MauSacImp mauSacImp;
+
     @Autowired
     MauSacRepository mauSacRepository;
-
 
     @GetMapping("/listMauSac")
     public String listMauSac(@RequestParam(defaultValue = "0") int p, @ModelAttribute("mausac") MauSac mauSac, @ModelAttribute("tim") ThuocTinhInfo info, Model model) {
         List<MauSac> page;
         String trimmedKey = (info.getKey() != null) ? info.getKey().trim().replaceAll("\\s+", " ") : null;
         boolean isKeyEmpty = (trimmedKey == null || trimmedKey.isEmpty());
-        boolean isTrangthaiNull = (info.getTrangthai() == null);
+        boolean isTrangThaiNull = (info.getTrangThai() == null);
 
-        if (isKeyEmpty && isTrangthaiNull) {
-            page = mauSacRepository.findAllByOrderByNgaytaoDesc();
+        if (isKeyEmpty && isTrangThaiNull) {
+            page = mauSacRepository.findAllByOrderByNgayTaoDesc();
         } else {
-            page = mauSacRepository.findByTenAndTrangthai("%" + trimmedKey + "%", info.getTrangthai());
+            page = mauSacRepository.findByTenAndTrangThai("%" + trimmedKey + "%", info.getTrangThai());
         }
         model.addAttribute("fillSearch", info.getKey());
-        model.addAttribute("fillTrangThai", info.getTrangthai());
+        model.addAttribute("fillTrangThai", info.getTrangThai());
         model.addAttribute("list", page);
         return "admin/qlmausac";
     }
@@ -45,7 +45,7 @@ public class MauSacController {
     public String updateTrangThaiMauSac(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         MauSac existingMauSac = mauSacRepository.findById(id).orElse(null);
         if (existingMauSac != null) {
-            existingMauSac.setTrangthai(!existingMauSac.getTrangthai());
+            existingMauSac.setTrangThai(!existingMauSac.getTrangThai());
             mauSacRepository.save(existingMauSac);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái thành công!");
         }
@@ -55,60 +55,48 @@ public class MauSacController {
     @PostMapping("/addSaveMauSac")
     @CacheEvict(value = "mausacCache", allEntries = true)
     public String addSave(@ModelAttribute("mausac") MauSac mauSac, @ModelAttribute("ms") ThuocTinhInfo info, Model model, HttpSession session) {
-
-        String trimmedTenMauSac = (mauSac.getTen() != null)
-                ? mauSac.getTen().trim().replaceAll("\\s+", " ")
-                : null;
+        String trimmedTenMauSac = (mauSac.getTen() != null) ? mauSac.getTen().trim().replaceAll("\\s+", " ") : null;
         LocalDateTime currentTime = LocalDateTime.now();
         mauSac.setTen(trimmedTenMauSac);
-        mauSac.setTrangthai(true);
-        mauSac.setNgaytao(currentTime);
-        mauSac.setNgaycapnhat(currentTime);
+        mauSac.setTrangThai(true);
+        mauSac.setNgayTao(currentTime);
+        mauSac.setNgayCapNhat(currentTime);
         mauSacRepository.save(mauSac);
         return "redirect:/listMauSac";
     }
 
     @PostMapping("/addMauSacModal")
     public String addMauSacModal(@ModelAttribute("mausac") MauSac mauSac, HttpSession session) {
-
-        String trimmedTenMauSac = (mauSac.getTen() != null)
-                ? mauSac.getTen().trim().replaceAll("\\s+", " ")
-                : null;
+        String trimmedTenMauSac = (mauSac.getTen() != null) ? mauSac.getTen().trim().replaceAll("\\s+", " ") : null;
         LocalDateTime currentTime = LocalDateTime.now();
         mauSac.setTen(trimmedTenMauSac);
-        mauSac.setTrangthai(true);
-        mauSac.setNgaytao(currentTime);
-        mauSac.setNgaycapnhat(currentTime);
+        mauSac.setTrangThai(true);
+        mauSac.setNgayTao(currentTime);
+        mauSac.setNgayCapNhat(currentTime);
         mauSacImp.addMauSac(mauSac);
         return "redirect:/viewaddSPGET";
     }
 
     @PostMapping("/addMauSacSua")
     public String addMauSacSua(@ModelAttribute("mausac") MauSac mauSac, @RequestParam("spctId") Integer spctId, HttpSession session) {
-
-        String trimmedTenMauSac = (mauSac.getTen() != null)
-                ? mauSac.getTen().trim().replaceAll("\\s+", " ")
-                : null;
+        String trimmedTenMauSac = (mauSac.getTen() != null) ? mauSac.getTen().trim().replaceAll("\\s+", " ") : null;
         LocalDateTime currentTime = LocalDateTime.now();
         mauSac.setTen(trimmedTenMauSac);
-        mauSac.setTrangthai(true);
-        mauSac.setNgaytao(currentTime);
-        mauSac.setNgaycapnhat(currentTime);
+        mauSac.setTrangThai(true);
+        mauSac.setNgayTao(currentTime);
+        mauSac.setNgayCapNhat(currentTime);
         mauSacImp.addMauSac(mauSac);
         return "redirect:/updateCTSP/" + spctId;
     }
 
     @PostMapping("/addMauSacSuaAll")
     public String addMauSacSuaAll(@ModelAttribute("mausac") MauSac mauSac, @RequestParam("spctId") Integer spctId, HttpSession session) {
-
-        String trimmedTenMauSac = (mauSac.getTen() != null)
-                ? mauSac.getTen().trim().replaceAll("\\s+", " ")
-                : null;
+        String trimmedTenMauSac = (mauSac.getTen() != null) ? mauSac.getTen().trim().replaceAll("\\s+", " ") : null;
         LocalDateTime currentTime = LocalDateTime.now();
         mauSac.setTen(trimmedTenMauSac);
-        mauSac.setTrangthai(true);
-        mauSac.setNgaytao(currentTime);
-        mauSac.setNgaycapnhat(currentTime);
+        mauSac.setTrangThai(true);
+        mauSac.setNgayTao(currentTime);
+        mauSac.setNgayCapNhat(currentTime);
         mauSacImp.addMauSac(mauSac);
         return "redirect:/updateAllCTSP/" + spctId;
     }

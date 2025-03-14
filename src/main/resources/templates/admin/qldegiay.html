@@ -253,8 +253,8 @@
                                                   th:action="@{/degiay/updateTrangThai/{id}(id=${dg.id})}" method="post"
                                                   onsubmit="return confirmUpdate(this);">
                                                 <button type="submit" style=" border: none;"
-                                                        th:classappend="${dg.trangthai == true ? 'badge badge-success' : 'badge badge-danger'}">
-                                                    <span th:text="${dg.trangthai == true ? 'Đang kinh doanh' : 'Ngừng kinh doanh'}"></span>
+                                                        th:classappend="${dg.trangThai == true ? 'badge badge-success' : 'badge badge-danger'}">
+                                                    <span th:text="${dg.trangThai == true ? 'Đang kinh doanh' : 'Ngừng kinh doanh'}"></span>
                                                 </button>
                                             </form>
                                         </td>

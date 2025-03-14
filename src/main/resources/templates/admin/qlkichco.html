@@ -265,7 +265,6 @@
                                     <tr>
                                         <th>STT</th>
                                         <th>Tên kích cỡ</th>
-                                        <th>Ngày tạo</th>
                                         <th>Trạng thái</th>
                                         <th>Thao tác</th>
                                     </tr>
@@ -279,14 +278,13 @@
                                             <span th:unless="${#strings.length(kc.ten) > 20}"
                                                   th:text="${kc.ten}"></span>
                                         </td>
-                                        <td th:text="${#temporals.format(kc.ngaytao, 'dd-MM-yyyy HH:mm:ss')}"></td>
                                         <td class="tdSameWidth">
                                             <form name="updateTrangThaiForm"
                                                   th:action="@{/kichco/updateTrangThai/{id}(id=${kc.id})}" method="post"
                                                   onsubmit="return confirmUpdateKichCo(this);">
                                                 <button type="submit" style=" border: none;"
-                                                        th:classappend="${kc.trangthai == true ? 'badge badge-success' : 'badge badge-danger'}">
-                                                    <span th:text="${kc.trangthai == true ? 'Đang kinh doanh' : 'Ngừng kinh doanh'}"></span>
+                                                        th:classappend="${kc.trangThai == true ? 'badge badge-success' : 'badge badge-danger'}">
+                                                    <span th:text="${kc.trangThai == true ? 'Đang kinh doanh' : 'Ngừng kinh doanh'}"></span>
                                                 </button>
                                             </form>
                                         </td>

@@ -187,15 +187,15 @@
                                         <p style="font-weight: bold">
                                             <span style="color: red">* </span>Tên sản phẩm:
                                             <input class="form-control" style="width:550px"
-                                                   th:field="*{sanpham.tensanpham}" readonly>
-                                            <input type="hidden" th:field="*{sanpham.id}">
+                                                   th:field="*{sanPham.tenSanPham}" readonly>
+                                            <input type="hidden" th:field="*{sanPham.id}">
                                         </p>
                                         <p id="errorSanPham" class="error-message"
                                            style="display: none; color: red;"></p>
                                         <p style="margin-left: 92px;font-weight: bold">
                                             <span style="color: red">* </span>Số lượng:
                                             <input type="number" class="form-control" style="width:550px"
-                                                   th:field="*{soluong}">
+                                                   th:field="*{soLuong}">
 
                                         </p>
                                     </div>
@@ -205,15 +205,15 @@
                                         <p style="font-weight: bold">
                                             <span style="color: red;">* </span>Giá tiền:
                                             <input class="form-control" style="width:550px"
-                                                   th:value="${#numbers.formatDecimal(hehe.giatien, 0, 'COMMA', 0, 'POINT') + '₫'}"
+                                                   th:value="${#numbers.formatDecimal(hehe.giaBan, 0, 'COMMA', 0, 'POINT') + '₫'}"
                                                    readonly>
                                         </p>
 
-                                        <input type="hidden" th:field="*{giatien}" th:value="${giamoi}">
+                                        <input type="hidden" th:field="*{giaBan}" th:value="${giamoi}">
 
                                         <p style="margin-left: 92px;font-weight: bold">
                                             <span style="color: red">* </span>Giới tính:
-                                            <select class="form-control" style="width:550px" th:field="*{gioitinh}">
+                                            <select class="form-control" style="width:550px" th:field="*{gioiTinh}">
                                                 <option value="true">Nam</option>
                                                 <option value="false">Nữ</option>
                                             </select>
@@ -223,14 +223,14 @@
                                     <p style="font-weight: bold">
                                         <span style="color: red">* </span>Mô tả:
                                         <textarea rows="2" cols="100" class="form-control"
-                                                  th:field="*{mota}"></textarea>
+                                                  th:field="*{moTa}"></textarea>
 
                                     </p>
                                     <p id="errorMoTa" class="error-message" style="display: none; color: red;"></p>
                                     <div class="d-flex">
                                         <p style="font-weight: bold">
                                             <span style="color: red">* </span>Thương hiệu:
-                                            <select th:field="*{thuonghieu.id}" class="form-control"
+                                            <select th:field="*{thuongHieu.id}" class="form-control"
                                                     style="width:482px">
                                                 <option th:each="th : ${th}" th:value="${th.id}"
                                                         th:text="${th.ten}"></option>
@@ -245,7 +245,7 @@
                                         </p>
                                         <p style="margin-left:92px;font-weight: bold">
                                             <span style="color: red">* </span>Trạng thái:
-                                            <select class="form-control" style="width:482px" th:field="*{trangthai}">
+                                            <select class="form-control" style="width:482px" th:field="*{trangThai}">
                                                 <option value="true">Đang kinh doanh</option>
                                                 <option value="false">Ngừng kinh doanh</option>
                                             </select>
@@ -261,7 +261,7 @@
                                     <div class="d-flex">
                                         <p style="font-weight: bold">
                                             <span style="color: red">* </span>Chất liệu:
-                                            <select th:field="*{chatlieu.id}" class="form-control" style="width:482px">
+                                            <select th:field="*{chatLieu.id}" class="form-control" style="width:482px">
                                                 <option th:each="cl : ${cl}" th:value="${cl.id}"
                                                         th:text="${cl.ten}"></option>
                                             </select>
@@ -275,7 +275,7 @@
                                         </p>
                                         <p style="margin-left:92px; font-weight: bold">
                                             <span style="color: red">* </span>Đế giày:
-                                            <select th:field="*{degiay.id}" class="form-control" style="width:482px">
+                                            <select th:field="*{deGiay.id}" class="form-control" style="width:482px">
                                                 <option th:each="dg : ${dg}" th:value="${dg.id}"
                                                         th:text="${dg.ten}"></option>
                                             </select>
@@ -291,7 +291,7 @@
                                     <div class="d-flex">
                                         <p style="font-weight: bold">
                                             <span style="color: red">* </span>Kích cỡ:
-                                            <select th:field="*{kichco.id}" class="form-control" style="width:482px">
+                                            <select th:field="*{kichCo.id}" class="form-control" style="width:482px">
                                                 <option th:each="kc : ${kc}" th:value="${kc.id}"
                                                         th:text="${kc.ten}"></option>
                                             </select>
@@ -309,7 +309,7 @@
                                             <!--                                                <option th:each="ms : ${ms}" th:value="${ms.id}"-->
                                             <!--                                                        th:text="${ms.ten}"></option>-->
                                             <!--                                            </select>-->
-                                            <select id="mausac-select" th:field="*{mausac.id}" class="form-control"
+                                            <select id="mausac-select" th:field="*{mauSac.id}" class="form-control"
                                                     style="width:482px">
                                                 <option th:each="ms : ${ms}" th:value="${ms.id}"
                                                         th:text="${ms.ten}" th:data-color="${ms.ten}"></option>
@@ -326,9 +326,9 @@
                                     <h5><span style="color: red;font-size: 15px">* </span>ẢNH SẢN PHẨM</h5>
                                     <p>
                                     <div class="d-flex">
-                                        <th:block th:each="anh, iterStat : *{anh}">
-                                            <img th:if="${anh.tenanh != null}"
-                                                 th:src="@{'/upload' + ${anh.tenanh.substring(anh.tenanh.lastIndexOf('upload') + 6)}}"
+                                        <th:block th:each="hinhAnh, iterStat : *{hinhAnh}">
+                                            <img th:if="${hinhAnh.tenAnh != null}"
+                                                 th:src="@{'/upload' + ${hinhAnh.tenAnh.substring(hinhAnh.tenAnh.lastIndexOf('upload') + 6)}}"
                                                  width="100" height="100" alt="Ảnh" style="margin-left: 20px"
                                                  th:classappend="${iterStat.index > 0} ? 'additional-margin' : ''">
                                         </th:block>

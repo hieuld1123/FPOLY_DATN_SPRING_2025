@@ -3,9 +3,7 @@ package com.example.datnsd26.models;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Getter
@@ -13,22 +11,25 @@ import java.util.Date;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "mausac")
+@Table(name = "mau_sac")
 public class MauSac {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
     @Column(name = "ten", columnDefinition = "NVARCHAR(255)")
     private String ten;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "ngay_tao")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime ngaycapnhat;
+    private LocalDateTime ngayTao;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "ngay_cap_nhat")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime ngaytao;
+    private LocalDateTime ngayCapNhat;
 
-    Boolean trangthai;
+    @Column(name = "trang_thai", columnDefinition = "BIT DEFAULT 1")
+    private Boolean trangThai;
 }

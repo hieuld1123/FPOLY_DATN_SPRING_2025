@@ -270,8 +270,8 @@
                                                   th:action="@{/mausac/updateTrangThai/{id}(id=${ms.id})}" method="post"
                                                   onsubmit="return confirmUpdateMauSac(this);">
                                                 <button type="submit" style=" border: none;"
-                                                        th:classappend="${ms.trangthai == true ? 'badge badge-success' : 'badge badge-danger'}">
-                                                    <span th:text="${ms.trangthai == true ? 'Đang sử dụng' : 'Ngừng sử dụng'}"></span>
+                                                        th:classappend="${ms.trangThai == true ? 'badge badge-success' : 'badge badge-danger'}">
+                                                    <span th:text="${ms.trangThai == true ? 'Đang sử dụng' : 'Ngừng sử dụng'}"></span>
                                                 </button>
                                             </form>
                                         </td>

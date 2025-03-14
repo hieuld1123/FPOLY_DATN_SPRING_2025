@@ -11,11 +11,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ThuocTinhInfo {
     String key;
-//    @Temporal(TemporalType.DATE)
-//    @DateTimeFormat(pattern = "yyy-MM-dd")
-//    Date ngaybd;
-//    @Temporal(TemporalType.DATE)
-//    @DateTimeFormat(pattern = "yyy-MM-dd")
-//    Date ngaykt;
-    Boolean trangthai;
+    Boolean trangThai;
 }

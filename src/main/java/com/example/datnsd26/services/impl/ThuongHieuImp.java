@@ -46,6 +46,6 @@ public class ThuongHieuImp implements ThuongHieuService {
 
     @Override
     public List<ThuongHieu> getThuongHieuByTenOrTrangthai(String ten, Boolean trangthai) {
-        return thuongHieuRepository.getThuongHieuByTenOrTrangthai(ten, trangthai);
+        return thuongHieuRepository.getThuongHieuByTenOrTrangThai(ten, trangthai);
     }
 }

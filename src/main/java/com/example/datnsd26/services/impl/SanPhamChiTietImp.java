@@ -31,7 +31,7 @@ public class SanPhamChiTietImp implements SanPhamChiTietService {
 
     @Override
     public Page<SanPhamChiTiet> finAllPage(Integer soluong,Pageable pageable) {
-        return sanPhamChiTietRepository.findAllBySoluongGreaterThan(soluong,pageable);
+        return sanPhamChiTietRepository.findAllBySoLuongGreaterThan(soluong,pageable);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class SanPhamChiTietImp implements SanPhamChiTietService {
 
     @Override
     public Boolean checkSPQR(String ma) {
-        return sanPhamChiTietRepository.existsByMasanphamchitiet(ma);
+        return sanPhamChiTietRepository.existsByMaSanPhamChiTiet(ma);
     }
 
 

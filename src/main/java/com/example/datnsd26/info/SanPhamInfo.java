@@ -11,6 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class SanPhamInfo {
     String key;
-    Boolean trangthai;
-    Integer soluong;
+    Boolean trangThai;
+    Integer soLuong;
 }

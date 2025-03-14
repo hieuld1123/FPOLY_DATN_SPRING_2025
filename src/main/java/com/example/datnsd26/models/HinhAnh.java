@@ -13,26 +13,31 @@ import java.util.Date;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "anh")
-public class Anh {
+@Table(name = "hinh_anh")
+public class HinhAnh {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     Integer id;
 
-    String tenanh;
+    @Column(name = "ten_anh")
+    private String tenAnh;
 
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime ngaytao;
+    @Column(name = "ngay_tao")
+    LocalDateTime ngayTao;
 
 
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime ngaycapnhat;
+    @Column(name = "ngay_cap_nhat")
+    LocalDateTime ngayCapNhat;
 
-    Boolean trangthai;
+    @Column(name = "trang_thai", columnDefinition = "BIT DEFAULT 1")
+    private Boolean trangthai;
 
     @ManyToOne
-    @JoinColumn(name = "idsanphamchitiet")
-    SanPhamChiTiet sanphamchitiet;
+    @JoinColumn(name = "id_san_pham_chi_tiet")
+    private SanPhamChiTiet sanPhamChiTiet;
 }

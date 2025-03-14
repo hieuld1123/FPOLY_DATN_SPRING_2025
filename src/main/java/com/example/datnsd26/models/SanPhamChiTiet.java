@@ -8,7 +8,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,74 +15,76 @@ import java.util.Objects;
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id"
 )
-
 @Entity
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "sanphamchitiet")
+@Table(name = "san_pham_chi_tiet")
 public class SanPhamChiTiet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+    private Integer id;
 
-    String qrcode;
+    @Column(name = "qr_code")
+    private String qrCode;
 
-    String masanphamchitiet;
+    @Column(name = "ma_san_pham_chi_tiet")
+    private String maSanPhamChiTiet;
 
-    String mota;
+    @Column(name = "mo_ta")
+    private String moTa;
 
-    Boolean gioitinh;
+    @Column(name = "gioi_tinh")
+    private Boolean gioiTinh;
 
-    Integer soluong;
+    @Column(name = "so_luong")
+    private Integer soLuong;
 
-    BigDecimal giatien;
+    @Column(name = "gia_ban")
+    private BigDecimal giaBan;
 
     @Column(name = "gia_ban_sau_giam")
     private Float giaBanSauGiam;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "ngay_tao")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime ngaytao;
+    private LocalDateTime ngayTao;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "ngay_cap_nhat")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime ngaycapnhat;
+    private LocalDateTime ngayCapNhat;
 
-    @Column(columnDefinition = "BIT DEFAULT 1")
-    Boolean trangthai;
-
-
-    @ManyToOne
-    @JoinColumn(name = "idsanpham")
-    SanPham sanpham;
+    @Column(name = "trang_thai", columnDefinition = "BIT DEFAULT 1")
+    private Boolean trangThai;
 
     @ManyToOne
-    @JoinColumn(name = "idkichco")
-    KichCo kichco;
+    @JoinColumn(name = "id_san_pham")
+    private SanPham sanPham;
 
     @ManyToOne
-    @JoinColumn(name = "idmausac")
-    MauSac mausac;
+    @JoinColumn(name = "id_kich_co")
+    private KichCo kichCo;
 
     @ManyToOne
-    @JoinColumn(name = "idchatlieu")
-    ChatLieu chatlieu;
+    @JoinColumn(name = "id_mau_sac")
+    private MauSac mauSac;
 
     @ManyToOne
-    @JoinColumn(name = "idthuonghieu")
-    ThuongHieu thuonghieu;
+    @JoinColumn(name = "id_chat_lieu")
+    private ChatLieu chatLieu;
 
     @ManyToOne
-    @JoinColumn(name = "iddegiay")
-    DeGiay degiay;
+    @JoinColumn(name = "id_thuong_hieu")
+    private ThuongHieu thuongHieu;
 
-    @OneToMany(mappedBy = "sanphamchitiet", fetch = FetchType.EAGER)
-    List<Anh> anh;
-    @OneToMany(mappedBy = "sanphamchitiet", fetch = FetchType.EAGER)
+    @ManyToOne
+    @JoinColumn(name = "id_de_giay")
+    private DeGiay deGiay;
 
+    @OneToMany(mappedBy = "sanPhamChiTiet", fetch = FetchType.EAGER)
+    private List<HinhAnh> hinhAnh;
 
     @Override
     public boolean equals(Object o) {

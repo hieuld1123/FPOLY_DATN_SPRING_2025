@@ -12,27 +12,27 @@ import java.util.List;
 public interface MauSacRepository extends JpaRepository<MauSac, Integer> {
 
     @Query( value = """
-            SELECT ms FROM MauSac ms WHERE (ms.ten LIKE?1) AND (?2 IS NULL OR ms.trangthai=?2)
+            SELECT ms FROM MauSac ms WHERE (ms.ten LIKE?1) AND (?2 IS NULL OR ms.trangThai=?2)
             """)
-    List<MauSac> findByTenAndTrangthai(String ten, Boolean trangthai);
+    List<MauSac> findByTenAndTrangThai(String ten, Boolean trangThai);
 
     boolean existsByTen(String ten);
 
 
-    List<MauSac> findAllByOrderByNgaytaoDesc();
+    List<MauSac> findAllByOrderByNgayTaoDesc();
 
-    @Query("SELECT ms FROM MauSac ms WHERE ms.ten = :ten AND ms.trangthai = true ")
+    @Query("SELECT ms FROM MauSac ms WHERE ms.ten = :ten AND ms.trangThai = true ")
     List<MauSac> findMauSacByTenAndTrangThaiFalse(@Param("ten") String ten);
 
     @Query(nativeQuery = true, value = """
-            SELECT * FROM MauSac Where TrangThai=1
-            ORDER BY NgayTao DESC
+            SELECT * FROM mau_sac Where trang_thai=1
+            ORDER BY ngay_tao DESC
              """)
     List<MauSac> getAll();
 
     @Modifying
     @Transactional
-    @Query("UPDATE MauSac ms SET ms.trangthai = false WHERE ms.id = :id")
+    @Query("UPDATE MauSac ms SET ms.trangThai = false WHERE ms.id = :id")
     void updateTrangThaiToFalseById(Integer id);
 
 }

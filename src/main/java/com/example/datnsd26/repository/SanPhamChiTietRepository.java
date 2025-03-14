@@ -19,15 +19,15 @@ import java.util.List;
 public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, Integer> {
 
     // search theo biến thể sản phẩm
-    @Query("SELECT spct FROM SanPhamChiTiet spct WHERE spct.sanpham = :sanPham " +
-            "AND (:key IS NULL OR spct.sanpham.tensanpham LIKE :key OR spct.masanphamchitiet LIKE :key) " +
-            "AND (:idThuongHieu IS NULL OR spct.thuonghieu.id = :idThuongHieu) " +
-            "AND (:idDeGiay IS NULL OR spct.degiay.id = :idDeGiay) " +
-            "AND (:idKichCo IS NULL OR spct.kichco.id = :idKichCo) " +
-            "AND (:idMauSac IS NULL OR spct.mausac.id = :idMauSac) " +
-            "AND (:idChatLieu IS NULL OR spct.chatlieu.id = :idChatLieu) " +
-            "AND (:gioiTinh IS NULL OR spct.gioitinh = :gioiTinh) " +
-            "AND (:trangThai IS NULL OR spct.sanpham.trangthai = :trangThai)")
+    @Query("SELECT spct FROM SanPhamChiTiet spct WHERE spct.sanPham = :sanPham " +
+            "AND (:key IS NULL OR spct.sanPham.tenSanPham LIKE :key OR spct.maSanPhamChiTiet LIKE :key) " +
+            "AND (:idThuongHieu IS NULL OR spct.thuongHieu.id = :idThuongHieu) " +
+            "AND (:idDeGiay IS NULL OR spct.deGiay.id = :idDeGiay) " +
+            "AND (:idKichCo IS NULL OR spct.kichCo.id = :idKichCo) " +
+            "AND (:idMauSac IS NULL OR spct.mauSac.id = :idMauSac) " +
+            "AND (:idChatLieu IS NULL OR spct.chatLieu.id = :idChatLieu) " +
+            "AND (:gioiTinh IS NULL OR spct.gioiTinh = :gioiTinh) " +
+            "AND (:trangThai IS NULL OR spct.sanPham.trangThai = :trangThai)")
     List<SanPhamChiTiet> searchBySanPham(
             @Param("sanPham") SanPham sanPham,
             @Param("key") String key,
@@ -43,23 +43,37 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
 
     @Query(value = """
 
-            SELECT s FROM SanPhamChiTiet s WHERE  s.mausac=?1 AND s.kichco=?2 AND s.thuonghieu=?3 AND 
-            s.chatlieu=?4 AND  s.degiay=?5 AND  s.sanpham=?6
+            SELECT s FROM SanPhamChiTiet s WHERE  
+            s.mauSac=?1 AND 
+            s.kichCo=?2 AND 
+            s.thuongHieu=?3 AND 
+            s.chatLieu=?4 AND  
+            s.deGiay=?5 AND  
+            s.sanPham=?6
             """)
     SanPhamChiTiet findSPCT(MauSac mauSac, KichCo kichCo, ThuongHieu thuongHieu, ChatLieu chatLieu, DeGiay deGiay, SanPham sanPham);
 
     // tìm theo sản phẩm
-    List<SanPhamChiTiet> findBySanpham(SanPham sanPham);
+    List<SanPhamChiTiet> findBySanPham(SanPham sanPham);
 
 
-    Boolean existsByMasanphamchitiet(String ma);
+    Boolean existsByMaSanPhamChiTiet(String ma);
 
 
-    @Query("SELECT c FROM SanPhamChiTiet c WHERE c.masanphamchitiet like %?1%")
+    @Query("SELECT c FROM SanPhamChiTiet c WHERE c.maSanPhamChiTiet like %?1%")
     List<SanPhamChiTiet> searchSPCTtheoMa(String masp);
 
 
-    @Query("SELECT c FROM SanPhamChiTiet c WHERE c.sanpham.tensanpham like %?1% and c.chatlieu.ten like %?2% and c.thuonghieu.ten like %?3% and c.degiay.ten like %?4% and c.kichco.ten like %?5% and c.mausac.ten like %?6% and c.gioitinh = ?7 and c.giatien <= ?8 and c.soluong >0")
+    @Query("SELECT c FROM SanPhamChiTiet c WHERE " +
+            "c.sanPham.tenSanPham like %?1% and " +
+            "c.chatLieu.ten like %?2% and " +
+            "c.thuongHieu.ten like %?3% and " +
+            "c.deGiay.ten like %?4% and " +
+            "c.kichCo.ten like %?5% and " +
+            "c.mauSac.ten like %?6% and " +
+            "c.gioiTinh = ?7 and " +
+            "c.giaBan <= ?8 and " +
+            "c.soLuong >0")
     List<SanPhamChiTiet> searchSPCT(String tenSp, String chatlieu,
                                     String ThuongHieu, String De,
                                     String KichCo, String MauSac,
@@ -70,26 +84,35 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
     Integer findMaxIdSPCT();
 
     //dùng cho search các thuộc tính sản phẩm chi tiết
-    @Query("SELECT spct FROM SanPhamChiTiet spct WHERE (spct.sanpham.tensanpham LIKE ?1 OR spct.masanphamchitiet LIKE ?2) AND (?3 IS NULL OR spct.thuonghieu.id=?3) " +
-            "AND (?4 IS NULL OR " + " spct.degiay.id=?4) AND (?5 IS NULL OR spct.kichco.id=?5) AND (?6 IS NULL OR spct.mausac.id=?6)" +
-            "AND (?7 IS NULL OR spct.chatlieu.id=?7) AND (?8 IS NULL OR spct.gioitinh=?8) AND (?9 IS NULL OR spct.sanpham.trangthai=?9)")
+    @Query("SELECT spct FROM SanPhamChiTiet spct WHERE (" +
+            "spct.sanPham.tenSanPham LIKE ?1 OR " +
+            "spct.maSanPhamChiTiet LIKE ?2) AND (?3 IS NULL OR " +
+            "spct.thuongHieu.id=?3) " +
+            "AND (?4 IS NULL OR " + " " +
+            "spct.deGiay.id=?4) AND (?5 IS NULL OR " +
+            "spct.kichCo.id=?5) AND (?6 IS NULL OR " +
+            "spct.mauSac.id=?6)" +
+            "AND (?7 IS NULL OR " +
+            "spct.chatLieu.id=?7) AND (?8 IS NULL OR " +
+            "spct.gioiTinh=?8) AND (?9 IS NULL OR " +
+            "spct.sanPham.trangThai=?9)")
     List<SanPhamChiTiet> search(String key, String maSPCT, Integer idthuonghieu, Integer iddegiay, Integer idkichco, Integer idmausac, Integer idchatlieu, Boolean gioitinh, Boolean trangthai);
 
 
-    @Query("SELECT spct FROM SanPhamChiTiet spct WHERE spct.sanpham.id = :Id")
+    @Query("SELECT spct FROM SanPhamChiTiet spct WHERE spct.sanPham.id = :Id")
     List<SanPhamChiTiet> findBySanPhamId(@Param("Id") Integer Id);
 
     //update số lượng và giá tiền
     @Transactional
     @Modifying
-    @Query(value = "UPDATE SanPhamChiTiet SET soluong = :soluong, giatien = :giatien WHERE id = :id", nativeQuery = true)
+    @Query(value = "UPDATE san_pham_chi_tiet SET so_luong = :soluong, gia_ban = :giatien WHERE id = :id", nativeQuery = true)
     void updateSoLuongVaGiaTienById(@Param("id") Integer id, @Param("soluong") Integer soLuong, @Param("giatien") BigDecimal giaTien);
 
     // lấy id by sản phẩm
-    @Query("SELECT s.sanpham.id FROM SanPhamChiTiet s WHERE s.id = :spctId")
+    @Query("SELECT s.sanPham.id FROM SanPhamChiTiet s WHERE s.id = :spctId")
     Integer findIdBySanpham(Integer spctId);
 
-    Page<SanPhamChiTiet> findAllBySoluongGreaterThan(Integer soluong, Pageable p);
+    Page<SanPhamChiTiet> findAllBySoLuongGreaterThan(Integer soluong, Pageable p);
 
 
 

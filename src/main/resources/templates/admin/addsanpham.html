@@ -295,7 +295,7 @@
                                                     onchange="clearErrorMessageTenSP()">
                                                 <option style="font-family: 'Bahnschrift'"></option>
                                                 <option th:each="sp : ${sp}" th:value="${sp.id}"
-                                                        th:text="${sp.tensanpham}"
+                                                        th:text="${sp.tenSanPham}"
                                                         th:selected="${sp.id == selectedTensp}"></option>
                                             </select>
                                             <span id="tenspError"
@@ -312,7 +312,7 @@
                                             <input class="form-check-input" type="radio" name="gioitinh"
                                                    style="width: 15px;height: 15px"
                                                    id="gioitinhNam" value="true"
-                                                   th:checked="${gioitinh == null || gioitinh}"
+                                                   th:checked="${gioiTinh == null || gioiTinh}"
                                                    onchange="clearErrorMessageGioiTinh()">
                                             <label for="gioitinhNam" style="font-size: 15px; margin-left: -5px"
                                                    class="form-check-label">
@@ -323,7 +323,7 @@
                                             <input class="form-check-input" type="radio" name="gioitinh"
                                                    style="width: 15px;height: 15px"
                                                    id="gioitinhNu" value="false"
-                                                   th:checked="${gioitinh != null && !gioitinh}"
+                                                   th:checked="${gioiTinh != null && !gioiTinh}"
                                                    onchange="clearErrorMessageGioiTinh()">
                                             <label for="gioitinhNu" style="font-size: 15px;margin-left: -5px"
                                                    class="form-check-label">
@@ -495,7 +495,7 @@
                                             <label><span style="color: red">* </span>Mô tả:</label>
                                             <textarea style="width: 1140px;" rows="4" cols="164" class="form-control"
                                                       name="mota"
-                                                      th:text="${motas}"
+                                                      th:text="${moTa}"
                                                       oninput="clearErrorMessageMoTa()"></textarea>
                                             <span id="motaError"
                                                   style="color: red;font-family: 'Bahnschrift';font-weight: bold"></span>
@@ -769,7 +769,7 @@
                                                 <span style="color: red">* </span>
                                                 Tên sản phẩm:
                                                 <input id="tenInputTenSP" class="form-control"
-                                                       th:field="*{tensanpham}"/>
+                                                       th:field="*{tenSanPham}"/>
                                             <div style="color: red; font-weight: initial"
                                                  id="errorTenSP"></div>
                                             </p>
@@ -914,28 +914,28 @@
                                                 <!--                                                  th:text="${#strings.substring(spctt.sanpham.tensanpham + ' [' + spctt.kichco.ten + '-' + spctt.mausac.ten + ']', 0, 40)} + '...'"></span>-->
                                                 <!--                                                <span th:unless="${#strings.length(spctt.sanpham.tensanpham + ' [' + spctt.kichco.ten + '-' + spctt.mausac.ten + ']') > 40}"-->
                                                 <!--                                                      th:text="${spctt.sanpham.tensanpham + ' [' + spctt.kichco.ten + '-' + spctt.mausac.ten + ']' }"></span>-->
-                                                <span th:if="${#strings.length(spctt.sanpham.tensanpham + spctt.kichco.ten + ' -' + spctt.mausac.ten) > 40}">
-    <span th:text="${#strings.substring(spctt.sanpham.tensanpham  + spctt.kichco.ten + ' -' + spctt.mausac.ten, 0, 40)} + '...'"></span>
-    <span th:text="${spctt.kichco.ten} + ' -'"
-          th:style="'background-color:' + ${spctt.kichco.ten} + '; color: black; padding: 2px 5px; border-radius: 3px;'"></span>
-    <span th:text="${spctt.mausac.ten}"
-          th:style="'background-color:' + ${spctt.mausac.ten} + '; color: white; padding: 2px 5px; border-radius: 3px;'"></span>
+                                                <span th:if="${#strings.length(spctt.sanPham.tenSanPham + spctt.kichCo.ten + ' -' + spctt.mauSac.ten) > 40}">
+    <span th:text="${#strings.substring(spctt.sanpham.tenSanPham  + spctt.kichco.ten + ' -' + spctt.mausac.ten, 0, 40)} + '...'"></span>
+    <span th:text="${spctt.kichCo.ten} + ' -'"
+          th:style="'background-color:' + ${spctt.kichCo.ten} + '; color: black; padding: 2px 5px; border-radius: 3px;'"></span>
+    <span th:text="${spctt.mauSac.ten}"
+          th:style="'background-color:' + ${spctt.mauSac.ten} + '; color: white; padding: 2px 5px; border-radius: 3px;'"></span>
 </span>
-                                                <span th:unless="${#strings.length(spctt.sanpham.tensanpham + spctt.kichco.ten + ' -' + spctt.mausac.ten) > 40}">
-    <span th:text="${spctt.sanpham.tensanpham}"></span>
-    <span th:text="${spctt.kichco.ten} + ' -'"
-          th:style="'background-color:' + ${spctt.kichco.ten} + '; color: black; padding: 2px 5px; border-radius: 3px;'"></span>
-    <span th:text="${spctt.mausac.ten}"
-          th:style="'background-color:' + ${spctt.mausac.ten} + '; color: white; padding: 2px 5px; border-radius: 3px;'"></span>
+                                                <span th:unless="${#strings.length(spctt.sanPham.tenSanPham + spctt.kichCo.ten + ' -' + spctt.mauSac.ten) > 40}">
+    <span th:text="${spctt.sanPham.tenSanPham}"></span>
+    <span th:text="${spctt.kichCo.ten} + ' -'"
+          th:style="'background-color:' + ${spctt.kichCo.ten} + '; color: black; padding: 2px 5px; border-radius: 3px;'"></span>
+    <span th:text="${spctt.mauSac.ten}"
+          th:style="'background-color:' + ${spctt.mauSac.ten} + '; color: white; padding: 2px 5px; border-radius: 3px;'"></span>
 </span>
                                             </td>
                                             <td>
                                                 <span style="width: 70px; height: 30px; line-height: 30px;"
-                                                      th:text="${spctt.soluong}"></span>
+                                                      th:text="${spctt.soLuong}"></span>
                                             </td>
                                             <td>
                                             <span style="width: 150px; height: 30px; color: black; font-weight: bold; line-height: 30px;"
-                                                  th:text="${#numbers.formatDecimal(spctt.giatien, 0, 'COMMA', 0, 'POINT')} + '&#x20ab;'"></span>
+                                                  th:text="${#numbers.formatDecimal(spctt.giaBan, 0, 'COMMA', 0, 'POINT')} + '&#x20ab;'"></span>
                                             </td>
                                             <td>
                                                 <a th:href="@{/deleteCTSP/{id}(id=${spctt.id})}"

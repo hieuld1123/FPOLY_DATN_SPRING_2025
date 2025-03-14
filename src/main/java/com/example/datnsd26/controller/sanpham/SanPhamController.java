@@ -61,9 +61,9 @@ public class SanPhamController {
     ChatLieuImp chatLieuImp;
 
     @Autowired
-    AnhImp anhImp;
+    HinhAnhImp anhImp;
     @Autowired
-    AnhRepository anhRepository;
+    HinhAnhRepository hinhAnhRepository;
 
     @Autowired
     private QRCodeGenerator qrCodeGenerator;
@@ -82,11 +82,11 @@ public class SanPhamController {
     public String updateTrangThaiCTSP(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         SanPham sp = sanPhamRepositoty.findById(id).orElse(null);
         if (sp != null) {
-            sp.setTrangthai(!sp.getTrangthai());
+            sp.setTrangThai(!sp.getTrangThai());
             sanPhamRepositoty.save(sp);
             List<SanPhamChiTiet> lstSPCT = sanPhamChiTietRepository.findBySanPhamId(sp.getId());
             for (SanPhamChiTiet s : lstSPCT) {
-                s.setTrangthai(!s.getTrangthai());
+                s.setTrangThai(!s.getTrangThai());
                 sanPhamChiTietRepository.save(s);
             }
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái thành công!");
@@ -101,14 +101,14 @@ public class SanPhamController {
         LocalDateTime currentTime = LocalDateTime.now();
         String maSanPham = "SP" + chuoiNgauNhien;
         // Trim tên sản phẩm và thay thế nhiều khoảng trắng liên tiếp bằng một khoảng trắng
-        String trimmedTenSanPham = (sanPham.getTensanpham() != null)
-                ? sanPham.getTensanpham().trim().replaceAll("\\s+", " ")
+        String trimmedTenSanPham = (sanPham.getTenSanPham() != null)
+                ? sanPham.getTenSanPham().trim().replaceAll("\\s+", " ")
                 : null;
-        sanPham.setTensanpham(trimmedTenSanPham);
-        sanPham.setTrangthai(true);
-        sanPham.setMasanpham(maSanPham);
-        sanPham.setNgaytao(currentTime);
-        sanPham.setNgaycapnhat(currentTime);
+        sanPham.setTenSanPham(trimmedTenSanPham);
+        sanPham.setTrangThai(true);
+        sanPham.setMaSanPham(maSanPham);
+        sanPham.setNgayTao(currentTime);
+        sanPham.setNgayCapNhat(currentTime);
         sanPhamRepositoty.save(sanPham);
         return "redirect:/viewaddSPGET";
     }
@@ -131,7 +131,7 @@ public class SanPhamController {
         List<KichCo> listKichCo = kichCoRepository.getAll();
         List<DeGiay> listDeGiay = deGiayRepository.getAll();
         List<ChatLieu> listChatLieu = chatLieuRepository.getAll();
-        List<Anh> listAnh = anhImp.findAll();
+        List<HinhAnh> listHinhAnh = anhImp.findAll();
         model.addAttribute("sp", listSanPham);
         model.addAttribute("spct", listSPCT);
         model.addAttribute("th", listThuongHieu);
@@ -139,7 +139,7 @@ public class SanPhamController {
         model.addAttribute("kc", listKichCo);
         model.addAttribute("dg", listDeGiay);
         model.addAttribute("cl", listChatLieu);
-        model.addAttribute("a", listAnh);
+        model.addAttribute("a", listHinhAnh);
         return "admin/addsanpham";
     }
 
@@ -151,7 +151,7 @@ public class SanPhamController {
         List<Object[]> list;
         String trimmedKey = (info.getKey() != null) ? info.getKey().trim().replaceAll("\\s+", " ") : null;
         boolean isKeyEmpty = (trimmedKey == null || trimmedKey.isEmpty());
-        boolean isTrangthaiNull = (info.getTrangthai() == null);
+        boolean isTrangthaiNull = (info.getTrangThai() == null);
         List<SanPham> listSanPham = sanPhamRepositoty.findAll();
         for (SanPham sp : listSanPham) {
             List<SanPhamChiTiet> listSPCT = sanPhamChiTietRepository.findBySanPhamId(sp.getId());
@@ -159,10 +159,10 @@ public class SanPhamController {
             if (listSPCT != null && !listSPCT.isEmpty()) {
                 int soluong = 0;
                 for (SanPhamChiTiet spct : listSPCT) {
-                    soluong = soluong + spct.getSoluong();
+                    soluong = soluong + spct.getSoLuong();
                 }
                 if (soluong <= 0) {
-                    sp.setTrangthai(false);
+                    sp.setTrangThai(false);
                     sanPhamRepositoty.save(sp);
                 }
             }
@@ -171,11 +171,11 @@ public class SanPhamController {
             list = sanPhamRepositoty.findProductsWithTotalQuantityOrderByDateDesc();
 
         } else {
-            list = sanPhamRepositoty.findByMasanphamAndTenSanPhamAndTrangThai("%" + trimmedKey + "%", "%" + trimmedKey + "%", info.getTrangthai());
+            list = sanPhamRepositoty.findByMaSanPhamAndTenSanPhamAndTrangThai("%" + trimmedKey + "%", "%" + trimmedKey + "%", info.getTrangThai());
         }
         model.addAttribute("list", list);
         model.addAttribute("fillSearch", trimmedKey);
-        model.addAttribute("fillTrangThai", info.getTrangthai());
+        model.addAttribute("fillTrangThai", info.getTrangThai());
         sanPhamChiTietList.clear();
         return "admin/qlsanpham";
     }
@@ -230,29 +230,29 @@ public class SanPhamController {
                         nextId2++;
                         SanPhamChiTiet spct = new SanPhamChiTiet();
                         spct.setId(nextId2);
-                        spct.setMasanphamchitiet(maSanPhamCT);
-                        spct.setSanpham(sanPham);
-                        spct.setSoluong(1);
-                        spct.setGiatien(BigDecimal.valueOf(100000.000));
-                        spct.setMota(trimmedMota);
-                        spct.setThuonghieu(idThuongHieu);
-                        spct.setChatlieu(idChatLieu);
-                        spct.setGioitinh(gioitinh);
-                        spct.setTrangthai(true);
-                        spct.setKichco(kichCo);
-                        spct.setDegiay(idDeGiay);
-                        spct.setMausac(colorId);
-                        spct.setNgaytao(currentTime);
-                        spct.setNgaycapnhat(currentTime);
+                        spct.setMaSanPhamChiTiet(maSanPhamCT);
+                        spct.setSanPham(sanPham);
+                        spct.setSoLuong(1);
+                        spct.setGiaBan(BigDecimal.valueOf(100000.000));
+                        spct.setMoTa(trimmedMota);
+                        spct.setThuongHieu(idThuongHieu);
+                        spct.setChatLieu(idChatLieu);
+                        spct.setGioiTinh(gioitinh);
+                        spct.setTrangThai(true);
+                        spct.setKichCo(kichCo);
+                        spct.setDeGiay(idDeGiay);
+                        spct.setMauSac(colorId);
+                        spct.setNgayTao(currentTime);
+                        spct.setNgayCapNhat(currentTime);
                         // Generate and save QR Code
                         String qrCodeUrl = qrCodeGenerator.generateQRCodeImage(maSanPhamCT, maSanPhamCT);
-                        spct.setQrcode(qrCodeUrl);
+                        spct.setQrCode(qrCodeUrl);
                         sanPhamChiTietList.add(spct);
 
                         for (SanPhamChiTiet spcts : sanPhamChiTietList) {
                             System.out.println("idspct:" + spcts.getId());
-                            System.out.println("mausac:" + spcts.getKichco().getTen());
-                            System.out.println("kichco:" + spcts.getMausac().getTen());
+                            System.out.println("mausac:" + spcts.getKichCo().getTen());
+                            System.out.println("kichco:" + spcts.getKichCo().getTen());
                         }
                     }
                 }
@@ -266,8 +266,8 @@ public class SanPhamController {
                         boolean found = false;
                         if (sanPhamChiTietList != null) {
                             for (SanPhamChiTiet spct2 : sanPhamChiTietList) {
-                                if (spct2.getMausac().getId() == colorId.getId() && spct2.getKichco().getTen().equals(sizeName)) {
-                                    spct2.setSoluong(spct2.getSoluong() + 1);
+                                if (spct2.getMauSac().getId() == colorId.getId() && spct2.getKichCo().getTen().equals(sizeName)) {
+                                    spct2.setSoLuong(spct2.getSoLuong() + 1);
                                     found = true;
                                     break;
                                 }
@@ -282,23 +282,23 @@ public class SanPhamController {
                             count++;
                             SanPhamChiTiet spct = new SanPhamChiTiet();
                             spct.setId(count);
-                            spct.setSanpham(sanPham);
-                            spct.setMasanphamchitiet(maSanPhamCT);
-                            spct.setSoluong(1);
-                            spct.setGiatien(BigDecimal.valueOf(100000.000));
-                            spct.setMota(trimmedMota);
-                            spct.setThuonghieu(idThuongHieu);
-                            spct.setChatlieu(idChatLieu);
-                            spct.setGioitinh(gioitinh);
-                            spct.setTrangthai(true);
-                            spct.setKichco(kichCo);
-                            spct.setDegiay(idDeGiay);
-                            spct.setMausac(colorId);
-                            spct.setNgaytao(currentTime);
-                            spct.setNgaycapnhat(currentTime);
+                            spct.setSanPham(sanPham);
+                            spct.setMaSanPhamChiTiet(maSanPhamCT);
+                            spct.setSoLuong(1);
+                            spct.setGiaBan(BigDecimal.valueOf(100000.000));
+                            spct.setMoTa(trimmedMota);
+                            spct.setThuongHieu(idThuongHieu);
+                            spct.setChatLieu(idChatLieu);
+                            spct.setGioiTinh(gioitinh);
+                            spct.setTrangThai(true);
+                            spct.setKichCo(kichCo);
+                            spct.setDeGiay(idDeGiay);
+                            spct.setMauSac(colorId);
+                            spct.setNgayTao(currentTime);
+                            spct.setNgayCapNhat(currentTime);
                             // Generate and save QR Code
                             String qrCodeUrl = qrCodeGenerator.generateQRCodeImage(maSanPhamCT, maSanPhamCT);
-                            spct.setQrcode(qrCodeUrl);
+                            spct.setQrCode(qrCodeUrl);
                             sanPhamChiTietList.add(spct);
                         }
                     }
@@ -315,8 +315,8 @@ public class SanPhamController {
     public String detailsanpham(@PathVariable Integer id, Model model, @ModelAttribute("search") SanPhamChiTietInfo info) {
         List<SanPhamChiTiet> listSPCT = sanPhamChiTietRepository.findBySanPhamId(id);
         for (SanPhamChiTiet spct : listSPCT) {
-            if (spct.getSoluong() <= 0) {
-                spct.setTrangthai(false);
+            if (spct.getSoLuong() <= 0) {
+                spct.setTrangThai(false);
                 sanPhamChiTietRepository.save(spct);
             }
         }
@@ -336,8 +336,8 @@ public class SanPhamController {
                         info.getIdKichCo() == null &&
                         info.getIdMauSac() == null &&
                         info.getIdThuongHieu() == null &&
-                        info.getGioitinh() == null &&
-                        info.getTrangthai() == null
+                        info.getGioiTinh() == null &&
+                        info.getTrangThai() == null
         );
         List<SanPhamChiTiet> listSanPhamChiTiet;
         if (isAllFiltersNull) {
@@ -351,8 +351,8 @@ public class SanPhamController {
                     info.getIdKichCo(),
                     info.getIdMauSac(),
                     info.getIdChatLieu(),
-                    info.getGioitinh(),
-                    info.getTrangthai()
+                    info.getGioiTinh(),
+                    info.getTrangThai()
             );
         }
 
@@ -362,8 +362,8 @@ public class SanPhamController {
         List<KichCo> listKichCo = kichCoRepository.getAll();
         List<DeGiay> listDeGiay = deGiayRepository.getAll();
         List<ChatLieu> listChatLieu = chatLieuRepository.getAll();
-        model.addAttribute("sanpham", sanPham);
-        model.addAttribute("sanphamchitiet", listSanPhamChiTiet);
+        model.addAttribute("sanPham", sanPham);
+        model.addAttribute("sanPhamChiTiet", listSanPhamChiTiet);
 
 //        for (SanPhamChiTiet chiTiet : listSanPhamChiTiet) {
 //            chiTiet.setSanphamdotgiam(chiTiet.getSanphamdotgiam().stream()
@@ -383,8 +383,8 @@ public class SanPhamController {
         model.addAttribute("fillKichCo", info.getIdKichCo());
         model.addAttribute("fillMauSac", info.getIdMauSac());
         model.addAttribute("fillChatLieu", info.getIdChatLieu());
-        model.addAttribute("fillGioiTinh", info.getGioitinh());
-        model.addAttribute("fillTrangThai", info.getTrangthai());
+        model.addAttribute("fillGioiTinh", info.getGioiTinh());
+        model.addAttribute("fillTrangThai", info.getTrangThai());
         return "admin/qlchitietsanpham";
     }
 
@@ -412,8 +412,8 @@ public class SanPhamController {
             RedirectAttributes redirectAttributes,
             Model model
     ) {
-        SanPham sanPham = sanPhamChiTietList.get(0).getSanpham();
-        List<SanPhamChiTiet> listsanPhamChiTietDB = sanPhamChiTietRepository.findBySanpham(sanPham);
+        SanPham sanPham = sanPhamChiTietList.get(0).getSanPham();
+        List<SanPhamChiTiet> listsanPhamChiTietDB = sanPhamChiTietRepository.findBySanPham(sanPham);
 
         if (listsanPhamChiTietDB.isEmpty()) {
             for (SanPhamChiTiet spct : sanPhamChiTietList) {
@@ -422,14 +422,14 @@ public class SanPhamController {
         } else {
             for (SanPhamChiTiet spctList : sanPhamChiTietList) {
                 SanPhamChiTiet spctTim = sanPhamChiTietRepository.findSPCT(
-                        spctList.getMausac(), spctList.getKichco(), spctList.getThuonghieu(),
-                        spctList.getChatlieu(), spctList.getDegiay(), spctList.getSanpham());
+                        spctList.getMauSac(), spctList.getKichCo(), spctList.getThuongHieu(),
+                        spctList.getChatLieu(), spctList.getDeGiay(), spctList.getSanPham());
                 if (spctTim != null) {
-                    spctTim.setSoluong(spctTim.getSoluong() + spctList.getSoluong());
-                    if (spctList.getAnh() != null) {
-                        for (Anh anh : spctList.getAnh()) {
-                            anh.setSanphamchitiet(spctTim);
-                            anhRepository.save(anh);
+                    spctTim.setSoLuong(spctTim.getSoLuong() + spctList.getSoLuong());
+                    if (spctList.getHinhAnh() != null) {
+                        for (HinhAnh hinhAnh : spctList.getHinhAnh()) {
+                            hinhAnh.setSanPhamChiTiet(spctTim);
+                            hinhAnhRepository.save(hinhAnh);
                         }
                     }
                     sanPhamChiTietRepository.save(spctTim);
@@ -469,14 +469,14 @@ public class SanPhamController {
         if (!anhFile.isEmpty()) {
             String anhUrl = saveImage(anhFile);
             if (anhUrl != null) {
-                Anh anh = new Anh();
+                HinhAnh hinhAnh = new HinhAnh();
                 LocalDateTime currentTime = LocalDateTime.now();
-                anh.setTenanh(anhUrl);
-                anh.setNgaytao(currentTime);
-                anh.setSanphamchitiet(spct);
-                anh.setTrangthai(true);
-                anh.setNgaycapnhat(currentTime);
-                anhRepository.save(anh);
+                hinhAnh.setTenAnh(anhUrl);
+                hinhAnh.setNgayTao(currentTime);
+                hinhAnh.setSanPhamChiTiet(spct);
+                hinhAnh.setTrangthai(true);
+                hinhAnh.setNgayCapNhat(currentTime);
+                hinhAnhRepository.save(hinhAnh);
             }
         }
     }
@@ -518,8 +518,8 @@ public class SanPhamController {
         for (Integer id : listInt) {
             for (SanPhamChiTiet sanPhamChiTiet : sanPhamChiTietList) {
                 if (sanPhamChiTiet.getId().equals(id)) {
-                    sanPhamChiTiet.setGiatien(giatien);
-                    sanPhamChiTiet.setSoluong(soluong);
+                    sanPhamChiTiet.setGiaBan(giatien);
+                    sanPhamChiTiet.setSoLuong(soluong);
                 }
             }
         }
@@ -547,13 +547,13 @@ public class SanPhamController {
     @ResponseBody
     public ResponseEntity<?> timaddImage(@RequestParam("image") List<String> listData
     ) {
-        Anh anh = new Anh();
+        HinhAnh hinhAnh = new HinhAnh();
         String url = "D:\\DATN\\src\\main\\resources\\static\\upload\\" + listData.get(1);
-        anh.setTenanh(url);
-        List<Anh> list = sanPhamChiTietList.get(Integer.valueOf(listData.get(0)) - 1).getAnh() == null ? new ArrayList<>() : sanPhamChiTietList.get(Integer.valueOf(listData.get(0)) - 1).getAnh();
-        list.add(anh);
+        hinhAnh.setTenAnh(url);
+        List<HinhAnh> list = sanPhamChiTietList.get(Integer.valueOf(listData.get(0)) - 1).getHinhAnh() == null ? new ArrayList<>() : sanPhamChiTietList.get(Integer.valueOf(listData.get(0)) - 1).getHinhAnh();
+        list.add(hinhAnh);
         System.out.println("KKKKKKKKKKKKKK" + list.size());
-        sanPhamChiTietList.get(Integer.valueOf(listData.get(0)) - 1).setAnh(list);
+        sanPhamChiTietList.get(Integer.valueOf(listData.get(0)) - 1).setHinhAnh(list);
         return ResponseEntity.ok(true);
     }
 }

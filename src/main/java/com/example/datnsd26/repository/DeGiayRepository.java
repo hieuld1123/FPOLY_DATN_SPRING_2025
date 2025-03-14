@@ -14,30 +14,30 @@ import java.util.List;
 public interface DeGiayRepository extends JpaRepository<DeGiay, Integer> {
 
     @Query( value = """
-            SELECT dg FROM DeGiay dg WHERE (dg.ten LIKE?1) AND (?2 IS NULL OR dg.trangthai=?2)
+            SELECT dg FROM DeGiay dg WHERE (dg.ten LIKE?1) AND (?2 IS NULL OR dg.trangThai=?2)
             """)
-    List<DeGiay> findByTenAndTrangthai(String ten, Boolean trangthai);
+    List<DeGiay> findByTenAndTrangThai(String ten, Boolean trangThai);
 
-    List<DeGiay> findAllByOrderByNgaytaoDesc();
+    List<DeGiay> findAllByOrderByNgayTaoDesc();
 
     @Query("SELECT dg FROM DeGiay dg WHERE dg.ten = :ten")
     List<DeGiay> findDeGiayByTen(@Param("ten") String ten);
 
     // search theo tên
-    @Query("SELECT dg FROM DeGiay dg WHERE dg.ten = :ten AND dg.trangthai = true ")
+    @Query("SELECT dg FROM DeGiay dg WHERE dg.ten = :ten AND dg.trangThai = true ")
     List<DeGiay> findDeGiayByTenAndTrangThaiFalse(@Param("ten") String ten);
 
     // hiển thị theo điều điều kiện trangthai=1
     @Query(nativeQuery = true, value = """
-            SELECT * FROM DeGiay Where TrangThai=1
-            ORDER BY NgayTao DESC
+            SELECT * FROM de_giay Where trang_thai=1
+            ORDER BY ngay_tao DESC
              """)
     List<DeGiay> getAll();
 
     // cập nhật trangthai=0
     @Modifying
     @Transactional
-    @Query("UPDATE DeGiay d SET d.trangthai = false WHERE d.id = :id")
+    @Query("UPDATE DeGiay d SET d.trangThai = false WHERE d.id = :id")
     void updateTrangThaiToFalseById(Integer id);
 
     boolean existsByTen(String ten);

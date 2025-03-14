@@ -5,7 +5,6 @@ import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -14,27 +13,31 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Table(name = "sanpham")
+@Table(name = "san_pham")
 public class SanPham {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "tensanpham", columnDefinition = "NVARCHAR(255)")
-    private String tensanpham;
+    @Column(name = "ten_san_pham", columnDefinition = "NVARCHAR(255)")
+    private String tenSanPham;
 
-    String masanpham;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime ngaycapnhat;
+    @Column(name = "ma_san_pham", columnDefinition = "NVARCHAR(50)")
+    private String maSanPham;
 
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime ngaytao;
+    @Column(name = "ngay_cap_nhat")
+    private LocalDateTime ngayCapNhat;
 
-    Boolean trangthai;
+    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Column(name = "ngay_tao")
+    private LocalDateTime ngayTao;
 
-    @OneToMany(mappedBy = "sanpham")
+    @Column(name = "trang_thai", columnDefinition = "BIT DEFAULT 1")
+    private Boolean trangThai;
+
+    @OneToMany(mappedBy = "sanPham")
     private List<SanPhamChiTiet> spct;
 }

@@ -13,8 +13,8 @@ import java.util.List;
 public interface SanPhamRepositoty extends JpaRepository<SanPham, Integer> {
 
     @Query(nativeQuery = true, value = """
-            SELECT * FROM SanPham WHERE TrangThai=1
-               ORDER BY NgayTao DESC
+            SELECT * FROM san_pham WHERE trang_thai =1
+               ORDER BY ngay_tao DESC
             """)
     List<SanPham> getAllByNgayTao();
 
@@ -22,28 +22,40 @@ public interface SanPhamRepositoty extends JpaRepository<SanPham, Integer> {
     @Query(value = "SELECT MAX(s.id) FROM SanPham s")
     Integer findMaxIdSP();
 
-    SanPham findFirstByOrderByNgaytaoDesc();
+    SanPham findFirstByOrderByNgayTaoDesc();
 
-    boolean existsByTensanpham(String tensanpham);
+    boolean existsByTenSanPham(String tensanpham);
 
     // search bên sp
-    @Query("SELECT sp.id, sp.tensanpham, sp.ngaytao,SUM(spct.soluong) as tongSoLuong ,sp.trangthai,sp.masanpham " +
+    @Query("SELECT " +
+            "sp.id, " +
+            "sp.tenSanPham, " +
+            "sp.ngayTao," +
+            "SUM(spct.soLuong) as tongSoLuong ," +
+            "sp.trangThai," +
+            "sp.maSanPham " +
             "FROM SanPham sp " +
             "JOIN sp.spct spct " +
-            "WHERE (sp.masanpham LIKE?1 OR sp.tensanpham LIKE ?2)AND(?3 IS NULL OR sp.trangthai=?3) " +
-            "GROUP BY sp.id, sp.tensanpham, sp.ngaytao, sp.trangthai, sp.masanpham " +
-            "ORDER BY sp.ngaytao DESC, tongSoLuong DESC")
-    List<Object[]> findByMasanphamAndTenSanPhamAndTrangThai(String masanpham, String key, Boolean trangthai);
+            "WHERE (sp.maSanPham LIKE?1 OR sp.tenSanPham LIKE ?2)AND(?3 IS NULL OR sp.trangThai=?3) " +
+            "GROUP BY sp.id, sp.tenSanPham, sp.ngayTao, sp.trangThai, sp.maSanPham " +
+            "ORDER BY sp.ngayTao DESC, tongSoLuong DESC")
+    List<Object[]> findByMaSanPhamAndTenSanPhamAndTrangThai(String masanpham, String key, Boolean trangthai);
 
     // các sp mới nhất bên sp
-    @Query("SELECT sp.id, sp.tensanpham, sp.ngaytao, SUM(spct.soluong) AS tongSoLuong,sp.trangthai, sp.masanpham " +
+    @Query("SELECT " +
+            "sp.id, " +
+            "sp.tenSanPham, " +
+            "sp.ngayTao, " +
+            "SUM(spct.soLuong) AS tongSoLuong," +
+            "sp.trangThai, " +
+            "sp.maSanPham " +
             "FROM SanPham sp JOIN sp.spct spct " +
-            "GROUP BY sp.id, sp.tensanpham, sp.ngaytao, sp.trangthai, sp.masanpham " +
-            "ORDER BY sp.ngaytao DESC, tongSoLuong DESC")
+            "GROUP BY sp.id, sp.tenSanPham, sp.ngayTao, sp.trangThai, sp.maSanPham " +
+            "ORDER BY sp.ngayTao DESC, tongSoLuong DESC")
     List<Object[]> findProductsWithTotalQuantityOrderByDateDesc();
 
     //lấy id và tên sản phẩm
-    @Query("SELECT sp.id, sp.tensanpham FROM SanPham sp WHERE sp.id = :id")
+    @Query("SELECT sp.id, sp.tenSanPham FROM SanPham sp WHERE sp.id = :id")
     List<Object[]> findByIdUpdatTenSP(@Param("id") Integer id);
 
 }
