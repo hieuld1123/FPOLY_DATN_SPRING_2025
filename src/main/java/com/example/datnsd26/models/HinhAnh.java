@@ -18,7 +18,7 @@ public class HinhAnh {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    Integer id;
+    private Integer id;
 
     @Column(name = "ten_anh")
     private String tenAnh;
@@ -26,13 +26,13 @@ public class HinhAnh {
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "ngay_tao")
-    LocalDateTime ngayTao;
+    private LocalDateTime ngayTao;
 
 
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "ngay_cap_nhat")
-    LocalDateTime ngayCapNhat;
+    private LocalDateTime ngayCapNhat;
 
     @Column(name = "trang_thai", columnDefinition = "BIT DEFAULT 1")
     private Boolean trangthai;
