@@ -33,7 +33,7 @@ public class SanPhamChiTiet {
     @Column(name = "ma_san_pham_chi_tiet")
     private String maSanPhamChiTiet;
 
-    @Column(name = "mo_ta")
+    @Column(name = "mo_ta", columnDefinition = "NVARCHAR(255)")
     private String moTa;
 
     @Column(name = "gioi_tinh")
@@ -49,10 +49,12 @@ public class SanPhamChiTiet {
     private Float giaBanSauGiam;
 
     @Column(name = "ngay_tao")
+    @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime ngayTao;
 
     @Column(name = "ngay_cap_nhat")
+    @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime ngayCapNhat;
 

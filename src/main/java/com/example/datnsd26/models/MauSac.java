@@ -23,10 +23,12 @@ public class MauSac {
     private String ten;
 
     @Column(name = "ngay_tao")
+    @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime ngayTao;
 
     @Column(name = "ngay_cap_nhat")
+    @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime ngayCapNhat;
 
