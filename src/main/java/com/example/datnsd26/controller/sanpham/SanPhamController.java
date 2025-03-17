@@ -233,7 +233,7 @@ public class SanPhamController {
                         spct.setMaSanPhamChiTiet(maSanPhamCT);
                         spct.setSanPham(sanPham);
                         spct.setSoLuong(1);
-                        spct.setGiaBan(BigDecimal.valueOf(100000.000));
+                        spct.setGiaBan(100000F);
                         spct.setMoTa(trimmedMota);
                         spct.setThuongHieu(idThuongHieu);
                         spct.setChatLieu(idChatLieu);
@@ -285,7 +285,7 @@ public class SanPhamController {
                             spct.setSanPham(sanPham);
                             spct.setMaSanPhamChiTiet(maSanPhamCT);
                             spct.setSoLuong(1);
-                            spct.setGiaBan(BigDecimal.valueOf(100000.000));
+                            spct.setGiaBan(100000F);
                             spct.setMoTa(trimmedMota);
                             spct.setThuongHieu(idThuongHieu);
                             spct.setChatLieu(idChatLieu);
@@ -505,7 +505,7 @@ public class SanPhamController {
     public String updateGiaAndSoLuong(
             Model model,
             @RequestParam("soluong") Integer soluong,
-            @RequestParam("giatien") BigDecimal giatien,
+            @RequestParam("giatien") Float giatien,
             @RequestParam("choncheckbox") String[] choncheckbox,
             HttpSession session) {
         List<String> listString = Arrays.asList(choncheckbox);

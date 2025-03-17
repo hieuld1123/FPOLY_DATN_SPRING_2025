@@ -43,7 +43,7 @@ public class SanPhamChiTiet {
     private Integer soLuong;
 
     @Column(name = "gia_ban")
-    private BigDecimal giaBan;
+    private Float giaBan;
 
     @Column(name = "gia_ban_sau_giam")
     private Float giaBanSauGiam;

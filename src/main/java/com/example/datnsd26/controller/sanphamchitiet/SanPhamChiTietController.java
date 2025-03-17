@@ -199,7 +199,7 @@ public class SanPhamChiTietController {
 
         SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietImp.findById(id);
 
-        BigDecimal giagoc = sanPhamChiTiet.getGiaBan();
+        Float giagoc = sanPhamChiTiet.getGiaBan();
         model.addAttribute("hehe", sanPhamChiTiet);
         return "admin/detailCTSP";
     }
@@ -246,7 +246,7 @@ public class SanPhamChiTietController {
         model.addAttribute("AllCTSP", sanPhamChiTietImp.findById(id));
 
         SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietImp.findById(id);
-        BigDecimal giagoc = sanPhamChiTiet.getGiaBan();
+        Float giagoc = sanPhamChiTiet.getGiaBan();
         model.addAttribute("hehe", sanPhamChiTiet);
         return "admin/ViewAllCTSP";
     }
