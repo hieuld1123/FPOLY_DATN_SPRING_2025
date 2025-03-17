@@ -2,7 +2,9 @@ package com.example.datnsd26.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -15,26 +17,27 @@ import java.util.Date;
 public class HinhAnh {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "id_san_pham_chi_tiet", referencedColumnName = "id")
-    private SanPhamChiTiet sanPhamChiTiet;
+    @Column(name = "ten_anh")
+    private String tenAnh;
 
-    @Column(name = "url", columnDefinition = "NVARCHAR(255)")
-    private String url;
-
-    @Column(name = "is_default")
-    private Boolean isDefault;
-
+    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "ngay_tao")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayTao;
+    private LocalDateTime ngayTao;
 
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "ngay_cap_nhat")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayCapNhat;
+    private LocalDateTime ngayCapNhat;
 
-    @Column(name = "trang_thai")
+    @Column(name = "trang_thai", columnDefinition = "BIT DEFAULT 1")
     private Boolean trangThai;
+
+    @ManyToOne
+    @JoinColumn(name = "id_san_pham_chi_tiet")
+    private SanPhamChiTiet sanPhamChiTiet;
 }
