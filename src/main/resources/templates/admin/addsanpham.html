@@ -1,0 +1,2499 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<!--<nav th:replace="~{/layoutadmin/head.html}"></nav>-->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<!--css cho tên màu sắc trong table-->
+<style>
+    .size-container {
+        display: flex;
+        flex-wrap: wrap; /* Tự động xuống dòng nếu thiếu chỗ */
+    }
+
+    .size-container button {
+        margin-right: 10px; /* Khoảng cách giữa các nút */
+        margin-bottom: 10px; /* Khoảng cách giữa các hàng */
+    }
+
+
+    .highlight-color {
+        color: white; /* Màu chữ cho tên màu sắc */
+        padding: 2px 5px; /* Khoảng cách bên trong */
+        border-radius: 3px; /* Bo góc */
+    }
+</style>
+
+
+<!--màu cho modal-->
+<style>
+    /* CSS cho các tùy chọn được chọn và khi hover */
+    .select2-container--default .select2-results__option--highlighted {
+        background-color: wheat !important;
+        color: black !important;
+    }
+</style>
+
+<!--màu cho select2-->
+<style>
+    .select2-container--default .select2-selection__choice {
+        background-color: white !important;
+        color: white !important;
+        border-color: white !important;
+    }
+</style>
+
+<!--màu cho checkbox-->
+<style>
+    .size-button {
+        background-color: transparent !important;
+        border-color: rgb(249, 72, 42) !important;
+        color: rgb(249, 72, 42) !important;
+    }
+
+    .btn-check:checked + .size-button {
+        background-color: rgb(249, 72, 42) !important;
+        color: white !important;
+    }
+</style>
+
+<style>
+    #idThuongHieu:hover {
+        cursor: pointer; /* Đổi con trỏ chuột thành bàn tay khi hover vào select */
+    }
+
+    #idChatLieu:hover {
+        cursor: pointer; /* Đổi con trỏ chuột thành bàn tay khi hover vào p */
+    }
+
+    #idDeGiay:hover {
+        cursor: pointer; /* Đổi con trỏ chuột thành bàn tay khi hover vào p */
+    }
+
+    #gioiTinhSelect:hover {
+        cursor: pointer; /* Đổi con trỏ chuột thành bàn tay khi hover vào select */
+    }
+</style>
+<!--highlight hàng trong table-->
+<!--<style>-->
+<!--    .selected-row {-->
+<!--        opacity: 1 !important;-->
+<!--        background-color: red; /* Optional: Adding a slight background color for better visibility */-->
+<!--    }-->
+
+<!--    tr {-->
+<!--    }-->
+<!--</style>-->
+<!-- ảnh-->
+<style>
+    .checkbox-red:checked {
+        background-color: red;
+    }
+
+    #editButton.disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+
+    /* CSS cho cột Upload Ảnh */
+    #example2 th:nth-child(7),
+    #example2 td:nth-child(7) {
+        width: 367px; /* Đặt kích thước của cột "Upload Ảnh" tại đây */
+    }
+
+    .container {
+        display: flex;
+        flex-wrap: wrap; /* Cho phép các phần tử con xuống dòng khi không đủ không gian */
+    }
+
+    #image-preview {
+        display: flex;
+        flex-wrap: wrap; /* Cho phép các ảnh xuống dòng khi không đủ không gian */
+    }
+
+    .preview-image-container {
+        position: relative;
+        margin: 10px;
+    }
+
+    .preview-image {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+    }
+
+    .delete-button {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background-color: red;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        cursor: pointer;
+    }
+
+    #file-input {
+        display: none; /* Ẩn input type file */
+    }
+
+    .custom-upload {
+        display: inline-block;
+        border: 2px dotted blue; /* Thay đổi viền thành viền chấm */
+        border-radius: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        width: 100px;
+        height: 100px;
+        margin-top: 10px;
+    }
+
+    .custom-upload::before {
+        content: "+ Upload";
+        display: block;
+        text-align: center;
+        line-height: 85px;
+    }
+</style>
+
+<!-- Google Font: Source Sans Pro -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+
+<!-- Bootstrap 5 (CSS) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+<!-- SweetAlert2 (CSS) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+<!-- iCheck (Checkbox & Radio Button Styling) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/icheck-bootstrap/3.0.1/icheck-bootstrap.min.css">
+
+<!-- Select2 (Dropdown multiple) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap4-theme/1.1.1/select2-bootstrap4.min.css">
+
+<!-- Bootstrap Color Picker -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.4.0/css/bootstrap-colorpicker.min.css">
+
+<!-- Tempusdominus Bootstrap 4 (DateTime Picker) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/css/tempusdominus-bootstrap-4.min.css">
+
+<!-- Bootstrap4 Duallistbox -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap4-duallistbox/4.0.2/bootstrap-duallistbox.min.css">
+
+<!-- BS-Stepper (Multi-step forms) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bs-stepper/1.7.0/css/bs-stepper.min.css">
+
+<!-- Dropzone.js (File Upload) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css">
+
+<!-- AdminLTE Theme -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/css/adminlte.min.css">
+
+<!-- jQuery (Load First) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<!-- Bootstrap 5 (JS) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- SweetAlert2 (JS) -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+
+<!-- Moment.js (Required by Tempusdominus & DateRangePicker) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+
+<!-- Select2 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+
+<!-- Bootstrap Color Picker -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.4.0/js/bootstrap-colorpicker.min.js"></script>
+
+<!-- Tempusdominus Bootstrap 4 (Requires Moment.js & Bootstrap) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/js/tempusdominus-bootstrap-4.min.js"></script>
+
+<!-- Bootstrap4 Duallistbox -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap4-duallistbox/4.0.2/jquery.bootstrap-duallistbox.min.js"></script>
+
+<!-- InputMask -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
+
+<!-- DateRange Picker -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.1/daterangepicker.min.js"></script>
+
+<!-- Bootstrap Switch -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
+
+<!-- BS-Stepper -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bs-stepper/1.7.0/js/bs-stepper.min.js"></script>
+
+<!-- Dropzone.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
+
+<!-- AdminLTE App (Load Last) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/js/adminlte.min.js"></script>
+
+
+<body class="hold-transition sidebar-mini" style="font-family: 'Bahnschrift'">
+<div class="wrapper">
+    <!-- Navbar -->
+<!--    <nav th:replace="~{/layoutadmin/navbar.html}"></nav>-->
+    <!-- End navbar -->
+
+    <!--Menu bán hàng -->
+<!--    <nav th:replace="~{/layoutadmin/menu.html}"></nav>-->
+    <!--end-->
+
+    <!--Nội dung -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+
+                    </div>
+                    <!--                    <div class="col-sm-6">-->
+                    <!--                        <ol class="breadcrumb float-sm-right">-->
+                    <!--                            <li class="breadcrumb-item"><a href="#">Home</a></li>-->
+                    <!--                            <li class="breadcrumb-item active">Thêm sản phẩm</li>-->
+                    <!--                        </ol>-->
+                    <!--                    </div>-->
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!---filter-->
+        <section class="content-header">
+
+            <div class="container-fluid">
+                <div class="row mb-5">
+                    <div class="col-sm-6 d-flex align-items-center">
+                        <h1 style="margin-left: 10px; margin-top: 5px;">THÊM SẢN PHẨM</h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <form action="/addProduct" method="post" name="addProduct" onsubmit="return validateForm()">
+                            <div class="card">
+                                <div class="card-header ">
+                                    <div class="d-flex align-items-center mt-2 mb-3">
+                                        <div>
+                                            <label><span style="color: red">* </span>Tên sản phẩm:</label>
+                                            <select class="form-control select2 select2-primary"
+                                                    data-dropdown-css-class="select2-primary"
+                                                    style="width: 1140px;"
+                                                    name="tensp" data-placeholder="Nhập tên sản phẩm"
+                                                    onchange="clearErrorMessageTenSP()">
+                                                <option style="font-family: 'Bahnschrift'"></option>
+                                                <option th:each="sp : ${sp}" th:value="${sp.id}"
+                                                        th:text="${sp.tenSanPham}"
+                                                        th:selected="${sp.id == selectedTensp}"></option>
+                                            </select>
+                                            <span id="tenspError"
+                                                  style="color: red; font-family: 'Bahnschrift';font-weight: bold"></span>
+                                        </div>
+                                        <button type="button" data-bs-toggle="modal" data-bs-target="#themtensp"
+                                                style=" margin-left:10px; margin-top: 28px; background-color: red; color: white; padding: 5px 10px; width: 45px; height: 45px; border-radius: 10px; border-color: rgb(249,72,42); font-weight: bold;">
+                                            +
+                                        </button>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label><span style="color: red">* </span>Giới tính:</label>
+                                        <div class="form-check d-inline-block" style="margin-left: 20px">
+                                            <input class="form-check-input" type="radio" name="gioitinh"
+                                                   style="width: 15px;height: 15px"
+                                                   id="gioitinhNam" value="true"
+                                                   th:checked="${gioiTinh == null || gioiTinh}"
+                                                   onchange="clearErrorMessageGioiTinh()">
+                                            <label for="gioitinhNam" style="font-size: 15px; margin-left: -5px"
+                                                   class="form-check-label">
+                                                Nam
+                                            </label>
+                                        </div>
+                                        <div class="form-check d-inline-block" style="margin-left: 20px;">
+                                            <input class="form-check-input" type="radio" name="gioitinh"
+                                                   style="width: 15px;height: 15px"
+                                                   id="gioitinhNu" value="false"
+                                                   th:checked="${gioiTinh != null && !gioiTinh}"
+                                                   onchange="clearErrorMessageGioiTinh()">
+                                            <label for="gioitinhNu" style="font-size: 15px;margin-left: -5px"
+                                                   class="form-check-label">
+                                                Nữ
+                                            </label>
+                                        </div>
+                                        <span id="gioitinhError"
+                                              style="color: red;font-style: italic;font-family: 'Bahnschrift';font-weight: bold"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--BIẾN THỂ-->
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="card" style="height: 100%;">
+                                        <div class="row">
+                                            <div class="d-flex justify-content-center align-items-center mt-2 mb-3 col-lg-4">
+                                                <div>
+                                                    <label><span style="color: red;">* </span>Thương hiệu:</label>
+                                                    <select id="idThuongHieu" class="form-control" style="width: 500px;"
+                                                            name="idThuongHieu">
+                                                        <option th:each="th : ${th}" th:value="${th.id}"
+                                                                th:text="${th.ten}"
+                                                                th:selected="${th.id == selectedThuongHieu}"></option>
+                                                    </select>
+                                                </div>
+                                                <button type="button" data-bs-toggle="modal"
+                                                        data-bs-target="#themthuonghieu"
+                                                        style=" margin-left:10px; margin-top: 28px; background-color: red; color: white; padding: 5px 10px; width: 45px; height: 45px; border-radius: 10px; border-color: rgb(249,72,42); font-weight: bold;">
+                                                    +
+                                                </button>
+                                            </div>
+                                            <!--end-->
+
+                                            <!--abc-->
+                                            <div class="d-flex justify-content-center align-items-center mb-3 col-lg-4">
+                                                <div>
+                                                    <label><span style="color: red;">* </span>Chất liệu:</label>
+                                                    <select id="idChatLieu" class="form-control" style="width: 500px;"
+                                                            name="idChatLieu">
+                                                        <option th:each="cl : ${cl}" th:value="${cl.id}"
+                                                                th:text="${cl.ten}"
+                                                                th:selected="${cl.id == selectedChatLieu}"></option>
+                                                    </select>
+                                                </div>
+                                                <button type="button" data-bs-toggle="modal" data-bs-target="#themchatlieu"
+                                                        style=" margin-left:10px; margin-top: 28px; background-color: red; color: white; padding: 5px 10px; width: 45px; height: 45px; border-radius: 10px; border-color: rgb(249,72,42); font-weight: bold;">
+                                                    +
+                                                </button>
+                                            </div>
+
+                                            <!--chất liệu-->
+                                            <div class="d-flex justify-content-center align-items-center mb-3 col-lg-4">
+                                                <div>
+                                                    <label><span style="color: red;">* </span>Đế giày:</label>
+                                                    <select id="idDeGiay" class="form-control" style="width: 500px;"
+                                                            name="idDeGiay">
+                                                        <option th:each="dg : ${dg}" th:value="${dg.id}"
+                                                                th:text="${dg.ten}"
+                                                                th:selected="${dg.id == selectedDeGiay}"></option>
+                                                    </select>
+                                                </div>
+                                                <button type="button" data-bs-toggle="modal" data-bs-target="#themdegiay"
+                                                        style=" margin-left:10px; margin-top: 28px; background-color: red; color: white; padding: 5px 10px; width: 45px; height: 45px; border-radius: 10px; border-color: rgb(249,72,42); font-weight: bold;">
+                                                    +
+                                                </button>
+                                            </div>
+                                            <!--đế giày-->
+                                            <!--end-->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="card" style="height: 100%;">
+<!--                                        <div class="row d-flex">-->
+<!--                                            &lt;!&ndash; Màu sắc&ndash;&gt;-->
+<!--                                            <div class="d-flex align-items-center mt-2 mb-3 col-lg-6" style="margin-left: 15px;">-->
+<!--                                                <div>-->
+<!--                                                    <label><span-->
+<!--                                                            style="color: red">* </span>Màu sắc:</label>-->
+<!--                                                    <select id="colorSelect" class="select2" multiple="multiple"-->
+<!--                                                            data-placeholder="Màu sắc" style="width: 500px;" name="idMauSac"-->
+<!--                                                            onchange="clearErrorMessageMauSac()">-->
+<!--                                                        <option th:each="ms : ${ms}" th:value="${ms.id}"-->
+<!--                                                                th:data-color="${ms.ten}"></option>-->
+<!--                                                    </select>-->
+<!--                                                    <span id="mausacError"-->
+<!--                                                          style="color: red;font-family: 'Bahnschrift';font-weight: bold"></span>-->
+<!--                                                </div>-->
+<!--                                                <button type="button" data-bs-toggle="modal" data-bs-target="#themmausac"-->
+<!--                                                        style=" margin-left:10px; margin-top: 28px; background-color: red; color: white; padding: 5px 10px; width: 45px; height: 45px; border-radius: 10px; border-color: rgb(249,72,42); font-weight: bold;">-->
+<!--                                                    +-->
+<!--                                                </button>-->
+<!--                                            </div>-->
+
+<!--                                            &lt;!&ndash;Kích cỡ&ndash;&gt;-->
+<!--                                            <div class="d-flex align-items-center mb-4 col-lg-6" style="margin-left: 15px;">-->
+<!--                                                <div>-->
+<!--                                                    <div class="d-flex align-items-center">-->
+<!--                                                        <label style="margin-left:15px "><span style="color: red">* </span>Kích cỡ:</label>-->
+<!--                                                    </div>-->
+<!--                                                    <div style="margin-left: 10px;" class="size-container">-->
+<!--                                                        <h6 id="displayValue"></h6>-->
+<!--                                                    </div>-->
+<!--                                                    <p id="kichcoError"-->
+<!--                                                       style="color: red;font-family: 'Bahnschrift';font-weight: bold"></p>-->
+<!--                                                    <button type="button" data-bs-toggle="modal"-->
+<!--                                                            data-bs-target="#themkichco2"-->
+<!--                                                            style=" margin-left:10px; margin-top: 7px; background-color: red; color: white; padding: 5px 10px; width: 100px; height: 45px; border-radius: 10px; border-color: rgb(249,72,42); font-weight: bold;">-->
+<!--                                                        Chọn size-->
+<!--                                                    </button>-->
+<!--                                                    <button type="button" data-bs-toggle="modal"-->
+<!--                                                            data-bs-target="#themnhanhkichco"-->
+<!--                                                            style=" margin-left:10px; margin-top: 7px; background-color: red; color: white; padding: 5px 10px; width: 45px; height: 45px; border-radius: 10px; border-color: rgb(249,72,42); font-weight: bold;">-->
+<!--                                                        +-->
+<!--                                                    </button>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+                                        <div class="row d-flex align-items-center gap-3">
+                                            <!-- Màu sắc -->
+                                            <div class="col-lg-5 d-flex align-items-center ms-3">
+                                                <div>
+                                                    <label><span
+                                                            style="color: red">* </span>Màu sắc:</label>
+                                                    <select id="colorSelect" class="select2" multiple="multiple"
+                                                            data-placeholder="Màu sắc" style="width: 500px;"
+                                                            name="idMauSac"
+                                                            onchange="clearErrorMessageMauSac()">
+                                                        <option th:each="ms : ${ms}" th:value="${ms.id}"
+                                                                th:data-color="${ms.ten}"></option>
+                                                    </select>
+                                                    <span id="mausacError"
+                                                          style="color: red;font-family: 'Bahnschrift';font-weight: bold"></span>
+                                                </div>
+                                                <button type="button" data-bs-toggle="modal"
+                                                        data-bs-target="#themmausac"
+                                                        style=" margin-left:10px; margin-top: 28px; background-color: red; color: white; padding: 5px 10px; width: 45px; height: 45px; border-radius: 10px; border-color: rgb(249,72,42); font-weight: bold;">
+                                                    +
+                                                </button>
+                                            </div>
+
+                                            <!-- Kích cỡ -->
+                                            <div class="col-lg-5 d-flex align-items-center ms-3">
+                                                <div>
+                                                    <div class="d-flex align-items-center">
+                                                        <label style="margin-left:15px "><span
+                                                                style="color: red">* </span>Kích cỡ:</label>
+                                                    </div>
+                                                    <div style="margin-left: 10px;" class="size-container">
+                                                        <h6 id="displayValue"></h6>
+                                                    </div>
+                                                    <p id="kichcoError"
+                                                       style="color: red;font-family: 'Bahnschrift';font-weight: bold"></p>
+                                                    <button type="button" data-bs-toggle="modal"
+                                                            data-bs-target="#themkichco2"
+                                                            style=" margin-left:10px; margin-top: 7px; background-color: red; color: white; padding: 5px 10px; width: 100px; height: 45px; border-radius: 10px; border-color: rgb(249,72,42); font-weight: bold;">
+                                                        Chọn size
+                                                    </button>
+                                                    <button type="button" data-bs-toggle="modal"
+                                                            data-bs-target="#themnhanhkichco"
+                                                            style=" margin-left:10px; margin-top: 7px; background-color: red; color: white; padding: 5px 10px; width: 45px; height: 45px; border-radius: 10px; border-color: rgb(249,72,42); font-weight: bold;">
+                                                        +
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3 ms-3">
+                                            <label><span style="color: red">* </span>Mô tả:</label>
+                                            <textarea style="width: 1140px;" rows="4" cols="164" class="form-control"
+                                                      name="mota"
+                                                      th:text="${moTa}"
+                                                      oninput="clearErrorMessageMoTa()"></textarea>
+                                            <span id="motaError"
+                                                  style="color: red;font-family: 'Bahnschrift';font-weight: bold"></span>
+                                        </div>
+
+                                        <!--end-->
+                                        <div class="d-flex justify-content-end align-items-center"
+                                             style="margin-right: 15px;">
+                                            <button type="submit"
+                                                    style=" background-color: red; color: white; padding: 5px 10px; width: 120px; height: 45px; border-radius: 10px; border-color: rgb(249,72,42); font-weight: bold;">
+                                                + Thêm
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Modal thêm kích cỡ 2-->
+                            <div class="modal fade" id="themkichco2" tabindex="-1"
+                                 aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5">Chọn kích cỡ</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="d-flex flex-wrap">
+                                                <!-- Lặp qua danh sách kích cỡ và tạo các checkbox -->
+                                                <div th:each="size : ${kc}">
+                                                    <div class="form-check">
+                                                        <input type="checkbox" class="btn-check"
+                                                               th:id="'btn-check-' + ${size.id}" th:value="${size.ten}"
+                                                               name="kichCoId" autocomplete="off"
+                                                               onchange="handleCheckboxChange()">
+                                                        <label class="btn btn-outline-primary size-button"
+                                                               th:for="'btn-check-' + ${size.id}"
+                                                               th:text="${size.ten}"></label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--                                            <div id="displayValue"></div>-->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Modal thêm thương hiệu-->
+                        <div class="modal fade" id="themthuonghieu" tabindex="-1"
+                             aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Thêm mới</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="addFormThuongHieu" name="addThuongHieu" th:method="post"
+                                              th:object="${thuonghieu}"
+                                              th:action="@{/addThuongHieuModal}"
+                                              onsubmit="return validateTrungThuongHieu()">
+                                            <p style="font-weight: bold">
+                                                <span style="color: red">* </span>
+                                                Tên thương hiệu:
+                                                <input id="tenInputThuongHieu" class="form-control" th:field="*{ten}"/>
+                                            <div style="color: red; font-weight: initial;font-style: italic"
+                                                 id="errorTenThuongHieu"></div>
+                                            </p>
+                                            <div class="d-flex justify-content-end align-items-center mt-5">
+                                                <button data-bs-dismiss="modal" type="button"
+                                                        style="background-color: gray;color: white; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px; border-color: black; font-weight: bold;">
+                                                    Đóng
+                                                </button>
+                                                <button id="submitButtonThuongHieu" type="submit"
+                                                        style="margin-left:15px; background-color: red;color: white; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px; border-color: rgb(249,72,42); font-weight: bold;">
+                                                    Xác nhận
+                                                </button>
+                                            </div>
+                                            <!--                                            <button id="submitButtonThuongHieu" class="btn"-->
+                                            <!--                                                    style="margin-left: 400px;background-color:rgb(249,72,42);color: white">-->
+                                            <!--                                                Thêm-->
+                                            <!--                                            </button>-->
+                                        </form>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Modal thêm chất liệu-->
+                        <div class="modal fade" id="themchatlieu" tabindex="-1"
+                             aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabelChatLieu">Thêm mới</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="addFormChatLieu" name="addChatLieu" th:method="post"
+                                              th:action="@{/addChatLieuModal}" th:object="${chatlieu}"
+                                              onsubmit="return validateTrungChatLieu()">
+                                            <p style="font-weight: bold">
+                                                <span style="color: red">* </span>
+                                                Tên chất liệu:
+                                                <input id="tenInputChatLieu" th:field="*{ten}" class="form-control">
+                                            <div style="color: red; font-weight: initial;font-style: italic"
+                                                 id="errorTenChatLieu"></div>
+                                            </p>
+
+                                            <div class="d-flex justify-content-end align-items-center mt-5">
+                                                <button data-bs-dismiss="modal" type="button"
+                                                        style="background-color: gray;color: white; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px; border-color: black; font-weight: bold;">
+                                                    Đóng
+                                                </button>
+                                                <button type="submit"
+                                                        style="margin-left:15px; background-color: red;color: white; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px; border-color: rgb(249,72,42); font-weight: bold;">
+                                                    Xác nhận
+                                                </button>
+                                            </div>
+
+                                            <!--                                            <button class="btn"-->
+                                            <!--                                                    style="margin-left: 400px;background-color:rgb(249,72,42);color: white">-->
+                                            <!--                                                Thêm-->
+                                            <!--                                            </button>-->
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Modal thêm đế giày-->
+                        <div class="modal fade" id="themdegiay" tabindex="-1" aria-labelledby="exampleModalLabel"
+                             aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel2">Thêm mới</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="addFormDeGiay" name="addDeGiay" th:method="post" th:object="${degiay}"
+                                              th:action="@{/addDeGiayModal}" onsubmit="return validateTrungDeGiay()">
+                                            <p>
+                                                <span style="color: red">* </span>
+                                                Tên đế giày:
+                                                <input id="tenInputDeGiay" class="form-control" th:field="*{ten}"/>
+                                            <div style="color: red; font-weight: initial;font-style: italic"
+                                                 id="errorTenDeGiay"></div>
+                                            </p>
+
+                                            <div class="d-flex justify-content-end align-items-center mt-5">
+                                                <button data-bs-dismiss="modal" type="button"
+                                                        style="background-color: gray;color: white; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px; border-color: black; font-weight: bold;">
+                                                    Dóng
+                                                </button>
+                                                <button id="submitButtonDeGiay" type="submit"
+                                                        style="margin-left:15px; background-color: red;color: white; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px; border-color: rgb(249,72,42); font-weight: bold;">
+                                                    Xác nhận
+                                                </button>
+                                            </div>
+
+                                            <!--                                            <button id="submitButtonDeGiay" class="btn"-->
+                                            <!--                                                    style="margin-left: 400px;background-color:rgb(249,72,42);color: white">-->
+                                            <!--                                                Thêm-->
+                                            <!--                                            </button>-->
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Modal thêm kích cỡ-->
+                        <div class="modal fade" id="themnhanhkichco" tabindex="-1"
+                             aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5">Thêm mới</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="addFormKichCo" name="addKichCo"
+                                              onsubmit="return validateTrungKichCo()"
+                                              method="post" th:action="@{/addKichCoModal}" th:object="${kichco}">
+                                            <p style="font-weight: bold">
+                                                <span style="color: red">* </span>
+                                                Tên kích cỡ:
+                                                <input id="tenInputKichCo" class="form-control" th:field="*{ten}"/>
+                                            <div style="color: red; font-weight: initial;font-style: italic"
+                                                 id="errorTenKichCo"></div>
+                                            </p>
+
+                                            <div class="d-flex justify-content-end align-items-center mt-5">
+                                                <button data-bs-dismiss="modal" type="button"
+                                                        style="background-color: gray;color: white; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px; border-color: black; font-weight: bold;">
+                                                    Đóng
+                                                </button>
+                                                <button id="submitButtonKichCo" type="submit"
+                                                        style="margin-left:15px; background-color: red;color: white; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px; border-color: rgb(249,72,42); font-weight: bold;">
+                                                    Xác nhận
+                                                </button>
+                                            </div>
+
+                                            <!--                                            <button id="submitButtonKichCo" class="btn"-->
+                                            <!--                                                    style="margin-left: 400px;background-color:rgb(249,72,42);color: white">-->
+                                            <!--                                                Thêm-->
+                                            <!--                                            </button>-->
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Modal thêm màu sắc-->
+                        <div class="modal fade" id="themmausac" tabindex="-1" aria-labelledby="exampleModalLabelMauSac"
+                             aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabelMauSac">Thêm mới</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="addFormMauSac" th:method="post" name="addMauSac" th:object="${mausac}"
+                                              th:action="@{/addMauSacModal}" onsubmit="return validateTrungMauSac()">
+                                            <p style="font-weight: bold">
+                                                <span style="color: red">* </span>
+                                                Mã màu sắc:
+                                                <input type="color" id="tenInputMauSac" th:field="*{ten}"
+                                                       style="width: 100%" class="form-control"/>
+                                            </p>
+
+
+                                            <div class="d-flex justify-content-end align-items-center mt-5">
+                                                <button data-bs-dismiss="modal" type="button"
+                                                        style="background-color: gray;color: white; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px; border-color: black; font-weight: bold;">
+                                                    Đóng
+                                                </button>
+                                                <button id="submitButtonMauSac" type="submit"
+                                                        style="margin-left:15px; background-color: red;color: white; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px; border-color: rgb(249,72,42); font-weight: bold;">
+                                                    Xác nhận
+                                                </button>
+                                            </div>
+
+                                            <!--                                            <button id="submitButtonMauSac" class="btn"-->
+                                            <!--                                                    style="margin-left: 400px;background-color:rgb(249,72,42);color: white">-->
+                                            <!--                                                Thêm-->
+                                            <!--                                            </button>-->
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Modal thêm tên sản phẩm-->
+                        <div class="modal fade" id="themtensp" tabindex="-1" aria-labelledby="exampleModalLabelTenSP"
+                             aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabelTenSP">Thêm mới</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="addFormTenSP" th:method="post" name="addTenSP" th:object="${sanpham}"
+                                              th:action="@{/addTenSPModal}" onsubmit="return validateTrungTenSP()">
+                                            <p style="font-weight: bold">
+                                                <span style="color: red">* </span>
+                                                Tên sản phẩm:
+                                                <input id="tenInputTenSP" class="form-control"
+                                                       th:field="*{tenSanPham}"/>
+                                            <div style="color: red; font-weight: initial"
+                                                 id="errorTenSP"></div>
+                                            </p>
+
+
+                                            <div class="d-flex justify-content-end align-items-center mt-5">
+                                                <button data-bs-dismiss="modal" type="button"
+                                                        style="background-color: gray;color: white; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px; border-color: black; font-weight: bold;">
+                                                    Đóng
+                                                </button>
+                                                <button id="submitButtonTenSP" type="submit"
+                                                        style="margin-left:15px; background-color: red;color: white; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px; border-color: rgb(249,72,42); font-weight: bold;">
+                                                    Xác nhận
+                                                </button>
+                                            </div>
+
+
+                                            <!--                                            <button id="submitButtonTenSP" class="btn"-->
+                                            <!--                                                    style="margin-left: 400px;background-color:rgb(249,72,42);color: white">-->
+                                            <!--                                                Thêm-->
+                                            <!--                                            </button>-->
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- /.card -->
+                    </div>
+                    <!-- /.col -->
+                </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.container-fluid -->
+        </section>
+        <!-- Main content -->
+
+        <!-- Modal chỉnh sửa số lượng và giá -->
+        <div class="modal fade" id="chinhsuasoluongvagia" tabindex="-1" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <form method="post" th:action="@{/updateGiaAndSoLuong}" id="submitid">
+                <input type="hidden" name="choncheckbox" value="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5">Chỉnh sửa giá và số lượng sản phẩm</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Số lượng:
+                                <input type="number" class="form-control" name="soluong" id="soluongInput" min="1"
+                                       max="100">
+                                <span id="soluongError" style="color: red"></span>
+                            </p>
+                            <p>Đơn giá:
+                                <input class="form-control" name="giatienDisplay" id="giatienInput"
+                                       onkeyup="formatCurrency('giatienInput')">
+                                <input type="hidden" name="giatien" id="giatienRawInput">
+                                <span id="giatienError" style="color: red"></span>
+                            </p>
+                        </div>
+
+
+                        <div class="d-flex justify-content-end align-items-center mb-3">
+                            <button data-bs-dismiss="modal" type="button"
+                                    style="background-color: gray;color: white; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px; border-color: black; font-weight: bold;">
+                                Đóng
+                            </button>
+                            <button onclick="validateAndSubmit()" type="button"
+                                    style="margin-left:15px; margin-right: 15px; background-color: red;color: white; padding: 5px 10px; width: 130px; height: 40px; border-radius: 10px; border-color: rgb(249,72,42); font-weight: bold;">
+                                Cập nhật
+                            </button>
+                        </div>
+
+                        <!--                        <p style="margin-left: 400px">-->
+                        <!--                            <button style="background-color:rgb(249,72,42);border-color: rgb(249,72,42);color: white"-->
+                        <!--                                    type="button" class="btn btn-primary" onclick="validateAndSubmit()">Cập nhật-->
+                        <!--                            </button>-->
+                        <!--                        </p>-->
+                    </div>
+                </div>
+            </form>
+        </div>
+        <form th:action="@{/addImage}" name="addImage" method="post" enctype="multipart/form-data"
+              onsubmit="return validateForm2()">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <h5 style="margin-left: 10px; padding-top: 12px;">Danh sách biến thể sản phẩm</h5>
+                </div>
+                <div class="d-flex align-items-center ms-auto">
+                    <button id="editButton" class="btn disabled" type="button" data-bs-toggle="modal"
+                            data-bs-target="#chinhsuasoluongvagia"
+                            style="background-color: red;color: white; padding: 5px 10px; width: 180px; height: 40px; border-radius: 10px; border-color: rgb(249,72,42); font-weight: bold;">
+                        Chỉnh sửa chung
+                    </button>
+
+                    <button id="submitButton" type="submit"
+                            style="margin-left: 15px; background-color: red;color: white; padding: 5px 10px; width: 120px; height: 40px; border-radius: 10px; border-color: rgb(249,72,42); font-weight: bold;">
+                        Lưu thay đổi
+                    </button>
+                </div>
+
+            </div>
+            <div id="error-message" style="color: red;"></div>
+            <!-- Thông báo lỗi -->
+
+            <section class="content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <table id="example2" style="width: 100%"
+                                           class="table-bordered table-hover text-center">
+                                        <thead style="height: 50px;color: black">
+                                        <tr>
+                                            <th style="padding-left: 40px;padding-bottom: 25px">
+                                                <input type="checkbox" name="chontatcactsp" id="chontatcactsp"
+                                                       onchange="selectAll(this)"
+                                                       class="form-check-input checkbox checkbox-red">
+                                            </th>
+                                            <th>STT</th>
+                                            <th>Tên sản phẩm</th>
+                                            <th>Số lượng</th>
+                                            <th>Giá bán</th>
+                                            <th>Thao tác</th>
+                                            <th>Upload Ảnh</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="spctt, stt : ${sanphamchitiet}" class="product-row">
+                                            <td style="padding-left: 12px;padding-bottom: 25px">
+                                                <input type="checkbox" class="form-check-input checkbox checkbox-red"
+                                                       th:value="${spctt.id}" onchange="toggleRowHighlight(this)"
+                                                       name="chonspct">
+                                            </td>
+                                            <td>
+                                                <span style="margin-left: 7px" th:text="${stt.index + 1}"></span>
+                                            </td>
+                                            <td>
+                                                <!--                                            <span th:if="${#strings.length(spctt.sanpham.tensanpham + ' [' + spctt.kichco.ten + '-' + spctt.mausac.ten + ']') > 40}"-->
+                                                <!--                                                  th:text="${#strings.substring(spctt.sanpham.tensanpham + ' [' + spctt.kichco.ten + '-' + spctt.mausac.ten + ']', 0, 40)} + '...'"></span>-->
+                                                <!--                                                <span th:unless="${#strings.length(spctt.sanpham.tensanpham + ' [' + spctt.kichco.ten + '-' + spctt.mausac.ten + ']') > 40}"-->
+                                                <!--                                                      th:text="${spctt.sanpham.tensanpham + ' [' + spctt.kichco.ten + '-' + spctt.mausac.ten + ']' }"></span>-->
+                                                <span th:if="${#strings.length(spctt.sanPham.tenSanPham + spctt.kichCo.ten + ' -' + spctt.mauSac.ten) > 40}">
+    <span th:text="${#strings.substring(spctt.sanpham.tenSanPham  + spctt.kichco.ten + ' -' + spctt.mausac.ten, 0, 40)} + '...'"></span>
+    <span th:text="${spctt.kichCo.ten} + ' -'"
+          th:style="'background-color:' + ${spctt.kichCo.ten} + '; color: black; padding: 2px 5px; border-radius: 3px;'"></span>
+    <span th:text="${spctt.mauSac.ten}"
+          th:style="'background-color:' + ${spctt.mauSac.ten} + '; color: white; padding: 2px 5px; border-radius: 3px;'"></span>
+</span>
+                                                <span th:unless="${#strings.length(spctt.sanPham.tenSanPham + spctt.kichCo.ten + ' -' + spctt.mauSac.ten) > 40}">
+    <span th:text="${spctt.sanPham.tenSanPham}"></span>
+    <span th:text="${spctt.kichCo.ten} + ' -'"
+          th:style="'background-color:' + ${spctt.kichCo.ten} + '; color: black; padding: 2px 5px; border-radius: 3px;'"></span>
+    <span th:text="${spctt.mauSac.ten}"
+          th:style="'background-color:' + ${spctt.mauSac.ten} + '; color: white; padding: 2px 5px; border-radius: 3px;'"></span>
+</span>
+                                            </td>
+                                            <td>
+                                                <span style="width: 70px; height: 30px; line-height: 30px;"
+                                                      th:text="${spctt.soLuong}"></span>
+                                            </td>
+                                            <td>
+                                            <span style="width: 150px; height: 30px; color: black; font-weight: bold; line-height: 30px;"
+                                                  th:text="${#numbers.formatDecimal(spctt.giaBan, 0, 'COMMA', 0, 'POINT')} + '&#x20ab;'"></span>
+                                            </td>
+                                            <td>
+                                                <a th:href="@{/deleteCTSP/{id}(id=${spctt.id})}"
+                                                   style="color: rgb(249,72,42)" onclick="return xoa(event)">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25"
+                                                         fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                                                        <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
+                                                    </svg>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <input type="hidden" name="spctId" th:value="${spctt.id}">
+                                                <label for="file-input-1-${stt.index}">
+                                                    <input type="file" id="file-input-1-${stt.index}" name="anh1"
+                                                           onchange="showFileInfo(event)">
+                                                </label>
+                                                <label for="file-input-2-${stt.index}">
+                                                    <input type="file" id="file-input-2-${stt.index}" name="anh2"
+                                                           onchange="showFileInfo(event)">
+                                                </label>
+                                                <label for="file-input-3-${stt.index}">
+                                                    <input type="file" id="file-input-3-${stt.index}" name="anh3"
+                                                           onchange="showFileInfo(event)">
+                                                </label>
+                                            </td>
+
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </form>
+        <!-- /.content -->
+    </div>
+    <!--end-->
+<!--    <nav th:replace="~{/layoutadmin/footer.html}"></nav>-->
+</div>
+<!--script-->
+<!--<nav th:replace="~{/layoutadmin/script.html}"></nav>-->
+<!--end-->
+</body>
+</html>
+<!-- jQuery (Yêu cầu đầu tiên) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<!-- Bootstrap (Phải load sớm để các thư viện khác hoạt động) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Moment.js (Yêu cầu trước khi load thư viện liên quan đến ngày giờ) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+
+<!-- Select2 (Plugin chọn nhiều giá trị) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+
+<!-- InputMask (Plugin định dạng input) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
+
+<!-- Date Range Picker (Yêu cầu Moment.js) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.1/daterangepicker.min.js"></script>
+
+<!-- Bootstrap Color Picker -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.4.0/js/bootstrap-colorpicker.min.js"></script>
+
+<!-- Tempusdominus Bootstrap 4 (Yêu cầu Moment.js và Bootstrap) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/js/tempusdominus-bootstrap-4.min.js"></script>
+
+<!-- Bootstrap Switch (Chuyển đổi trạng thái bật/tắt) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
+
+<!-- Bootstrap4 Duallistbox -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap4-duallistbox/4.0.2/jquery.bootstrap-duallistbox.min.js"></script>
+
+<!-- BS-Stepper (Bước tiến trình từng phần) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bs-stepper/1.7.0/js/bs-stepper.min.js"></script>
+
+<!-- Dropzone (Tải lên tệp kéo thả) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
+
+<!-- AdminLTE (Phải được load CUỐI CÙNG để đảm bảo không lỗi) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/js/adminlte.min.js"></script>
+
+<!-- AdminLTE for demo purposes -->
+<!--<script src="../../dist/js/demo.js"></script>-->
+<!--thư viện để chọn nhiều giá trị trên select -->
+<script>
+    $(function () {
+        //Initialize Select2 Elements
+        $('.select2').select2()
+
+        //Initialize Select2 Elements
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        })
+
+        //Datemask dd/mm/yyyy
+        $('#datemask').inputmask('dd/mm/yyyy', {'placeholder': 'dd/mm/yyyy'})
+        //Datemask2 mm/dd/yyyy
+        $('#datemask2').inputmask('mm/dd/yyyy', {'placeholder': 'mm/dd/yyyy'})
+        //Money Euro
+        $('[data-mask]').inputmask()
+
+        //Date picker
+        $('#reservationdate').datetimepicker({
+            format: 'L'
+        });
+
+        //Date and time picker
+        $('#reservationdatetime').datetimepicker({icons: {time: 'far fa-clock'}});
+
+        //Date range picker
+        $('#reservation').daterangepicker()
+        //Date range picker with time picker
+        $('#reservationtime').daterangepicker({
+            timePicker: true,
+            timePickerIncrement: 30,
+            locale: {
+                format: 'MM/DD/YYYY hh:mm A'
+            }
+        })
+        //Date range as a button
+        $('#daterange-btn').daterangepicker(
+            {
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                startDate: moment().subtract(29, 'days'),
+                endDate: moment()
+            },
+            function (start, end) {
+                $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
+            }
+        )
+
+        //Timepicker
+        $('#timepicker').datetimepicker({
+            format: 'LT'
+        })
+
+        //Bootstrap Duallistbox
+        $('.duallistbox').bootstrapDualListbox()
+
+        //Colorpicker
+        $('.my-colorpicker1').colorpicker()
+        //color picker with addon
+        $('.my-colorpicker2').colorpicker()
+
+        $('.my-colorpicker2').on('colorpickerChange', function (event) {
+            $('.my-colorpicker2 .fa-square').css('color', event.color.toString());
+        })
+
+        $("input[data-bootstrap-switch]").each(function () {
+            $(this).bootstrapSwitch('state', $(this).prop('checked'));
+        })
+
+    })
+    // BS-Stepper Init
+    document.addEventListener('DOMContentLoaded', function () {
+        window.stepper = new Stepper(document.querySelector('.bs-stepper'))
+    })
+
+    // DropzoneJS Demo Code Start
+    Dropzone.autoDiscover = false
+
+    // Get the template HTML and remove it from the doumenthe template HTML and remove it from the doument
+    var previewNode = document.querySelector("#template")
+    previewNode.id = ""
+    var previewTemplate = previewNode.parentNode.innerHTML
+    previewNode.parentNode.removeChild(previewNode)
+
+    var myDropzone = new Dropzone(document.body, { // Make the whole body a dropzone
+        url: "/target-url", // Set the url
+        thumbnailWidth: 80,
+        thumbnailHeight: 80,
+        parallelUploads: 20,
+        previewTemplate: previewTemplate,
+        autoQueue: false, // Make sure the files aren't queued until manually added
+        previewsContainer: "#previews", // Define the container to display the previews
+        clickable: ".fileinput-button" // Define the element that should be used as click trigger to select files.
+    })
+
+    myDropzone.on("addedfile", function (file) {
+        // Hookup the start button
+        file.previewElement.querySelector(".start").onclick = function () {
+            myDropzone.enqueueFile(file)
+        }
+    })
+
+    // Update the total progress bar
+    myDropzone.on("totaluploadprogress", function (progress) {
+        document.querySelector("#total-progress .progress-bar").style.width = progress + "%"
+    })
+
+    myDropzone.on("sending", function (file) {
+        // Show the total progress bar when upload starts
+        document.querySelector("#total-progress").style.opacity = "1"
+        // And disable the start button
+        file.previewElement.querySelector(".start").setAttribute("disabled", "disabled")
+    })
+
+    // Hide the total progress bar when nothing's uploading anymore
+    myDropzone.on("queuecomplete", function (progress) {
+        document.querySelector("#total-progress").style.opacity = "0"
+    })
+
+    // Setup the buttons for all transfers
+    // The "add files" button doesn't need to be setup because the config
+    // `clickable` has already been specified.
+    document.querySelector("#actions .start").onclick = function () {
+        myDropzone.enqueueFiles(myDropzone.getFilesWithStatus(Dropzone.ADDED))
+    }
+    document.querySelector("#actions .cancel").onclick = function () {
+        myDropzone.removeAllFiles(true)
+    }
+    // DropzoneJS Demo Code End
+</script>
+<!--validate khi thêm sp-->
+<script>
+    function clearErrorMessageTenSP() {
+        document.getElementById("tenspError").innerText = "";
+    }
+
+    function clearErrorMessageGioiTinh() {
+        document.getElementById("gioitinhError").innerText = "";
+    }
+
+    function clearErrorMessageMoTa() {
+        document.getElementById("motaError").innerText = "";
+    }
+
+    function clearMotaError() {
+        document.getElementById("motaError").innerText = "";
+    }
+
+    function clearErrorMessageMauSac() {
+        document.getElementById("mausacError").innerText = "";
+    }
+
+    function validateForm() {
+        var tensp = document.forms["addProduct"]["tensp"].value;
+        var mota = document.forms["addProduct"]["mota"].value;
+        var gioitinh = document.forms["addProduct"]["gioitinh"].value;
+        var mausac = document.forms["addProduct"]["idMauSac"].value;
+        // Lấy tất cả các checkbox có name là "kichCoId" và đã được chọn
+        var checkboxes = document.querySelectorAll('input[name="kichCoId"]:checked');
+
+        // Kiểm tra và cập nhật thông báo lỗi cho mỗi trường dữ liệu
+        if (isEmpty(tensp)) {
+            document.getElementById("tenspError").innerText = "Vui lòng nhập tên sản phẩm.";
+            return false;
+        } else {
+            document.getElementById("tenspError").innerText = "";
+        }
+
+        if (isEmpty(gioitinh)) {
+            document.getElementById("gioitinhError").innerText = "Vui lòng chọn giới tính.";
+            return false;
+        } else {
+            document.getElementById("gioitinhError").innerText = "";
+        }
+
+        if (isEmpty(mota)) {
+            document.getElementById("motaError").innerText = "Vui lòng nhập mô tả.";
+            return false;
+        } else if (mota.length > 500) {
+            motaError.innerText = "Mô tả không được vượt quá 500 ký tự.";
+            return false;
+        } else {
+            document.getElementById("motaError").innerText = "";
+        }
+        if (isEmpty(mausac)) {
+            document.getElementById("mausacError").innerText = "Vui lòng chọn màu sắc.";
+            return false;
+        } else {
+            document.getElementById("mausacError").innerText = "";
+        }
+// Kiểm tra xem có ít nhất một checkbox đã được chọn hay không
+        if (checkboxes.length === 0) {
+            document.getElementById("kichcoError").innerText = "Vui lòng chọn ít nhất một kích cỡ.";
+            return false;
+        } else {
+            document.getElementById("kichcoError").innerText = "";
+        }
+        return them();
+
+    }
+
+    function them() {
+        // Sử dụng SweetAlert2 thay vì hộp thoại confirm
+        Swal.fire({
+            title: 'Bạn có muốn thêm không?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Có',
+            cancelButtonText: 'Không'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Nếu người dùng nhấn Có, hiển thị thông báo thành công và chuyển hướng sau một khoảng thời gian
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                setTimeout(function () {
+                    // Lưu thông báo vào sessionStorage
+                    sessionStorage.setItem('successMessage', 'Thêm thành công!');
+                    document.addProduct.submit();
+                });
+            }
+        });
+
+        // Ngăn form được gửi đi ngay lập tức
+        return false;
+    }
+
+    function isEmpty(str) {
+        return !str.trim();
+    }
+
+    function handleCheckboxChange() {
+        document.getElementById("kichcoError").innerText = "";
+    }
+
+</script>
+
+<!--confirm khi xóa spct-->
+<script>
+    function xoa(event) {
+        event.preventDefault(); // Ngăn chặn chuyển hướng mặc định của thẻ 'a'
+        var deleteUrl = event.currentTarget.getAttribute('href'); // Lấy giá trị của thuộc tính href của thẻ <a>
+        console.log("Delete URL: ", deleteUrl); // Hiển thị giá trị của deleteUrl trong console
+        Swal.fire({
+            title: 'Bạn có muốn xóa không?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                setTimeout(function () {
+                    sessionStorage.setItem('successMessageXoa', 'Xóa thành công!');
+                    window.location.href = deleteUrl;
+                });
+            }
+        });
+    }
+</script>
+
+<!--thông báo xóa-->
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const successMessage = sessionStorage.getItem('successMessageXoa');
+        if (successMessage) {
+            // Hiển thị thông báo ở góc bên phải màn hình
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+            Toast.fire({
+                icon: 'success',
+                title: successMessage
+            });
+
+            // Xóa thông báo khỏi sessionStorage sau khi hiển thị
+            sessionStorage.removeItem('successMessageXoa');
+        }
+    });
+</script>
+
+<!--dùng cho thêm size-->
+<script>
+    $(document).ready(function () {
+        var selectedValues = [];
+
+        // Function to remove a value from selectedValues array
+        function removeValue(value) {
+            selectedValues = selectedValues.filter(function (item) {
+                return item !== value;
+            });
+        }
+
+        // Function to update display of selected values
+        function updateDisplay() {
+            $('#displayValue').empty();
+            selectedValues.forEach(function (val) {
+                var button = $('<button type="button" class="btn mr-2 btn-dark">' + val + '</button>');
+                $('#displayValue').append(button);
+            });
+        }
+
+        $('.btn-check').on('click', function () {
+            var value = $(this).val();
+
+            if ($(this).is(':checked')) {
+                selectedValues.push(value);
+            } else {
+                removeValue(value);
+            }
+
+            updateDisplay();
+        });
+    });
+</script>
+
+<!--ảnh-->
+<script>
+    function previewImages() {
+        var preview = document.getElementById('image-preview');
+        var files = document.getElementById('file-input').files;
+
+        // Kiểm tra số lượng ảnh đã chọn và số lượng ảnh hiện có
+        var currentImages = preview.getElementsByClassName('preview-image-container').length;
+        var totalImages = currentImages + files.length;
+
+        // Kiểm tra số lượng ảnh hiện có và ảnh mới
+        if (totalImages > 3) {
+            alert('Bạn chỉ có thể tải lên tối đa 3 ảnh.');
+            return; // Dừng hàm nếu số lượng ảnh vượt quá 3
+        }
+
+        for (var i = 0; i < files.length; i++) {
+            var file = files[i];
+            var reader = new FileReader();
+
+            reader.onload = function (event) {
+                var imageContainer = document.createElement('div');
+                imageContainer.classList.add('preview-image-container');
+
+                var image = new Image();
+                image.src = event.target.result;
+                image.classList.add('preview-image');
+
+                var deleteButton = document.createElement('button');
+                deleteButton.innerHTML = 'X';
+                deleteButton.classList.add('delete-button');
+                deleteButton.onclick = function () {
+                    deleteImage(imageContainer);
+                };
+
+                imageContainer.appendChild(image);
+                imageContainer.appendChild(deleteButton);
+                preview.appendChild(imageContainer);
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        // Ẩn nút file upload khi đã thêm tối đa 3 ảnh
+        if (totalImages >= 3) {
+            document.getElementById('file-input').parentElement.style.display = 'none';
+        }
+    }
+
+    // Hàm xóa ảnh và hiển thị lại nút file upload
+    function deleteImage(imageContainer) {
+        imageContainer.remove();
+        var preview = document.getElementById('image-preview');
+        var currentImages = preview.getElementsByClassName('preview-image-container').length;
+        // Hiển thị lại nút file upload khi ảnh bị xóa
+        if (currentImages < 3) {
+            document.getElementById('file-input').parentElement.style.display = 'block';
+        }
+    }
+</script>
+<!--dùng ẩn hiển nút chỉnh sửa số lượng và nút hoàn tất-->
+<script>
+    function checkProductDetails() {
+        // Kiểm tra số lượng sản phẩm chi tiết trong bảng
+        var rowCount = document.querySelectorAll('.product-row').length;
+        var editButton = document.getElementById('editButton');
+        var submitButton = document.getElementById('submitButton');
+
+        // Nếu có ít nhất một sản phẩm chi tiết, kích hoạt nút "Hoàn tất", ngược lại vô hiệu hóa nút
+        if (rowCount > 0) {
+
+            editButton.style.display = 'inline'; // Hiển thị nút chỉnh sửa
+            submitButton.style.display = 'inline'; // Hiển thị nút chỉnh sửa
+        } else {
+
+            editButton.style.display = 'none'; // Ẩn nút chỉnh sửa
+            submitButton.style.display = 'none'; // Ẩn nút chỉnh sửa
+        }
+    }
+
+    // Gọi hàm kiểm tra khi tải trang
+    window.onload = checkProductDetails;
+
+</script>
+
+<!-- dùng cho click vào checkbox-->
+<script>
+    var giaTriTuCheckbox = []; // Mảng lưu trữ giá trị từ checkbox
+
+    // Hàm lưu trữ giá trị từ checkbox khi thay đổi
+    function toggleRowHighlight(checkbox) {
+        const row = checkbox.closest('tr');
+        if (checkbox.checked) {
+            row.classList.add('selected-row');
+            if (giaTriTuCheckbox.indexOf(checkbox.value) === -1) {
+                giaTriTuCheckbox.push(checkbox.value);
+            }
+        } else {
+            row.classList.remove('selected-row');
+            var index = giaTriTuCheckbox.indexOf(checkbox.value);
+            if (index !== -1) {
+                giaTriTuCheckbox.splice(index, 1);
+            }
+        }
+        console.log(giaTriTuCheckbox);
+    }
+
+    function selectAll(source) {
+        var checkboxes = document.getElementsByName('chonspct');
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = source.checked;
+            toggleRowHighlight(checkboxes[i]); // Call toggleRowHighlight for each checkbox
+        }
+    }
+
+    function validateAndSubmit() {
+        var soluong = document.getElementById("soluongInput").value.trim();
+        var giatien = document.getElementsByName("giatienDisplay")[0].value.trim();
+        var soluongError = document.getElementById("soluongError");
+        var giatienError = document.getElementById("giatienError");
+
+        // Kiểm tra nếu số lượng và giá tiền không hợp lệ
+        if (soluong.trim() === "") {
+            soluongError.innerText = "Vui lòng nhập số lượng";
+            return false;
+        } else if (soluong <= 0) {
+            soluongError.innerText = "Số lượng phải lớn hơn 0";
+            return false; // Ngăn form được gửi đi
+        } else if (soluong > 2147483647) {
+            soluongError.innerText = "Số lượng phải nhỏ hơn 2147483647";
+            return false; // Ngăn form được gửi đi
+        } else {
+            soluongError.innerText = ""; // Xóa thông báo lỗi nếu có
+        }
+        giatien = giatien.replace(/[^0-9]/g, '');
+        var giatienValue = parseInt(giatien);
+        // Kiểm tra nếu giá trị rỗng
+        if (giatien.trim() === "") {
+            giatienError.innerText = "Vui lòng nhập giá tiền";
+            return false;
+        }
+        // Kiểm tra giá trị <= 0
+        else if (giatienValue <= 0) {
+            giatienError.innerText = "Giá tiền phải lớn hơn 0";
+            return false;
+        }
+        // Kiểm tra giá trị > 922337203685477
+        else if (giatienValue > 922337203685477) {
+            giatienError.innerText = "Giá tiền không được vượt quá 922.337.203.685.477 ₫";
+            return false;
+        } else {
+            giatienError.innerText = ""; // Xóa thông báo lỗi nếu có
+        }
+        // Cập nhật giá trị vào input ẩn để gửi lên server
+        document.getElementById('giatienRawInput').value = giatienValue;
+
+        // Lưu giá trị từ checkbox vào form trước khi submit
+        if (giaTriTuCheckbox.length > 0) {
+            for (var i = 0; i < giaTriTuCheckbox.length; i++) {
+                var input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "choncheckbox";
+                input.value = giaTriTuCheckbox[i];
+                document.getElementById("submitid").appendChild(input);
+            }
+        }
+
+        // Sử dụng SweetAlert2 để xác nhận trước khi gửi form
+        Swal.fire({
+            title: 'Bạn có muốn cập nhật không không?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Có',
+            cancelButtonText: 'Không'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Hiển thị thông báo thành công
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                // Submit form
+                setTimeout(function () {
+                    // Lưu thông báo vào sessionStorage
+                    sessionStorage.setItem('successMessageSuaGia', 'Cập nhật thành công!');
+                    document.getElementById("submitid").submit();
+                });
+            }
+        });
+
+        // Ngăn form được gửi đi ngay lập tức
+        return false;
+    }
+
+
+    function formatCurrency(elementId) {
+        var input = document.getElementById(elementId);
+        var rawInput = document.getElementById('giatienRawInput');
+        var value = input.value.replace(/[^0-9]/g, ''); // Loại bỏ tất cả ký tự không phải số
+
+        if (value) {
+            rawInput.value = value; // Gán giá trị thô vào input ẩn
+            value = (parseInt(value, 10)).toLocaleString('vi-VN'); // Định dạng giá trị với phân cách hàng nghìn
+            input.value = value + ' ₫'; // Hiển thị giá trị với đơn vị tiền tệ
+        } else {
+            rawInput.value = ''; // Đảm bảo input ẩn được xóa nếu không có giá trị hợp lệ
+            input.value = '';
+        }
+    }
+</script>
+
+<!--dùng ẩn hiện modal khi click vào checkBox-->
+<script>
+    // Lắng nghe sự kiện khi checkbox được thay đổi
+    $('.form-check-input.checkbox.checkbox-red').change(function () {
+        // Kiểm tra số lượng checkbox được chọn
+        var checkedCount = $('.form-check-input.checkbox.checkbox-red:checked').length;
+
+        // Kiểm tra nếu có ít nhất một checkbox được chọn
+        if (checkedCount > 0) {
+            // Xóa lớp disabled cho nút chỉnh sửa
+            $('#editButton').removeClass('disabled');
+        } else {
+            // Thêm lớp disabled cho nút chỉnh sửa
+            $('#editButton').addClass('disabled');
+        }
+    });
+</script>
+
+<!-- dùng để validate các thuộc tính sản phẩm-->
+<script>
+    function validateThuongHieu() {
+        var tenThuongHieu = document.getElementById("tenThuongHieu").value;
+        var tenThuongHieuError = document.getElementById("tenThuongHieuError");
+
+        // Kiểm tra xem trường "Tên thương hiệu" có trống không
+        if (tenThuongHieu.trim() === "") {
+            tenThuongHieuError.innerText = "Vui lòng nhập tên thương hiệu.";
+            return false; // Ngăn form được gửi đi
+        } else {
+            tenThuongHieuError.innerText = ""; // Xóa thông báo lỗi nếu có
+            return true; // Cho phép form được gửi đi
+        }
+    }
+
+    function validateChatLieu() {
+        var tenChatLieu = document.getElementById("tenChatLieu").value;
+        var tenChatLieuError = document.getElementById("tenChatLieuError");
+
+        // Kiểm tra xem trường "Tên thương hiệu" có trống không
+        if (tenChatLieu.trim() === "") {
+            tenChatLieuError.innerText = "Vui lòng nhập tên chất liệu.";
+            return false; // Ngăn form được gửi đi
+        } else {
+            tenChatLieuError.innerText = ""; // Xóa thông báo lỗi nếu có
+            return true; // Cho phép form được gửi đi
+        }
+    }
+
+    function validateDeGiay() {
+        var tenDeGiay = document.getElementById("tenDeGiay").value;
+        var tenDeGiayError = document.getElementById("tenDeGiayError");
+
+        // Kiểm tra xem trường "Tên thương hiệu" có trống không
+        if (tenDeGiay.trim() === "") {
+            tenDeGiayError.innerText = "Vui lòng nhập tên đế giày.";
+            return false; // Ngăn form được gửi đi
+        } else {
+            tenDeGiayError.innerText = ""; // Xóa thông báo lỗi nếu có
+            return true; // Cho phép form được gửi đi
+        }
+    }
+
+    function validateMauSac() {
+        var tenMauSac = document.getElementById("tenMauSac").value;
+        var tenMauSacError = document.getElementById("tenMauSacError");
+
+        // Kiểm tra xem trường "Tên thương hiệu" có trống không
+        if (tenMauSac.trim() === "") {
+            tenMauSacError.innerText = "Vui lòng nhập tên màu sắc.";
+            return false; // Ngăn form được gửi đi
+        } else {
+            tenMauSacError.innerText = ""; // Xóa thông báo lỗi nếu có
+            return true; // Cho phép form được gửi đi
+        }
+    }
+</script>
+
+<script>
+    var giaTriTuCheckbox = []; // Mảng lưu trữ giá trị từ checkbox
+</script>
+
+<!--validate thuộc tính sp trong modal-->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var objectsFromControllerThuongHieu = /*[[${th}]]*/ [];
+    var objectsFromControllerChatLieu = /*[[${cl}]]*/ [];
+    var objectsFromControllerDeGiay = /*[[${dg}]]*/ [];
+    var objectsFromControllerMauSac = /*[[${ms}]]*/ [];
+    var objectsFromControllerKichCo = /*[[${kc}]]*/ [];
+    var objectsFromControllerTenSP = /*[[${sp}]]*/ [];
+    const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+    const specialCharPatternSo = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?0-9]/;
+
+    function validateTrungTenSP() {
+        var inputMaTenSP = document.getElementById("tenInputTenSP").value;
+        var errorMaTenSP = document.getElementById("errorTenSP");
+        var isMaValid = true;
+        // Kiểm tra xem trường "Tên sản phẩm" có trống không và không vượt quá 20 ký tự
+        if (inputMaTenSP.trim() === "") {
+            errorMaTenSP.innerText = "Vui lòng nhập tên sản phẩm.";
+            return false; // Ngăn form được gửi đi
+        } else if (inputMaTenSP.trim().length > 50) {
+            errorMaTenSP.innerText = "Tên sản phẩm không được vượt quá 50 ký tự.";
+            return false; // Ngăn form được gửi đi
+        } else if (specialCharPattern.test(inputMaTenSP.trim())) {
+            errorMaTenSP.innerText = "Tên sản phẩm không được chứa ký tự đặc biệt.";
+            return false; // Ngăn form được gửi đi
+        } else {
+            errorMaTenSP.innerText = ""; // Xóa thông báo lỗi nếu có
+        }
+
+// Kiểm tra trùng tên sản phẩm (không phân biệt chữ hoa chữ thường và khoảng trắng)
+        for (var i = 0; i < objectsFromControllerTenSP.length; i++) {
+            var obj = objectsFromControllerTenSP[i];
+            // Loại bỏ khoảng trắng và chuyển đổi về chữ thường để so sánh
+            var normalizedInput = inputMaTenSP.trim().replace(/\s+/g, ' ').toLowerCase();
+            var normalizedObjName = obj.tensanpham.trim().replace(/\s+/g, ' ').toLowerCase();
+
+            if (normalizedInput === normalizedObjName) {
+                errorMaTenSP.innerText = "Tên sản phẩm đã tồn tại!";
+                return false; // Ngăn form được gửi đi
+            }
+        }
+
+
+        if (isMaValid) {
+            errorMaTenSP.innerText = "";
+            themTenSP();
+        }
+
+        return false;
+    }
+
+    function validateTrungThuongHieu() {
+        var inputMaThuongHieu = document.getElementById("tenInputThuongHieu").value;
+        var errorMaThuongHieu = document.getElementById("errorTenThuongHieu");
+        var isMaValid = true;
+
+
+        // Kiểm tra xem trường "Tên thương hiệu" có trống không
+        if (inputMaThuongHieu.trim() === "") {
+            errorMaThuongHieu.innerText = "Vui lòng nhập tên thương hiệu.";
+            return false; // Ngăn form được gửi đi
+        } else if (inputMaThuongHieu.trim().length > 20) {
+            errorMaThuongHieu.innerText = "Tên thương hiệu không được vượt quá 20 ký tự.";
+            return false; // Ngăn form được gửi đi
+        } else if (specialCharPattern.test(inputMaThuongHieu.trim())) {
+            errorMaThuongHieu.innerText = "Tên thương hiệu không được chứa ký tự đặc biệt.";
+            return false; // Ngăn form được gửi đi
+        } else {
+            errorMaThuongHieu.innerText = ""; // Xóa thông báo lỗi nếu có
+        }
+        // Kiểm tra trùng tên thương hiệu (không phân biệt chữ hoa chữ thường và khoảng trắng)
+        for (var i = 0; i < objectsFromControllerThuongHieu.length; i++) {
+            var obj = objectsFromControllerThuongHieu[i];
+            // Loại bỏ khoảng trắng và chuyển đổi về chữ thường để so sánh
+            var normalizedInput = inputMaThuongHieu.trim().replace(/\s+/g, ' ').toLowerCase();
+            var normalizedObjName = obj.ten.trim().replace(/\s+/g, ' ').toLowerCase();
+
+            if (normalizedInput === normalizedObjName) {
+                errorMaThuongHieu.innerText = "Tên thương hiệu đã tồn tại!";
+                isMaValid = false; // Đánh dấu không hợp lệ
+                return false; // Ngăn form được gửi đi
+            }
+        }
+
+
+        if (isMaValid) {
+            errorMaThuongHieu.innerText = "";
+            themThuongHieu();
+        }
+
+        return false;
+    }
+
+    function validateTrungChatLieu() {
+        var inputMaChatLieu = document.getElementById("tenInputChatLieu").value;
+        var errorMaChatLieu = document.getElementById("errorTenChatLieu");
+        var isMaValid = true;
+
+
+        // Kiểm tra xem trường "Tên chất liệu" có trống không
+        if (inputMaChatLieu.trim() === "") {
+            errorMaChatLieu.innerText = "Vui lòng nhập tên chất liệu.";
+            return false; // Ngăn form được gửi đi
+        } else if (inputMaChatLieu.trim().length > 20) {
+            errorMaChatLieu.innerText = "Tên chất liệu không được vượt quá 20 ký tự.";
+            return false; // Ngăn form được gửi đi
+        } else if (specialCharPattern.test(inputMaChatLieu.trim())) {
+            errorMaChatLieu.innerText = "Tên chất liệu không được chứa ký tự đặc biệt.";
+            return false; // Ngăn form được gửi đi
+        } else {
+            errorMaChatLieu.innerText = ""; // Xóa thông báo lỗi nếu có
+        }
+
+// Kiểm tra trùng tên chất liệu (không phân biệt chữ hoa chữ thường và khoảng trắng)
+        for (var i = 0; i < objectsFromControllerChatLieu.length; i++) {
+            var obj = objectsFromControllerChatLieu[i];
+            // Loại bỏ khoảng trắng và chuyển đổi về chữ thường để so sánh
+            var normalizedInput = inputMaChatLieu.trim().replace(/\s+/g, ' ').toLowerCase();
+            var normalizedObjName = obj.ten.trim().replace(/\s+/g, ' ').toLowerCase();
+
+            if (normalizedInput === normalizedObjName) {
+                errorMaChatLieu.innerText = "Tên chất liệu đã tồn tại!";
+                return false; // Ngăn form được gửi đi
+            }
+        }
+
+
+        if (isMaValid) {
+            errorMaChatLieu.innerText = "";
+            themChatLieu();
+        }
+
+        return false;
+    }
+
+    function validateTrungDeGiay() {
+        var inputMaDeGiay = document.getElementById("tenInputDeGiay").value;
+        var errorMaDeGiay = document.getElementById("errorTenDeGiay");
+        var isMaValid = true;
+
+        // Kiểm tra xem trường "Tên đế giày" có trống không
+        if (inputMaDeGiay.trim() === "") {
+            errorMaDeGiay.innerText = "Vui lòng nhập tên đế giày.";
+            return false; // Ngăn form được gửi đi
+        } else if (inputMaDeGiay.trim().length > 20) {
+            errorMaDeGiay.innerText = "Tên đế giày không được vượt quá 20 ký tự.";
+            return false; // Ngăn form được gửi đi
+        } else if (specialCharPattern.test(inputMaDeGiay.trim())) {
+            errorMaDeGiay.innerText = "Tên đế giày không được chứa ký tự đặc biệt.";
+            return false; // Ngăn form được gửi đi
+        } else {
+            errorMaDeGiay.innerText = ""; // Xóa thông báo lỗi nếu có
+        }
+// Kiểm tra trùng tên đế giày (không phân biệt chữ hoa chữ thường)
+        // Kiểm tra trùng tên đế giày (không phân biệt chữ hoa chữ thường và khoảng trắng)
+        for (var i = 0; i < objectsFromControllerDeGiay.length; i++) {
+            var obj = objectsFromControllerDeGiay[i];
+            // Loại bỏ khoảng trắng và chuyển đổi về chữ thường để so sánh
+            var normalizedInput = inputMaDeGiay.trim().replace(/\s+/g, ' ').toLowerCase();
+            var normalizedObjName = obj.ten.trim().replace(/\s+/g, ' ').toLowerCase();
+
+            if (normalizedInput === normalizedObjName) {
+                errorMaDeGiay.innerText = "Tên đế giày đã tồn tại!";
+                return false; // Ngăn form được gửi đi
+            }
+        }
+
+        if (isMaValid) {
+            errorMaDeGiay.innerText = "";
+            themDeGiay();
+        }
+        return false;
+    }
+
+    function validateTrungMauSac() {
+        // Khai báo và cấu hình Toast của SweetAlert2
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+            }
+        });
+
+        var inputMaMauSac = document.getElementById("tenInputMauSac").value;
+        var isMaValid = true;
+// Kiểm tra trùng tên màu sắc (không phân biệt chữ hoa chữ thường và khoảng trắng)
+        for (var i = 0; i < objectsFromControllerMauSac.length; i++) {
+            var obj = objectsFromControllerMauSac[i];
+            // Loại bỏ khoảng trắng và chuyển đổi về chữ thường để so sánh
+            var normalizedInput = inputMaMauSac.trim().replace(/\s+/g, ' ').toLowerCase();
+            var normalizedObjName = obj.ten.trim().replace(/\s+/g, ' ').toLowerCase();
+
+            if (normalizedInput === normalizedObjName) {
+                // Hiển thị thông báo toast khi mã màu đã tồn tại
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Mã màu sắc đã tồn tại'
+                });
+                return false; // Ngăn form được gửi đi
+            }
+        }
+        if (isMaValid) {
+            themMauSac();
+        }
+        return false;
+    }
+
+    function validateTrungKichCo() {
+        var inputMaKichCo = document.getElementById("tenInputKichCo").value;
+        var errorMaKichCo = document.getElementById("errorTenKichCo");
+        var isMaValid = true;
+        // Kiểm tra xem trường "Tên kích cỡ" có trống không
+        // Kiểm tra xem trường "Tên kích cỡ" có trống không
+        if (inputMaKichCo.trim() === "") {
+            errorMaKichCo.innerText = "Vui lòng nhập tên kích cỡ.";
+            return false; // Ngăn form được gửi đi
+        } else if (inputMaKichCo.trim().length > 20) {
+            errorMaKichCo.innerText = "Tên kích cỡ không được vượt quá 20 ký tự.";
+            return false; // Ngăn form được gửi đi
+        } else if (/[^0-9\s]/.test(inputMaKichCo.trim())) {
+            errorMaKichCo.innerText = "Tên kích cỡ chỉ được phép chứa số.";
+            return false; // Ngăn form được gửi đi
+        } else {
+            errorMaKichCo.innerText = ""; // Xóa thông báo lỗi nếu có
+        }
+
+
+// Kiểm tra trùng tên kích cỡ (không phân biệt chữ hoa chữ thường và khoảng trắng)
+        for (var i = 0; i < objectsFromControllerKichCo.length; i++) {
+            var obj = objectsFromControllerKichCo[i];
+            // Loại bỏ khoảng trắng và chuyển đổi về chữ thường để so sánh
+            var normalizedInput = inputMaKichCo.trim().replace(/\s+/g, ' ').toLowerCase();
+            var normalizedObjName = obj.ten.trim().replace(/\s+/g, ' ').toLowerCase();
+
+            if (normalizedInput === normalizedObjName) {
+                errorMaKichCo.innerText = "Tên kích cỡ đã tồn tại!";
+                return false; // Ngăn form được gửi đi
+            }
+        }
+
+
+        if (isMaValid) {
+            errorMaKichCo.innerText = "";
+            themKichCo();
+        }
+
+        return false;
+    }
+
+
+    function themTenSP() {
+        // Sử dụng SweetAlert2 thay vì hộp thoại confirm
+        Swal.fire({
+            title: 'Bạn có muốn thêm không?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Có',
+            cancelButtonText: 'Không'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Nếu người dùng nhấn Có, hiển thị thông báo thành công và chuyển hướng sau một khoảng thời gian
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                setTimeout(function () {
+                    sessionStorage.setItem('successMessageThemTenSP', 'Thêm thành công!');
+                    document.addTenSP.submit();
+                });
+            }
+        });
+
+        // Ngăn form được gửi đi ngay lập tức
+        return false;
+    }
+
+    function themThuongHieu() {
+        // Sử dụng SweetAlert2 thay vì hộp thoại confirm
+        Swal.fire({
+            title: 'Bạn có muốn thêm không?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Có',
+            cancelButtonText: 'Không'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Nếu người dùng nhấn Có, hiển thị thông báo thành công và chuyển hướng sau một khoảng thời gian
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                setTimeout(function () {
+                    sessionStorage.setItem('successMessageThemTenThuongHieu', 'Thêm thành công!');
+                    document.addThuongHieu.submit();
+                });
+            }
+        });
+
+        // Ngăn form được gửi đi ngay lập tức
+        return false;
+    }
+
+    function themChatLieu() {
+        // Sử dụng SweetAlert2 thay vì hộp thoại confirm
+        Swal.fire({
+            title: 'Bạn có muốn thêm không?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Có',
+            cancelButtonText: 'Không'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Nếu người dùng nhấn Có, hiển thị thông báo thành công và chuyển hướng sau một khoảng thời gian
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                setTimeout(function () {
+                    sessionStorage.setItem('successMessageThemTenChatLieu', 'Thêm thành công!');
+                    document.addChatLieu.submit();
+                });
+            }
+        });
+        return false;
+    }
+
+    function themDeGiay() {
+        // Sử dụng SweetAlert2 thay vì hộp thoại confirm
+        Swal.fire({
+            title: 'Bạn có muốn thêm không?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Có',
+            cancelButtonText: 'Không'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Nếu người dùng nhấn Có, hiển thị thông báo thành công và chuyển hướng sau một khoảng thời gian
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                setTimeout(function () {
+                    sessionStorage.setItem('successMessageThemTenDeGiay', 'Thêm thành công!');
+                    document.addDeGiay.submit();
+                });
+            }
+        });
+        return false;
+    }
+
+    function themMauSac() {
+        // Sử dụng SweetAlert2 thay vì hộp thoại confirm
+        Swal.fire({
+            title: 'Bạn có muốn thêm không?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Có',
+            cancelButtonText: 'Không'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Nếu người dùng nhấn Có, hiển thị thông báo thành công và chuyển hướng sau một khoảng thời gian
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                setTimeout(function () {
+                    sessionStorage.setItem('successMessageThemTenMauSac', 'Thêm thành công!');
+                    document.addMauSac.submit();
+                });
+            }
+        });
+        return false;
+    }
+
+    function themKichCo() {
+        // Sử dụng SweetAlert2 thay vì hộp thoại confirm
+        Swal.fire({
+            title: 'Bạn có muốn thêm không?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Có',
+            cancelButtonText: 'Không'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Nếu người dùng nhấn Có, hiển thị thông báo thành công và chuyển hướng sau một khoảng thời gian
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                setTimeout(function () {
+                    sessionStorage.setItem('successMessageThemTenKichCo', 'Thêm thành công!');
+                    document.addKichCo.submit();
+                });
+            }
+        });
+        return false;
+    }
+
+    /*]]>*/
+</script>
+
+<!--validate hoàn tất-->
+<script>
+    function validateForm2() {
+        const rows = document.querySelectorAll('.product-row');
+        let valid = true;
+
+        rows.forEach(row => {
+            const anh1 = row.querySelector('input[name="anh1"]').files.length;
+            const anh2 = row.querySelector('input[name="anh2"]').files.length;
+            const anh3 = row.querySelector('input[name="anh3"]').files.length;
+
+            // Kiểm tra nếu không có ảnh nào được chọn
+            if (anh1 === 0 && anh2 === 0 && anh3 === 0) {
+                valid = false;
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                Toast.fire({
+                    icon: 'warning',
+                    title: 'Mỗi biến thể sản phẩm phải có ít nhất một ảnh.'
+                });
+            }
+        });
+
+        // Nếu tất cả đều hợp lệ, gọi hàm xác nhận
+        if (!valid) return false; // Ngăn không cho gửi form
+        return hoantat();
+    }
+
+    function hoantat() {
+        Swal.fire({
+            title: 'Bạn có muốn xác nhận không?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Có',
+            cancelButtonText: 'Không'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.forms['addImage'].submit(); // Gửi biểu mẫu
+            }
+        });
+        return false; // Ngăn không cho gửi form ngay lập tức
+    }
+</script>
+
+<!--thông báo thêm thành công-->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const successMessage = sessionStorage.getItem('successMessage');
+        if (successMessage) {
+            // Hiển thị thông báo ở góc bên phải màn hình
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+
+            Toast.fire({
+                icon: 'success',
+                title: successMessage
+            });
+
+            // Xóa thông báo khỏi sessionStorage sau khi hiển thị
+            sessionStorage.removeItem('successMessage');
+        }
+    });
+</script>
+
+<!--thông báo thêm tên sản phẩm thành công-->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const successMessage = sessionStorage.getItem('successMessageThemTenSP');
+        if (successMessage) {
+            // Hiển thị thông báo ở góc bên phải màn hình
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+
+            Toast.fire({
+                icon: 'success',
+                title: successMessage
+            });
+
+            // Xóa thông báo khỏi sessionStorage sau khi hiển thị
+            sessionStorage.removeItem('successMessageThemTenSP');
+        }
+    });
+</script>
+
+<!--thông báo thêm tên thương hiệu thành công-->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const successMessage = sessionStorage.getItem('successMessageThemTenThuongHieu');
+        if (successMessage) {
+            // Hiển thị thông báo ở góc bên phải màn hình
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+
+            Toast.fire({
+                icon: 'success',
+                title: successMessage
+            });
+
+            // Xóa thông báo khỏi sessionStorage sau khi hiển thị
+            sessionStorage.removeItem('successMessageThemTenThuongHieu');
+        }
+    });
+</script>
+
+<!--thông báo thêm tên chất liệu thành công-->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const successMessage = sessionStorage.getItem('successMessageThemTenChatLieu');
+        if (successMessage) {
+            // Hiển thị thông báo ở góc bên phải màn hình
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+
+            Toast.fire({
+                icon: 'success',
+                title: successMessage
+            });
+
+            // Xóa thông báo khỏi sessionStorage sau khi hiển thị
+            sessionStorage.removeItem('successMessageThemTenChatLieu');
+        }
+    });
+</script>
+
+<!--thông báo thêm tên đế giày thành công-->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const successMessage = sessionStorage.getItem('successMessageThemTenDeGiay');
+        if (successMessage) {
+            // Hiển thị thông báo ở góc bên phải màn hình
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+
+            Toast.fire({
+                icon: 'success',
+                title: successMessage
+            });
+
+            // Xóa thông báo khỏi sessionStorage sau khi hiển thị
+            sessionStorage.removeItem('successMessageThemTenDeGiay');
+        }
+    });
+</script>
+
+<!--thông báo thêm tên màu sắc thành công-->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const successMessage = sessionStorage.getItem('successMessageThemTenMauSac');
+        if (successMessage) {
+            // Hiển thị thông báo ở góc bên phải màn hình
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+
+            Toast.fire({
+                icon: 'success',
+                title: successMessage
+            });
+
+            // Xóa thông báo khỏi sessionStorage sau khi hiển thị
+            sessionStorage.removeItem('successMessageThemTenMauSac');
+        }
+    });
+</script>
+
+<!--thông báo thêm tên kích cỡ thành công-->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const successMessage = sessionStorage.getItem('successMessageThemTenKichCo');
+        if (successMessage) {
+            // Hiển thị thông báo ở góc bên phải màn hình
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+
+            Toast.fire({
+                icon: 'success',
+                title: successMessage
+            });
+
+            // Xóa thông báo khỏi sessionStorage sau khi hiển thị
+            sessionStorage.removeItem('successMessageThemTenKichCo');
+        }
+    });
+</script>
+
+<!--thông báo sửa giá thành công-->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const successMessage = sessionStorage.getItem('successMessageSuaGia');
+        if (successMessage) {
+            // Hiển thị thông báo ở góc bên phải màn hình
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+            Toast.fire({
+                icon: 'success',
+                title: successMessage
+            });
+            sessionStorage.removeItem('successMessageSuaGia');
+        }
+    });
+</script>
+
+<!--validate ảnh -->
+<script>
+    function showFileInfo(event) {
+        // Lấy thẻ <input> từ event
+        var input = event.target;
+
+        // Hiển thị tên tệp với màu đỏ
+        if (input.files && input.files[0]) {
+            var fileName = input.files[0].name;
+            input.parentNode.style.color = 'red';
+        }
+
+        // validate ảnh
+        if (input.files && input.files[0]) {
+            var file = input.files[0];
+            var fileName = file.name;
+            var fileExtension = fileName.split('.').pop().toLowerCase();
+            var fileSizeMB = file.size / (1024 * 1024); // Kích thước tệp tính bằng MB
+
+            // Kiểm tra định dạng file
+            if (fileExtension !== 'jpg' && fileExtension !== 'png') {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Sai định dạng ảnh. Vui lòng tải ảnh định dạng jpg hoặc png.'
+                });
+                input.value = ''; // Xóa giá trị của input để không lưu ảnh sai định dạng
+                input.parentNode.style.color = ''; // Xóa màu chữ
+                return;
+            }
+
+            // Kiểm tra kích thước tệp
+            if (fileSizeMB > 1) {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Kích thước ảnh không được lớn hơn 1MB.'
+                });
+                input.value = ''; // Xóa giá trị của input để không lưu ảnh quá lớn
+                input.parentNode.style.color = ''; // Xóa màu chữ
+                return;
+            }
+        }
+    }
+</script>
+
+<script>
+    $(function () {
+        // Initialize Select2 Elements
+        $('.select2').select2();
+
+        // Cập nhật màu sắc cho các tùy chọn
+        $('.select2').on('select2:open', function () {
+            // Duyệt qua tất cả các tùy chọn trong select2
+            $('#colorSelect .select2-results__option').each(function () {
+                // Lấy mã màu từ thuộc tính data-color
+                var color = $(this).data('color');
+                // Áp dụng màu nền và màu biên
+                $(this).css({
+                    'background-color': color,
+                    'color': 'white'
+                });
+            });
+        });
+
+        // Đảm bảo rằng các tùy chọn được hiển thị đúng màu ngay cả khi trang được tải lại
+        $('#colorSelect').select2({
+            templateResult: formatState,
+            templateSelection: formatState
+        });
+
+        function formatState(state) {
+            if (!state.id) {
+                return state.text;
+            }
+            var color = $(state.element).data('color');
+            var $state = $(
+                '<span style="background-color:' + color + '; display: inline-block; width: 50px;margin-top: 5px; height: 20px; border-radius: 3px;"></span>' +
+                '<span>' + state.text + '</span>'
+            );
+            return $state;
+        }
+    });
+</script>
+

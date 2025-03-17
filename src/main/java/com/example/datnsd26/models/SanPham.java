@@ -2,8 +2,10 @@ package com.example.datnsd26.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -17,39 +19,25 @@ public class SanPham {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "id_danh_muc", referencedColumnName = "id")
-    private DanhMuc danhMuc;
-
-    @ManyToOne
-    @JoinColumn(name = "id_chat_lieu", referencedColumnName = "id")
-    private ChatLieu chatLieu;
-
-    @ManyToOne
-    @JoinColumn(name = "id_thuong_hieu", referencedColumnName = "id")
-    private ThuongHieu thuongHieu;
-
-    @Column(name = "ma_san_pham", columnDefinition = "NVARCHAR(255)")
-    private String maSanPham;
-
     @Column(name = "ten_san_pham", columnDefinition = "NVARCHAR(255)")
     private String tenSanPham;
 
-    @Column(name = "hinh_anh", columnDefinition = "NVARCHAR(255)")
-    private String hinhAnh;
+    @Column(name = "ma_san_pham", columnDefinition = "NVARCHAR(50)")
+    private String maSanPham;
 
-    @Column(name = "mo_ta", columnDefinition = "NVARCHAR(255)")
-    private String moTa;
-
-    @Column(name = "ngay_tao")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayTao;
-
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "ngay_cap_nhat")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayCapNhat;
+    private LocalDateTime ngayCapNhat;
 
-    @Column(name = "trang_thai")
+    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Column(name = "ngay_tao")
+    private LocalDateTime ngayTao;
+
+    @Column(name = "trang_thai", columnDefinition = "BIT DEFAULT 1")
     private Boolean trangThai;
 
+    @OneToMany(mappedBy = "sanPham")
+    private List<SanPhamChiTiet> spct;
 }

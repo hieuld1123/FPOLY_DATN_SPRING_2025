@@ -63,7 +63,7 @@ public class CartController {
 
             if (quantity > product.getSoLuong()) {
                 redirectAttributes.addFlashAttribute("errorMessage",
-                        "Hiện sản phẩm " + product.getTenSanPhamChiTiet() + " chỉ còn " + product.getSoLuong() +
+                        "Hiện sản phẩm " + product.getSanPham().getTenSanPham() + " chỉ còn " + product.getSoLuong() +
                                 " sản phẩm. Nếu bạn đặt hàng với số lượng lớn, hãy liên hệ với chúng tôi qua 0397818716 để được hỗ trợ tốt nhất.");
                 return "redirect:/shop"; // Giữ người dùng ở lại trang /shop/
             }
@@ -114,7 +114,7 @@ public class CartController {
                 // Kiểm tra số lượng trong kho
                 if (newQuantity > product.get().getSoLuong()) {
                     redirectAttributes.addFlashAttribute("errorMessage",
-                            "Hiện sản phẩm " + product.get().getTenSanPhamChiTiet() + " chỉ còn " + product.get().getSoLuong() +
+                            "Hiện sản phẩm " + product.get().getSanPham().getTenSanPham() + " chỉ còn " + product.get().getSoLuong() +
                                     " sản phẩm. Nếu bạn đặt hàng với số lượng lớn, hãy liên hệ với chúng tôi qua 0397818716 để được hỗ trợ tốt nhất.");
                     return "redirect:/shop/cart";
                 }
@@ -144,7 +144,7 @@ public class CartController {
             SanPhamChiTiet product = sanPhamChiTietRepository.findById(item.getSanPhamChiTiet().getId()).orElse(null);
 
             if (product != null && item.getSoLuong() > product.getSoLuong()) {
-                warnings.add("Sản phẩm " + product.getTenSanPhamChiTiet() + " chỉ còn " + product.getSoLuong() + " sản phẩm.");
+                warnings.add("Sản phẩm " + product.getSanPham().getTenSanPham() + " chỉ còn " + product.getSoLuong() + " sản phẩm.");
             }
         }
 
@@ -232,7 +232,7 @@ public class CartController {
 
             // Kiểm tra số lượng còn lại
             if (sanPham.getSoLuong() < item.getSoLuong()) {
-                model.addAttribute("errorMessage", "Sản phẩm " + sanPham.getTenSanPhamChiTiet() + " không đủ hàng.");
+                model.addAttribute("errorMessage", "Sản phẩm " + sanPham.getSanPham().getTenSanPham() + " không đủ hàng.");
                 return "shop/checkout";
             }
 
