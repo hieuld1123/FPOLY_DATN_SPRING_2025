@@ -27,7 +27,8 @@
                     <div class="card cart-summary">
                         <div class="card-body">
                             <h5 class="card-title mb-4">Thông tin giao hàng</h5>
-                            <form th:action="@{/shop/place-order}" method="post" th:object="${hoaDon}">
+                            <p th:if="${errorMessage}" class="text-danger" th:text="${errorMessage}"></p>
+                            <form th:action="@{/shop/place-order}" method="post" th:object="${hoaDonBinhRequest}">
                                 <div class="mb-3">
                                     <label class="form-label">Họ và tên:</label>
                                     <input th:field="*{tenNguoiNhan}" type="text" class="form-control">
