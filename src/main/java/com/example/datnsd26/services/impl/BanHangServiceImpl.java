@@ -178,9 +178,17 @@ public class BanHangServiceImpl implements BanHangService {
         HoaDon hoaDon = findHoaDonById(paymentRequest.getInvoiceId());
         hoaDon.setHinhThucMuaHang(paymentRequest.getType());
         // TODO Customer, Employee
-        hoaDon.setTrangThai("Thành công");
         hoaDon.setHinhThucMuaHang(paymentRequest.getType());
         hoaDon.setPhiVanChuyen(0f);
+        hoaDon.setTrangThai(paymentRequest.getType());
+        hoaDon.setTenNguoiNhan(paymentRequest.getRecipient_name());
+        hoaDon.setSdtNguoiNhan(paymentRequest.getPhone_number());
+        hoaDon.setEmail(paymentRequest.getEmail());
+        hoaDon.setTinh(paymentRequest.getProvince());
+        hoaDon.setQuan(paymentRequest.getDistrict());
+        hoaDon.setXa(paymentRequest.getWard());
+        hoaDon.setDiaChiNguoiNhan(paymentRequest.getAddressDetail());
+        hoaDon.setPhuongThucThanhToan(paymentRequest.getPaymentMethod());
         hoaDon.setNgayCapNhat(new Date());
         this.hoaDonRepository.save(hoaDon);
     }
