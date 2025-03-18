@@ -4,10 +4,14 @@ let formData = {
     totalItem: 0,
     note: null,
     type: null,
+    recipient_name: null,
+    phone_number: null,
+    email: null,
     province: null,
     district: null,
     ward: null,
-    addressDetail: null
+    addressDetail: null,
+    paymentMethod: 'Thanh toán tại cửa hàng'
 }
 
 const clearData = async () => {
@@ -16,7 +20,15 @@ const clearData = async () => {
         totalInvoice: 0,
         totalItem: 0,
         note: null,
-        type: null
+        type: null,
+        recipient_name: null,
+        phone_number: null,
+        email: null,
+        province: null,
+        district: null,
+        ward: null,
+        addressDetail: null,
+        paymentMethod: 'Thanh toán tại cửa hàng'
     }
     document.getElementById("search-product").disabled = true;
     document.getElementById("search-product").value = "";
@@ -47,18 +59,46 @@ const enableElement = () => {
     document.getElementById("btnCancel").disabled = false;
 }
 
+function checkRequiredFields(data) {
+    const requiredFields = {
+        recipient_name: "Tên người nhận",
+        phone_number: "Số điện thoại",
+        province: "Tỉnh/Thành Phố",
+        district: "Quận/Huyện",
+        ward: "Xã/Phường",
+        addressDetail: "Địa chỉ cụ thể"
+    };
+
+    for (let key in requiredFields) {
+        if (data[key] === null || data[key] === undefined || data[key] === "") {
+            alert(`${requiredFields[key]} không được để trống!`);
+            return false;
+        }
+    }
+    return true;
+}
+
 const handlePayment = async () => {
-    console.log(formData)
-    // return;
     if (formData.totalItem < 1) {
         alert("Chưa có sản phẩm để thanh toán!")
+        return;
+    }
+    if((formData.type === "Có giao hàng") && (!checkRequiredFields(formData))){
         return;
     }
     const data = {
         invoiceId: formData.invoiceId,
         customerId: null,
         employeeId: null,
-        type: formData.type == null ? 'Offline' : formData.type
+        type: formData.type == null ? 'Offline' : formData.type,
+        recipient_name: formData.recipient_name,
+        phone_number: formData.phone_number,
+        email: formData.email,
+        province: formData.province,
+        district: formData.district,
+        ward: formData.ward,
+        addressDetail: formData.addressDetail,
+        paymentMethod: formData.paymentMethod
     }
 
     const confirm = window.confirm("Xác nhận thanh toán");
@@ -74,7 +114,7 @@ const handlePayment = async () => {
         body: JSON.stringify(data)
     }).then(response => response.json()).then(res => {
         if (res.status === 202) {
-            clearData();
+            window.location.reload();
         }
     })
 };
@@ -404,7 +444,6 @@ document.getElementById("btnCancel").addEventListener('click', async () => {
     if (!confirm) {
         return;
     }
-    console.log("cancel invoice ", formData.invoiceId)
     await fetch(`http://localhost:8080/api/v1/ban-hang/cancel-invoice/${formData.invoiceId}`, {
         method: "DELETE",
         headers: {
@@ -413,6 +452,7 @@ document.getElementById("btnCancel").addEventListener('click', async () => {
     }).then(response => {
         if (response.status === 200) {
             clearData();
+            window.location.reload();
         }
     })
 })
@@ -495,4 +535,22 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('address-detail').addEventListener('input', (e) => {
         formData.addressDetail = e.target.value;
     })
+
+    document.getElementById("recipient_name").addEventListener('input', (e) => {
+        formData.recipient_name = e.target.value;
+    })
+
+    document.getElementById("phone_number").addEventListener('input', (e) => {
+        formData.phone_number = e.target.value;
+    })
+
+    document.getElementById("email").addEventListener('input', (e) => {
+        formData.email = e.target.value;
+    })
+
+    document.getElementsByName('paymentMethod').forEach(input => {
+        input.addEventListener('change', () => {
+            formData.paymentMethod = input.value;
+        });
+    });
 });

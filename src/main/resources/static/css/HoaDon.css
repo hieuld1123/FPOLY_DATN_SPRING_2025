@@ -1,0 +1,52 @@
+.card-body {
+    padding: 1.5rem;
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+.table th, .table td {
+    vertical-align: middle;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.page-item {
+    margin: 0 0.25rem;
+}
+
+.page-link {
+    padding: 0.3rem 0.7rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    color: #007bff;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.page-link:hover {
+    background-color: #e9ecef;
+}
+
+.page-item.active .page-link {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+    background-color: #f8f9fa;
+}
+
+@media (max-width: 576px) {
+    .form-label {
+        margin-bottom: 0.5rem;
+    }
+}
