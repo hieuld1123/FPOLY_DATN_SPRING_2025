@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<!--<nav th:replace="~{/layoutadmin/head.html}"></nav>-->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+    .custom-confirm-button {
+        background-color: rgb(249, 72, 42) !important;
+        color: white !important;
+    }
+
+    .custom-cancel-button {
+        background-color: black !important; /* Màu mặc định của nút "Không" nếu cần */
+        color: white !important;
+    }
+</style>
+
+<style>
+
+    .btn-custom-warning {
+        background-color: rgb(222, 255, 206);
+        color: rgb(255, 33, 4);
+        border-color: rgb(255, 33, 4);
+    }
+
+    .btn-custom-info {
+        background-color: rgb(222, 255, 206);
+        color: rgb(7, 50, 255);
+        border-color: rgb(7, 50, 255);
+    }
+</style>
+<!-- Google Font: Source Sans Pro -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+
+<!-- Bootstrap 5 (CSS) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+<!-- SweetAlert2 (CSS) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+<!-- iCheck (Checkbox & Radio Button Styling) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/icheck-bootstrap/3.0.1/icheck-bootstrap.min.css">
+
+<!-- Select2 (Dropdown multiple) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap4-theme/1.1.1/select2-bootstrap4.min.css">
+
+<!-- Bootstrap Color Picker -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.4.0/css/bootstrap-colorpicker.min.css">
+
+<!-- Tempusdominus Bootstrap 4 (DateTime Picker) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/css/tempusdominus-bootstrap-4.min.css">
+
+<!-- Bootstrap4 Duallistbox -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap4-duallistbox/4.0.2/bootstrap-duallistbox.min.css">
+
+<!-- BS-Stepper (Multi-step forms) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bs-stepper/1.7.0/css/bs-stepper.min.css">
+
+<!-- Dropzone.js (File Upload) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css">
+
+<!-- AdminLTE Theme -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/css/adminlte.min.css">
+
+<!-- jQuery (Load First) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<!-- Bootstrap 5 (JS) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- SweetAlert2 (JS) -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+
+<!-- Moment.js (Required by Tempusdominus & DateRangePicker) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+
+<!-- Select2 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+
+<!-- Bootstrap Color Picker -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.4.0/js/bootstrap-colorpicker.min.js"></script>
+
+<!-- Tempusdominus Bootstrap 4 (Requires Moment.js & Bootstrap) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/js/tempusdominus-bootstrap-4.min.js"></script>
+
+<!-- Bootstrap4 Duallistbox -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap4-duallistbox/4.0.2/jquery.bootstrap-duallistbox.min.js"></script>
+
+<!-- InputMask -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
+
+<!-- DateRange Picker -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.1/daterangepicker.min.js"></script>
+
+<!-- Bootstrap Switch -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
+
+<!-- BS-Stepper -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bs-stepper/1.7.0/js/bs-stepper.min.js"></script>
+
+<!-- Dropzone.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
+
+<!-- AdminLTE App (Load Last) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/js/adminlte.min.js"></script>
+<body class="hold-transition sidebar-mini" style="font-family: 'Bahnschrift'">
+
+<div class="wrapper">
+    <!-- Navbar -->
+<!--    <nav th:replace="~{/layoutadmin/navbar.html}"></nav>-->
+    <!-- End navbar -->
+
+    <!--Menu bán hàng -->
+<!--    <nav th:replace="~{/layoutadmin/menu.html}"></nav>-->
+    <!--end-->
+
+    <!--Nội dung -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                                 class="bi bi-bookmark-dash-fill" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                      d="M2 15.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5M6 6a.5.5 0 0 0 0 1h4a.5.5 0 0 0 0-1z"/>
+                            </svg>
+                            QUẢN LÝ ĐẾ GIÀY
+                        </h1>
+                    </div>
+                    <!--                    <div class="col-sm-6">-->
+                    <!--                        <ol class="breadcrumb float-sm-right">-->
+                    <!--                            <li class="breadcrumb-item"><a href="#">Home</a></li>-->
+                    <!--                            <li class="breadcrumb-item active">QUẢN LÝ ĐẾ GIÀY</li>-->
+                    <!--                        </ol>-->
+                    <!--                    </div>-->
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+        <!---filter-->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title" style="font-weight: bold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                                         class="bi bi-funnel" viewBox="0 0 16 16">
+                                        <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"/>
+                                    </svg>
+                                    Bộ lọc
+                                </h3>
+                                <br>
+                                <hr class="border border-danger border opacity-50">
+                                <form id="searchForm" method="get" th:object="${tim}">
+                                    <h3 class="card-title">
+                                        <span style="font-weight: bold">Tìm kiếm theo tên:</span>
+                                        <input type="text" id="searchInput" placeholder="Tìm kiếm đế giày"
+                                               class="form-control" name="key" style="width: 1000px"
+                                               th:value="${fillSearch}">
+                                    </h3>
+                                    <h3 class="card-title" style="margin-left: 30px;font-weight: bold">
+                                        <span style="font-weight: bold">Trạng thái:</span>
+                                        <select id="statusSelect" class="form-control" name="trangthai"
+                                                style="color: rgb(249,72,42); font-weight: bold; width: 150px">
+                                            <option value="" th:selected="${fillTrangThai == null}">Tất cả</option>
+                                            <option value="true"
+                                                    th:selected="${fillTrangThai != null && fillTrangThai}">Đang kinh
+                                                doanh
+                                            </option>
+                                            <option value="false"
+                                                    th:selected="${fillTrangThai != null && !fillTrangThai}">Ngừng kinh
+                                                doanh
+                                            </option>
+                                        </select>
+                                    </h3>
+                                    <!--                                                                        <button type="submit" style="margin-left: 100px;background-color:rgb(249,72,42);color: white" class="btn">Tìm kiếm</button>-->
+                                    <!--                                                                        <input type="button" class="btn btn-dark" value="Làm mới bộ lọc" onclick="clearSearch()" />-->
+                                </form>
+                            </div>
+                        </div>
+                        <!-- /.card -->
+                    </div>
+                    <!-- /.col -->
+                </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.container-fluid -->
+        </section>
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title" style="font-weight: bold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                                         class="bi bi-card-list" viewBox="0 0 16 16">
+                                        <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
+                                        <path d="M5 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 5 8m0-2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0 5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-1-5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0M4 8a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m0 2.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/>
+                                    </svg>
+                                    Danh sách đế giày
+                                </h3>
+                                <a class="btn"
+                                   style="margin-left: 870px;background-color:rgb(249,72,42);color: white"
+                                   data-bs-toggle="modal" data-bs-target="#themdegiay">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                         class="bi bi-plus" viewBox="0 0 16 16">
+                                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                                    </svg>
+                                    Thêm đế giày</a>
+                            </div>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="themdegiay" tabindex="-1" aria-labelledby="exampleModalLabel"
+                                 aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Thêm đế giày</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form id="addForm" name="addDeGiay" th:method="post" th:object="${degiay}"
+                                                  th:action="@{/addSave}" onsubmit="return validateTrung()">
+                                                <p style="font-weight: bold">
+                                                    <span style="color: red">* </span>
+                                                    Tên đế giày:
+                                                    <input id="tenInput" class="form-control" th:field="*{ten}"/>
+                                                <div style="color: red; font-weight: initial;font-style: italic"
+                                                     id="errorTen"></div>
+                                                </p>
+                                                <button id="submitButton" class="btn"
+                                                        style="margin-left: 400px;background-color:rgb(249,72,42);color: white">
+                                                    Thêm
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <table id="example2" style="width: 100%" class="table-bordered table-hover text-center">
+                                    <thead style="background-color:rgb(249,72,42);height: 50px;color: white">
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Tên đế giày</th>
+                                        <th>Ngày tạo</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="dg,stt:${list}">
+                                        <td th:text="${stt.index+1}"></td>
+                                        <td>
+                                            <span th:if="${#strings.length(dg.ten) > 20}"
+                                                  th:text="${#strings.substring(dg.ten, 0, 20)} + '...'"></span>
+                                            <span th:unless="${#strings.length(dg.ten) > 20}"
+                                                  th:text="${dg.ten}"></span>
+                                        </td>
+                                        <td th:text="${#temporals.format(dg.ngaytao, 'dd-MM-yyyy HH:mm:ss')}"></td>
+                                        <td class="tdSameWidth">
+                                            <form name="updateTrangThaiForm"
+                                                  th:action="@{/degiay/updateTrangThai/{id}(id=${dg.id})}" method="post"
+                                                  onsubmit="return confirmUpdate(this);">
+                                                <button type="submit" style=" border: none;"
+                                                        th:classappend="${dg.trangthai == true ? 'badge badge-success' : 'badge badge-danger'}">
+                                                    <span th:text="${dg.trangthai == true ? 'Đang kinh doanh' : 'Ngừng kinh doanh'}"></span>
+                                                </button>
+                                            </form>
+                                        </td>
+                                        <td>
+                                            <a style="color: rgb(249,72,42); font-size: 25px;" th:data-id="${dg.id}"
+                                               data-bs-toggle="modal" data-bs-target="#capnhatdegiay"
+                                               onclick="fillShoeSoleName(this)">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            <!--                                            <form th:action="@{/update/{id}(id=${dg.id})}" method="post"-->
+                                            <!--                                                  style="display: inline;">-->
+                                            <!--                                                <button type="submit"-->
+                                            <!--                                                        style="background: none; border: none; color: rgb(249,72,42); padding-left: 10px"-->
+                                            <!--                                                        onclick="return confirm('Bạn có muốn xóa không?')">-->
+                                            <!--                                                    <a style="color: rgb(249,72,42); font-size: 25px;">-->
+                                            <!--                                                        <i class="bi bi-trash3-fill"></i>-->
+                                            <!--                                                    </a>-->
+                                            <!--                                                </button>-->
+                                            <!--                                            </form>-->
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                    </tfoot>
+                                </table>
+                                <!-- Modal -->
+                                <div class="modal fade" id="capnhatdegiay" tabindex="-1"
+                                     aria-labelledby="capnhatdegiayLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="capnhatdegiayLabel">Cập nhật đế giày</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <input type="hidden" id="deGiayId">
+                                                <div class="mb-3">
+                                                    <span style="color: red">* </span>
+                                                    <label for="tenDeGiay" class="form-label">Tên đế giày:</label>
+                                                    <input type="text" class="form-control" id="tenDeGiay">
+                                                    <div id="error-message" class="text-danger" style="display: none;">
+                                                    </div>
+                                                    <div id="length-error-message" class="text-danger"
+                                                         style="display: none;">
+                                                    </div>
+                                                    <div id="duplicate-error-message" class="text-danger"
+                                                         style="display: none;">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <!--                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>-->
+                                                <button type="button" class="btn btn-primary"
+                                                        onclick="updateShoeSoleName()"
+                                                        style="background-color:rgb(249,72,42);color: white;border-color:rgb(249,72,42)"
+                                                        id="updateButton" disabled>Cập nhật
+                                                </button>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- /.card-body -->
+                        </div>
+                        <!-- /.card -->
+                    </div>
+                    <!-- /.col -->
+                </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.container-fluid -->
+        </section>
+        <!-- /.content -->
+    </div>
+    <!--end-->
+<!--    <nav th:replace="~{/layoutadmin/footer.html}"></nav>-->
+</div>
+<!--script-->
+<!--<nav th:replace="~{/layoutadmin/script.html}"></nav>-->
+<!--end-->
+<script>
+    function clearSearch() {
+        document.getElementById("searchInput").value = "";
+        document.getElementById("statusSelect").selectedIndex = 0;
+    }
+</script>
+
+<script th:inline="javascript">
+
+    /*<![CDATA[*/
+    var objectsFromController = /*[[${listAll}]]*/ [];
+    const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+
+    function validateTrung() {
+        var inputMa = document.getElementById("tenInput").value;
+        var errorMa = document.getElementById("errorTen");
+        var isMaValid = true;
+
+        // Kiểm tra xem trường "Tên đế giày" có trống không và không vượt quá 20 ký tự
+        if (inputMa.trim() === "") {
+            errorMa.innerText = "Vui lòng nhập tên đế giày.";
+            return false; // Ngăn form được gửi đi
+        } else if (inputMa.trim().length > 20) {
+            errorMa.innerText = "Tên đế giày không được vượt quá 20 ký tự.";
+            return false; // Ngăn form được gửi đi
+        } else if (specialCharPattern.test(inputMa.trim())) {
+            errorMa.innerText = "Tên đế giày không được chứa ký tự đặc biệt.";
+            return false; // Ngăn form được gửi đi
+        } else {
+            errorMa.innerText = ""; // Xóa thông báo lỗi nếu có
+        }
+
+        // Kiểm tra trùng tên đế giày (không phân biệt chữ hoa chữ thường và khoảng trắng)
+        for (var i = 0; i < objectsFromController.length; i++) {
+            var obj = objectsFromController[i];
+            // Loại bỏ khoảng trắng và chuyển đổi về chữ thường để so sánh
+            var normalizedInput = inputMa.trim().replace(/\s+/g, ' ').toLowerCase();
+            var normalizedObjName = obj.ten.trim().replace(/\s+/g, ' ').toLowerCase();
+
+            if (normalizedInput === normalizedObjName) {
+                errorMa.innerText = "Tên đế giày đã tồn tại!";
+                return false; // Ngăn form được gửi đi
+            }
+        }
+
+        if (isMaValid) {
+            errorMa.innerText = "";
+            them();
+        }
+
+        return false;
+    }
+
+
+    function them() {
+        // Sử dụng SweetAlert2 thay vì hộp thoại confirm
+        Swal.fire({
+            title: 'Bạn có muốn thêm không?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Có',
+            cancelButtonText: 'Không'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Nếu người dùng nhấn Có, hiển thị thông báo thành công và chuyển hướng sau một khoảng thời gian
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                setTimeout(function () {
+                    // Lưu thông báo vào sessionStorage
+                    sessionStorage.setItem('successMessage2', 'Thêm thành công!');
+                    document.addDeGiay.submit();
+                });
+            }
+        });
+
+        // Ngăn form được gửi đi ngay lập tức
+        return false;
+    }
+
+    /*]]>*/
+</script>
+<!--tìm-->
+<script>
+    // Lắng nghe sự kiện change trong các trường input
+    document.getElementById('searchInput').addEventListener('change', function () {
+        document.getElementById('searchForm').submit(); // Gửi form khi có sự thay đổi
+    });
+    document.getElementById('statusSelect').addEventListener('change', function () {
+        document.getElementById('searchForm').submit(); // Gửi form khi có sự thay đổi
+    });
+</script>
+
+<!--cập nhật-->
+<script>
+    let originalName = ''; // Biến toàn cục để lưu tên ban đầu
+
+    function fillShoeSoleName(element) {
+        const id = element.getAttribute('data-id');
+
+        // Gọi API để lấy thông tin đế giày
+        fetch(`/updateDeGiay/${id}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Không thể lấy thông tin đế giày');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Hiển thị thông tin trong modal
+                document.getElementById('tenDeGiay').value = data.ten || '';
+                document.getElementById('deGiayId').value = data.id || id;
+                originalName = data.ten || ''; // Lưu tên ban đầu
+                checkChanges(); // Kiểm tra thay đổi ban đầu
+            })
+            .catch(error => {
+                console.error('Có lỗi xảy ra:', error);
+                alert('Có lỗi xảy ra: ' + error.message);
+            });
+    }
+
+    function checkChanges() {
+        const currentName = document.getElementById('tenDeGiay').value.trim();
+        const updateButton = document.getElementById('updateButton');
+
+        // So sánh tên hiện tại với tên ban đầu
+        if (currentName === originalName) {
+            updateButton.disabled = true; // Vô hiệu hóa nút nếu không thay đổi
+        } else {
+            updateButton.disabled = false; // Kích hoạt nút nếu có thay đổi
+        }
+    }
+
+    // Thêm sự kiện cho input
+    document.getElementById('tenDeGiay').addEventListener('input', checkChanges);
+
+
+    // Thêm hàm cập nhật
+    function updateShoeSoleName() {
+        const id = document.getElementById('deGiayId').value;
+        let ten = document.getElementById('tenDeGiay').value;
+
+// Loại bỏ khoảng trắng ở đầu và cuối và chỉ giữ lại một khoảng trắng giữa các từ
+        ten = ten.trim().replace(/\s+/g, ' ');
+
+        const errorMessage = document.getElementById('error-message');
+        const lengthErrorMessage = document.getElementById('length-error-message');
+        const duplicateErrorMessage = document.getElementById('duplicate-error-message');
+        const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+// Reset thông báo lỗi
+        errorMessage.style.display = 'none';
+        lengthErrorMessage.style.display = 'none';
+        duplicateErrorMessage.style.display = 'none';
+
+// Kiểm tra tính hợp lệ
+        if (!ten) {
+            errorMessage.style.display = 'block';
+            errorMessage.innerText = "Tên đế giày không được để trống";
+            return;
+        }
+
+        if (ten.length > 20) {
+            lengthErrorMessage.style.display = 'block';
+            lengthErrorMessage.innerText = 'Tên đế giày không được vượt quá 20 ký tự.';
+            return;
+        } else if (specialCharPattern.test(ten)) {
+            lengthErrorMessage.style.display = 'block';
+            lengthErrorMessage.innerText = 'Tên đế giày không được chứa ký tự đặc biệt.';
+            return;
+        }
+
+        // Kiểm tra tên trùng
+        fetch(`/checkTenDeGiay?ten=${encodeURIComponent(ten)}`)
+            .then(response => response.json())
+            .then(exists => {
+                if (exists) {
+                    duplicateErrorMessage.style.display = 'block';
+                    duplicateErrorMessage.innerText = 'Tên đế giày không được trùng!';
+                    return;
+                }
+
+                // Hiển thị xác nhận trước khi cập nhật
+                Swal.fire({
+                    title: 'Bạn có muốn cập nhật không?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Có',
+                    cancelButtonText: 'Không'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const updatedDeGiay = {ten};
+
+                        fetch(`/updateDeGiay/${id}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(updatedDeGiay),
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    // Lưu thông báo vào sessionStorage
+                                    sessionStorage.setItem('successMessage', 'Cập nhật thành công!');
+                                    // Chuyển hướng
+                                    window.location.href = '/listdegiay';
+                                } else {
+                                    throw new Error('Cập nhật thất bại');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Có lỗi xảy ra:', error);
+                                alert('Có lỗi xảy ra: ' + error.message);
+                            });
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Có lỗi xảy ra:', error);
+                alert('Có lỗi xảy ra: ' + error.message);
+            });
+    }
+
+
+</script>
+<!--message1-->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const successMessage = sessionStorage.getItem('successMessage');
+        if (successMessage) {
+            // Hiển thị thông báo ở góc bên phải màn hình
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+
+            Toast.fire({
+                icon: 'success',
+                title: successMessage
+            });
+
+            // Xóa thông báo khỏi sessionStorage sau khi hiển thị
+            sessionStorage.removeItem('successMessage');
+        }
+    });
+</script>
+<!--message2-->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const successMessage = sessionStorage.getItem('successMessage2');
+        if (successMessage) {
+            // Hiển thị thông báo ở góc bên phải màn hình
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+
+            Toast.fire({
+                icon: 'success',
+                title: successMessage
+            });
+
+            // Xóa thông báo khỏi sessionStorage sau khi hiển thị
+            sessionStorage.removeItem('successMessage2');
+        }
+    });
+</script>
+</body>
+</html>
+<!--câp nhật trạng thái-->
+<script>
+    function confirmUpdate(form) {
+        Swal.fire({
+            title: 'Bạn có muốn cập nhật không?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Có',
+            cancelButtonText: 'Không',
+            // width: '500px',
+            customClass: {
+                confirmButton: 'custom-confirm-button', // Thêm lớp tùy chỉnh cho nút "Có"
+                cancelButton: 'custom-cancel-button'    // Thêm lớp tùy chỉnh cho nút "Không" nếu cần
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Nếu người dùng nhấn Có, hiển thị thông báo thành công và submit form sau một khoảng thời gian
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                setTimeout(function () {
+                    // Lưu thông báo vào sessionStorage
+                    sessionStorage.setItem('successMessage2', 'Cập nhật trạng thái thành công!');
+                    // Submit form cụ thể
+                    form.submit();
+                }, 500); // Điều chỉnh thời gian delay nếu cần
+            }
+        });
+
+        // Ngăn form được gửi đi ngay lập tức
+        return false;
+    }
+</script>
+
+

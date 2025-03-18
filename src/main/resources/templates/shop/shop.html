@@ -11,7 +11,7 @@
     <h2>Danh sách sản phẩm</h2>
     <p th:if="${errorMessage}" style="color: red;" th:text="${errorMessage}"></p>
     <div th:each="sp : ${productDetailsList}">
-        <p>Tên: <span th:text="${sp.tenSanPhamChiTiet}"></span></p>
+        <p>Tên: <span th:text="${sp.sanPham.tenSanPham}"></span></p>
         <p>Giá: <span th:text="${sp.giaBan}"></span></p>
         <form action="/shop/add-to-cart" method="post">
             <input type="hidden" name="productId" th:value="${sp.id}" />
