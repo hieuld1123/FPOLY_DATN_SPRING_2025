@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NineShoes</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+</head>
+<body>
+    <div th:replace="~{components/admin-sidebar :: sidebar}"></div>
+    <div class="page-wrapper">
+        <div class="container-xl">
+            <div class="row">
+                <div class="card mt-5">
+                    <div class="card-header">
+                        <h3 class="card-title">Kết quả kinh doanh trong ngày</h3>
+                    </div>
+                    <div class="card-body border-bottom py-3">
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="card-title">Doanh thu</div>
+                                <p th:text="${doanhThu} + ' VND'"></p>
+                            </div>
+                            <div class="col-4">
+                                <div class="card-title">Đơn hàng mới</div>
+                                <p th:text="${soDonHangMoi}"></p>
+                            </div>
+                            <div class="col-4">
+                                <div class="card-title">Đã hủy</div>
+                                <p th:text="${soDonDaHuy}"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mt-5">
+                    <div class="card-header">
+                        <h3 class="card-title">Thống kê doanh số</h3>
+                    </div>
+                    <div class="card-body border-bottom py-3">
+                        <div class="row">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div id="chart"></div>
+                                </div>
+                            </div>                              
+                        </div>
+                    </div>
+                </div>
+                <div class="card mt-5">
+                    <div class="card-header">
+                        <h3 class="card-title">Top sản phẩm bán chạy</h3>
+                    </div>
+                    <div class="card-body border-bottom py-3">
+                        <div class="row">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var options = {
+                series: [{
+                    name: 'Doanh thu',
+                    data: [45000, 52000, 48000, 60000, 57000, 62000, 70000] // Dữ liệu doanh thu theo tuần
+                }],
+                chart: {
+                    type: 'bar',
+                    height: 350
+                },
+                plotOptions: {
+                    bar: {
+                        distributed: true, // Kích hoạt chế độ phân phối màu sắc
+                        horizontal: false,
+                        columnWidth: '45%',
+                    }
+                },
+                xaxis: {
+                    categories: ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'],
+                    labels: {
+                        style: {
+                            fontSize: '14px'
+                        }
+                    }
+                },
+                colors: ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0', '#546E7A', '#26a69a'],
+                title: {
+                    text: 'Doanh thu theo tuần',
+                    align: 'center'
+                }
+            };
+
+            var chart = new ApexCharts(document.querySelector("#chart"), options);
+            chart.render();
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
+
+</body>
+</html>
