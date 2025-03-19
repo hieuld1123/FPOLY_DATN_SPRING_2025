@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
@@ -16,4 +17,6 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
 
     @Query("FROM HoaDon hd WHERE hd.trangThai = :status")
     List<HoaDon> findAllInvoiceByStatus(@Param("status") String status);
+
+    Optional<HoaDon> findHoaDonByMaHoaDon(String maHoaDon);
 }

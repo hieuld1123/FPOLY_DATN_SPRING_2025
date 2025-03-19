@@ -28,10 +28,11 @@ public class InvoiceInformation {
     private Summary summary;
 
     @Getter
-    private static class StatusTimeline{
+    @Builder
+    public static class StatusTimeline{
         private String status;
 
-        private Date date;
+        private Date time;
 
         private boolean completed;
     }

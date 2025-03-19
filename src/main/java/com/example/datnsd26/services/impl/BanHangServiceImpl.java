@@ -36,7 +36,7 @@ public class BanHangServiceImpl implements BanHangService {
 
     @Override
     public List<HoaDonResponse> getHoaDon() {
-        return this.hoaDonRepository.findAllInvoiceByStatus("Đang chờ").stream().map(s -> HoaDonResponse.builder()
+        return this.hoaDonRepository.findAllInvoiceByStatus("Đang xử lý").stream().map(s -> HoaDonResponse.builder()
                 .id(s.getId())
                 .maHoaDon(s.getMaHoaDon())
                 .tranThai(s.getTrangThai())
@@ -68,7 +68,7 @@ public class BanHangServiceImpl implements BanHangService {
     public Integer createHoaDon() {
         HoaDon hoaDon = HoaDon.builder()
                 .maHoaDon(generateInvoiceCode())
-                .trangThai("Đang chờ")
+                .trangThai("Đang xử lý")
                 .tongTien(0f)
                 .ngayTao(new Date())
                 .ngayCapNhat(new Date())
@@ -184,7 +184,7 @@ public class BanHangServiceImpl implements BanHangService {
         hoaDon.setNhanVien(authUtil.getNhanVien());
         hoaDon.setHinhThucMuaHang(paymentRequest.getType());
         hoaDon.setPhiVanChuyen(0f);
-        hoaDon.setTrangThai(paymentRequest.getType());
+        hoaDon.setTrangThai(paymentRequest.getType().equalsIgnoreCase("Offline") ? "Hoàn thành" : "Đã giao cho đơn vị vận chuyển");
         hoaDon.setTenNguoiNhan(paymentRequest.getRecipient_name());
         hoaDon.setSdtNguoiNhan(paymentRequest.getPhone_number());
         hoaDon.setEmail(paymentRequest.getEmail());

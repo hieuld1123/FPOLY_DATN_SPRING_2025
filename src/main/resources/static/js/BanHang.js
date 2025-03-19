@@ -83,7 +83,7 @@ const handlePayment = async () => {
         alert("Chưa có sản phẩm để thanh toán!")
         return;
     }
-    if((formData.type === "Có giao hàng") && (!checkRequiredFields(formData))){
+    if ((formData.type === "Có giao hàng") && (!checkRequiredFields(formData))) {
         return;
     }
     const data = {
@@ -100,7 +100,8 @@ const handlePayment = async () => {
         addressDetail: formData.addressDetail,
         paymentMethod: formData.paymentMethod
     }
-
+    console.log(data)
+    // return;
     const confirm = window.confirm("Xác nhận thanh toán");
     if (!confirm) {
         return;

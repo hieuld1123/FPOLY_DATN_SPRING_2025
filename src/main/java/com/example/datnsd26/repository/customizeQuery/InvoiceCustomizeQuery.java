@@ -62,7 +62,7 @@ public class InvoiceCustomizeQuery {
         if (StringUtils.hasLength(request.getStatus())) {
             query.setParameter("status", String.format(LIKE_FORMAT, request.getStatus()));
         }else{
-            query.setParameter("status", String.format(LIKE_FORMAT, "Đang chờ"));
+            query.setParameter("status", String.format(LIKE_FORMAT, "Đang xử lý"));
         }
 
         if (StringUtils.hasLength(request.getInvoiceCode())) {
@@ -124,7 +124,7 @@ public class InvoiceCustomizeQuery {
         if (StringUtils.hasLength(request.getStatus())) {
             countQuery.setParameter("status", String.format(LIKE_FORMAT, request.getStatus()));
         } else {
-            countQuery.setParameter("status", String.format(LIKE_FORMAT, "Đang chờ"));
+            countQuery.setParameter("status", String.format(LIKE_FORMAT, "Đang xử lý"));
         }
 
         if (StringUtils.hasLength(request.getInvoiceCode())) {
