@@ -2,10 +2,6 @@ package com.example.datnsd26.models;
 
 import jakarta.persistence.*;
 import lombok.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,7 +29,7 @@ public class HoaDon {
 
     @ManyToOne
     @JoinColumn(name = "id_nhan_vien", referencedColumnName = "id", nullable = true)
-    private NhanVien1 nhanVien; // Có thể null
+    private NhanVien nhanVien; // Có thể null
 
     @Column(name = "ma_hoa_don", columnDefinition = "nvarchar(255)")
     private String maHoaDon;
@@ -94,6 +90,9 @@ public class HoaDon {
 
     @Column(name = "trang_thai", columnDefinition = "nvarchar(255)")
     private String trangThai;
+
+    @Column(name = "thanh_toan")
+    private boolean thanhToan;
 
     @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL)
     private List<HoaDonChiTiet> danhSachSanPham;

@@ -1,0 +1,136 @@
+.cancel-btn {
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    padding: 8px 16px;
+    border-radius: 4px;
+}
+
+.edit-btn {
+    color: #0288d1;
+    border: 1px solid #0288d1;
+    padding: 8px 16px;
+    border-radius: 4px;
+}
+
+.back-link {
+    color: #333;
+    text-decoration: none;
+}
+
+.back-link svg {
+    margin-right: 5px;
+}
+
+.product-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.product-table th,
+.product-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.product-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.product-table td {
+    vertical-align: middle;
+}
+
+.product-table img {
+    max-width: 50px;
+    max-height: 50px;
+    object-fit: cover;
+    margin-right: 0.5rem;
+}
+
+.product-table .text-right {
+    text-align: right;
+}
+
+.product-table .remove-btn {
+    width: 15px;
+    color: #dc3545;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.product-table .remove-btn:hover {
+    text-decoration: underline;
+}
+
+/*timeline*/
+.timeline {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    padding: 20px 0;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 40%;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-color: #0288d1;
+}
+
+.timeline-item {
+    position: relative;
+    text-align: center;
+}
+
+.timeline-icon {
+    width: 20px;
+    height: 20px;
+    background-color: #0288d1;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    margin: 0 auto 20px;
+}
+
+.timeline-label {
+    font-size: 12px;
+    margin-top: 10px;
+}
+
+.timeline-time {
+    font-size: 10px;
+    margin-top: 5px;
+}
+
+.payment-info {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: #e9f5ff;
+}
+
+.payment-item {
+    text-align: center;
+}
+
+.label {
+    font-size: 14px;
+    color: #6c757d;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.value {
+    font-size: 16px;
+    font-weight: bold;
+    color: #212529;
+}

@@ -12,6 +12,7 @@ import com.example.datnsd26.repository.HoaDonChiTietRepository;
 import com.example.datnsd26.repository.HoaDonRepository;
 import com.example.datnsd26.repository.SanPhamChiTietRepository;
 import com.example.datnsd26.services.BanHangService;
+import com.example.datnsd26.utilities.AuthUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ public class BanHangServiceImpl implements BanHangService {
     private final HoaDonRepository hoaDonRepository;
     private final SanPhamChiTietRepository sanPhamChiTietRepository;
     private final HoaDonChiTietRepository hoaDonChiTietRepository;
+    private final AuthUtil authUtil;
 
     @Override
     public List<HoaDonResponse> getHoaDon() {
@@ -174,10 +176,12 @@ public class BanHangServiceImpl implements BanHangService {
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public void payment(PaymentRequest paymentRequest) {
         HoaDon hoaDon = findHoaDonById(paymentRequest.getInvoiceId());
         hoaDon.setHinhThucMuaHang(paymentRequest.getType());
-        // TODO Customer, Employee
+        // TODO Customer
+        hoaDon.setNhanVien(authUtil.getNhanVien());
         hoaDon.setHinhThucMuaHang(paymentRequest.getType());
         hoaDon.setPhiVanChuyen(0f);
         hoaDon.setTrangThai(paymentRequest.getType());
@@ -189,6 +193,7 @@ public class BanHangServiceImpl implements BanHangService {
         hoaDon.setXa(paymentRequest.getWard());
         hoaDon.setDiaChiNguoiNhan(paymentRequest.getAddressDetail());
         hoaDon.setPhuongThucThanhToan(paymentRequest.getPaymentMethod());
+        hoaDon.setThanhToan(paymentRequest.getPaymentMethod().equalsIgnoreCase("Thanh toán tại cửa hàng"));
         hoaDon.setNgayCapNhat(new Date());
         this.hoaDonRepository.save(hoaDon);
     }

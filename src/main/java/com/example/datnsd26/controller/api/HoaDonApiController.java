@@ -22,4 +22,13 @@ public class HoaDonApiController {
                 .data(hoaDonService.getInvoices(request))
                 .build();
     }
+
+    @GetMapping("/{id}")
+    public ApiResponse getInvoice(@PathVariable Integer id) {
+        return ApiResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Danh sách hóa đơn")
+                .data(hoaDonService.getInvoice(id))
+                .build();
+    }
 }
