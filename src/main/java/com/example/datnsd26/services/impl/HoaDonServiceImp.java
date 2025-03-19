@@ -56,7 +56,7 @@ public class HoaDonServiceImp implements HoaDonService {
         HoaDon hd = getHoaDonByCode(code);
         return InvoiceInformation.builder()
                 .order_id(hd.getMaHoaDon())
-                .seller(hd.getNhanVien().getTenNhanVien())
+                .seller(hd.getNhanVien() == null ? "N/A" : hd.getNhanVien().getTenNhanVien())
                 .order_date(hd.getNgayTao())
                 .note(hd.getGhiChu() == null ? "Không có ghi chú nào" : hd.getGhiChu())
                 .status_timeline(statusTimeline)
