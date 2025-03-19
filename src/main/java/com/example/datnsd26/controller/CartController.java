@@ -32,6 +32,7 @@ public class CartController {
     private final HoaDonChiTietRepository hoaDonChiTietRepository;
     private final HoaDonService hoaDonService;
     private final BinhMailService mailService;
+    private final KichCoRepository kichCoRepository;
 
 
     @GetMapping
@@ -216,6 +217,7 @@ public class CartController {
                 .phiVanChuyen(tongTamTinh >= 1000000 ? 0.0f : 30000.0f)
                 .tongTien(tongTamTinh)
                 .phuongThucThanhToan(hoaDonBinhRequest.getPhuongThucThanhToan())
+                .thanhToan(false)
                 .ghiChu(hoaDonBinhRequest.getGhiChu())
                 .khachHang1(null)
                 .nhanVien(null)

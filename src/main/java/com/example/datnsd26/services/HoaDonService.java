@@ -7,5 +7,5 @@ import com.example.datnsd26.controller.response.InvoicePageResponse;
 public interface HoaDonService {
     InvoicePageResponse getInvoices(InvoiceParamRequest request);
 
-    InvoiceInformation getInvoice(Integer id);
+    InvoiceInformation getInvoice(String code);
 }

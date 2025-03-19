@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,19 +33,37 @@ public class HoaDonServiceImp implements HoaDonService {
     }
 
     @Override
-    public InvoiceInformation getInvoice(Integer id) {
-        log.info("GET/hoa-don/{id}", id);
-        HoaDon hd = getHoaDon(id);
+    public InvoiceInformation getInvoice(String code) {
+        log.info("GET/hoa-don/{id}", code);
+        // status_timeline - dummy
+        List<InvoiceInformation.StatusTimeline> statusTimeline = new ArrayList<>();
+        statusTimeline.add(InvoiceInformation.StatusTimeline.builder()
+                .status("Đặt hàng")
+                .time(new Date())
+                .completed(true)
+                .build());
+        statusTimeline.add(InvoiceInformation.StatusTimeline.builder()
+                .status("Đã giao cho đơn vị vận chuyển")
+                .time(new Date())
+                .completed(true)
+                .build());
+        statusTimeline.add(InvoiceInformation.StatusTimeline.builder()
+                .status("Hoàn thành")
+                .time(new Date())
+                .completed(true)
+                .build());
+
+        HoaDon hd = getHoaDonByCode(code);
         return InvoiceInformation.builder()
                 .order_id(hd.getMaHoaDon())
                 .seller(hd.getNhanVien().getTenNhanVien())
                 .order_date(hd.getNgayTao())
                 .note(hd.getGhiChu() == null ? "Không có ghi chú nào" : hd.getGhiChu())
-                // status_timeline
+                .status_timeline(statusTimeline)
                 .customer(InvoiceInformation.Customer.builder()
                         .name(hd.getKhachHang1() == null ? "Khách lẻ" : hd.getKhachHang1().getHoTen())
                         .phone(hd.getSdtNguoiNhan())
-                        .delivery_address(hd.getDiaChiNguoiNhan())
+                        .delivery_address(String.format("%s, %s, %s, %s", hd.getDiaChiNguoiNhan(), hd.getXa(), hd.getQuan(), hd.getTinh()))
                         .build())
                 .payment(InvoiceInformation.Payment.builder()
                         .total_amount(hd.getTongTien())
@@ -51,9 +72,9 @@ public class HoaDonServiceImp implements HoaDonService {
                         .build())
                 .products(hd.getDanhSachSanPham().stream().map(s -> InvoiceInformation.Product.builder()
                         .id(s.getSanPhamChiTiet().getId())
-                        .image(null)
+                        .image("https://th.bing.com/th/id/OIP.8tQmmY_ccVpcxBxu0Z0mzwHaE8?rs=1&pid=ImgDetMain")
                         .code(s.getSanPhamChiTiet().getMaSanPhamChiTiet())
-                        .name(s.getSanPhamChiTiet().getSanPham().getTenSanPham())
+                        .name(String.format("%s [%s - %s]", s.getSanPhamChiTiet().getSanPham().getTenSanPham(), s.getSanPhamChiTiet().getMauSac().getTen(), s.getSanPhamChiTiet().getKichCo().getTen()))
                         .quantity(s.getSoLuong())
                         .unit_price(s.getSanPhamChiTiet().getGiaBanSauGiam())
                         .total_price(s.getSoLuong() * s.getGiaTienSauGiam())
@@ -67,7 +88,7 @@ public class HoaDonServiceImp implements HoaDonService {
                 .build();
     }
 
-    private HoaDon getHoaDon(Integer id) {
-        return this.hoaDonRepository.findById(id).orElseThrow(() -> new EntityNotFound("Not found!"));
+    private HoaDon getHoaDonByCode(String code) {
+        return this.hoaDonRepository.findHoaDonByMaHoaDon(code).orElseThrow(() -> new EntityNotFound("Not found!"));
     }
 }
