@@ -117,6 +117,14 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
 
     Page<SanPhamChiTiet> findAllBySoLuongGreaterThan(Integer soluong, Pageable p);
 
+    @Query("SELECT spct FROM SanPhamChiTiet spct " +
+            "WHERE spct.id IN ( " +
+            "    SELECT MIN(spct2.id) FROM SanPhamChiTiet spct2 " +
+            "    WHERE spct2.sanPham.id = :sanPhamId " +
+            "    GROUP BY spct2.mauSac.id" +
+            ")")
+    List<SanPhamChiTiet> findDistinctBySanPham_Id(@Param("sanPhamId") Integer sanPhamId);
 
+    List<SanPhamChiTiet> findBySanPhamAndMauSac(SanPham sanPham, MauSac mauSac);
 
 }

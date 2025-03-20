@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết sản phẩm</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css" />
+</head>
+
+<body>
+    <div th:replace="components/navbar :: navbar"></div>
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Ảnh sản phẩm -->
+                <img th:src="${product.hinhAnh[0]?.tenAnh}" alt="Ảnh sản phẩm" class="img-fluid">
+            </div>
+            <div class="col-md-6">
+                <h1 th:text="${product.sanPham.tenSanPham + ' - ' + product.mauSac.ten}"></h1>
+                <p><strong>Mã sản phẩm:</strong> <span th:text="${product.maSanPhamChiTiet}"></span></p>
+                <p><strong>Màu sắc:</strong> <span th:text="${product.mauSac.ten}"></span></p>
+                <p class="text-muted">
+                    Giá:
+                    <span th:text="${#numbers.formatDecimal(product.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+                    <span class="text-decoration-line-through"
+                          th:text="${#numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+                </p>
+
+                <!-- Form thêm vào giỏ hàng -->
+                <form action="/shop/add-to-cart" method="post" id="addToCartForm">
+                    <input type="hidden" name="productId" id="selectedProductId">
+                    
+                    <!-- Chọn size -->
+                    <form action="/shop/add-to-cart" method="post">
+                        <!-- Chọn size -->
+                        <label for="sizeSelect">Chọn size:</label>
+                        <select id="sizeSelect" name="sizeId" class="form-control" required>
+                            <option th:each="size : ${sizes}" th:value="${size.id}" th:text="${size.kichCo.ten}"></option>
+                        </select>
+
+                        <!-- Nhập số lượng -->
+                        <label for="quantity">Số lượng:</label>
+                        <input type="number" id="quantity" name="quantity" class="form-control" min="1" value="1" required>
+
+                        <!-- Button thêm vào giỏ hàng -->
+                        <button type="submit" class="btn btn-primary mt-3">Thêm vào giỏ hàng</button>
+                    </form>
+
+                    <div id="error-message" style="color: red;"></div>
+
+                    <!-- Button thêm vào giỏ hàng -->
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("sizeSelect").addEventListener("change", function () {
+            let selectedOption = this.options[this.selectedIndex];
+            let stock = selectedOption.getAttribute("data-stock");
+            document.getElementById("quantity").setAttribute("max", stock);
+            document.getElementById("selectedProductId").value = selectedOption.value;
+        });
+
+        document.getElementById("addToCartForm").addEventListener("submit", function (event) {
+            let quantityInput = document.getElementById("quantity");
+            let selectedSize = document.getElementById("sizeSelect");
+            let stock = parseInt(selectedSize.options[selectedSize.selectedIndex].getAttribute("data-stock"));
+            let quantity = parseInt(quantityInput.value);
+
+            let errorMessage = document.getElementById("error-message");
+
+            if (quantity > stock) {
+                event.preventDefault();
+                errorMessage.innerHTML = `Số lượng sản phẩm còn lại chỉ là ${stock}. Vui lòng chọn lại.`;
+            }
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/js/tabler.min.js"></script>
+</body>
+
+</html>

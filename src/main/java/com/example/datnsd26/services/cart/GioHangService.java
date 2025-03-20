@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
@@ -59,5 +60,37 @@ public class GioHangService {
             gioHang.getChiTietList().removeIf(detail -> detail.getSanPhamChiTiet().getId().equals(productId));
             session.setAttribute("cart", gioHang); // Cập nhật lại session
         }
+    }
+
+    public void addToUserCart(HttpSession session, Integer sizeId, int quantity) {
+        GioHang gioHang = (GioHang) session.getAttribute("cart");
+        if (gioHang == null) {
+            gioHang = new GioHang();
+            gioHang.setChiTietList(new ArrayList<>());
+            session.setAttribute("cart", gioHang);
+        }
+
+        Optional<SanPhamChiTiet> optionalProduct = sanPhamChiTietRepository.findById(sizeId);
+        GioHang finalGioHang = gioHang;
+        optionalProduct.ifPresent(product -> {
+            // Kiểm tra nếu số lượng yêu cầu lớn hơn số lượng tồn kho
+            if (quantity > product.getSoLuong()) {
+                return; // Không thêm vào giỏ nếu vượt quá số lượng cho phép
+            }
+
+            Optional<GioHangChiTiet> existingDetail = finalGioHang.getChiTietList().stream()
+                    .filter(detail -> detail.getSanPhamChiTiet().getId().equals(sizeId))
+                    .findFirst();
+
+            if (existingDetail.isPresent()) {
+                existingDetail.get().setSoLuong(existingDetail.get().getSoLuong() + quantity);
+            } else {
+                GioHangChiTiet newDetail = new GioHangChiTiet();
+                newDetail.setSanPhamChiTiet(product);
+                newDetail.setSoLuong(quantity);
+                newDetail.setNgayTao(LocalDateTime.now());
+                finalGioHang.getChiTietList().add(newDetail);
+            }
+        });
     }
 }
