@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo Khuyến Mãi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        .error-message {
+            color: red;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        .table td {
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h2 class="card-title mb-0">Tạo Khuyến Mãi Mới</h2>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/admin/khuyen-mai/create}" method="post" class="needs-validation" novalidate id="khuyenMaiForm" >
+                <!-- Thông tin cơ bản -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Tên chiến dịch <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="tenChienDich" required
+                               minlength="5" maxlength="200" >
+                        <div class="invalid-feedback">Vui lòng nhập tên chiến dịch (5-200 ký tự)</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Hình thức giảm <span class="text-danger">*</span></label>
+                        <select class="form-select" id="hinhThucGiam" name="hinhThucGiam" required>
+                            <option value="">Chọn hình thức giảm</option>
+                            <option value="Phần Trăm">Phần Trăm</option>
+                            <option value="Theo Giá Tiền">Theo Giá Tiền</option>
+                        </select>
+                        <div class="invalid-feedback">Vui lòng chọn hình thức giảm</div>
+                    </div>
+                </div>
+
+                <!-- Thời gian và giá trị giảm -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Giá trị giảm chung <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="giaTriGiam" name="giaTriGiam"
+                                   min="0" required>
+                            <span class="input-group-text" id="giaTriGiamUnit">VNĐ</span>
+                        </div>
+                        <div class="invalid-feedback">Vui lòng nhập giá trị giảm hợp lệ</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Thời gian bắt đầu <span class="text-danger">*</span></label>
+                        <input type="datetime-local" class="form-control" name="thoiGianBatDau"
+                               id="thoiGianBatDau" required>
+                        <div class="invalid-feedback">Vui lòng chọn thời gian bắt đầu</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Thời gian kết thúc <span class="text-danger">*</span></label>
+                        <input type="datetime-local" class="form-control" name="thoiGianKetThuc"
+                               id="thoiGianKetThuc" required>
+                        <div class="invalid-feedback">Vui lòng chọn thời gian kết thúc</div>
+                    </div>
+                </div>
+
+                <!-- Bảng sản phẩm -->
+                <div class="card mb-3">
+                    <div class="card-header bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Sản phẩm áp dụng</h5>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="selectAll">
+                                <label class="form-check-label" for="selectAll">Chọn tất cả</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-light">
+                                <tr>
+                                    <th style="width: 50px" class="text-center">#</th>
+                                    <th>Sản phẩm</th>
+                                    <th>Giá gốc</th>
+                                    <th>Mức giảm</th>
+                                    <th>Giá sau giảm</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="sp : ${sanPhams}">
+                                    <td class="text-center">
+                                        <input type="checkbox" class="form-check-input chonSanPham"
+                                               th:name="'sanPham_' + ${sp.id}">
+                                    </td>
+                                    <td th:text="${sp.tenSanPhamChiTiet}"></td>
+                                    <td th:text="${#numbers.formatDecimal(sp.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"
+                                        class="giaGoc" th:data-gia="${sp.giaBan}"></td>
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control mucGiam"
+                                                   th:name="'mucGiam_' + ${sp.id}"
+                                                   min="0" disabled>
+                                            <span class="input-group-text mucGiamUnit">VNĐ</span>
+                                        </div>
+                                    </td>
+                                    <td class="giaSauGiam text-end"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="text-end">
+                    <a href="/admin/khuyen-mai" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Hủy
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Lưu
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('khuyenMaiForm');
+        const hinhThucGiam = document.getElementById('hinhThucGiam');
+        const giaTriGiam = document.getElementById('giaTriGiam');
+        const thoiGianBatDau = document.getElementById('thoiGianBatDau');
+        const thoiGianKetThuc = document.getElementById('thoiGianKetThuc');
+        const selectAll = document.getElementById('selectAll');
+        const checkboxes = document.querySelectorAll('.chonSanPham');
+        const mucGiamInputs = document.querySelectorAll('.mucGiam');
+        const giaGocCells = document.querySelectorAll('.giaGoc');
+        const giaSauGiamCells = document.querySelectorAll('.giaSauGiam');
+        const giaTriGiamUnit = document.getElementById('giaTriGiamUnit');
+        const mucGiamUnits = document.querySelectorAll('.mucGiamUnit');
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND'
+            }).format(value);
+        }
+
+        function updateGiaTriGiamUnit() {
+            const isPercent = hinhThucGiam.value === 'Phần Trăm';
+            const unit = isPercent ? '%' : 'VNĐ';
+            giaTriGiamUnit.textContent = unit;
+            mucGiamUnits.forEach(el => el.textContent = unit);
+
+            if (isPercent) {
+                giaTriGiam.max = '100';
+                giaTriGiam.step = '0.1';
+                mucGiamInputs.forEach(input => {
+                    if (!input.disabled) {
+                        input.max = '100';
+                        input.step = '0.1';
+                        if (parseFloat(input.value) > 100) {
+                            input.value = '100';
+                        }
+                    }
+                });
+            } else {
+                giaTriGiam.removeAttribute('max');
+                giaTriGiam.step = '1000';
+                mucGiamInputs.forEach(input => {
+                    if (!input.disabled) {
+                        input.removeAttribute('max');
+                        input.step = '1000';
+                    }
+                });
+            }
+            updateGiaSauGiam();
+        }
+
+        function tinhGiaSauGiam(giaGoc, mucGiam) {
+            const isPercent = hinhThucGiam.value === 'Phần Trăm';
+            if (isPercent) {
+                return giaGoc * (1 - mucGiam / 100);
+            }
+            return Math.max(0, giaGoc - mucGiam);
+        }
+
+        function updateGiaSauGiam() {
+            checkboxes.forEach((checkbox, index) => {
+                const mucGiamInput = mucGiamInputs[index];
+                const giaGoc = parseFloat(giaGocCells[index].dataset.gia);
+                const giaSauGiamCell = giaSauGiamCells[index];
+
+                if (checkbox.checked) {
+                    mucGiamInput.disabled = false;
+                    const mucGiam = parseFloat(mucGiamInput.value) || 0;
+                    const giaSauGiam = tinhGiaSauGiam(giaGoc, mucGiam);
+                    giaSauGiamCell.textContent = formatCurrency(giaSauGiam);
+                } else {
+                    mucGiamInput.disabled = true;
+                    mucGiamInput.value = '';
+                    giaSauGiamCell.textContent = '';
+                }
+            });
+        }
+
+        // Event Listeners
+        hinhThucGiam.addEventListener('change', updateGiaTriGiamUnit);
+
+        giaTriGiam.addEventListener('input', () => {
+            const value = parseFloat(giaTriGiam.value) || 0;
+            mucGiamInputs.forEach(input => {
+                if (!input.disabled) {
+                    input.value = value;
+                }
+            });
+            updateGiaSauGiam();
+        });
+
+        selectAll.addEventListener('change', function() {
+            checkboxes.forEach((checkbox, index) => {
+                checkbox.checked = this.checked;
+                const mucGiamInput = mucGiamInputs[index];
+                if (this.checked) {
+                    mucGiamInput.disabled = false;
+                    mucGiamInput.value = giaTriGiam.value;
+                } else {
+                    mucGiamInput.disabled = true;
+                    mucGiamInput.value = '';
+                }
+            });
+            updateGiaSauGiam();
+        });
+
+        checkboxes.forEach((checkbox, index) => {
+            checkbox.addEventListener('change', () => {
+                const mucGiamInput = mucGiamInputs[index];
+                if (checkbox.checked) {
+                    mucGiamInput.disabled = false;
+                    mucGiamInput.value = giaTriGiam.value;
+                } else {
+                    mucGiamInput.disabled = true;
+                    mucGiamInput.value = '';
+                }
+                updateGiaSauGiam();
+
+                const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                const someChecked = Array.from(checkboxes).some(cb => cb.checked);
+                selectAll.checked = allChecked;
+                selectAll.indeterminate = someChecked && !allChecked;
+            });
+        });
+
+        mucGiamInputs.forEach(input => {
+            input.addEventListener('input', updateGiaSauGiam);
+        });
+
+        thoiGianBatDau.addEventListener('change', function() {
+            thoiGianKetThuc.min = this.value;
+            if (thoiGianKetThuc.value && thoiGianKetThuc.value < this.value) {
+                thoiGianKetThuc.value = this.value;
+            }
+        });
+
+        // Form Validation
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            let isValid = true;
+            let errorMessage = '';
+
+            // Kiểm tra thời gian
+            const batDau = new Date(thoiGianBatDau.value);
+            const ketThuc = new Date(thoiGianKetThuc.value);
+            if (ketThuc <= batDau) {
+                errorMessage = 'Thời gian kết thúc phải sau thời gian bắt đầu';
+                isValid = false;
+            }
+
+            // Kiểm tra sản phẩm được chọn
+            const hasSelectedProducts = Array.from(checkboxes).some(cb => cb.checked);
+            if (!hasSelectedProducts) {
+                errorMessage = 'Vui lòng chọn ít nhất một sản phẩm';
+                isValid = false;
+            }
+
+            // Kiểm tra mức giảm
+            const isPercent = hinhThucGiam.value === 'Phần Trăm';
+            if (isPercent && parseFloat(giaTriGiam.value) > 100) {
+                errorMessage = 'Giá trị giảm theo phần trăm không được vượt quá 100%';
+                isValid = false;
+            }
+
+            checkboxes.forEach((checkbox, index) => {
+                if (checkbox.checked) {
+                    const mucGiamInput = mucGiamInputs[index];
+                    const giaGoc = parseFloat(giaGocCells[index].dataset.gia);
+                    const mucGiam = parseFloat(mucGiamInput.value);
+
+                    if (!mucGiam || mucGiam <= 0) {
+                        errorMessage = 'Vui lòng nhập mức giảm hợp lệ cho tất cả sản phẩm được chọn';
+                        isValid = false;
+                    }
+
+                    if (!isPercent && mucGiam >= giaGoc) {
+                        errorMessage = 'Mức giảm không được lớn hơn hoặc bằng giá gốc của sản phẩm';
+                        isValid = false;
+                    }
+                }
+            });
+
+            if (!isValid) {
+                alert(errorMessage);
+                return;
+            }
+
+            // If all validations pass, submit the form
+            form.classList.add('was-validated');
+            form.submit();
+        });
+
+        // Set min datetime for inputs
+        const now = new Date();
+        const nowString = now.toISOString().slice(0, 16);
+        thoiGianBatDau.min = nowString;
+        thoiGianKetThuc.min = nowString;
+
+        // Initialize
+        updateGiaTriGiamUnit();
+    });
+</script>
+</body>
+</html>

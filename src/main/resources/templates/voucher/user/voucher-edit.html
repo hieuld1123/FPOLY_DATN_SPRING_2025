@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chỉnh Sửa Voucher</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Chỉnh Sửa Voucher</h5>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/admin/vouchers/edit/{id}(id=${voucher.id})}" method="post">
+                <input type="hidden" name="id" th:value="${voucher.id}">
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Mã Voucher</label>
+                        <input type="text" class="form-control" name="maVoucher" th:value="${voucher.maVoucher}" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Tên Voucher</label>
+                        <input type="text" class="form-control" name="tenVoucher" th:value="${voucher.tenVoucher}" required>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Hình thức giảm</label>
+                        <select class="form-select" name="hinhThucGiam">
+                            <option value="Phần Trăm" th:selected="${voucher.hinhThucGiam == 'Phần Trăm'}">Phần Trăm</option>
+                            <option value="Theo Giá Tiền" th:selected="${voucher.hinhThucGiam == 'Theo Giá Tiền'}">Theo Giá Tiền</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Số lượng</label>
+                        <input type="number" class="form-control" name="soLuong" th:value="${voucher.soLuong}" required min="1">
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Giá trị giảm</label>
+                        <input type="number" class="form-control" name="giaTriGiam" th:value="${voucher.giaTriGiam}" required min="0">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Giá trị giảm tối thiểu</label>
+                        <input type="number" class="form-control" name="giaTriGiamToiThieu" th:value="${voucher.giaTriGiamToiThieu}" required min="0">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Giá trị giảm tối đa</label>
+                        <input type="number" class="form-control" name="giaTriGiamToiDa" th:value="${voucher.giaTriGiamToiDa}" required min="0">
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Ngày bắt đầu</label>
+                        <input type="datetime-local" class="form-control" name="ngayBatDau"
+                               th:value="${#temporals.format(voucher.ngayBatDau, 'yyyy-MM-dd''T''HH:mm')}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Ngày kết thúc</label>
+                        <input type="datetime-local" class="form-control" name="ngayKetThuc"
+                               th:value="${#temporals.format(voucher.ngayKetThuc, 'yyyy-MM-dd''T''HH:mm')}" required>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Trạng thái</label>
+                        <select class="form-select" name="trangThai">
+                            <option value="0" th:selected="${voucher.trangThai == 0}">Chưa bắt đầu</option>
+                            <option value="1" th:selected="${voucher.trangThai == 1}">Đang hoạt động</option>
+                            <option value="2" th:selected="${voucher.trangThai == 2}">Hết hạn</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="text-end mt-3">
+                    <a th:href="@{/admin/vouchers}" class="btn btn-secondary">Hủy</a>
+                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (confirm('Bạn có chắc chắn muốn lưu thay đổi?')) {
+                this.submit();
+            }
+        });
+    });
+</script>
+</body>
+</html>

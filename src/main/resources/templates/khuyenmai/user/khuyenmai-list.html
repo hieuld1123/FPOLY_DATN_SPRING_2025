@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản Lý Khuyến Mãi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <!-- Thông báo -->
+    <div th:if="${param.success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:if="${param.success == 'created'}">Thêm mới khuyến mãi thành công!</span>
+        <span th:if="${param.success == 'updated'}">Cập nhật khuyến mãi thành công!</span>
+        <span th:if="${param.success == 'deleted'}">Xóa khuyến mãi thành công!</span>
+        <span th:if="${param.success == 'restored'}">Khôi phục khuyến mãi thành công!</span>
+        <span th:if="${param.success == 'stopped'}">Đã ngừng khuyến mãi thành công!</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${param.error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Danh Sách Khuyến Mãi</h2>
+        <div>
+            <a href="/admin/khuyen-mai/create" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Thêm Mới
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="card">
+        <div class="card-body">
+            <!-- Page Size Selector -->
+            <div class="mb-3">
+                <select class="form-select w-auto" id="pageSize" onchange="changePageSize(this.value)">
+                    <option value="5" th:selected="${danhSachKhuyenMai.size == 5}">5 / trang</option>
+                    <option value="10" th:selected="${danhSachKhuyenMai.size == 10}">10 / trang</option>
+                    <option value="20" th:selected="${danhSachKhuyenMai.size == 20}">20 / trang</option>
+                </select>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-light">
+                    <tr>
+                        <th>STT</th>
+                        <th>Tên Chiến Dịch</th>
+                        <th>Hình Thức Giảm</th>
+                        <th>Giá Trị Giảm</th>
+                        <th>Số SP</th>
+                        <th>Thời Gian Bắt Đầu</th>
+                        <th>Thời Gian Kết Thúc</th>
+                        <th>Trạng Thái</th>
+                        <th>Thao Tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="km, stat : ${danhSachKhuyenMai.content}">
+                        <td th:text="${danhSachKhuyenMai.number * danhSachKhuyenMai.size + stat.count}"></td>
+                        <td th:text="${km.tenChienDich}"></td>
+                        <td th:text="${km.hinhThucGiam}"></td>
+                        <td>
+                            <span th:if="${km.hinhThucGiam == 'Phần Trăm'}"
+                                  th:text="${#numbers.formatDecimal(km.giaTriGiam, 1, 'COMMA', 2, 'POINT') + '%'}"></span>
+                            <span th:if="${km.hinhThucGiam == 'Theo Giá Tiền'}"
+                                  th:text="${#numbers.formatDecimal(km.giaTriGiam, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}"></span>
+                        </td>
+                        <td>
+                            <span class="badge bg-info" th:text="${#lists.size(km.khuyenMaiChitiets)}"></span>
+                        </td>
+                        <td th:text="${#temporals.format(km.thoiGianBatDau, 'dd-MM-yyyy HH:mm')}"></td>
+                        <td th:text="${#temporals.format(km.thoiGianKetThuc, 'dd-MM-yyyy HH:mm')}"></td>
+                        <td>
+                            <span th:if="${km.trangThai == 0}" class="badge bg-warning text-dark">Chưa bắt đầu</span>
+                            <span th:if="${km.trangThai == 1}" class="badge bg-success">Đang hoạt động</span>
+                            <span th:if="${km.trangThai == 2}" class="badge bg-danger">Hết hạn</span>
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a th:href="@{/admin/khuyen-mai/edit/{id}(id=${km.id})}"
+                                   class="btn btn-sm btn-info me-2" title="Sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a th:if="${km.trangThai == 2}"
+                                   th:href="@{/admin/khuyen-mai/restore/{id}(id=${km.id})}"
+                                   class="btn btn-sm btn-success me-2"
+                                   onclick="return confirm('Bạn có chắc muốn khôi phục khuyến mãi này?')"
+                                   title="Khôi phục">
+                                    <i class="fas fa-redo"></i>
+                                </a>
+                                <a th:if="${km.trangThai == 1}"
+                                   th:href="@{/admin/khuyen-mai/stop/{id}(id=${km.id})}"
+                                   class="btn btn-sm btn-warning me-2"
+                                   onclick="return confirm('Bạn có chắc muốn ngừng khuyến mãi này?')"
+                                   title="Ngừng hoạt động">
+                                    <i class="fas fa-stop-circle"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-danger"
+                                        th:onclick="'confirmDelete(' + ${km.id} + ')'"
+                                        th:disabled="${km.trangThai == 1}"
+                                        title="Xóa">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${danhSachKhuyenMai.empty}">
+                        <td colspan="9" class="text-center">Không có khuyến mãi nào</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <!-- Pagination -->
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <!-- Pagination Navigation -->
+                    <nav th:if="${danhSachKhuyenMai.totalPages > 0}">
+                        <ul class="pagination mb-0">
+                            <!-- First page -->
+                            <li class="page-item" th:classappend="${danhSachKhuyenMai.first ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/admin/khuyen-mai(page=0,size=${danhSachKhuyenMai.size})}">&laquo;</a>
+                            </li>
+                            <!-- Previous page -->
+                            <li class="page-item" th:classappend="${danhSachKhuyenMai.first ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/admin/khuyen-mai(page=${danhSachKhuyenMai.number - 1},size=${danhSachKhuyenMai.size})}">&lsaquo;</a>
+                            </li>
+                            <!-- Page numbers -->
+                            <li class="page-item"
+                                th:each="pageNumber : ${#numbers.sequence(0, danhSachKhuyenMai.totalPages - 1)}"
+                                th:classappend="${pageNumber == danhSachKhuyenMai.number ? 'active' : ''}"
+                                th:if="${pageNumber >= danhSachKhuyenMai.number - 2 and pageNumber <= danhSachKhuyenMai.number + 2}">
+                                <a class="page-link" th:href="@{/admin/khuyen-mai(page=${pageNumber},size=${danhSachKhuyenMai.size})}"
+                                   th:text="${pageNumber + 1}"></a>
+                            </li>
+                            <!-- Next page -->
+                            <li class="page-item" th:classappend="${danhSachKhuyenMai.last ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/admin/khuyen-mai(page=${danhSachKhuyenMai.number + 1},size=${danhSachKhuyenMai.size})}">&rsaquo;</a>
+                            </li>
+                            <!-- Last page -->
+                            <li class="page-item" th:classappend="${danhSachKhuyenMai.last ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/admin/khuyen-mai(page=${danhSachKhuyenMai.totalPages - 1},size=${danhSachKhuyenMai.size})}">&raquo;</a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    <!-- Page Info -->
+                    <div class="text-muted">
+                        Hiển thị
+                        <span th:text="${danhSachKhuyenMai.numberOfElements}"></span> /
+                        <span th:text="${danhSachKhuyenMai.totalElements}"></span>
+                        khuyến mãi
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Xác nhận xóa -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa khuyến mãi này?</p>
+                <p class="text-danger"><small>Lưu ý: Không thể xóa khuyến mãi đang hoạt động.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    setTimeout(function() {
+        document.querySelectorAll('.alert').forEach(function(alert) {
+            bootstrap.Alert.getOrCreateInstance(alert).close();
+        });
+    }, 5000);
+
+    function confirmDelete(id) {
+        const deleteForm = document.getElementById('deleteForm');
+        deleteForm.action = `/admin/khuyen-mai/delete/${id}`;
+        new bootstrap.Modal(document.getElementById('deleteModal')).show();
+    }
+
+    function changePageSize(size) {
+        window.location.href = `/admin/khuyen-mai?page=0&size=${size}`;
+    }
+</script>
+</body>
+</html>

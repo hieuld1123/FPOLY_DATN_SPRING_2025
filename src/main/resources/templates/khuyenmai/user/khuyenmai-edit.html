@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chỉnh Sửa Khuyến Mãi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Chỉnh Sửa Khuyến Mãi</h5>
+        </div>
+        <div class="card-body">
+            <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+
+            <form th:action="@{/admin/khuyen-mai/edit/{id}(id=${khuyenMai.id})}" method="post" id="khuyenMaiForm">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Tên chiến dịch</label>
+                        <input type="text" class="form-control" name="tenChienDich" th:value="${khuyenMai.tenChienDich}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Hình thức giảm</label>
+                        <select class="form-select" name="hinhThucGiam" id="hinhThucGiam">
+                            <option value="Phần Trăm" th:selected="${khuyenMai.hinhThucGiam == 'Phần Trăm'}">Phần Trăm</option>
+                            <option value="Theo Giá Tiền" th:selected="${khuyenMai.hinhThucGiam == 'Theo Giá Tiền'}">Theo Giá Tiền</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Thời gian bắt đầu</label>
+                        <input type="datetime-local" class="form-control" name="thoiGianBatDau" id="thoiGianBatDau"
+                               th:value="${#temporals.format(khuyenMai.thoiGianBatDau, 'yyyy-MM-dd''T''HH:mm')}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Thời gian kết thúc</label>
+                        <input type="datetime-local" class="form-control" name="thoiGianKetThuc" id="thoiGianKetThuc"
+                               th:value="${#temporals.format(khuyenMai.thoiGianKetThuc, 'yyyy-MM-dd''T''HH:mm')}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Giá trị giảm chung</label>
+                        <input type="number" class="form-control" name="giaTriGiam" id="giaTriGiam"
+                               th:value="${khuyenMai.giaTriGiam}" min="0" required>
+                    </div>
+                </div>
+
+                <div class="card mt-3">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Danh sách sản phẩm</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th style="width: 50px;">
+                                        <input type="checkbox" id="selectAll" class="form-check-input">
+                                    </th>
+                                    <th>Sản phẩm</th>
+                                    <th>Giá gốc</th>
+                                    <th style="width: 150px;">Mức giảm</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="sp : ${sanPhams}">
+                                    <td>
+                                        <input type="checkbox" class="form-check-input chonSanPham"
+                                               th:name="'sanPham_' + ${sp.id}"
+                                               th:value="on"
+                                               th:data-id="${sp.id}"
+                                               th:checked="${sanPhamGiamGiaMap.containsKey(sp.id)}">
+                                    </td>
+                                    <td th:text="${sp.tenSanPhamChiTiet}"></td>
+                                    <td class="giaGoc" th:text="${#numbers.formatDecimal(sp.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"
+                                        th:data-gia="${sp.giaBan}"></td>
+                                    <td>
+                                        <input type="number" class="form-control mucGiam"
+                                               th:name="'mucGiam_' + ${sp.id}"
+                                               th:value="${sanPhamGiamGiaMap.get(sp.id)}"
+                                               th:data-original-value="${sanPhamGiamGiaMap.get(sp.id)}"
+                                               min="0" step="0.1">
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-end mt-3">
+                    <a href="/admin/khuyen-mai" class="btn btn-secondary">Hủy</a>
+                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("khuyenMaiForm");
+        const hinhThucGiam = document.getElementById("hinhThucGiam");
+        const giaTriGiam = document.getElementById("giaTriGiam");
+        const mucGiamInputs = document.querySelectorAll(".mucGiam");
+        const giaGocElements = document.querySelectorAll(".giaGoc");
+        const checkboxes = document.querySelectorAll(".chonSanPham");
+        const selectAll = document.getElementById("selectAll");
+
+        // Xử lý chọn tất cả
+        selectAll.addEventListener("change", function() {
+            checkboxes.forEach((checkbox, index) => {
+                checkbox.checked = this.checked;
+                mucGiamInputs[index].disabled = !this.checked;
+            });
+        });
+
+        // Xử lý từng checkbox
+        checkboxes.forEach((checkbox, index) => {
+            checkbox.addEventListener("change", function() {
+                mucGiamInputs[index].disabled = !this.checked;
+                updateSelectAllState();
+            });
+        });
+
+        // Cập nhật trạng thái "Chọn tất cả"
+        function updateSelectAllState() {
+            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+            selectAll.checked = checkedCount === checkboxes.length;
+            selectAll.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
+        }
+
+        // Kiểm tra form trước khi submit
+        form.addEventListener("submit", function(event) {
+            event.preventDefault();
+            if (validateForm()) {
+                this.submit();
+            }
+        });
+
+        // Hàm kiểm tra form
+        function validateForm() {
+            const startDate = new Date(document.getElementById("thoiGianBatDau").value);
+            const endDate = new Date(document.getElementById("thoiGianKetThuc").value);
+
+            if (endDate <= startDate) {
+                alert("Thời gian kết thúc phải sau thời gian bắt đầu");
+                return false;
+            }
+
+            let hasSelectedProduct = false;
+            let isValid = true;
+
+            checkboxes.forEach((checkbox, index) => {
+                if (checkbox.checked) {
+                    hasSelectedProduct = true;
+                    const mucGiam = parseFloat(mucGiamInputs[index].value);
+                    const giaGoc = parseFloat(giaGocElements[index].dataset.gia);
+
+                    if (!mucGiam || mucGiam <= 0) {
+                        alert("Mức giảm phải lớn hơn 0");
+                        isValid = false;
+                        return;
+                    }
+
+                    if (hinhThucGiam.value === "Phần Trăm" && mucGiam > 100) {
+                        alert("Mức giảm không được vượt quá 100%");
+                        isValid = false;
+                        return;
+                    }
+
+                    if (hinhThucGiam.value === "Theo Giá Tiền" && mucGiam >= giaGoc) {
+                        alert("Mức giảm không được vượt quá giá gốc");
+                        isValid = false;
+                        return;
+                    }
+                }
+            });
+
+            if (!hasSelectedProduct) {
+                alert("Vui lòng chọn ít nhất một sản phẩm");
+                return false;
+            }
+
+            return isValid;
+        }
+
+        // Khởi tạo trạng thái ban đầu
+        updateSelectAllState();
+        checkboxes.forEach((checkbox, index) => {
+            mucGiamInputs[index].disabled = !checkbox.checked;
+        });
+    });
+</script>
+</body>
+</html>
