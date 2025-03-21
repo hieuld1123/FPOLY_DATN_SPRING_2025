@@ -5,7 +5,7 @@ let filterParams = {
     invoiceCode: '',
     startDate: '',
     endDate: '',
-    status: 'All',
+    status: 'Chờ xác nhận',
     customer: ''
 };
 
@@ -28,7 +28,7 @@ function fetchInvoices(page, size, params) {
         invoiceCode: params.invoiceCode,
         startDate: formattedStartDate,
         endDate: formattedEndDate,
-        status: params.status === 'All' ? '' : params.status,
+        status: params.status,
         customer: params.customer
     }).toString();
 
@@ -58,13 +58,20 @@ function loadInvoices(data, page, total) {
     data.forEach(invoice => {
         const customerName = invoice.customer === null ? "Khách lẻ" : invoice.customer;
         const formattedValue = invoice.value.toLocaleString('vi-VN') + " VNĐ";
-        const creationDate = new Date(invoice.creationDate).toLocaleDateString('vi-VN');
+        // const creationDate = new Date(invoice.creationDate).toLocaleDateString('vi-VN');
+        const creationDate = new Date(invoice.creationDate);
+        const formattedDate = `${creationDate.getDate().toString().padStart(2, '0')}/` +
+            `${(creationDate.getMonth() + 1).toString().padStart(2, '0')}/` +
+            `${creationDate.getFullYear()} ` +
+            `${creationDate.getHours().toString().padStart(2, '0')}:` +
+            `${creationDate.getMinutes().toString().padStart(2, '0')}:` +
+            `${creationDate.getSeconds().toString().padStart(2, '0')}`;
         const row = `
                 <tr>
                     <td><a href="/hoa-don/${invoice.id}">${invoice.id}</a></td>
                     <td>${customerName}</td>
                     <td>${invoice.purchaseMethod}</td>
-                    <td>${creationDate}</td>
+                    <td>${formattedDate}</td>
                     <td>${invoice.status}</td>
                     <td>${formattedValue}</td>
                 </tr>
