@@ -185,14 +185,17 @@ public class BanHangServiceImpl implements BanHangService {
         hoaDon.setHinhThucMuaHang(paymentRequest.getType());
         hoaDon.setPhiVanChuyen(0f);
         hoaDon.setTrangThai(paymentRequest.getType().equalsIgnoreCase("Offline") ? "Hoàn thành" : "Đã giao cho đơn vị vận chuyển");
-        hoaDon.setTenNguoiNhan(paymentRequest.getRecipient_name());
-        hoaDon.setSdtNguoiNhan(paymentRequest.getPhone_number());
-        hoaDon.setEmail(paymentRequest.getEmail());
-        hoaDon.setTinh(paymentRequest.getProvince());
-        hoaDon.setQuan(paymentRequest.getDistrict());
-        hoaDon.setXa(paymentRequest.getWard());
-        hoaDon.setDiaChiNguoiNhan(paymentRequest.getAddressDetail());
-        hoaDon.setPhuongThucThanhToan(paymentRequest.getPaymentMethod());
+
+        if(hoaDon.getHinhThucMuaHang().equalsIgnoreCase("Có giao hàng") || hoaDon.getHinhThucMuaHang().equalsIgnoreCase("Online")){
+            hoaDon.setTenNguoiNhan(paymentRequest.getRecipient_name());
+            hoaDon.setSdtNguoiNhan(paymentRequest.getPhone_number());
+            hoaDon.setEmail(paymentRequest.getEmail());
+            hoaDon.setTinh(paymentRequest.getProvince());
+            hoaDon.setQuan(paymentRequest.getDistrict());
+            hoaDon.setXa(paymentRequest.getWard());
+            hoaDon.setDiaChiNguoiNhan(paymentRequest.getAddressDetail());
+            hoaDon.setPhuongThucThanhToan(paymentRequest.getPaymentMethod());
+        }
         hoaDon.setThanhToan(paymentRequest.getPaymentMethod().equalsIgnoreCase("Thanh toán tại cửa hàng"));
         hoaDon.setNgayCapNhat(new Date());
         this.hoaDonRepository.save(hoaDon);
