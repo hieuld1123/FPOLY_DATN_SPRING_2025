@@ -9,6 +9,8 @@ import java.util.List;
 @Getter
 @Builder
 public class InvoiceInformation {
+    private boolean isConfirm;
+
     private String order_id;
 
     private String seller;

@@ -8,4 +8,8 @@ public interface HoaDonService {
     InvoicePageResponse getInvoices(InvoiceParamRequest request);
 
     InvoiceInformation getInvoice(String code);
+
+    void confirmInvoice(String code);
+
+    void payment(String code);
 }

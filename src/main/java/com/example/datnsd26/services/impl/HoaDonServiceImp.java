@@ -34,27 +34,68 @@ public class HoaDonServiceImp implements HoaDonService {
 
     @Override
     public InvoiceInformation getInvoice(String code) {
-        log.info("GET/hoa-don/{id}", code);
-        // status_timeline - dummy
+        log.info("GET/hoa-don/{}", code);
+        HoaDon hd = getHoaDonByCode(code);
         List<InvoiceInformation.StatusTimeline> statusTimeline = new ArrayList<>();
+
         statusTimeline.add(InvoiceInformation.StatusTimeline.builder()
                 .status("Đặt hàng")
                 .time(new Date())
                 .completed(true)
                 .build());
-        statusTimeline.add(InvoiceInformation.StatusTimeline.builder()
-                .status("Đã giao cho đơn vị vận chuyển")
-                .time(new Date())
-                .completed(true)
-                .build());
-        statusTimeline.add(InvoiceInformation.StatusTimeline.builder()
-                .status("Hoàn thành")
-                .time(new Date())
-                .completed(true)
-                .build());
+        if (hd.getHinhThucMuaHang().equalsIgnoreCase("Offline") && hd.isThanhToan()) {
+            statusTimeline.add(InvoiceInformation.StatusTimeline.builder()
+                    .status("Hoàn thành")
+                    .time(new Date())
+                    .completed(true)
+                    .build());
+        }
 
-        HoaDon hd = getHoaDonByCode(code);
+        if (hd.getHinhThucMuaHang().equalsIgnoreCase("Có giao hàng")) {
+            statusTimeline.add(InvoiceInformation.StatusTimeline.builder()
+                    .status("Đã xác nhận")
+                    .time(new Date())
+                    .completed(true)
+                    .build());
+            statusTimeline.add(InvoiceInformation.StatusTimeline.builder()
+                    .status("Đã giao cho đơn vị vận chuyển")
+                    .time(new Date())
+                    .completed(true)
+                    .build());
+            statusTimeline.add(InvoiceInformation.StatusTimeline.builder()
+                    .status("Hoàn thành")
+                    .time(new Date())
+                    .completed(hd.isThanhToan())
+                    .build());
+        }
+
+        boolean isOk = false;
+        if (hd.getHinhThucMuaHang().equalsIgnoreCase("Online")) {
+            isOk = hd.getTrangThai().equalsIgnoreCase("Đã giao cho đơn vị vận chuyển") || hd.getTrangThai().equalsIgnoreCase("Hoàn thành");
+            statusTimeline.add(InvoiceInformation.StatusTimeline.builder()
+                    .status("Chờ xác nhận")
+                    .time(new Date())
+                    .completed(true)
+                    .build());
+            statusTimeline.add(InvoiceInformation.StatusTimeline.builder()
+                    .status("Đã xác nhận")
+                    .time(new Date())
+                    .completed(isOk)
+                    .build());
+            statusTimeline.add(InvoiceInformation.StatusTimeline.builder()
+                    .status("Đã giao cho đơn vị vận chuyển")
+                    .time(new Date())
+                    .completed(isOk)
+                    .build());
+            statusTimeline.add(InvoiceInformation.StatusTimeline.builder()
+                    .status("Hoàn thành")
+                    .time(new Date())
+                    .completed(isOk && hd.isThanhToan())
+                    .build());
+        }
+
         return InvoiceInformation.builder()
+                .isConfirm(!hd.getHinhThucMuaHang().equalsIgnoreCase("Online"))
                 .order_id(hd.getMaHoaDon())
                 .seller(hd.getNhanVien() == null ? "N/A" : hd.getNhanVien().getTenNhanVien())
                 .order_date(hd.getNgayTao())
@@ -86,6 +127,23 @@ public class HoaDonServiceImp implements HoaDonService {
                         .total(hd.getTongTien())
                         .build())
                 .build();
+    }
+
+    @Override
+    public void confirmInvoice(String code) {
+        HoaDon hd = getHoaDonByCode(code);
+        hd.setTrangThai(!hd.isThanhToan() ? "Đã giao cho đơn vị vận chuyển" : "Hoàn thành");
+        hd.setNgayCapNhat(new Date());
+        this.hoaDonRepository.save(hd);
+    }
+
+    @Override
+    public void payment(String code) {
+        HoaDon hd = getHoaDonByCode(code);
+        hd.setTrangThai(hd.getTrangThai().equalsIgnoreCase("Chờ xác nhận") ? hd.getTrangThai() : "Hoàn thành");
+        hd.setThanhToan(true);
+        hd.setNgayCapNhat(new Date());
+        this.hoaDonRepository.save(hd);
     }
 
     private HoaDon getHoaDonByCode(String code) {
