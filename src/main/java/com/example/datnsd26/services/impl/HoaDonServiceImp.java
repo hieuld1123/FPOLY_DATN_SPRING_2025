@@ -95,7 +95,7 @@ public class HoaDonServiceImp implements HoaDonService {
         }
 
         return InvoiceInformation.builder()
-                .isConfirm(!hd.getHinhThucMuaHang().equalsIgnoreCase("Online"))
+                .isConfirm(!hd.getTrangThai().equalsIgnoreCase("Chờ xác nhận"))
                 .order_id(hd.getMaHoaDon())
                 .seller(hd.getNhanVien() == null ? "N/A" : hd.getNhanVien().getTenNhanVien())
                 .order_date(hd.getNgayTao())
