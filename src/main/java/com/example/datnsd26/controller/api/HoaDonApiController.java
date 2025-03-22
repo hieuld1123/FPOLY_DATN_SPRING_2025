@@ -31,4 +31,22 @@ public class HoaDonApiController {
                 .data(hoaDonService.getInvoice(code))
                 .build();
     }
+
+    @PatchMapping("/confirm/{code}")
+    public ApiResponse confirmInvoice(@PathVariable String code) {
+        hoaDonService.confirmInvoice(code);
+        return ApiResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Xác nhận đơn hàng")
+                .build();
+    }
+
+    @PatchMapping("/payment/{code}")
+    public ApiResponse payment(@PathVariable String code) {
+        hoaDonService.payment(code);
+        return ApiResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Thanh toán")
+                .build();
+    }
 }

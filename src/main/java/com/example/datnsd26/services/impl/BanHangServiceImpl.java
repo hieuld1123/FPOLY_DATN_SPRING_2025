@@ -51,7 +51,7 @@ public class BanHangServiceImpl implements BanHangService {
                         .id(sp.getId())
                         .maSanPham(sp.getSanPhamChiTiet().getSanPham().getMaSanPham())
                         .tenSanPham(String.format("%s [%s - %s]", sp.getSanPhamChiTiet().getSanPham().getTenSanPham(), sp.getSanPhamChiTiet().getMauSac().getTen(), sp.getSanPhamChiTiet().getKichCo().getTen()))
-                        .gia(sp.getSanPhamChiTiet().getGiaBan())
+                        .gia(sp.getSanPhamChiTiet().getGiaBanSauGiam())
                         .soLuong(sp.getSoLuong())
                         .soLuongTonKho(sp.getSanPhamChiTiet().getSoLuong())
                         .hinhAnh("https://th.bing.com/th/id/OIP.8tQmmY_ccVpcxBxu0Z0mzwHaE8?rs=1&pid=ImgDetMain") // TODO
@@ -86,7 +86,7 @@ public class BanHangServiceImpl implements BanHangService {
                 .id(sp.getId())
                 .maSanPham(sp.getSanPham().getMaSanPham())
                 .tenSanPham(String.format("%s [%s - %s]", sp.getSanPham().getTenSanPham(), sp.getMauSac().getTen(), sp.getKichCo().getTen()))
-                .gia(sp.getGiaBan())
+                .gia(sp.getGiaBanSauGiam()) // Note: update
                 .soLuong(sp.getSoLuong())
                 .hinhAnh("https://th.bing.com/th/id/OIP.8tQmmY_ccVpcxBxu0Z0mzwHaE8?rs=1&pid=ImgDetMain") // TODO
                 .build()).toList();
@@ -105,17 +105,17 @@ public class BanHangServiceImpl implements BanHangService {
             log.info("update invoice id: {}", invoiceId);
             HoaDonChiTiet hoaDonChiTiet = invoice.get();
             hoaDonChiTiet.setSoLuong(hoaDonChiTiet.getSoLuong() + 1);
-            hoaDon.setTongTien(hoaDon.getTongTien() + product.getGiaBan());
+            hoaDon.setTongTien(hoaDon.getTongTien() + product.getGiaBanSauGiam()); // Note
             return this.hoaDonChiTietRepository.save(hoaDonChiTiet).getId();
         }
         log.info("addToCart invoice id: {}", invoiceId);
         HoaDonChiTiet hoaDonChiTiet = HoaDonChiTiet.builder()
-                .giaTienSauGiam(product.getGiaBan())
+                .giaTienSauGiam(product.getGiaBanSauGiam()) // Note
                 .sanPhamChiTiet(product)
                 .hoaDon(hoaDon)
                 .soLuong(1)
                 .build();
-        hoaDon.setTongTien(hoaDon.getTongTien() + product.getGiaBan()); // NOTE: Price
+        hoaDon.setTongTien(hoaDon.getTongTien() + product.getGiaBanSauGiam()); // Note
         return this.hoaDonChiTietRepository.save(hoaDonChiTiet).getId();
     }
 
@@ -144,7 +144,7 @@ public class BanHangServiceImpl implements BanHangService {
             if (hoaDon != null) {
                 float newTotalPrice = (float) hoaDon.getDanhSachSanPham()
                         .stream()
-                        .mapToDouble(sp -> sp.getSoLuong() * sp.getSanPhamChiTiet().getGiaBan())
+                        .mapToDouble(sp -> sp.getSoLuong() * sp.getSanPhamChiTiet().getGiaBanSauGiam()) // Note
                         .sum();
                 hoaDon.setTongTien(newTotalPrice);
                 hoaDonRepository.save(hoaDon);
@@ -185,14 +185,17 @@ public class BanHangServiceImpl implements BanHangService {
         hoaDon.setHinhThucMuaHang(paymentRequest.getType());
         hoaDon.setPhiVanChuyen(0f);
         hoaDon.setTrangThai(paymentRequest.getType().equalsIgnoreCase("Offline") ? "Hoàn thành" : "Đã giao cho đơn vị vận chuyển");
-        hoaDon.setTenNguoiNhan(paymentRequest.getRecipient_name());
-        hoaDon.setSdtNguoiNhan(paymentRequest.getPhone_number());
-        hoaDon.setEmail(paymentRequest.getEmail());
-        hoaDon.setTinh(paymentRequest.getProvince());
-        hoaDon.setQuan(paymentRequest.getDistrict());
-        hoaDon.setXa(paymentRequest.getWard());
-        hoaDon.setDiaChiNguoiNhan(paymentRequest.getAddressDetail());
-        hoaDon.setPhuongThucThanhToan(paymentRequest.getPaymentMethod());
+
+        if(hoaDon.getHinhThucMuaHang().equalsIgnoreCase("Có giao hàng") || hoaDon.getHinhThucMuaHang().equalsIgnoreCase("Online")){
+            hoaDon.setTenNguoiNhan(paymentRequest.getRecipient_name());
+            hoaDon.setSdtNguoiNhan(paymentRequest.getPhone_number());
+            hoaDon.setEmail(paymentRequest.getEmail());
+            hoaDon.setTinh(paymentRequest.getProvince());
+            hoaDon.setQuan(paymentRequest.getDistrict());
+            hoaDon.setXa(paymentRequest.getWard());
+            hoaDon.setDiaChiNguoiNhan(paymentRequest.getAddressDetail());
+            hoaDon.setPhuongThucThanhToan(paymentRequest.getPaymentMethod());
+        }
         hoaDon.setThanhToan(paymentRequest.getPaymentMethod().equalsIgnoreCase("Thanh toán tại cửa hàng"));
         hoaDon.setNgayCapNhat(new Date());
         this.hoaDonRepository.save(hoaDon);
