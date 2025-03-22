@@ -2,13 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Quản lý khách hàng</title>
+    <title>NineShoes</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </head>
 <style>
     .img-preview {
-        width: 150px; /* Kích thước cố định */
+        width: 150px;
         height: 150px;
         border-radius: 50%; /* Bo tròn ảnh */
         object-fit: cover; /* Đảm bảo ảnh không méo */
@@ -40,7 +42,7 @@
                                      th:src="@{/uploads/{imageName}(imageName=${khachHangDto.hinhAnh != null ? khachHangDto.hinhAnh : 'default.jpg'})}">
                             </div>
                             <input type="file" class="form-control mt-3" name="anh" id="fileInput"
-                                   accept="image/png, image/jpeg"/>
+                                   accept="image/*"/>
                         </div>
 
                         <!-- Cột bên phải: Thông tin -->
@@ -294,15 +296,23 @@
 <script>
     document.getElementById("fileInput").addEventListener("change", function (event) {
         let file = event.target.files[0]; // Lấy file được chọn
+
         if (file) {
+            console.log("Ảnh mới được chọn:", file.name); // Debug kiểm tra có nhận file không
+
             let reader = new FileReader();
             reader.onload = function (e) {
+                console.log("Ảnh preview:", e.target.result); // Debug đường dẫn ảnh
                 document.getElementById("uploadedImage").src = e.target.result; // Hiển thị ảnh
             };
-            reader.readAsDataURL(file); // Đọc file ảnh
+            reader.readAsDataURL(file); // Đọc file ảnh để hiển thị preview
+        } else {
+            console.log("Không có ảnh nào được chọn.");
         }
     });
 </script>
+
+<!--validate-->
 <script th:inline="javascript">
     var listTK = /*[[${taiKhoan}]]*/ '[]';
 </script>
@@ -331,7 +341,7 @@
         return true; // Không trùng
     }
 
-    // Validate
+
     function validate(event) {
         let isValid = true;
 
@@ -493,16 +503,7 @@
 </script>
 
 
-<script>
-    document.getElementById('fileInput').addEventListener('change', function (event) {
-        const file = event.target.files[0];
-        if (file) {
-            console.log("Ảnh được chọn:", file.name); // Debug kiểm tra có nhận file không
-        } else {
-            console.log("Không có ảnh nào được chọn.");
-        }
-    });
-</script>
+
 
 </body>
 </html>

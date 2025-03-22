@@ -16,10 +16,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,18 +90,13 @@ public class KhachHangController {
                                 @RequestParam(name = "anh") MultipartFile anh) throws MessagingException {
 
         if (anh != null && !anh.isEmpty()) {
-            System.out.println("Ảnh được gửi lên: " + anh.getOriginalFilename());
-            // Lưu ảnh vào thư mục
             String fileName = fileLoadService.uploadFile(anh);
-            System.out.println("Tên file sau khi lưu: " + fileName);
-
             khachHangDto.setHinhAnh(fileName != null ? fileName : "default.jpg");
         } else {
-            System.out.println("Không có ảnh nào được gửi lên.");
-            khachHangDto.setHinhAnh("default.jpg");  // Đặt ảnh mặc định nếu không có ảnh
+            khachHangDto.setHinhAnh("default.jpg");
         }
 
-      for (int i = 0; i < khachHangDto.getListDiaChi().size(); i++) {
+        for (int i = 0; i < khachHangDto.getListDiaChi().size(); i++) {
             khachHangDto.getListDiaChi().get(i).setTrangThai(false);
         }
 
@@ -185,44 +183,41 @@ public class KhachHangController {
         }).collect(Collectors.toList());
         khachHangDto.setListDiaChi(listDiaChiDTO);
 
-        Integer macDinhId = danhSachDiaChi.stream()
-                .filter(DiaChi::getTrangThai) // Lọc địa chỉ có trạng thái true (mặc định)
-                .findFirst()
-                .map(DiaChi::getId)
-                .orElse(null);
-        khachHangDto.setDiaChiMacDinhId(macDinhId);
-
         model.addAttribute("khachHang", khachHangDto);
+        model.addAttribute("listTK", taiKhoanService.getAll());
         return "/admin/khach-hang/view-sua";
     }
 
     @PostMapping("/sua/{id}")
-    public String suaKhachHang(@ModelAttribute("khachHangDto") KhachHangDto khachHangDto,
-                               @RequestParam("diaChiMacDinhId") Integer diaChiMacDinhIndex,
+    public String suaKhachHang(@ModelAttribute("khachHang") KhachHangDto khachHangDto,
                                @RequestParam(name = "anh") MultipartFile anh,
+                               @RequestParam("oldImage") String oldImage,
                                @PathVariable Integer id) {
         if (!anh.isEmpty()) {
             String fileName = fileLoadService.uploadFile(anh);
             khachHangDto.setHinhAnh(fileName);
+        } else {
+            khachHangDto.setHinhAnh(oldImage);
         }
-
-        // Cập nhật mặc định
-//        for (DiaChiDTO diaChiDTO : khachHangDto.getListDiaChi()) {
-//            diaChiDTO.setTrangThai(false);
-//
-//            if (diaChiDTO.getId() != null && diaChiDTO.getId().equals(diaChiMacDinhIndex)) {
-//                diaChiDTO.setTrangThai(true);
-//            }
-//
-//        }
         khachHangService.update(khachHangDto, id);
         return "redirect:/khach-hang/hien-thi";
     }
 
-    @PostMapping("/xoa-dia-chi/{id}")
-    public String xoaDC(@PathVariable("id") Integer id) {
-        diaChiService.xoaDiaChiTheoId(id);
-        return "redirect:/khach-hang/sua/{id}";
+    @DeleteMapping("/xoa-dia-chi/{id}")
+    @ResponseBody
+    public ResponseEntity<?> xoaDC(@PathVariable("id") Integer id) {
+        Integer khachHangId = diaChiService.getKhachHangIdByDiaChiId(id);
+        if (khachHangId == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy khách hàng!");
+        }
 
+        try {
+            diaChiService.xoaDiaChiTheoId(id);
+            return ResponseEntity.ok("Xóa địa chỉ thành công!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi xóa địa chỉ!");
+        }
     }
+
+
 }

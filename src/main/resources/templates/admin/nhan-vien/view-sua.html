@@ -2,14 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Quản lý nhân viên</title>
+    <title>NineShoes</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
-
+<style>
+    .img-preview {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 50%;
+        display: block;
+        margin: auto;
+        border: 3px solid #ddd;
+    }
+</style>
 <body>
-<div th:replace="components/admin-sidebar :: sidebar"></div>
+<div th:replace="~{components/admin-sidebar :: sidebar}"></div>
 <div class="page-wrapper">
     <div class="container-xl">
         <div class="my-5">
@@ -26,15 +38,16 @@
                       enctype="multipart/form-data" onsubmit="return validate(event);">
                     <div class="row">
                         <!-- Cột bên trái: Ảnh nhân viên -->
-                        <div class="col-md-4 text-center">
-                            <div class="avatar avatar-xl mb-3" style="margin-top: 70px">
-                                <img id="uploadedImage" ,style="width: 150px; height: 150px; object-fit: cover;"
+                        <div class="col-md-4 text-center" style="margin-top: 50px">
+                            <div>
+                                <img id="uploadedImage" class="img-preview rounded-circle"
                                      th:src="@{/uploads/{imageName}(imageName=${nhanVienDto.hinhAnh})}">
                             </div>
-                            <input type="file" class="form-control" name="anh" id="fileInput"
-                                   accept="image/png, image/jpeg"/>
+                            <input type="file" class="form-control mt-3" name="anh" id="fileInput"
+                                   accept="image/png, image/jpeg, image/jpg"/>
+                            <!-- Input hidden để giữ lại ảnh cũ -->
+                            <input type="hidden" name="oldImage" th:value="${nhanVienDto.hinhAnh}">
                         </div>
-
                         <!-- Cột bên phải: Thông tin nhân viên -->
                         <div class="col-md-8">
                             <div class="row">
@@ -57,13 +70,11 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Giới tính</label>
-                                    <div class="form-check">
+                                    <div class="d-flex">
                                         <input class="form-check-input" type="radio" th:field="*{gioiTinh}" id="radioGT"
-                                               th:value="true"> Nam
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" th:field="*{gioiTinh}"
-                                               th:value="false"> Nữ
+                                               style="margin-right: 5px" th:value="true"> Nam
+                                        <input class="form-check-input ms-3" type="radio" th:field="*{gioiTinh}"
+                                               style="margin-right:5px" th:value="false"> Nữ
                                     </div>
                                 </div>
                                 <div class="col-md-6 mb-3">
@@ -72,7 +83,8 @@
                                            id="inputEmail" th:errorclass="is-invalid"
                                            placeholder="Nhập email"
                                            th:attr="data-original=${nhanVienDto.email},
-                                                            data-id=${nhanVienDto.email}">
+                                                            data-id=${nhanVienDto.id}">
+
                                     <p style="color: red; font-weight: initial;" id="errorEmail"></p>
                                 </div>
                             </div>
@@ -84,7 +96,7 @@
                                            th:errorclass="is-invalid" id="inputSdt"
                                            placeholder="Nhập số điện thoại"
                                            th:attr="data-original=${nhanVienDto.sdt},
-                                                            data-id=${nhanVienDto.sdt}">
+                                                            data-id=${nhanVienDto.id}">
                                     <p style="color: red; font-weight: initial;" id="errorSdt"></p>
                                 </div>
                                 <div class="col-md-6 mb-3">
@@ -214,53 +226,42 @@
 </script>
 
 <script th:inline="javascript">
-    var listNV = /*[[${nhanVien}]]*/ '[]';
-    var listTK = /*[[${taiKhoan}]]*/ '[]';
-    console.log("Dữ liệu nhân viên:", listNV);
+    var listTK = /*[[${listTK}]]*/ '[]';
     console.log("Dữ liệu tài khoản:", listTK);
 </script>
 
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Đặt giá trị radio button mặc định
-        var errorAnh = document.getElementById("errorAnh");
-        var fileInput = document.getElementById('fileInput');
-        var imgElement = document.getElementById('uploadedImage');
+        let fileInput = document.getElementById("fileInput");
+        let uploadedImage = document.getElementById("uploadedImage");
 
-        fileInput.addEventListener('change', function (event) {
-            var file = event.target.files[0];
+        if (!fileInput || !uploadedImage) {
+            console.error("Không tìm thấy phần tử fileInput hoặc uploadedImage!");
+            return;
+        }
 
-            // 🔹 Reset trạng thái mỗi lần chọn ảnh mới
-            var isAnhValid = true;
-            errorAnh.innerText = "";
-            imgElement.style.display = 'none';
-
+        fileInput.addEventListener("change", function (event) {
+            let file = event.target.files[0]; // Lấy file được chọn
 
             if (file) {
-                // ✅ Kiểm tra kích thước tệp (dưới 1MB)
-                const maxSize = 1024 * 1024; // 1MB
-                if (file.size > maxSize) {
-                    errorAnh.innerText = "Ảnh nhân viên không được quá 1MB!";
-                    isAnhValid = false;
+                console.log("Ảnh mới được chọn:", file.name); // Kiểm tra có nhận file không
+                console.log("Loại file:", file.type);
+
+                // Kiểm tra xem file có phải ảnh không
+                if (!file.type.startsWith("image/")) {
+                    console.error("File không phải là ảnh!");
+                    return;
                 }
 
-                // ✅ Kiểm tra định dạng tệp (chỉ PNG hoặc JPG)
-                const validFormats = ['image/png', 'image/jpeg'];
-                if (!validFormats.includes(file.type)) {
-                    errorAnh.innerText = "Ảnh nhân viên chỉ nhận định dạng PNG và JPG!";
-                    isAnhValid = false;
-                }
-
-                // ✅ Nếu ảnh hợp lệ, hiển thị ngay lập tức
-                if (isAnhValid) {
-                    var reader = new FileReader();
-                    reader.onload = function (e) {
-                        imgElement.src = e.target.result;
-                        imgElement.style.display = 'block'; // Hiển thị hình ảnh
-                    };
-                    reader.readAsDataURL(file);
-                }
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    console.log("Ảnh preview URL:", e.target.result);
+                    uploadedImage.src = e.target.result; // Cập nhật ảnh preview
+                };
+                reader.readAsDataURL(file);
+            } else {
+                console.warn("Không có ảnh nào được chọn.");
             }
         });
     });
@@ -270,29 +271,42 @@
         var sdtInput = document.getElementById('inputSdt').value.trim();
         var originalSdt = document.getElementById('inputSdt').getAttribute("data-original") || "";
         var currentId = document.getElementById('inputSdt').getAttribute("data-id");
-
+        console.log("📌 SDT nhập vào:", sdtInput);
+        console.log("📌 SDT ban đầu:", originalSdt);
+        console.log("📌 ID nhân viên hiện tại:", currentId); // Kiểm tra xem ID có đúng không
         if (sdtInput === originalSdt) {
+            console.log("✅ Sdt không thay đổi, hợp lệ!");
             return true;
         }
 
-        return !listTK.some(tk => tk.sdt === sdtInput && tk.id !== currentId);
+        var isDuplicate = listTK.some(tk => tk.sdt === sdtInput && tk.id !== currentId);
+        console.log("🔍 Kết quả kiểm tra sdt:", isDuplicate ? "❌ Trùng" : "✅ Không trùng");
+        return !isDuplicate;
     }
 
     function checkTrungEmail() {
-        var emailInput = document.getElementById('inputEmail').value.trim();
-        var originalEmail = document.getElementById('inputEmail').getAttribute("data-original") || "";
-        var currentId = document.getElementById('inputEmail').getAttribute("data-id");
-        console.log("email nhập vào:", emailInput);
-        console.log("email ban đầu:", originalEmail);
-        console.log("email hiện tại:", currentId);
+        var emailInput = document.getElementById('inputEmail').value.trim().toLowerCase();
+        var originalEmail = (document.getElementById('inputEmail').getAttribute("data-original") || "").toLowerCase();
+        var currentId = document.getElementById('inputEmail').getAttribute("data-id"); // ID tài khoản nhân viên
+
+        console.log("📌 Email nhập vào:", emailInput);
+        console.log("📌 Email ban đầu:", originalEmail);
+        console.log("📌 ID tài khoản hiện tại:", currentId);
+
+        // Nếu email không thay đổi -> hợp lệ
         if (emailInput === originalEmail) {
-            console.log("✅ email không thay đổi, hợp lệ!");
+            console.log("✅ Email không thay đổi, hợp lệ!");
             return true;
         }
 
-        return !listTK.some(tk => tk.email.toLowerCase() === emailInput && tk.id !== currentId);
-        console.log("Kết quả kiểm tra trùng email:", isDuplicate ? "❌ Trùng" : "✅ Không trùng");
+        // Kiểm tra danh sách tài khoản có trùng email không
+        var isDuplicate = listTK.some(tk => tk.email.toLowerCase() === emailInput && tk.id != currentId);
+        console.log("🔍 Kết quả kiểm tra email:", isDuplicate ? "❌ Trùng" : "✅ Không trùng");
+
+        return !isDuplicate;
     }
+
+
 
     function validate(event) {
         let isValid = true;

@@ -81,16 +81,7 @@
                                     <textarea th:field="*{ghiChu}" class="form-control" rows="3"></textarea>
                                 </div>
                                 <div class="mb-3 form-selectgroup">
-                                    <label class="form-selectgroup-item">
-                                        <input th:field="*{phuongThucThanhToan}" type="radio" name="name"
-                                            value="Thanh toán khi nhận hàng" class="form-selectgroup-input" />
-                                        <span class="form-selectgroup-label">Thanh toán khi nhận hàng</span>
-                                    </label>
-                                    <label class="form-selectgroup-item">
-                                        <input th:field="*{phuongThucThanhToan}" type="radio" name="name"
-                                            value="Chuyển khoản" class="form-selectgroup-input" />
-                                        <span class="form-selectgroup-label">Chuyển khoản</span>
-                                    </label>
+                                    Thanh toán khi nhận hàng
                                 </div>
                                 <div class="mb-3">
                                     <button type="submit" class="btn btn-primary">Đặt hàng</button>
@@ -115,7 +106,7 @@
                                     </p>
                                     <div class="row">
                                         <div class="col-6">
-                                            <span class="fw-bold">Kích thước: <span>Sau này hien thi</span></span>
+                                            <span class="fw-bold">Size: <span th:text="${item.sanPhamChiTiet.kichCo.ten}"></span></span>
                                         </div>
                                         <div class="col-6 d-flex flex-row">
                                             <!-- Số lượng hiển thị -->

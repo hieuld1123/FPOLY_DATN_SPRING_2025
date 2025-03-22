@@ -86,15 +86,10 @@ public class NhanVienController {
     public String themNhanVien(@ModelAttribute("nhanVienDto") NhanVienTKDto nhanVienTKDto,
                                @RequestParam(name = "anh", required = false) MultipartFile anh) throws MessagingException {
         if (anh != null && !anh.isEmpty()) {
-            System.out.println("Ảnh được gửi lên: " + anh.getOriginalFilename());
-            // Lưu ảnh vào thư mục
             String fileName = fileLoadService.uploadFile(anh);
-            System.out.println("Tên file sau khi lưu: " + fileName);
-
             nhanVienTKDto.setHinhAnh(fileName != null ? fileName : "default.jpg");
         } else {
-            System.out.println("Không có ảnh nào được gửi lên.");
-            nhanVienTKDto.setHinhAnh("default.jpg");  // Đặt ảnh mặc định nếu không có ảnh
+            nhanVienTKDto.setHinhAnh("default.jpg");
         }
 
         nhanVienService.save(nhanVienTKDto);
@@ -163,10 +158,13 @@ public class NhanVienController {
     @PostMapping("/sua/{id}")
     private String suaNhanVien(@ModelAttribute("nhanVien") NhanVienTKDto nhanVienTKDto,
                                @PathVariable Integer id,
+                               @RequestParam("oldImage") String oldImage,
                                @RequestParam(name = "anh") MultipartFile anh) {
         if (!anh.isEmpty()) {
             String fileName = fileLoadService.uploadFile(anh);
             nhanVienTKDto.setHinhAnh(fileName);
+        } else {
+            nhanVienTKDto.setHinhAnh(oldImage);
         }
         nhanVienService.update(nhanVienTKDto, id);
         return "redirect:/nhan-vien/hien-thi";

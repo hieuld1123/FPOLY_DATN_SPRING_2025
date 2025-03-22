@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Quản lý khách hàng</title>
+    <title>NineShoes</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </head>
 <style>
@@ -40,12 +41,12 @@
                         <div class="col-md-4 text-center" style="margin-top: 50px">
                             <div>
                                 <img id="uploadedImage" class="img-preview rounded-circle"
-                                     th:src="@{/uploads/{imageName}(imageName=${khachHang.hinhAnh != null ? khachHang.hinhAnh : 'default.jpg'})}">
+                                     th:src="@{/uploads/{imageName}(imageName=${khachHang.hinhAnh})}">
                             </div>
                             <input type="file" class="form-control mt-3" name="anh" id="fileInput"
-                                   accept="image/png, image/jpeg"/>
-
-
+                                   accept="image/png, image/jpeg, image/jpg"/>
+                            <!-- Input hidden để giữ lại ảnh cũ -->
+                            <input type="hidden" name="oldImage" th:value="${khachHang.hinhAnh}">
                         </div>
 
                         <!-- Cột bên phải: Thông tin -->
@@ -81,6 +82,8 @@
                                     <label class="form-label">Email</label>
                                     <input type="email" class="form-control" th:field="*{email}"
                                            id="inputEmail" th:errorclass="is-invalid"
+                                           th:attr="data-original=${khachHang.email},
+                                                            data-id=${khachHang.id}"
                                            placeholder="Nhập email">
                                     <p style="color: red; font-weight: initial;" id="errorEmail"></p>
                                 </div>
@@ -91,6 +94,8 @@
                                     <label class="form-label">Số điện thoại</label>
                                     <input type="text" class="form-control" th:field="*{sdt}"
                                            th:errorclass="is-invalid" id="inputSdt"
+                                           th:attr="data-original=${khachHang.sdt},
+                                                            data-id=${khachHang.id}"
                                            placeholder="Nhập số điện thoại">
                                     <p style="color: red; font-weight: initial;" id="errorSdt"></p>
                                 </div>
@@ -118,32 +123,38 @@
 
                     <div id="address-list">
                         <div class="card p-3">
-                            <div class="address-item" th:each="diaChi, index : *{listDiaChi}">
-                                <input type="hidden" th:field="*{listDiaChi[__${index.index}__].id}" />
+
+                            <div class="address-item" th:each="diaChi, index : *{listDiaChi}"
+                                 th:if="${diaChi.id != null}" th:data-id="${diaChi.id}">
+                                <input type="hidden" th:field="*{listDiaChi[__${index.index}__].id}" class="diaChiId"/>
+
                                 <div class="row">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <div>
-                                            <input type="radio" name="diaChiMacDinhId"
-                                                   class="form-check-input"
-                                                   th:value="${listDiaChi[__${index.index}__].id}"
-                                                   th:checked="${listDiaChi[__${index.index}__].id == khachHang.diaChiMacDinhId}"/>
-                                            <label class="ms-2">Mặc định</label>
+                                            <input type="radio"
+                                                   name="activeAddress"
+                                                   th:checked="${diaChi.trangThai or index.index == 0}"
+                                                   th:value="${index.index}" onclick="onlyOneActive(this)"> Mặc định
+
+                                            <input type="hidden" th:field="*{listDiaChi[__${index.index}__].trangThai}"
+                                                   th:value="${diaChi.trangThai}" class="hiddenStatus">
                                         </div>
 
-                                        <button type="button" class="btn btn-danger btn-sm remove-address"
-                                                th:data-id="${diaChi.id}">
+                                        <button type="button" class="btn btn-danger btn-sm remove-address" th:data-id="${diaChi.id}">
                                             <i class="bi bi-trash"></i> Xóa
                                         </button>
+
                                     </div>
 
                                     <div class="col-md-4 mb-3">
                                         <label class="form-label">Tỉnh/Thành phố</label>
                                         <select class="form-control form-select province"
-                                                name="llistDiaChi[__${index.index}__].tinh"
+                                                name="listDiaChi[__${index.index}__].tinh"
                                                 th:field="*{listDiaChi[__${index.index}__].tinh}">
                                             <option th:value="${diaChi.tinh}" selected
                                                     th:text="${diaChi.tinh}"></option>
                                         </select>
+                                        <p style="color: red; font-weight: initial;" class="errorTinh"></p>
                                     </div>
 
                                     <div class="col-md-4 mb-3">
@@ -154,6 +165,8 @@
                                             <option th:value="${diaChi.huyen}" selected
                                                     th:text="${diaChi.huyen}"></option>
                                         </select>
+                                        <p style="color: red; font-weight: initial;" class="errorQuan"></p>
+
                                     </div>
 
                                     <div class="col-md-4 mb-3">
@@ -164,6 +177,7 @@
                                             <option th:value="${diaChi.xa}" selected
                                                     th:text="${diaChi.xa}"></option>
                                         </select>
+                                        <p style="color: red; font-weight: initial;" class="errorPhuong"></p>
 
                                     </div>
                                 </div>
@@ -173,9 +187,13 @@
                                     <input type="text" class="form-control"
                                            name="listDiaChi[__${index.index}__].diaChiCuThe"
                                            th:field="*{listDiaChi[__${index.index}__].diaChiCuThe}"
-                                           id="inputDuong" th:errorclass="is-invalid" placeholder="Nhập địa chỉ cụ thể">
+                                           th:errorclass="is-invalid"
+                                           placeholder="Nhập địa chỉ cụ thể">
+                                    <p style="color: red; font-weight: initial;" class="errorDuong"></p>
+
                                 </div>
                             </div>
+
                         </div>
                         <br>
                     </div>
@@ -191,10 +209,44 @@
         </div>
     </div>
 </div>
-</div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    let addressIndex = 0;
+    document.addEventListener("DOMContentLoaded", function () {
+        let fileInput = document.getElementById("fileInput");
+        let uploadedImage = document.getElementById("uploadedImage");
+
+        if (!fileInput || !uploadedImage) {
+            console.error("Không tìm thấy phần tử fileInput hoặc uploadedImage!");
+            return;
+        }
+
+        fileInput.addEventListener("change", function (event) {
+            let file = event.target.files[0]; // Lấy file được chọn
+
+            if (file) {
+                console.log("Ảnh mới được chọn:", file.name); // Kiểm tra có nhận file không
+                console.log("Loại file:", file.type);
+
+                // Kiểm tra xem file có phải ảnh không
+                if (!file.type.startsWith("image/")) {
+                    console.error("File không phải là ảnh!");
+                    return;
+                }
+
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    console.log("Ảnh preview URL:", e.target.result);
+                    uploadedImage.src = e.target.result; // Cập nhật ảnh preview
+                };
+                reader.readAsDataURL(file);
+            } else {
+                console.warn("Không có ảnh nào được chọn.");
+            }
+        });
+    });
+
+</script>
+
+<script>
     let provincesData = [];
 
     $(document).ready(function () {
@@ -251,19 +303,21 @@
             }
         });
 
+
         // Sự kiện khi bấm "Thêm địa chỉ"
         $("#add-address").click(function () {
-            addressIndex++;
+            let addressIndex = $(".address-item").length;
             let newAddress = `
                 <div class="address-item border p-3 mb-3">
+
                <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <input type="radio" class="form-check-input" name="diaChiMacDinhId" value="${addressIndex}">
-            <label class="ms-2">Mặc định</label>
-        </div>
-        <button type="button" class="btn btn-danger btn-sm remove-address">
-            <i class="bi bi-trash"></i> Xóa
-        </button>
+ <input type="radio" name="activeAddress" value="true" onclick="onlyOneActive(this)"> Mặc định
+<input type="hidden" name="listDiaChi[${addressIndex}].trangThai" value="false" class="hiddenStatus">
+      </div>
+        <button type="button" class="btn btn-danger btn-sm remove-address" data-id="">
+                <i class="bi bi-trash"></i> Xóa
+            </button>
     </div>
                     <div class="row">
                         <div class="col-md-4">
@@ -271,23 +325,27 @@
                             <select class="form-control form-select province" name="listDiaChi[${addressIndex}].tinh">
                                 <option value="">Chọn tỉnh thành</option>
                             </select>
+                            <p style="color: red; font-weight: initial;" class="errorTinh"></p>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Quận/Huyện</label>
                             <select class="form-control form-select district" name="listDiaChi[${addressIndex}].huyen">
                                 <option value="">Chọn quận huyện</option>
                             </select>
+                                     <p style="color: red; font-weight: initial;" class="errorQuan"></p>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Xã/Phường</label>
                             <select class="form-control form-select ward" name="listDiaChi[${addressIndex}].xa">
                                 <option value="">Chọn phường xã</option>
                             </select>
+                              <p style="color: red; font-weight: initial;" class="errorPhuong"></p>
                         </div>
                     </div>
                     <div class="mt-3">
                         <label class="form-label">Địa chỉ cụ thể</label>
                         <input type="text" class="form-control" name="listDiaChi[${addressIndex}].diaChiCuThe" placeholder="Nhập địa chỉ cụ thể">
+                        <p style="color: red; font-weight: initial;" class="errorDuong"></p>
                     </div>
                 </div>`;
 
@@ -295,94 +353,308 @@
             loadProvinces(); // Load lại danh sách tỉnh cho dropdown mới
         });
 
-        $(document).on("click", ".remove-address", function () {
-            $(this).closest(".address-item").remove();
-        });
-    });
-
-    $(document).on("change", "input[type='radio'][name^='listDiaChi']", function () {
-        let name = $(this).attr("name"); // Lấy name của radio được chọn
-
-        // Bỏ checked tất cả radio khác có cùng pattern name (listDiaChi[*].trangThai)
-        $("input[type='radio'][name^='listDiaChi']").not(this).prop("checked", false);
     });
 
 
 </script>
 
 <script>
-    $(document).ready(function () {
-        // Sự kiện khi bấm nút "Xóa"
-        $(document).on("click", ".remove-address", function () {
-            let addressItem = $(this).closest(".address-item");
-            let diaChiId = addressItem.data("id");
+    function onlyOneActive(selectedRadio) {
+        let radios = document.querySelectorAll("input[type='radio'][name='activeAddress']");
 
-            if (diaChiId) { // Nếu địa chỉ đã có ID (được lưu trong DB)
-                if (confirm("Bạn có chắc muốn xóa địa chỉ này không?")) {
-                    fetch(`/khach-hang/xoa-dia-chi/${diaChiId}`, {
-                        method: "DELETE"
-                    }).then(response => {
-                        if (response.ok) {
-                            alert("Xóa thành công!");
-                            addressItem.remove();
-                        } else {
-                            alert("Xóa thất bại!");
-                        }
-                    }).catch(error => {
-                        console.error("Lỗi khi xóa địa chỉ:", error);
-                    });
-                }
-            } else { // Nếu địa chỉ vừa thêm mới (chưa lưu trong DB)
-                addressItem.remove();
+        // Bỏ chọn tất cả radio và reset input hidden về false
+        radios.forEach(radio => {
+            radio.checked = false;
+            let parentDiv = radio.closest(".address-item");
+            let hiddenInput = parentDiv.querySelector(".hiddenStatus");
+            if (hiddenInput) {
+                hiddenInput.value = "false";
             }
         });
-    });
+
+        // Chỉ chọn radio hiện tại
+        selectedRadio.checked = true;
+
+        // Cập nhật input hidden của radio được chọn thành true
+        let parentDiv = selectedRadio.closest(".address-item");
+        let hiddenInput = parentDiv.querySelector(".hiddenStatus");
+        if (hiddenInput) {
+            hiddenInput.value = "true";
+        }
+    }
+
+
 </script>
 
-    <script>
-        $(document).ready(function () {
-        $(".remove-address").click(function () {
-            let diaChiId = $(this).attr("data-id");
-            let addressItem = $(this).closest(".address-item");
+<!--Xóa địa chỉ-->
+<script>
+    $(document).ready(function () {
+        $(document).on("click", ".remove-address", function (event) {
+            event.preventDefault(); // Ngăn chặn hành vi mặc định
 
-            // Hiển thị hộp thoại xác nhận trước khi xóa
+            let addressItem = $(this).closest(".address-item");
+            let diaChiId = addressItem.attr("data-id");
+            let isDefault = addressItem.find("input[name='activeAddress']").is(":checked"); // Kiểm tra có phải mặc định không
+
             Swal.fire({
-                title: "Bạn có chắc chắn muốn xóa?",
-                text: "Hành động này không thể hoàn tác!",
-                icon: "warning",
+                title: 'Bạn có chắc chắn muốn xóa địa chỉ này?',
+                icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
-                confirmButtonText: "Xóa",
-                cancelButtonText: "Hủy"
+                confirmButtonText: 'Có',
+                cancelButtonText: 'Không'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.ajax({
-                        url: "/khach-hang/xoa-dia-chi/" + diaChiId,
-                        type: "POST",
-                        success: function (response) {
-                            Swal.fire({
-                                title: "Xóa thành công!",
-                                text: response,
-                                icon: "success",
-                                timer: 2000,
-                                showConfirmButton: false
-                            });
-                            addressItem.fadeOut(500, function () {
-                                $(this).remove();
-                            });
-                        },
-                        error: function () {
-                            Swal.fire("Lỗi!", "Có lỗi xảy ra khi xóa địa chỉ.", "error");
-                        }
+                    if (!diaChiId) {
+                        updateDefaultAddress(addressItem, isDefault);
+                        addressItem.remove();
+                    } else {
+                        $.ajax({
+                            url: "/khach-hang/xoa-dia-chi/" + diaChiId,
+                            type: "DELETE",
+                            success: function (response) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Xóa thành công!',
+                                    text: 'Địa chỉ đã được xóa.',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+
+                                updateDefaultAddress(addressItem, isDefault);
+                                addressItem.remove();
+                            },
+                            error: function () {
+                                Swal.fire("Lỗi!", "Có lỗi xảy ra khi xóa địa chỉ.", "error");
+                            }
+                        });
+                    }
+                }
+            });
+
+            return false;
+        });
+
+        function updateDefaultAddress(removedItem, wasDefault) {
+            if (wasDefault) {
+                let nextAddress = $(".address-item").not(removedItem).first();
+                if (nextAddress.length) {
+                    console.log("Đặt địa chỉ mặc định:", nextAddress);
+                    nextAddress.find("input[name='activeAddress']").prop("checked", true).trigger("change");
+                    nextAddress.find(".hiddenStatus").val("true"); // Cập nhật hidden input
+                }
+            }
+        }
+    });
+
+</script>
+
+
+<script th:inline="javascript">
+    var listTK = /*[[${listTK}]]*/ '[]';
+    console.log("Dữ liệu tài khoản:", listTK);
+</script>
+
+<script>
+    function checkTrungSdt() {
+        var sdtInput = document.getElementById('inputSdt').value.trim();
+        var originalSdt = document.getElementById('inputSdt').getAttribute("data-original") || "";
+        var currentId = document.getElementById('inputSdt').getAttribute("data-id");
+        console.log("📌 SDT nhập vào:", sdtInput);
+        console.log("📌 SDT ban đầu:", originalSdt);
+        console.log("📌 ID tk kh hiện tại:", currentId); // Kiểm tra xem ID có đúng không
+        if (sdtInput === originalSdt) {
+            console.log("✅ Sdt không thay đổi, hợp lệ!");
+            return true;
+        }
+
+        var isDuplicate = listTK.some(tk => tk.sdt === sdtInput && tk.id !== currentId);
+        console.log("🔍 Kết quả kiểm tra sdt:", isDuplicate ? "❌ Trùng" : "✅ Không trùng");
+        return !isDuplicate;
+    }
+
+    function checkTrungEmail() {
+        var emailInput = document.getElementById('inputEmail').value.trim().toLowerCase();
+        var originalEmail = (document.getElementById('inputEmail').getAttribute("data-original") || "").toLowerCase();
+        var currentId = document.getElementById('inputEmail').getAttribute("data-id"); // ID tài khoản nhân viên
+
+        console.log("📌 Email nhập vào:", emailInput);
+        console.log("📌 Email ban đầu:", originalEmail);
+        console.log("📌 ID tài khoản hiện tại:", currentId);
+
+        // Nếu email không thay đổi -> hợp lệ
+        if (emailInput === originalEmail) {
+            console.log("✅ Email không thay đổi, hợp lệ!");
+            return true;
+        }
+
+        // Kiểm tra danh sách tài khoản có trùng email không
+        var isDuplicate = listTK.some(tk => tk.email.toLowerCase() === emailInput && tk.id != currentId);
+        console.log("🔍 Kết quả kiểm tra email:", isDuplicate ? "❌ Trùng" : "✅ Không trùng");
+
+        return !isDuplicate;
+    }
+
+
+    // Validate
+    function validate(event) {
+        let isValid = true;
+
+        // Lấy giá trị từ input
+        let tenKhachHang = document.getElementById("inputTen").value.trim();
+        let ngaySinh = document.getElementById("inputNgSinh").value;
+        let email = document.getElementById("inputEmail").value.trim();
+        let sdt = document.getElementById("inputSdt").value.trim();
+
+
+        // Kiểm tra tên
+        let nameRegex = /^[A-Za-zÀ-ỹ\s]{2,50}$/; //cho phép tiếng Việt, dấu cách, không có ký tự đặc biệt
+        if (tenKhachHang === "") {
+            document.getElementById("errorTen").innerText = "Tên khách hàng không được để trống!";
+            isValid = false;
+        } else if (!nameRegex.test(tenKhachHang)) {
+            document.getElementById("errorTen").innerText = "Tên khách hàng phải từ 2 đến 50 ký tự và không chứa ký tự đặc biệt!";
+            isValid = false;
+        } else {
+            document.getElementById("errorTen").innerText = ""; // Xóa thông báo lỗi nếu hợp lệ
+        }
+
+        // Kiểm tra ngày sinh
+        let ns = new Date(ngaySinh);
+        let today = new Date();
+        today.setHours(0, 0, 0, 0); // Loại bỏ giờ để so sánh chính xác
+        ns.setHours(0, 0, 0, 0);
+
+        let tuoi = today.getFullYear() - ns.getFullYear();
+
+        // Kiểm tra ngày sinh có bị để trống không
+        if (ngaySinh === "") {
+            document.getElementById("errorNgSinh").innerText = "Vui lòng chọn ngày sinh!";
+            isValid = false;
+        }
+        // Kiểm tra ngày sinh có lớn hơn ngày hiện tại không
+        else if (ns >= today) {
+            document.getElementById("errorNgSinh").innerText = "Ngày sinh không hợp lệ!";
+            isValid = false;
+        }
+        // Kiểm tra nếu chưa đến sinh nhật trong năm hiện tại thì trừ tuổi đi 1
+        else {
+            if (today.getMonth() < ns.getMonth() ||
+                (today.getMonth() === ns.getMonth() && today.getDate() < ns.getDate())) {
+                tuoi--;
+            }
+
+            if (tuoi < 18) {
+                document.getElementById("errorNgSinh").innerText = "Nhân viên phải đủ 18 tuổi!";
+                isValid = false;
+            } else {
+                document.getElementById("errorNgSinh").innerText = "";
+            }
+        }
+
+
+        // Kiểm tra Email
+        let regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (email === "") {
+            document.getElementById("errorEmail").innerText = "Email không được để trống!";
+            isValid = false;
+        } else if (!regexEmail.test(email)) {
+            document.getElementById("errorEmail").innerText = "Email không hợp lệ!";
+            isValid = false;
+        } else if (!checkTrungEmail()) {
+            document.getElementById("errorEmail").innerText = "Email đã tồn tại!";
+            isValid = false;
+        } else {
+            document.getElementById("errorEmail").innerText = ""; // Xóa thông báo lỗi nếu hợp lệ
+        }
+
+        // Kiểm tra Số điện thoại
+        let regexSdt = /^(0[3|5|7|8|9])+([0-9]{8})$/; // Số điện thoại Việt Nam
+        if (sdt === "") {
+            document.getElementById("errorSdt").innerText = "Số điện thoại không được để trống!";
+            isValid = false;
+        } else if (!regexSdt.test(sdt)) {
+            document.getElementById("errorSdt").innerText = "Số điện thoại không hợp lệ!";
+            isValid = false;
+        } else if (!checkTrungSdt()) {
+            document.getElementById("errorSdt").innerText = "Số điện thoại đã tồn tại!";
+            isValid = false;
+        } else {
+            document.getElementById("errorSdt").innerText = ""; // Xóa thông báo lỗi nếu hợp lệ
+        }
+
+
+        // Validate từng địa chỉ
+        $(".address-item").each(function (index) {
+            let province = $(this).find(".province").val();
+            let district = $(this).find(".district").val();
+            let ward = $(this).find(".ward").val();
+            let addressDetail = $(this).find("input[name$='.diaChiCuThe']").val();
+
+            // Lấy phần hiển thị lỗi tương ứng trong từng địa chỉ
+            let errorTinh = $(this).find(".errorTinh");
+            let errorHuyen = $(this).find(".errorQuan");
+            let errorXa = $(this).find(".errorPhuong");
+            let errorDuong = $(this).find(".errorDuong");
+
+            // Kiểm tra từng trường và hiển thị lỗi
+            if (!province) {
+                errorTinh.text("Vui lòng chọn Tỉnh/Thành phố!");
+                isValid = false;
+            } else {
+                errorTinh.text("");
+            }
+
+            if (!district) {
+                errorHuyen.text("Vui lòng chọn Quận/Huyện!");
+                isValid = false;
+            } else {
+                errorHuyen.text("");
+            }
+
+            if (!ward) {
+                errorXa.text("Vui lòng chọn Xã/Phường!");
+                isValid = false;
+            } else {
+                errorXa.text("");
+            }
+
+            if (!addressDetail) {
+                errorDuong.text("Vui lòng nhập Địa chỉ cụ thể!");
+                isValid = false;
+            } else {
+                errorDuong.text("");
+            }
+        });
+
+
+        if (!isValid) {
+            event.preventDefault();
+            return false;
+        } else {
+            event.preventDefault();
+
+            Swal.fire({
+                title: 'Bạn có muốn sửa không?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Có',
+                cancelButtonText: 'Không'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sửa thành công!',
+                        text: 'Thông tin khách hàng đã được sửa trong hệ thống.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        document.getElementById("addForm").submit(); // Gửi form sau khi hiển thị thông báo
                     });
                 }
             });
-        });
-    });
-    </script>
-
-
-
+        }
+        return false;
+    }
+</script>
 </body>
 </html>
