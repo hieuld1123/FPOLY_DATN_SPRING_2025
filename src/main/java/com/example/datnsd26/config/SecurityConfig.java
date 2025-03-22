@@ -4,6 +4,7 @@ import com.example.datnsd26.repository.TaiKhoanRepository;
 import com.example.datnsd26.services.CustomUserDetailsServices;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -20,13 +21,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/shop/**", "/api/**")) // Bỏ qua CSRF cho tất cả URL bắt đầu với /shop/
+                        .ignoringRequestMatchers("/shop/**", "/api/**")) // Disable CSRF if using REST API
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/shop/**", "/error/**", "/**", "/api/**").permitAll()  // Public access
                         .requestMatchers("/admin/**").hasAnyRole("ADMIN", "EMPLOYEE")  // Requires authentication
                         .requestMatchers("/admin/ban-hang").hasRole("EMPLOYEE") // Only Employee role
                         .requestMatchers("/doi-mat-khau").permitAll() // Cho phép đổi mật khẩu mà không cần đăng nhập
-
                         .anyRequest().authenticated() // All other pages require login
                 )
                 .sessionManagement(session -> session

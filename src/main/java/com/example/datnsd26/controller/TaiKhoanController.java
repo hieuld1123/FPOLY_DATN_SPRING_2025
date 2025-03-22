@@ -64,5 +64,20 @@ public class TaiKhoanController {
 
         return "redirect:/nhan-vien/hien-thi";
     }
+
+    @GetMapping("user/dang-nhap")
+    public String dangNhapUser(Model model) {
+        return "/admin/tai-khoan/dang-nhap-client";
+    }
+
+    @GetMapping("admin/dang-nhap")
+    public String dangNhapAdmin(Model model) {
+        return "/admin/tai-khoan/dang-nhap-admin";
+    }
+
+    @GetMapping("user/dang-ky")
+    public String dangKy(Model model) {
+        return "dang-ky-admin";
+    }
 }
 

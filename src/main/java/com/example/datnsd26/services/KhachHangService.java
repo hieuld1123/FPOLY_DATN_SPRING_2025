@@ -106,15 +106,15 @@ public class KhachHangService {
 
 
     public KhachHang getById(Integer id) {
-
         return khachHangRepository.findById(id).orElse(null);
     }
 
     @Transactional
     public KhachHang update(KhachHangDto khachHangDto, Integer id) {
         KhachHang khachHang = khachHangRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khách hàng với ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy khách hàng"));
 
+        // Cập nhật thông tin khách hàng
         khachHang.setHinhAnh(khachHangDto.getHinhAnh());
         khachHang.setTenKhachHang(khachHangDto.getTenKhachHang());
         khachHang.setTrangThai(khachHangDto.getTrangThai());
@@ -122,6 +122,7 @@ public class KhachHangService {
         khachHang.setNgaySinh(khachHangDto.getNgaySinh());
         khachHang.setNgayCapNhat(new Timestamp(new Date().getTime()));
 
+        // Cập nhật tài khoản
         TaiKhoan existingTaiKhoan = khachHang.getTaiKhoan();
         existingTaiKhoan.setSdt(khachHangDto.getSdt());
         existingTaiKhoan.setEmail(khachHangDto.getEmail());
@@ -131,14 +132,10 @@ public class KhachHangService {
             existingTaiKhoan.setTrangThai(true);
         }
         taiKhoanRepository.save(existingTaiKhoan);
-        khachHang = khachHangRepository.save(khachHang);
 
-        diaChiRepository.deleteAllByKhachHangId(id);
         khachHang.getDiaChi().clear();
 
-        Integer diaChiMacDinhId = khachHangDto.getDiaChiMacDinhId();
         List<DiaChi> diaChiList = new ArrayList<>();
-
         for (DiaChiDTO diaChiDTO : khachHangDto.getListDiaChi()) {
             DiaChi diaChi = new DiaChi();
             diaChi.setKhachHang(khachHang);
@@ -146,13 +143,23 @@ public class KhachHangService {
             diaChi.setHuyen(diaChiDTO.getHuyen());
             diaChi.setXa(diaChiDTO.getXa());
             diaChi.setDiaChiCuThe(diaChiDTO.getDiaChiCuThe());
-            diaChi.setTrangThai(diaChiDTO.getId() != null && diaChiDTO.getId().equals(diaChiMacDinhId));
-            diaChiList.add(diaChi);
+            diaChi.setTrangThai(diaChiDTO.getTrangThai());
+
+            khachHang.getDiaChi().add(diaChi);
+            System.out.println("Khách hàng ID trước khi lưu: " + khachHang.getId());
+
         }
-        diaChiRepository.saveAll(diaChiList);
-        khachHang.setDiaChi(diaChiList);
-        return khachHang;
+
+        if (diaChiList.stream().noneMatch(DiaChi::getTrangThai) && !diaChiList.isEmpty()) {
+            diaChiList.get(0).setTrangThai(true);
+        }
+
+        khachHang.getDiaChi().addAll(diaChiList);
+
+        return khachHangRepository.save(khachHang);
     }
+
+
 
     public Page<KhachHang> findAll(Pageable p) {
         return khachHangRepository.findAll(p);

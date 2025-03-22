@@ -4,6 +4,7 @@ import com.example.datnsd26.models.DiaChi;
 import com.example.datnsd26.models.KhachHang;
 import com.example.datnsd26.repository.DiaChiRepository;
 import com.example.datnsd26.repository.KhachHangRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,24 +22,22 @@ public class DiaChiService {
     public List<DiaChi> findByKhachHangId(Integer id) {
         return diaChiRepository.findByKhachHangId(id);
     }
+    @Transactional
     public void xoaDiaChiTheoId(Integer id) {
         DiaChi diaChi = diaChiRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy địa chỉ!"));
 
         KhachHang khachHang = diaChi.getKhachHang();
-        // Nếu địa chỉ này là mặc định, chọn một địa chỉ khác làm mặc định
-        if (diaChi.getTrangThai()) {
-            Optional<DiaChi> diaChiMoi = khachHang.getDiaChi().stream()
-                    .filter(dc -> !dc.getId().equals(id)) // Lọc ra địa chỉ khác
-                    .findFirst(); // Lấy địa chỉ đầu tiên
 
-            diaChiMoi.ifPresent(dc -> dc.setTrangThai(true));
-        }
         khachHang.getDiaChi().remove(diaChi);
-
         khachHangRepository.save(khachHang);
-
         diaChiRepository.deleteById(id);
+        System.out.println("Xóa thành công địa chỉ ID: " + id);
     }
 
+
+    public Integer getKhachHangIdByDiaChiId(Integer diaChiId) {
+        DiaChi diaChi = diaChiRepository.findById(diaChiId).orElse(null);
+        return (diaChi != null && diaChi.getKhachHang() != null) ? diaChi.getKhachHang().getId() : null;
+    }
 }
