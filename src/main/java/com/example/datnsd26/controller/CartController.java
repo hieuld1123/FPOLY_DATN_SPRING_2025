@@ -210,7 +210,7 @@ public class CartController {
                         hoaDonBinhRequest.getQuan() + ", " +
                         hoaDonBinhRequest.getXa() + ", " +
                         hoaDonBinhRequest.getDiaChiNguoiNhan())
-                .hinhThucMuaHang("Có giao hàng")
+                .hinhThucMuaHang("Online")
                 .ngayTao(new Date())
                 .ngayCapNhat(new Date())
                 .trangThai("Chờ xác nhận")
