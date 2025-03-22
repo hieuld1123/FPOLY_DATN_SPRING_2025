@@ -133,7 +133,6 @@ public class KhachHangService {
         }
         taiKhoanRepository.save(existingTaiKhoan);
 
-        diaChiRepository.deleteAllByKhachHangId(id);
         khachHang.getDiaChi().clear();
 
         List<DiaChi> diaChiList = new ArrayList<>();
