@@ -87,7 +87,7 @@ public class InvoiceCustomizeQuery {
 
         List<InvoiceResponse> invoices = query.getResultList().stream().map(i -> InvoiceResponse.builder()
                 .id(i.getMaHoaDon())
-                .customer((i.getKhachHang1() == null) ? (i.getTenNguoiNhan() == null ? "Khách lẻ" : i.getTenNguoiNhan()) : i.getKhachHang1().getHoTen())
+                .customer((i.getKhachHang() == null) ? (i.getTenNguoiNhan() == null ? "Khách lẻ" : i.getTenNguoiNhan()) : i.getKhachHang().getTenKhachHang())
                 .purchaseMethod(i.getHinhThucMuaHang())
                 .creationDate(i.getNgayTao())
                 .status(i.getTrangThai())

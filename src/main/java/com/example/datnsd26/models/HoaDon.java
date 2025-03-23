@@ -25,7 +25,7 @@ public class HoaDon {
 
     @ManyToOne
     @JoinColumn(name = "id_khach_hang", referencedColumnName = "id", nullable = true)
-    private KhachHang1 khachHang1; // Có thể null
+    private KhachHang khachHang; // Có thể null
 
     @ManyToOne
     @JoinColumn(name = "id_nhan_vien", referencedColumnName = "id", nullable = true)

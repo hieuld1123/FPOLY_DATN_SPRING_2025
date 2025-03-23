@@ -219,7 +219,7 @@ public class CartController {
                 .phuongThucThanhToan(hoaDonBinhRequest.getPhuongThucThanhToan())
                 .thanhToan(false)
                 .ghiChu(hoaDonBinhRequest.getGhiChu())
-                .khachHang1(null)
+                .khachHang(null)
                 .nhanVien(null)
                 .build();
 
