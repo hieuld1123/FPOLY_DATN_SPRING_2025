@@ -21,7 +21,7 @@ public class GioHang {
 
     @ManyToOne
     @JoinColumn(name = "id_khach_hang", referencedColumnName = "id")
-    private KhachHang1 khachHang1;
+    private KhachHang khachHang;
 
     @OneToMany(mappedBy = "gioHang", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<GioHangChiTiet> chiTietList = new ArrayList<>();

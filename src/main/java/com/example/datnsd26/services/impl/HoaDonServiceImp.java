@@ -102,7 +102,7 @@ public class HoaDonServiceImp implements HoaDonService {
                 .note(hd.getGhiChu() == null ? "Không có ghi chú nào" : hd.getGhiChu())
                 .status_timeline(statusTimeline)
                 .customer(InvoiceInformation.Customer.builder()
-                        .name(hd.getKhachHang1() == null ? "Khách lẻ" : hd.getKhachHang1().getHoTen())
+                        .name(hd.getKhachHang() == null ? "Khách lẻ" : hd.getKhachHang().getTenKhachHang())
                         .phone(hd.getSdtNguoiNhan())
                         .delivery_address(String.format("%s, %s, %s, %s", hd.getDiaChiNguoiNhan(), hd.getXa(), hd.getQuan(), hd.getTinh()))
                         .build())
