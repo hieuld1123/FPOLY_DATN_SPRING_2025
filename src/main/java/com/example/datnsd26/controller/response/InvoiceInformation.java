@@ -13,6 +13,8 @@ public class InvoiceInformation {
 
     private boolean isDelivery;
 
+    private boolean allowCancel;
+
     private String order_id;
 
     private String seller;
