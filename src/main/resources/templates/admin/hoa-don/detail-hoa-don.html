@@ -25,7 +25,8 @@
             <div class="col-6 text-end">
                 <button class="btn cancel-btn" disabled>Hủy đơn hàng</button>
                 <button class="btn edit-btn" disabled>Sửa đơn hàng</button>
-                <button id="confirm-invoice" class="btn btn-primary" disabled>Đóng gói & Giao hàng</button>
+                <button id="confirm-invoice" class="btn btn-primary" disabled>Xác nhận</button>
+                <button id="confirm-delivery" class="btn btn-primary" disabled>Giao cho đơn vị vận chuyển</button>
             </div>
         </div>
 
@@ -185,7 +186,17 @@
 
         // Hàm hiển thị dữ liệu hóa đơn lên giao diện
         function renderOrderDetails(data) {
-            document.getElementById("confirm-invoice").disabled = data.confirm;
+            const confirmInvoice = document.getElementById("confirm-invoice");
+            confirmInvoice.disabled = !data.confirm;
+            if (!data.confirm) {
+                confirmInvoice.style.display = "none"
+            }
+
+            const confirmDelivery = document.getElementById("confirm-delivery");
+            confirmDelivery.disabled = !data.delivery;
+            if (!data.delivery) {
+                confirmDelivery.style.display = "none"
+            }
 
             // Hiển thị mã hóa đơn
             $('#order-id').text(data.order_id);
@@ -398,7 +409,6 @@
             });
         }
 
-        // Thêm sự kiện click cho nút "Xác nhận"
         $('#confirm-invoice').on('click', function () {
             const orderId = window.location.pathname.split('/').pop(); // Lấy orderId từ URL
             if (confirm('Bạn có chắc chắn muốn xác nhận hóa đơn này?')) {
@@ -411,7 +421,7 @@
                         if (response.status === 200) {
                             alert('Xác nhận hóa đơn thành công!');
                             // Tải lại dữ liệu để cập nhật giao diện
-                            fetchOrderData(orderId);
+                            window.location.reload();
                         } else {
                             alert('Xác nhận hóa đơn thất bại: ' + response.message);
                         }
@@ -419,6 +429,30 @@
                     error: function (xhr, status, error) {
                         console.error('Lỗi khi xác nhận hóa đơn:', error);
                         alert('Đã xảy ra lỗi khi xác nhận hóa đơn.');
+                    }
+                });
+            }
+        });
+
+        $('#confirm-delivery').on('click', function () {
+            const orderId = window.location.pathname.split('/').pop();
+            if (confirm('Bạn có chắc chắn muốn vận chuyển hóa đơn này?')) {
+                $.ajax({
+                    url: `http://localhost:8080/api/v1/hoa-don/delivery/${orderId}`,
+                    method: 'PATCH',
+                    contentType: 'application/json',
+                    data: JSON.stringify({}),
+                    success: function (response) {
+                        if (response.status === 200) {
+                            alert('Vận chuyển hóa đơn thành công!');
+                            window.location.reload();
+                        } else {
+                            alert('Vận chuyển hóa đơn thất bại: ' + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Lỗi khi vận chuyển hóa đơn:', error);
+                        alert('Đã xảy ra lỗi khi vận chuyển hóa đơn.');
                     }
                 });
             }

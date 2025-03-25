@@ -157,6 +157,7 @@ async function loadInvoices() {
         const invoiceContainer = document.getElementById('invoices');
 
         if (!invoices.data || invoices.data.length === 0) {
+            document.getElementById("div-invoice").className = "text-center mb-3"
             invoiceContainer.innerHTML = `
                 <div class="text-center text-secondary p-3">
                     <img style="width: 50px" class="mt-3" src="/icon/invoice_icon.png" alt="Invoice Icon">
@@ -167,6 +168,7 @@ async function loadInvoices() {
 
         let htmlContent = '';
         invoices.data.forEach((invoice) => {
+            document.getElementById("div-invoice").className = "mb-3"
             htmlContent += `
                 <label class="form-selectgroup-item">
                     <input type="radio" name="name" value="${invoice.id}" class="form-selectgroup-input radio-invoice" />
@@ -276,7 +278,10 @@ async function handleInvoiceChange(id) {
             input.addEventListener('input', (event) => {
                 const maxValue = Number(event.target.getAttribute('max'));
                 let newQuantity = Number(event.target.value);
-
+                if (newQuantity < 1) {
+                    event.target.value = 1;
+                    newQuantity = 1;
+                }
                 if (newQuantity > maxValue) {
                     event.target.value = maxValue;
                     newQuantity = maxValue;

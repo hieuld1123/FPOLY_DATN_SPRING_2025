@@ -5,7 +5,9 @@ import com.example.datnsd26.controller.response.InvoiceInformation;
 import com.example.datnsd26.controller.response.InvoicePageResponse;
 import com.example.datnsd26.exception.EntityNotFound;
 import com.example.datnsd26.models.HoaDon;
+import com.example.datnsd26.models.LichSuHoaDon;
 import com.example.datnsd26.repository.HoaDonRepository;
+import com.example.datnsd26.repository.LichSuHoaDonRepository;
 import com.example.datnsd26.repository.customizeQuery.InvoiceCustomizeQuery;
 import com.example.datnsd26.services.HoaDonService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,9 @@ public class HoaDonServiceImp implements HoaDonService {
     private final InvoiceCustomizeQuery invoiceCustomizeQuery;
 
     private final HoaDonRepository hoaDonRepository;
+
+    private final LichSuHoaDonRepository lichSuHoaDonRepository;
+
 
     @Override
     public InvoicePageResponse getInvoices(InvoiceParamRequest request) {
@@ -94,13 +99,20 @@ public class HoaDonServiceImp implements HoaDonService {
                     .build());
         }
 
+        boolean confirm = this.lichSuHoaDonRepository.findByStatusAndInvoice("Đã xác nhận", hd.getId()).isEmpty();
+        boolean delivery = this.lichSuHoaDonRepository.findByStatusAndInvoice("Đã giao cho đơn vị vận chuyển", hd.getId()).isEmpty();
         return InvoiceInformation.builder()
-                .isConfirm(!hd.getTrangThai().equalsIgnoreCase("Chờ xác nhận"))
+                .isConfirm(hd.getHinhThucMuaHang().equalsIgnoreCase("offline") ? false : confirm)
+                .isDelivery(hd.getHinhThucMuaHang().equalsIgnoreCase("offline") ? false : (!confirm && delivery))
                 .order_id(hd.getMaHoaDon())
                 .seller(hd.getNhanVien() == null ? "N/A" : hd.getNhanVien().getTenNhanVien())
                 .order_date(hd.getNgayTao())
                 .note(hd.getGhiChu() == null ? "Không có ghi chú nào" : hd.getGhiChu())
-                .status_timeline(statusTimeline)
+                .status_timeline(hd.getLichSuHoaDon().stream().map(tl -> InvoiceInformation.StatusTimeline.builder()
+                        .status(tl.getTrangThai())
+                        .time(tl.getThoiGian())
+                        .completed(true)
+                        .build()).collect(Collectors.toList()))
                 .customer(InvoiceInformation.Customer.builder()
                         .name(hd.getKhachHang() == null ? "Khách lẻ" : hd.getKhachHang().getTenKhachHang())
                         .phone(hd.getSdtNguoiNhan())
@@ -132,8 +144,9 @@ public class HoaDonServiceImp implements HoaDonService {
     @Override
     public void confirmInvoice(String code) {
         HoaDon hd = getHoaDonByCode(code);
-        hd.setTrangThai(!hd.isThanhToan() ? "Đã giao cho đơn vị vận chuyển" : "Hoàn thành");
+        hd.setTrangThai("Đã xác nhận");
         hd.setNgayCapNhat(new Date());
+        lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Đã xác nhận").hoaDon(hd).build());
         this.hoaDonRepository.save(hd);
     }
 
@@ -143,6 +156,22 @@ public class HoaDonServiceImp implements HoaDonService {
         hd.setTrangThai(hd.getTrangThai().equalsIgnoreCase("Chờ xác nhận") ? hd.getTrangThai() : "Hoàn thành");
         hd.setThanhToan(true);
         hd.setNgayCapNhat(new Date());
+        boolean isExistsInvoice = lichSuHoaDonRepository.findByStatusAndInvoice("Đã giao cho đơn vị vận chuyển", hd.getId()).isPresent();
+        if (isExistsInvoice && hd.isThanhToan()) {
+            lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Hoàn thành").hoaDon(hd).build());
+        }
+        this.hoaDonRepository.save(hd);
+    }
+
+    @Override
+    public void confirmDelivery(String code) {
+        HoaDon hd = getHoaDonByCode(code);
+        hd.setTrangThai(hd.isThanhToan() ? "Hoàn thành" : "Đã giao cho đơn vị vận chuyển");
+        hd.setNgayCapNhat(new Date());
+        lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Đã giao cho đơn vị vận chuyển").hoaDon(hd).build());
+        if (hd.isThanhToan()) {
+            lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Hoàn thành").hoaDon(hd).build());
+        }
         this.hoaDonRepository.save(hd);
     }
 
