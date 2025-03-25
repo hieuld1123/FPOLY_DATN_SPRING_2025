@@ -14,4 +14,6 @@ public interface HoaDonService {
     void payment(String code);
 
     void confirmDelivery(String code);
+
+    void cancel(String code);
 }

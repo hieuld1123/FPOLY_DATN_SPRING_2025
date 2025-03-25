@@ -6,10 +6,13 @@ import com.example.datnsd26.controller.response.InvoicePageResponse;
 import com.example.datnsd26.exception.EntityNotFound;
 import com.example.datnsd26.models.HoaDon;
 import com.example.datnsd26.models.LichSuHoaDon;
+import com.example.datnsd26.models.SanPhamChiTiet;
 import com.example.datnsd26.repository.HoaDonRepository;
 import com.example.datnsd26.repository.LichSuHoaDonRepository;
+import com.example.datnsd26.repository.SanPhamChiTietRepository;
 import com.example.datnsd26.repository.customizeQuery.InvoiceCustomizeQuery;
 import com.example.datnsd26.services.HoaDonService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,8 @@ public class HoaDonServiceImp implements HoaDonService {
     private final HoaDonRepository hoaDonRepository;
 
     private final LichSuHoaDonRepository lichSuHoaDonRepository;
+
+    private final SanPhamChiTietRepository sanPhamChiTietRepository;
 
 
     @Override
@@ -101,9 +106,11 @@ public class HoaDonServiceImp implements HoaDonService {
 
         boolean confirm = this.lichSuHoaDonRepository.findByStatusAndInvoice("Đã xác nhận", hd.getId()).isEmpty();
         boolean delivery = this.lichSuHoaDonRepository.findByStatusAndInvoice("Đã giao cho đơn vị vận chuyển", hd.getId()).isEmpty();
+        boolean isCancel = this.lichSuHoaDonRepository.findByStatusAndInvoice("Đã hủy", hd.getId()).isEmpty();
         return InvoiceInformation.builder()
-                .isConfirm(hd.getHinhThucMuaHang().equalsIgnoreCase("offline") ? false : confirm)
-                .isDelivery(hd.getHinhThucMuaHang().equalsIgnoreCase("offline") ? false : (!confirm && delivery))
+                .isConfirm(!hd.getHinhThucMuaHang().equalsIgnoreCase("offline") && confirm && isCancel)
+                .isDelivery(!hd.getHinhThucMuaHang().equalsIgnoreCase("offline") && (!confirm && delivery))
+                .allowCancel(!hd.getHinhThucMuaHang().equalsIgnoreCase("offline") && confirm && isCancel) // Note can change
                 .order_id(hd.getMaHoaDon())
                 .seller(hd.getNhanVien() == null ? "N/A" : hd.getNhanVien().getTenNhanVien())
                 .order_date(hd.getNgayTao())
@@ -118,9 +125,13 @@ public class HoaDonServiceImp implements HoaDonService {
                         .phone(hd.getSdtNguoiNhan())
                         .delivery_address(String.format("%s, %s, %s, %s", hd.getDiaChiNguoiNhan(), hd.getXa(), hd.getQuan(), hd.getTinh()))
                         .build())
-                .payment(InvoiceInformation.Payment.builder()
+                .payment(isCancel ? InvoiceInformation.Payment.builder()
                         .total_amount(hd.getTongTien())
                         .paid_amount(hd.isThanhToan() ? hd.getTongTien() : 0)
+                        .remaining_amount(hd.getTongTien())
+                        .build() : InvoiceInformation.Payment.builder()
+                        .total_amount(hd.getTongTien())
+                        .paid_amount(hd.getTongTien())
                         .remaining_amount(hd.getTongTien())
                         .build())
                 .products(hd.getDanhSachSanPham().stream().map(s -> InvoiceInformation.Product.builder()
@@ -142,6 +153,7 @@ public class HoaDonServiceImp implements HoaDonService {
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public void confirmInvoice(String code) {
         HoaDon hd = getHoaDonByCode(code);
         hd.setTrangThai("Đã xác nhận");
@@ -151,6 +163,7 @@ public class HoaDonServiceImp implements HoaDonService {
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public void payment(String code) {
         HoaDon hd = getHoaDonByCode(code);
         hd.setTrangThai(hd.getTrangThai().equalsIgnoreCase("Chờ xác nhận") ? hd.getTrangThai() : "Hoàn thành");
@@ -164,6 +177,7 @@ public class HoaDonServiceImp implements HoaDonService {
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public void confirmDelivery(String code) {
         HoaDon hd = getHoaDonByCode(code);
         hd.setTrangThai(hd.isThanhToan() ? "Hoàn thành" : "Đã giao cho đơn vị vận chuyển");
@@ -172,6 +186,20 @@ public class HoaDonServiceImp implements HoaDonService {
         if (hd.isThanhToan()) {
             lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Hoàn thành").hoaDon(hd).build());
         }
+        this.hoaDonRepository.save(hd);
+    }
+
+    @Override
+    @Transactional(rollbackOn = Exception.class)
+    public void cancel(String code) {
+        HoaDon hd = getHoaDonByCode(code);
+        hd.setTrangThai("Đã hủy");
+        hd.getDanhSachSanPham().forEach(sp -> {
+            SanPhamChiTiet ct = this.sanPhamChiTietRepository.findById(sp.getSanPhamChiTiet().getId()).orElseThrow(() -> new EntityNotFound("Product not found"));
+            ct.setSoLuong(ct.getSoLuong() + sp.getSoLuong());
+            this.sanPhamChiTietRepository.save(ct);
+        });
+        lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Đã hủy").hoaDon(hd).build());
         this.hoaDonRepository.save(hd);
     }
 
