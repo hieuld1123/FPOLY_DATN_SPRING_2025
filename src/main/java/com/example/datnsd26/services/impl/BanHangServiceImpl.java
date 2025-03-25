@@ -3,13 +3,16 @@ package com.example.datnsd26.services.impl;
 import com.example.datnsd26.controller.request.PaymentRequest;
 import com.example.datnsd26.controller.response.HoaDonChiTietResponse;
 import com.example.datnsd26.controller.response.HoaDonResponse;
+import com.example.datnsd26.controller.response.InvoiceInformation;
 import com.example.datnsd26.controller.response.SanPhamResponse;
 import com.example.datnsd26.exception.EntityNotFound;
 import com.example.datnsd26.models.HoaDon;
 import com.example.datnsd26.models.HoaDonChiTiet;
+import com.example.datnsd26.models.LichSuHoaDon;
 import com.example.datnsd26.models.SanPhamChiTiet;
 import com.example.datnsd26.repository.HoaDonChiTietRepository;
 import com.example.datnsd26.repository.HoaDonRepository;
+import com.example.datnsd26.repository.LichSuHoaDonRepository;
 import com.example.datnsd26.repository.SanPhamChiTietRepository;
 import com.example.datnsd26.services.BanHangService;
 import com.example.datnsd26.utilities.AuthUtil;
@@ -33,6 +36,7 @@ public class BanHangServiceImpl implements BanHangService {
     private final SanPhamChiTietRepository sanPhamChiTietRepository;
     private final HoaDonChiTietRepository hoaDonChiTietRepository;
     private final AuthUtil authUtil;
+    private final LichSuHoaDonRepository lichSuHoaDonRepository;
 
     @Override
     public List<HoaDonResponse> getHoaDon() {
@@ -49,7 +53,7 @@ public class BanHangServiceImpl implements BanHangService {
         List<SanPhamResponse> listSanPham = hoaDon.getDanhSachSanPham().stream().map(sp ->
                 SanPhamResponse.builder()
                         .id(sp.getId())
-                        .maSanPham(sp.getSanPhamChiTiet().getSanPham().getMaSanPham())
+                        .maSanPham(sp.getSanPhamChiTiet().getMaSanPhamChiTiet())
                         .tenSanPham(String.format("%s [%s - %s]", sp.getSanPhamChiTiet().getSanPham().getTenSanPham(), sp.getSanPhamChiTiet().getMauSac().getTen(), sp.getSanPhamChiTiet().getKichCo().getTen()))
                         .gia(sp.getSanPhamChiTiet().getGiaBanSauGiam())
                         .soLuong(sp.getSoLuong())
@@ -82,9 +86,9 @@ public class BanHangServiceImpl implements BanHangService {
         if (!StringUtils.hasText(keyword)) {
             return null;
         }
-        return this.sanPhamChiTietRepository.findByName(keyword).stream().map(sp -> SanPhamResponse.builder()
+        return this.sanPhamChiTietRepository.findByNameOrCode(keyword).stream().map(sp -> SanPhamResponse.builder()
                 .id(sp.getId())
-                .maSanPham(sp.getSanPham().getMaSanPham())
+                .maSanPham(sp.getMaSanPhamChiTiet())
                 .tenSanPham(String.format("%s [%s - %s]", sp.getSanPham().getTenSanPham(), sp.getMauSac().getTen(), sp.getKichCo().getTen()))
                 .gia(sp.getGiaBanSauGiam()) // Note: update
                 .soLuong(sp.getSoLuong())
@@ -184,7 +188,7 @@ public class BanHangServiceImpl implements BanHangService {
         hoaDon.setNhanVien(authUtil.getNhanVien());
         hoaDon.setHinhThucMuaHang(paymentRequest.getType());
         hoaDon.setPhiVanChuyen(0f);
-        hoaDon.setTrangThai(paymentRequest.getType().equalsIgnoreCase("Offline") ? "Hoàn thành" : "Đã giao cho đơn vị vận chuyển");
+        hoaDon.setTrangThai(paymentRequest.getType().equalsIgnoreCase("Offline") ? "Hoàn thành" : "Chờ xác nhận");
 
         if(hoaDon.getHinhThucMuaHang().equalsIgnoreCase("Có giao hàng") || hoaDon.getHinhThucMuaHang().equalsIgnoreCase("Online")){
             hoaDon.setTenNguoiNhan(paymentRequest.getRecipient_name());
@@ -198,6 +202,14 @@ public class BanHangServiceImpl implements BanHangService {
         }
         hoaDon.setThanhToan(paymentRequest.getPaymentMethod().equalsIgnoreCase("Thanh toán tại cửa hàng"));
         hoaDon.setNgayCapNhat(new Date());
+        lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Đặt hàng").hoaDon(hoaDon).build());
+
+        if (hoaDon.getHinhThucMuaHang().equalsIgnoreCase("Offline") && hoaDon.isThanhToan()) {
+            lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Hoàn thành").hoaDon(hoaDon).build());
+        }
+        if (hoaDon.getHinhThucMuaHang().equalsIgnoreCase("Có giao hàng")) {
+            lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Chờ xác nhận").hoaDon(hoaDon).build());
+        }
         this.hoaDonRepository.save(hoaDon);
     }
 

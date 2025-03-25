@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -96,4 +97,7 @@ public class HoaDon {
 
     @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL)
     private List<HoaDonChiTiet> danhSachSanPham;
+
+    @OneToMany(mappedBy = "hoaDon")
+    private List<LichSuHoaDon> lichSuHoaDon = new ArrayList<>();
 }

@@ -25,7 +25,7 @@ function fetchInvoices(page, size, params) {
     const queryParams = new URLSearchParams({
         currentPage: page,
         pageSize: size,
-        invoiceCode: params.invoiceCode,
+        invoiceCode: params.invoiceCode.trim(),
         startDate: formattedStartDate,
         endDate: formattedEndDate,
         status: params.status,
