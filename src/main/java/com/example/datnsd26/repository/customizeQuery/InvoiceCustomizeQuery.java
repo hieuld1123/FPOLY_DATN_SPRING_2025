@@ -28,7 +28,7 @@ public class InvoiceCustomizeQuery {
     private static final String LIKE_FORMAT = "%%%s%%";
 
     public InvoicePageResponse getInvoices(InvoiceParamRequest request) {
-        log.info("pageable {} {} date {} {} id {} status {}", request.getCurrentPage(), request.getPageSize(), request.getStartDate(), request.getEndDate(), request.getInvoiceCode(), request.getStatus());
+        log.info("GET/hoa-don sort {}", request.getSortDirection());
         if (request.getCurrentPage() < 1) {
             request.setCurrentPage(1);
         }
@@ -56,7 +56,7 @@ public class InvoiceCustomizeQuery {
             sql.append(" AND (i.tenNguoiNhan LIKE :customer OR i.sdtNguoiNhan LIKE :customer)");
         }
 
-        sql.append(" ORDER BY i.ngayTao ASC");
+        sql.append(String.format(" ORDER BY i.ngayTao %s", request.getSortDirection().equalsIgnoreCase("desc") ? "desc" : "asc"));
 
         TypedQuery<HoaDon> query = entityManager.createQuery(sql.toString(), HoaDon.class);
         if (StringUtils.hasLength(request.getStatus())) {

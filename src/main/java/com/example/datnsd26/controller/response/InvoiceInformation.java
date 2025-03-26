@@ -11,6 +11,10 @@ import java.util.List;
 public class InvoiceInformation {
     private boolean isConfirm;
 
+    private boolean isDelivery;
+
+    private boolean allowCancel;
+
     private String order_id;
 
     private String seller;

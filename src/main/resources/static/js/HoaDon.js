@@ -1,6 +1,8 @@
 let currentPage = 1;
 let pageSize = 5;
 let totalPages = 0;
+let sortField = 'creationDate';
+let sortDirection = 'asc';
 let filterParams = {
     invoiceCode: '',
     startDate: '',
@@ -25,11 +27,13 @@ function fetchInvoices(page, size, params) {
     const queryParams = new URLSearchParams({
         currentPage: page,
         pageSize: size,
-        invoiceCode: params.invoiceCode,
+        invoiceCode: params.invoiceCode.trim(),
         startDate: formattedStartDate,
         endDate: formattedEndDate,
         status: params.status,
-        customer: params.customer
+        customer: params.customer,
+        sortBy: sortField,
+        sortDirection: sortDirection
     }).toString();
 
     $.ajax({
@@ -82,6 +86,15 @@ function loadInvoices(data, page, total) {
     currentPage = page;
     totalPages = total;
     updatePagination(totalPages, page);
+}
+
+function updateSortIcons() {
+    const sortIcon = $("#sort-creation-date .sort-icon");
+    if (sortField === 'creationDate') {
+        sortIcon.text(sortDirection === 'asc' ? '↑' : '↓');
+    } else {
+        sortIcon.text('↕');
+    }
 }
 
 // Handle pagination
@@ -163,12 +176,12 @@ function applyFilters() {
     filterParams.customer = $("#filter-customer").val();
 
     currentPage = 1; // Return to the first page after filtering
-    fetchInvoices(currentPage, pageSize, filterParams);
+    fetchInvoices(currentPage, pageSize, filterParams, sortField, sortDirection);
 }
 
 // Download data for the first time and process events
 $(document).ready(function () {
-    fetchInvoices(currentPage, pageSize, filterParams);
+    fetchInvoices(currentPage, pageSize, filterParams, sortField, sortDirection);
 
     // Apply the filter
     $("#apply-filter").click(function () {
@@ -179,7 +192,7 @@ $(document).ready(function () {
     $("#page-size-select").change(function () {
         pageSize = parseInt($(this).val());
         currentPage = 1;
-        fetchInvoices(currentPage, pageSize, filterParams);
+        fetchInvoices(currentPage, pageSize, filterParams, sortField, sortDirection);
     });
 
     // Transfer
@@ -188,7 +201,20 @@ $(document).ready(function () {
         const page = $(this).data("page");
         if (page && page >= 1 && page <= totalPages) {
             currentPage = page;
-            fetchInvoices(currentPage, pageSize, filterParams);
+            fetchInvoices(currentPage, pageSize, filterParams, sortField, sortDirection);
         }
+    });
+    $("#sort-creation-date").click(function (e) {
+        e.preventDefault();
+        if (sortField === 'creationDate') {
+            // Nếu đã sort theo creationDate thì đổi hướng
+            sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            // Nếu chưa sort theo creationDate thì set mặc định desc
+            sortField = 'creationDate';
+            sortDirection = 'desc';
+        }
+        currentPage = 1;
+        fetchInvoices(currentPage, pageSize, filterParams, sortField, sortDirection);
     });
 });

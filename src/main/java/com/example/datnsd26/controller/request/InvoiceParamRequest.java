@@ -24,4 +24,6 @@ public class InvoiceParamRequest {
     private String status;
 
     private String customer; // name or phone number
+
+    private String sortDirection;
 }

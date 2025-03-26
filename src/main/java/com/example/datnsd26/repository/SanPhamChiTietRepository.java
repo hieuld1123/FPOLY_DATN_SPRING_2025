@@ -19,8 +19,8 @@ import java.util.Optional;
 @Repository
 public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, Integer> {
 
-    @Query("FROM SanPhamChiTiet sp WHERE sp.sanPham.tenSanPham like %:keyword% AND sp.soLuong >= 1")
-    List<SanPhamChiTiet> findByName(String keyword);
+    @Query("FROM SanPhamChiTiet sp WHERE (sp.sanPham.tenSanPham like %:keyword% OR sp.maSanPhamChiTiet like %:keyword%) AND sp.soLuong >= 1")
+    List<SanPhamChiTiet> findByNameOrCode(String keyword);
 
     // search theo biến thể sản phẩm
     @Query("SELECT spct FROM SanPhamChiTiet spct WHERE spct.sanPham = :sanPham " +
