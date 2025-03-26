@@ -1,6 +1,8 @@
 package com.example.datnsd26.services;
 
 import com.example.datnsd26.models.SanPhamChiTiet;
+import com.example.datnsd26.repository.SanPhamChiTietRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
