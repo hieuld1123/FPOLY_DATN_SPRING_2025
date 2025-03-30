@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý khách hàng</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css">
+    <style>
+        .profile-img {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #007bff;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .profile-img:hover {
+            transform: scale(1.05);
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+    </style>
+</head>
+
+<body>
+<!-- Sidebar -->
+<div th:replace="components/admin-sidebar :: sidebar"></div>
+
+<div class="page-wrapper">
+    <div class="container-xl">
+        <div class="row my-4">
+            <div class="col-12 my-5">
+                <div class="page-pretitle">
+                    Admin
+                </div>
+                <h2 class="page-title">Quản lý khách hàng</h2>
+            </div>
+
+
+            <!-- Thẻ chứa thông tin -->
+            <div class="col-12 mx-auto mt-3">
+                <div class="card shadow-sm">
+                    <div class="card-header d-flex align-items-center">
+                        <h3 class="card-title mb-0">Thông tin khách hàng</h3>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Ảnh -->
+                            <div class="col-md-4 d-flex flex-column align-items-center">
+                                <img th:src="@{/uploads/{imageName}(imageName=${khachHangDto.hinhAnh})}"
+                                     class="profile-img shadow-sm">
+                            </div>
+                            <!-- Thông tin-->
+                            <div class="col-md-8">
+                                <h3 class="fw-bold text-primary" th:text="${khachHangDto.tenKhachHang}"></h3>
+
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p><strong>Mã khách hàng:</strong> <span th:text="${khachHangDto.maKhachHang}"></span>
+                                        </p>
+                                        <p><strong>Giới tính:</strong> <span
+                                                th:text="${khachHangDto.gioiTinh} ? 'Nam' : 'Nữ'"></span></p>
+                                        <p><strong>Ngày sinh:</strong> <span th:text="${khachHangDto.ngaySinh}"></span></p>
+                                        <p><strong>Email:</strong> <span th:text="${khachHangDto.email}"></span></p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p><strong>Số điện thoại:</strong> <span th:text="${khachHangDto.sdt}"></span></p>
+                                        <p><strong>Địa chỉ mặc định:</strong>
+                                            <span th:each="diaChi : ${listDiaChi}"
+                                                  th:text="${diaChi.diaChiCuThe + ', ' + diaChi.xa + ', ' + diaChi.huyen + ', ' + diaChi.tinh}"></span>
+                                        </p>
+                                        <p><strong>Trạng thái:</strong>
+                                            <span th:if="${khachHangDto.trangThai}" th:text="'Hoạt động'" class="badge bg-success me-1" style="color: white"></span>
+                                            <span th:unless="${khachHangDto.trangThai}" class="badge bg-danger me-1" th:text="'Ngừng hoạt động'" style="color: white"></span>
+
+                                        </p>
+
+
+                                        <!-- Ngày tạo và Ngày cập nhật -->
+                                        <p class="text-muted small mb-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="16" height="16"
+                                                 viewBox="0 0 24 24" stroke-width="2"
+                                                 stroke="currentColor" fill="none" stroke-linecap="round"
+                                                 stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                <rect x="4" y="5" width="16" height="16" rx="2"/>
+                                                <line x1="16" y1="3" x2="16" y2="7"/>
+                                                <line x1="8" y1="3" x2="8" y2="7"/>
+                                                <line x1="4" y1="11" x2="20" y2="11"/>
+                                                <rect x="8" y="15" width="2" height="2"/>
+                                                <rect x="12" y="15" width="2" height="2"/>
+                                                <rect x="16" y="15" width="2" height="2"/>
+                                            </svg>
+                                            Ngày tạo: <span
+                                                th:text="${#dates.format(khachHangDto.ngayTao, 'dd/MM/yyyy')}"></span>
+                                        </p>
+
+                                        <p class="text-muted small">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="16" height="16"
+                                                 viewBox="0 0 24 24" stroke-width="2"
+                                                 stroke="currentColor" fill="none" stroke-linecap="round"
+                                                 stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                <polyline points="12 8 12 12 14 14"/>
+                                                <path d="M6 12a6 6 0 1 0 12 0a6 6 0 1 0 -12 0"/>
+                                            </svg>
+                                            Ngày cập nhật: <span
+                                                th:text="${#dates.format(khachHangDto.ngayCapNhat, 'dd/MM/yyyy')}"></span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nút hành động -->
+                        <div class="d-flex justify-content-end">
+                            <a th:href="@{/khach-hang/hien-thi}"
+                               class="btn btn-primary btn-secondary me-2">Quay lại</a>
+                            <a th:href="@{/khach-hang/sua/{id}(id=${khachHangDto.id})}"
+                               class="btn btn-primary btn-primary me-2">Sửa thông tin</a>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- End Card -->
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
+</body>
+</html>

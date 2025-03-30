@@ -57,7 +57,7 @@
 <div class="container">
     <h2>Danh sách sản phẩm</h2>
     <div th:each="sp : ${productDetailsList}">
-        <p>Tên: <span th:text="${sp.tenSanPhamChiTiet}"></span></p>
+        <p>Tên: <span th:text="${sp.sanPham.tenSanPham}"></span></p>
         <p>Giá: <span th:text="${sp.giaBanSauGiam}"></span></p>
         <form>
             <input type="hidden" name="productId" th:value="${sp.id}" />

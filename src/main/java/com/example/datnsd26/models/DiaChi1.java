@@ -28,4 +28,5 @@ public class DiaChi1 {
 
     @Column(name = "xa_phuong", columnDefinition = "NVARCHAR(255)")
     private String xaPhuong;
+
 }

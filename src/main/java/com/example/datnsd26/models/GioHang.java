@@ -3,7 +3,9 @@ package com.example.datnsd26.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,6 +22,9 @@ public class GioHang {
     @ManyToOne
     @JoinColumn(name = "id_khach_hang", referencedColumnName = "id")
     private KhachHang1 khachHang1;
+
+    @OneToMany(mappedBy = "gioHang", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<GioHangChiTiet> chiTietList = new ArrayList<>();
 
     @Column(name = "ngay_tao")
     @Temporal(TemporalType.TIMESTAMP)

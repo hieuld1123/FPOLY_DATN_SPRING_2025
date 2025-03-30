@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css">
+</head>
+
+<body>
+    <div th:replace="components/admin-sidebar :: sidebar"></div>
+    <div class="container-xl mt-5">
+        <div class="row row-deck row-cards">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Danh sách hoá đơn</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table card-table table-vcenter text-nowrap datatable">
+                            <thead>
+                                <tr>
+                                    <th class="w-1"><input class="form-check-input m-0 align-middle" type="checkbox"
+                                            aria-label="Select all invoices"></th>
+                                    <th class="w-1">Mã.
+                                        <!-- Download SVG icon from http://tabler.io/icons/icon/chevron-up -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round"
+                                            class="icon icon-sm icon-thick icon-2">
+                                            <path d="M6 15l6 -6l6 6"></path>
+                                        </svg>
+                                    </th>
+                                    <th>Khách hàng</th>
+                                    <th>Hình thức mua hàng</th>
+                                    <th>Ngày tạo</th>
+                                    <th>Trạng thái</th>
+                                    <th>Giá trị</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="hoaDon : ${hoaDonList}">
+                                    <td><input class="form-check-input m-0 align-middle" type="checkbox"
+                                            aria-label="Select invoice"></td>
+                                    <td><span class="text-secondary" th:text="${hoaDon.maHoaDon}"></span></td>
+                                    <td th:text="${hoaDon.tenNguoiNhan}"></td>
+                                    <td th:text="${hoaDon.hinhThucMuaHang}"></td>
+                                    <!-- <td th:text="${hoaDon.nhanVien}"></td> -->
+                                    <td th:text="${hoaDon.ngayTao}"></td>
+                                    <td th:text="${hoaDon.trangThai}"></td>
+                                    <td><span th:text="${#numbers.formatDecimal(hoaDon.tongTien, 0, 'COMMA', 0, 'POINT')}"></span> VND</td>
+                                    <td class="text-end">
+                                        <span class="dropdown">
+                                            <button class="btn dropdown-toggle align-text-top"
+                                                data-bs-boundary="viewport" data-bs-toggle="dropdown">Actions</button>
+                                            <div class="dropdown-menu dropdown-menu-end">
+                                                <a class="dropdown-item" href="#">
+                                                    Action
+                                                </a>
+                                                <a class="dropdown-item" href="#">
+                                                    Another action
+                                                </a>
+                                            </div>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
+</body>
+
+</html>

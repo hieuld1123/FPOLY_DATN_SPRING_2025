@@ -38,6 +38,8 @@ public class KhuyenMai {
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime thoiGianKetThuc;
 
+
+
     @Column(name = "ngay_tao")
     private LocalDateTime ngayTao;
 

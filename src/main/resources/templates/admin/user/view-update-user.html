@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css" />
+</head>
+
+<body>
+    <div th:replace="components/admin-sidebar :: sidebar"></div>
+    <div class="page-wrapper">
+        <div class="container-xl">
+            <div class="row">
+                <div class="col-12 my-5">
+                    <div class="page-pretitle">Admin</div>
+                    <h2 class="page-title">Quản lý nhân viên</h2>
+                </div>
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Thông tin nhân viên</h3>
+                        </div>
+                        <div class="card-body border-bottom py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="p-2 flex-shrink-0">
+                                    <span class="avatar rounded-circle" style="
+                        width: 150px;
+                        height: 150px;
+                        background-image: url(data:image/jpeg;base64,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);
+                      ">AA</span>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h2 class="fw-bold text-primary">Khánh Linh</h2>
+                                    <p>Admin</p>
+                                    <div>
+                                        <button type="button" class="btn">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
+                                                <polyline points="7 9 12 4 17 9" />
+                                                <line x1="12" y1="4" x2="12" y2="16" />
+                                            </svg>
+                                            Upload
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr />
+                            <div>
+                                <form>
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <div class="mb-3 pe-2">
+                                                <label class="form-label">Họ tên</label>
+                                                <input type="text" class="form-control" />
+                                                <div class="form-text">Tên không được để trống</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="mb-3 pe-2">
+                                                <label class="form-label">Email</label>
+                                                <input type="text" class="form-control" />
+                                                <div class="form-text">Tên không được để trống</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="mb-3 pe-2">
+                                                <label class="form-label">Số điện thoại</label>
+                                                <input type="text" class="form-control" />
+                                                <div class="form-text">Tên không được để trống</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="mb-3 pe-2">
+                                                <label class="form-label">Vai trò</label>
+                                                <select class="form-select">
+                                                    <option value="1" selected>Admin</option>
+                                                    <option value="2">Employee</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="mb-3 pe-2">
+                                                <label class="form-label">Trạng thái</label>
+                                                <select class="form-select">
+                                                    <option value="1" selected>Admin</option>
+                                                    <option value="2">Employee</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="mb-3 pe-2">
+                                                <label class="form-label">Gioi tinh</label>
+
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio"
+                                                        name="inlineRadioOptions" id="inlineRadio1" value="option1" />
+                                                    <label class="form-check-label" for="inlineRadio1">Nam</label>
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio"
+                                                        name="inlineRadioOptions" id="inlineRadio2" value="option2" />
+                                                    <label class="form-check-label" for="inlineRadio2">Nữ</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr class="mt-3"/>
+                                        <div class="col-4">
+                                            <div class="mb-3 pe-2">
+                                                <label class="form-label">Tỉnh/Thành phố</label>
+                                                <select class="form-select">
+                                                    <option value="1" selected>Admin</option>
+                                                    <option value="2">Employee</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="mb-3 pe-2">
+                                                <label class="form-label">Quận/huyện</label>
+                                                <select class="form-select">
+                                                    <option value="1" selected>Admin</option>
+                                                    <option value="2">Employee</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="mb-3 pe-2">
+                                                <label class="form-label">Xã phường</label>
+                                                <select class="form-select">
+                                                    <option value="1" selected>Admin</option>
+                                                    <option value="2">Employee</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="mb-3 pe-2">
+                                                <label class="form-label">Địa chỉ cụ thể</label>
+                                                <input type="text" class="form-control" />
+                                                <div class="form-text">Tên không được để trống</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                    <button type="submit" class="btn btn-primary">
+                                        Submit
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
+</body>
+
+</html>

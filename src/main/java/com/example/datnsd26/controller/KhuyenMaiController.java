@@ -2,15 +2,20 @@ package com.example.datnsd26.controller;
 
 import com.example.datnsd26.models.KhuyenMai;
 import com.example.datnsd26.models.SanPhamChiTiet;
+import com.example.datnsd26.repository.KhuyenMaiChiTietRepository;
 import com.example.datnsd26.repository.KhuyenMaiRepository;
 import com.example.datnsd26.repository.SanPhamChiTietRepository;
 import com.example.datnsd26.services.KhuyenMaiService;
+import com.example.datnsd26.services.SanPhamChiTietService;
 import com.example.datnsd26.services.SanPhamChitiet1;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +44,9 @@ public class KhuyenMaiController {
     @Autowired
     private KhuyenMaiRepository khuyenMaiRepository;
     @Autowired
-    private SanPhamChitiet1 sanPhamChitiet1;
+    private KhuyenMaiChiTietRepository khuyenMaiChiTietRepository;
+    @Autowired
+    private SanPhamChiTietService sanPhamChiTietService;
 
     /**
      * Hiển thị danh sách khuyến mãi
@@ -64,11 +71,15 @@ public class KhuyenMaiController {
      * Hiển thị form tạo mới khuyến mãi
      */
     @GetMapping("/create")
-    public String viewCreate(Model model) {
+    public String viewCreate(Model model,
+                             @RequestParam(defaultValue = "0") int page,
+                             @RequestParam(defaultValue = "5") int size) {
+        Page<SanPhamChiTiet> sanPhamPage = sanPhamChiTietRepository.findAvailableProducts(PageRequest.of(page, size));
         model.addAttribute("khuyenMai", new KhuyenMai());
-        model.addAttribute("sanPhams", sanPhamChiTietRepository.findAll());
+        model.addAttribute("sanPhamPage", sanPhamPage);
         return "khuyenmai/user/khuyenmai-create";
     }
+
 
     /**
      * Xử lý tạo mới khuyến mãi
@@ -82,14 +93,14 @@ public class KhuyenMaiController {
         try {
             // Kiểm tra dữ liệu nhập vào
             if (bindingResult.hasErrors()) {
-                model.addAttribute("sanPhams", sanPhamChiTietRepository.findAll());
+                model.addAttribute("sanPhams", sanPhamChiTietService.findAll());
                 return "khuyenmai/user/khuyenmai-create";
             }
 
             // Kiểm tra thời gian khuyến mãi
             if (khuyenMai.getThoiGianKetThuc().isBefore(khuyenMai.getThoiGianBatDau())) {
                 model.addAttribute("error", "Thời gian kết thúc phải sau thời gian bắt đầu");
-                model.addAttribute("sanPhams", sanPhamChiTietRepository.findAll());
+                model.addAttribute("sanPhams", sanPhamChiTietService.findAll());
                 return "khuyenmai/user/khuyenmai-create";
             }
 
@@ -138,7 +149,7 @@ public class KhuyenMaiController {
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("khuyenMai", khuyenMai);
-            model.addAttribute("sanPhams", sanPhamChiTietRepository.findAll());
+            model.addAttribute("sanPhams", sanPhamChiTietService.findAll());
             return "khuyenmai/user/khuyenmai-create";
         }
     }
@@ -147,23 +158,35 @@ public class KhuyenMaiController {
      * Hiển thị form chỉnh sửa khuyến mãi
      */
     @GetMapping("/edit/{id}")
-    public String viewEdit(@PathVariable Long id, Model model) {
+    public String viewEdit(@PathVariable Long id,
+                           @RequestParam(defaultValue = "0") int page,
+                           @RequestParam(defaultValue = "5") int size,
+                           Model model) {
         try {
             KhuyenMai khuyenMai = khuyenMaiService.findById(id);
-            List<SanPhamChiTiet> allSanPhams = sanPhamChiTietRepository.findAll();
 
-            // Lấy map chứa thông tin sản phẩm và mức giảm giá
+            // Tạo đối tượng Pageable để phân trang
+            Pageable pageable = PageRequest.of(page, size);
+            Page<SanPhamChiTiet> sanPhamPage = khuyenMaiService.finAllPage(pageable);
+            List<SanPhamChiTiet> sanPhams = sanPhamPage.getContent();
+
+            // Lấy danh sách sản phẩm đã có khuyến mãi
             Map<Integer, Float> sanPhamGiamGiaMap = khuyenMaiService.getGiaTriGiamMap(id);
 
             model.addAttribute("khuyenMai", khuyenMai);
-            model.addAttribute("sanPhams", allSanPhams);
+            model.addAttribute("sanPhams", sanPhams);
             model.addAttribute("sanPhamGiamGiaMap", sanPhamGiamGiaMap);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", sanPhamPage.getTotalPages());
+            model.addAttribute("size", size);
 
             return "khuyenmai/user/khuyenmai-edit";
         } catch (Exception e) {
             return "redirect:/admin/khuyen-mai?error=" + e.getMessage();
         }
     }
+
+
 
     @PostMapping("/edit/{id}")
     public String update(@PathVariable Long id,
@@ -216,7 +239,7 @@ public class KhuyenMaiController {
 
             model.addAttribute("error", e.getMessage());
             model.addAttribute("khuyenMai", khuyenMai);
-            model.addAttribute("sanPhams", sanPhamChiTietRepository.findAll());
+            model.addAttribute("sanPhams", sanPhamChiTietService.findAll());
             model.addAttribute("sanPhamGiamGiaMap", sanPhamGiamGiaMap);
             return "khuyenmai/user/khuyenmai-edit";
         }
@@ -225,53 +248,10 @@ public class KhuyenMaiController {
      * Xử lý xóa khuyến mãi
      */
     @PostMapping("/delete/{id}")
-    public String delete(@PathVariable Long id) {
-        try {
-            KhuyenMai khuyenMai = khuyenMaiRepository.findById(id)
-                    .orElseThrow(() -> new IllegalStateException("Không tìm thấy khuyến mãi"));
-
-
-
-            khuyenMaiService.delete(id);
-            return "redirect:/admin/khuyen-mai?success=deleted";
-        } catch (IllegalStateException e) {
-            return "redirect:/admin/khuyen-mai?error=" + e.getMessage();
-        }
-    }
-
-    /**
-     * Chuyển đổi dữ liệu từ form sang đối tượng Map chứa thông tin giảm giá của sản phẩm
-     */
-    private Map<Long, Float> convertToSanPhamGiamGia(Map<String, String> raw, KhuyenMai khuyenMai) {
-        Map<Long, Float> sanPhamGiamGia = new HashMap<>();
-        Float giaTriGiam = (khuyenMai.getGiaTriGiam() != null) ? khuyenMai.getGiaTriGiam().floatValue() : 0.0f;
-
-        for (Map.Entry<String, String> entry : raw.entrySet()) {
-            if (entry.getKey().startsWith("sanPham_") && !entry.getValue().trim().isEmpty()) {
-                try {
-                    Long sanPhamId = Long.parseLong(entry.getKey().substring(8));
-                    Float giamGia = Float.parseFloat(entry.getValue().trim());
-
-                    if (giamGia <= 0) {
-                        throw new IllegalArgumentException("Mức giảm phải lớn hơn 0.");
-                    }
-
-                    if ("Phần Trăm".equals(khuyenMai.getHinhThucGiam()) && giamGia > 100) {
-                        throw new IllegalArgumentException("Mức giảm theo phần trăm không được vượt quá 100%");
-                    }
-
-                    sanPhamGiamGia.put(sanPhamId, giamGia);
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException("Mức giảm không hợp lệ cho sản phẩm.");
-                }
-            }
-        }
-
-        if (sanPhamGiamGia.isEmpty() && giaTriGiam <= 0) {
-            throw new IllegalArgumentException("Vui lòng nhập ít nhất một mức giảm giá hoặc giá trị giảm.");
-        }
-
-        return sanPhamGiamGia;
+    public String deleteKhuyenMai(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        khuyenMaiService.delete(id);
+        redirectAttributes.addFlashAttribute("successMessage", "Xóa khuyến mãi thành công!");
+        return "redirect:/admin/khuyen-mai";
     }
 
     @GetMapping("/restore/{id}")
@@ -294,6 +274,82 @@ public class KhuyenMaiController {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
         return "redirect:/admin/khuyen-mai";
+    }
+
+    @GetMapping("/san-pham-khuyen-mai")
+    public ResponseEntity<List<Long>> getSanPhamDangKhuyenMai() {
+        List<Long> danhSachSanPham = khuyenMaiChiTietRepository.findSanPhamDangKhuyenMai();
+        return ResponseEntity.ok(danhSachSanPham);
+    }
+
+    @GetMapping("/search-products")
+    public String searchProducts(
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            Model model) {
+        if (keyword == null) {
+            keyword = "";
+        }
+        // Giả sử mỗi trang có 10 sản phẩm
+        Pageable pageable = PageRequest.of(page, 10);
+        LocalDateTime now = LocalDateTime.now();
+        Page<SanPhamChiTiet> productPage = sanPhamChiTietRepository.findAvailableProductsWithSearch(keyword, now, pageable);
+        model.addAttribute("productPage", productPage);
+        model.addAttribute("keyword", keyword);
+        return "khuyenmai/user/product-search";
+    }
+    @GetMapping("/tim-kiem-san-pham")
+    public ResponseEntity<?> timKiemSanPham(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        try {
+            if (keyword.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Từ khóa tìm kiếm không được để trống.");
+            }
+
+            Page<SanPhamChiTiet> result = sanPhamChiTietRepository.findByTenSanPham(keyword, PageRequest.of(page, size));
+
+            if (result.isEmpty()) {
+                return ResponseEntity.ok("Không tìm thấy sản phẩm nào phù hợp.");
+            }
+
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("Lỗi khi tìm kiếm sản phẩm: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi hệ thống, vui lòng thử lại.");
+        }
+    }
+
+    @GetMapping("/search")
+    public String searchKhuyenMai(
+            @RequestParam(required = false) String tenChienDich,
+            @RequestParam(required = false) Integer trangThai,  // Đảm bảo là Integer
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime endDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            Model model) {
+
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<KhuyenMai> khuyenMaiPage = khuyenMaiService.searchKhuyenMai(
+                    tenChienDich, trangThai, startDate, endDate, pageable);
+
+            model.addAttribute("danhSachKhuyenMai", khuyenMaiPage);
+            model.addAttribute("tenChienDich", tenChienDich);
+            model.addAttribute("trangThai", trangThai);
+            model.addAttribute("startDate", startDate);
+            model.addAttribute("endDate", endDate);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("size", size);
+
+            return "khuyenmai/user/khuyenmai-list";
+        } catch (Exception e) {
+            model.addAttribute("error", "Có lỗi xảy ra khi tìm kiếm khuyến mãi");
+            return "error";
+        }
     }
 
 

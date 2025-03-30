@@ -65,7 +65,6 @@ public class KhuyenMaiService {
     }
 
 
-
     @Transactional
     public void capNhatGiaSanPham() {
         LocalDateTime now = LocalDateTime.now();
@@ -94,13 +93,13 @@ public class KhuyenMaiService {
     }
 
 
-
     private boolean isKhuyenMaiHienTai(KhuyenMai khuyenMai, LocalDateTime now) {
         return khuyenMai.getTrangThai() == 1
                 && now.isAfter(khuyenMai.getThoiGianBatDau())
                 && now.isBefore(khuyenMai.getThoiGianKetThuc());
     }
-   //phan trang
+
+    //phan trang
     public Page<KhuyenMai> findAll(Pageable pageable) {
         Page<KhuyenMai> khuyenMais = khuyenMaiRepository.findAll(pageable);
         khuyenMais.getContent().forEach(km -> {
@@ -121,49 +120,13 @@ public class KhuyenMaiService {
         return khuyenMais;
     }
 
-    public List<KhuyenMai> searchKhuyenMai(String tenChienDich, Integer trangThai,
-                                           LocalDateTime ngayBatDau, LocalDateTime ngayKetThuc) {
-        return khuyenMaiRepository.findByFilters(tenChienDich, trangThai, ngayBatDau, ngayKetThuc);
+    public Page<KhuyenMai> searchKhuyenMai(String tenChienDich, Integer trangThai,
+                                           LocalDateTime startDate, LocalDateTime endDate,
+                                           Pageable pageable) {
+        return khuyenMaiRepository.searchKhuyenMai(tenChienDich, trangThai, startDate, endDate, pageable);
     }
 
-    private void validateKhuyenMaiUpdate(KhuyenMai khuyenMai, Map<Integer, Float> sanPhamGiamGia) {
-        // 1. Kiểm tra thông tin cơ bản
-        if (khuyenMai.getTenChienDich() == null || khuyenMai.getTenChienDich().trim().isEmpty()) {
-            throw new IllegalArgumentException("Tên chiến dịch không được để trống");
-        }
 
-        if (khuyenMai.getThoiGianBatDau() == null || khuyenMai.getThoiGianKetThuc() == null) {
-            throw new IllegalArgumentException("Thời gian bắt đầu và kết thúc không được để trống");
-        }
-
-        if (khuyenMai.getThoiGianBatDau().isAfter(khuyenMai.getThoiGianKetThuc())) {
-            throw new IllegalArgumentException("Thời gian bắt đầu phải trước thời gian kết thúc");
-        }
-
-        // 2. Kiểm tra sản phẩm và mức giảm giá
-        if (sanPhamGiamGia == null || sanPhamGiamGia.isEmpty()) {
-            throw new IllegalArgumentException("Phải chọn ít nhất một sản phẩm để áp dụng khuyến mãi");
-        }
-
-        for (Map.Entry<Integer, Float> entry : sanPhamGiamGia.entrySet()) {
-            Float giaTriGiam = entry.getValue();
-            if (giaTriGiam == null || giaTriGiam <= 0) {
-                throw new IllegalArgumentException("Giá trị giảm phải lớn hơn 0");
-            }
-
-            // Kiểm tra theo hình thức giảm giá
-            if ("Phần Trăm".equals(khuyenMai.getHinhThucGiam()) && giaTriGiam > 100) {
-                throw new IllegalArgumentException("Giảm giá theo phần trăm không được vượt quá 100%");
-            }
-
-            SanPhamChiTiet sp = sanPhamChiTietRepository.findById(entry.getKey())
-                    .orElseThrow(() -> new ResourceNotFoundException("SanPhamChiTiet", "id", entry.getKey()));
-
-            if ("Theo Giá Tiền".equals(khuyenMai.getHinhThucGiam()) && giaTriGiam >= sp.getGiaBan()) {
-                throw new IllegalArgumentException("Giá trị giảm không được lớn hơn hoặc bằng giá bán của sản phẩm");
-            }
-        }
-    }
 
     @Transactional
     public KhuyenMai save(KhuyenMai khuyenMai, Map<Integer, Float> sanPhamGiamGia) {
@@ -286,7 +249,6 @@ public class KhuyenMaiService {
     }
 
 
-
     public KhuyenMai update(Long id, KhuyenMai khuyenMaiMoi, Map<Integer, Float> sanPhamGiamGia) {
         KhuyenMai khuyenMaiHienTai = khuyenMaiRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("KhuyenMai", "id", id));
@@ -389,19 +351,16 @@ public class KhuyenMaiService {
     }
 
 
-
-
+    @Transactional
     public void delete(Long id) {
         KhuyenMai km = khuyenMaiRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("KhuyenMai", "id", id));
 
-        if (km.getTrangThai() == 1) {
-            throw new IllegalStateException("Không thể xóa khuyến mãi đang hoạt động.");
-        }
         khuyenMaiChiTietRepository.deleteByKhuyenMai_Id(id);
         khuyenMaiRepository.deleteById(id);
         capNhatGiaSanPham();
     }
+
 
     private void validateKhuyenMaisave(KhuyenMai khuyenMai) {
         if (khuyenMai.getTenChienDich() == null || khuyenMai.getTenChienDich().trim().isEmpty()) {
@@ -423,6 +382,7 @@ public class KhuyenMaiService {
 
 
     }
+
     public KhuyenMai findById(Long id) {
         return khuyenMaiRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("KhuyenMai", "id", id));
@@ -434,7 +394,6 @@ public class KhuyenMaiService {
                 .map(kmct -> Long.valueOf(kmct.getSanPhamChiTiet().getId()))
                 .toList();
     }
-
 
 
     public Map<Integer, Float> getGiaTriGiamMap(Long khuyenMaiId) {
@@ -451,6 +410,10 @@ public class KhuyenMaiService {
         }
 
         return giaTriGiamMap;
+    }
+
+    public Page<SanPhamChiTiet> finAllPage(Pageable pageable) {
+        return sanPhamChiTietRepository.findAll(pageable);
     }
 
     public void restoreKhuyenMai(Long id) {
@@ -516,5 +479,6 @@ public class KhuyenMaiService {
     }
 
 
-
+    public void deleteById(Long id) {
+    }
 }
