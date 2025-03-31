@@ -97,4 +97,88 @@ public class EmailService {
         helper.setText(emailContent, true);
         mailSender.send(message);
     }
+
+    @Async
+    public void sendDoiMatKhauEmail(String toEmail, String token) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom("linhptkph30303@fpt.edu.vn");
+            helper.setTo(toEmail);
+            helper.setSubject("🔒 Yêu cầu đặt lại mật khẩu - Nine Shoes Store");
+
+            String resetPasswordLink = "http://localhost:8080/dat-lai-mat-khau?token=" + token;
+            String emailContent = """
+                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; 
+                                    border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
+                            <h2 style="color: #333; text-align: center;">🔐 Đặt lại mật khẩu của bạn 🔐</h2>
+                            <p style="font-size: 16px; color: #555;">Xin chào <strong>%s</strong>,</p>
+                            <p style="font-size: 16px; color: #555;">Chúng tôi nhận được yêu cầu đặt lại mật khẩu của bạn tại <strong>Nine Shoes Store</strong>.</p>
+                            
+                            <p style="font-size: 16px; color: #555;">Vui lòng nhấn vào nút bên dưới để đặt lại mật khẩu:</p>
+
+                            <div style="text-align: center; margin-top: 20px;">
+                                <a href="%s" style="background-color: #007bff; color: white; padding: 12px 20px; 
+                                                   text-decoration: none; font-size: 16px; border-radius: 5px; display: inline-block;">
+                                    🔑 Đặt lại mật khẩu
+                                </a>
+                            </div>
+
+                            <p style="font-size: 14px; color: #777; margin-top: 20px;">Nếu bạn không yêu cầu điều này, vui lòng bỏ qua email này hoặc liên hệ với bộ phận hỗ trợ.</p>
+
+                            <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+                            <p style="text-align: center; font-size: 14px; color: #777;">🚀 Nine Shoes Store - Hỗ trợ khách hàng 24/7</p>
+                        </div>
+                    """.formatted(toEmail, resetPasswordLink);
+
+            helper.setText(emailContent, true);
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Gửi email thất bại, vui lòng thử lại!");
+        }
+    }
+
+    @Async
+    public void sendDangKyThanhCong(String toEmail, String fullName) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom("linhptkph30303@fpt.edu.vn");
+            helper.setTo(toEmail);
+            helper.setSubject("🎉 Chúc mừng! Bạn đã đăng ký thành công tài khoản - Nine Shoes Store");
+
+            String emailContent = """
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; 
+                                border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
+                        <h2 style="color: #333; text-align: center;">🎉 Chúc mừng, %s! 🎉</h2>
+                        <p style="font-size: 16px; color: #555;">Xin chào <strong>%s</strong>,</p>
+                        <p style="font-size: 16px; color: #555;">Bạn đã đăng ký thành công tài khoản tại <strong>Nine Shoes Store</strong>.</p>
+                        
+                        <p style="font-size: 16px; color: #555;">Tận hưởng trải nghiệm mua sắm tuyệt vời và khám phá những sản phẩm mới nhất ngay hôm nay!</p>
+
+                        <div style="text-align: center; margin-top: 20px;">
+                            <a href="http://localhost:8080/dang-nhap" style="background-color: #28a745; color: white; padding: 12px 20px; 
+                                               text-decoration: none; font-size: 16px; border-radius: 5px; display: inline-block;">
+                                🚀 Đăng nhập ngay
+                            </a>
+                        </div>
+
+                        <p style="font-size: 14px; color: #777; margin-top: 20px;">Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với bộ phận hỗ trợ của chúng tôi.</p>
+
+                        <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+                        <p style="text-align: center; font-size: 14px; color: #777;">🚀 Nine Shoes Store - Hỗ trợ khách hàng 24/7</p>
+                    </div>
+                """.formatted(fullName, fullName);
+
+            helper.setText(emailContent, true);
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Gửi email thất bại, vui lòng thử lại!");
+        }
+    }
+
 }
