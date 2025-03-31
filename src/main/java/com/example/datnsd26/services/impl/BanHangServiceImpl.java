@@ -1,17 +1,12 @@
 package com.example.datnsd26.services.impl;
 
 import com.example.datnsd26.controller.request.PaymentRequest;
-import com.example.datnsd26.controller.response.HoaDonChiTietResponse;
-import com.example.datnsd26.controller.response.HoaDonResponse;
-import com.example.datnsd26.controller.response.SanPhamResponse;
+import com.example.datnsd26.controller.response.*;
 import com.example.datnsd26.exception.EntityNotFound;
-import com.example.datnsd26.models.HoaDon;
-import com.example.datnsd26.models.HoaDonChiTiet;
-import com.example.datnsd26.models.SanPhamChiTiet;
-import com.example.datnsd26.repository.HoaDonChiTietRepository;
-import com.example.datnsd26.repository.HoaDonRepository;
-import com.example.datnsd26.repository.SanPhamChiTietRepository;
+import com.example.datnsd26.models.*;
+import com.example.datnsd26.repository.*;
 import com.example.datnsd26.services.BanHangService;
+import com.example.datnsd26.utilities.AuthUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +16,7 @@ import org.springframework.util.StringUtils;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.example.datnsd26.utilities.CommonUtils.generateInvoiceCode;
 
@@ -31,10 +27,13 @@ public class BanHangServiceImpl implements BanHangService {
     private final HoaDonRepository hoaDonRepository;
     private final SanPhamChiTietRepository sanPhamChiTietRepository;
     private final HoaDonChiTietRepository hoaDonChiTietRepository;
+    private final AuthUtil authUtil;
+    private final LichSuHoaDonRepository lichSuHoaDonRepository;
+    private final KhachHangRepository khachHangRepository;
 
     @Override
     public List<HoaDonResponse> getHoaDon() {
-        return this.hoaDonRepository.findAllInvoiceByStatus("Đang chờ").stream().map(s -> HoaDonResponse.builder()
+        return this.hoaDonRepository.findAllInvoiceByStatus("Đang xử lý").stream().map(s -> HoaDonResponse.builder()
                 .id(s.getId())
                 .maHoaDon(s.getMaHoaDon())
                 .tranThai(s.getTrangThai())
@@ -47,17 +46,25 @@ public class BanHangServiceImpl implements BanHangService {
         List<SanPhamResponse> listSanPham = hoaDon.getDanhSachSanPham().stream().map(sp ->
                 SanPhamResponse.builder()
                         .id(sp.getId())
-                        .maSanPham(sp.getSanPhamChiTiet().getSanPham().getMaSanPham())
+                        .maSanPham(sp.getSanPhamChiTiet().getMaSanPhamChiTiet())
                         .tenSanPham(String.format("%s [%s - %s]", sp.getSanPhamChiTiet().getSanPham().getTenSanPham(), sp.getSanPhamChiTiet().getMauSac().getTen(), sp.getSanPhamChiTiet().getKichCo().getTen()))
-                        .gia(sp.getSanPhamChiTiet().getGiaBan())
+                        .gia(sp.getSanPhamChiTiet().getGiaBanSauGiam())
                         .soLuong(sp.getSoLuong())
                         .soLuongTonKho(sp.getSanPhamChiTiet().getSoLuong())
                         .hinhAnh("https://th.bing.com/th/id/OIP.8tQmmY_ccVpcxBxu0Z0mzwHaE8?rs=1&pid=ImgDetMain") // TODO
                         .build()
         ).toList();
+        KhachHang kh = hoaDon.getKhachHang();
         return HoaDonChiTietResponse.builder()
                 .tongTien(hoaDon.getTongTien())
                 .ghiChu(hoaDon.getGhiChu() == null ? null : hoaDon.getGhiChu().trim())
+                .khachHang(kh == null ? null : HoaDonChiTietResponse.Customer.builder()
+                        .id(kh.getId())
+                        .maKhachHang(kh.getMaKhachHang())
+                        .tenKhachHang(kh.getTenKhachHang())
+                        .soDienThoai(kh.getTaiKhoan().getSdt())
+                        .diaChi(String.format("%s, %s, %s, %s", hoaDon.getDiaChiNguoiNhan(), hoaDon.getXa(), hoaDon.getQuan(), hoaDon.getTinh()))
+                        .build())
                 .listSanPham(listSanPham)
                 .build();
     }
@@ -66,7 +73,7 @@ public class BanHangServiceImpl implements BanHangService {
     public Integer createHoaDon() {
         HoaDon hoaDon = HoaDon.builder()
                 .maHoaDon(generateInvoiceCode())
-                .trangThai("Đang chờ")
+                .trangThai("Đang xử lý")
                 .tongTien(0f)
                 .ngayTao(new Date())
                 .ngayCapNhat(new Date())
@@ -80,11 +87,11 @@ public class BanHangServiceImpl implements BanHangService {
         if (!StringUtils.hasText(keyword)) {
             return null;
         }
-        return this.sanPhamChiTietRepository.findByName(keyword).stream().map(sp -> SanPhamResponse.builder()
+        return this.sanPhamChiTietRepository.findByNameOrCode(keyword).stream().map(sp -> SanPhamResponse.builder()
                 .id(sp.getId())
-                .maSanPham(sp.getSanPham().getMaSanPham())
+                .maSanPham(sp.getMaSanPhamChiTiet())
                 .tenSanPham(String.format("%s [%s - %s]", sp.getSanPham().getTenSanPham(), sp.getMauSac().getTen(), sp.getKichCo().getTen()))
-                .gia(sp.getGiaBan())
+                .gia(sp.getGiaBanSauGiam()) // Note: update
                 .soLuong(sp.getSoLuong())
                 .hinhAnh("https://th.bing.com/th/id/OIP.8tQmmY_ccVpcxBxu0Z0mzwHaE8?rs=1&pid=ImgDetMain") // TODO
                 .build()).toList();
@@ -103,17 +110,17 @@ public class BanHangServiceImpl implements BanHangService {
             log.info("update invoice id: {}", invoiceId);
             HoaDonChiTiet hoaDonChiTiet = invoice.get();
             hoaDonChiTiet.setSoLuong(hoaDonChiTiet.getSoLuong() + 1);
-            hoaDon.setTongTien(hoaDon.getTongTien() + product.getGiaBan());
+            hoaDon.setTongTien(hoaDon.getTongTien() + product.getGiaBanSauGiam()); // Note
             return this.hoaDonChiTietRepository.save(hoaDonChiTiet).getId();
         }
         log.info("addToCart invoice id: {}", invoiceId);
         HoaDonChiTiet hoaDonChiTiet = HoaDonChiTiet.builder()
-                .giaTienSauGiam(product.getGiaBan())
+                .giaTienSauGiam(product.getGiaBanSauGiam()) // Note
                 .sanPhamChiTiet(product)
                 .hoaDon(hoaDon)
                 .soLuong(1)
                 .build();
-        hoaDon.setTongTien(hoaDon.getTongTien() + product.getGiaBan()); // NOTE: Price
+        hoaDon.setTongTien(hoaDon.getTongTien() + product.getGiaBanSauGiam()); // Note
         return this.hoaDonChiTietRepository.save(hoaDonChiTiet).getId();
     }
 
@@ -142,7 +149,7 @@ public class BanHangServiceImpl implements BanHangService {
             if (hoaDon != null) {
                 float newTotalPrice = (float) hoaDon.getDanhSachSanPham()
                         .stream()
-                        .mapToDouble(sp -> sp.getSoLuong() * sp.getSanPhamChiTiet().getGiaBan())
+                        .mapToDouble(sp -> sp.getSoLuong() * sp.getSanPhamChiTiet().getGiaBanSauGiam()) // Note
                         .sum();
                 hoaDon.setTongTien(newTotalPrice);
                 hoaDonRepository.save(hoaDon);
@@ -174,22 +181,29 @@ public class BanHangServiceImpl implements BanHangService {
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public void payment(PaymentRequest paymentRequest) {
         HoaDon hoaDon = findHoaDonById(paymentRequest.getInvoiceId());
-        hoaDon.setHinhThucMuaHang(paymentRequest.getType());
-        // TODO Customer, Employee
+        // TODO Customer
+        hoaDon.setNhanVien(authUtil.getNhanVien());
         hoaDon.setHinhThucMuaHang(paymentRequest.getType());
         hoaDon.setPhiVanChuyen(0f);
-        hoaDon.setTrangThai(paymentRequest.getType());
-        hoaDon.setTenNguoiNhan(paymentRequest.getRecipient_name());
-        hoaDon.setSdtNguoiNhan(paymentRequest.getPhone_number());
-        hoaDon.setEmail(paymentRequest.getEmail());
-        hoaDon.setTinh(paymentRequest.getProvince());
-        hoaDon.setQuan(paymentRequest.getDistrict());
-        hoaDon.setXa(paymentRequest.getWard());
-        hoaDon.setDiaChiNguoiNhan(paymentRequest.getAddressDetail());
-        hoaDon.setPhuongThucThanhToan(paymentRequest.getPaymentMethod());
+        hoaDon.setTrangThai(paymentRequest.getType().equalsIgnoreCase("Offline") ? "Hoàn thành" : "Chờ xác nhận");
+
+        if (hoaDon.getHinhThucMuaHang().equalsIgnoreCase("Có giao hàng") || hoaDon.getHinhThucMuaHang().equalsIgnoreCase("Online")) {
+            hoaDon.setPhuongThucThanhToan(paymentRequest.getPaymentMethod());
+        }
+        //hoaDon.setThanhToan(paymentRequest.getPaymentMethod().equalsIgnoreCase("Thanh toán tại cửa hàng"));
+        hoaDon.setThanhToan(true);
         hoaDon.setNgayCapNhat(new Date());
+        lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Đặt hàng").hoaDon(hoaDon).build());
+
+        if (hoaDon.getHinhThucMuaHang().equalsIgnoreCase("Offline") && hoaDon.isThanhToan()) {
+            lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Hoàn thành").hoaDon(hoaDon).build());
+        }
+        if (hoaDon.getHinhThucMuaHang().equalsIgnoreCase("Có giao hàng")) {
+            lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Chờ xác nhận").hoaDon(hoaDon).build());
+        }
         this.hoaDonRepository.save(hoaDon);
     }
 
@@ -206,6 +220,50 @@ public class BanHangServiceImpl implements BanHangService {
         this.hoaDonRepository.delete(hoaDon);
     }
 
+    @Override
+    public List<CustomerResponse> getCustomerByInfo(String keyword) {
+        return this.khachHangRepository.findByNameOrCodeOrPhone(keyword).stream().map(khachHang -> CustomerResponse.builder()
+                .id(khachHang.getId())
+                .tenKhachHang(khachHang.getTenKhachHang())
+                .maKhachHang(khachHang.getMaKhachHang())
+                .soDienThoai(khachHang.getTaiKhoan().getSdt())
+                .build()).collect(Collectors.toList());
+    }
+
+    @Override
+    public void addCustomerToInvoice(Integer invoiceId, Integer idKhachHang) {
+        KhachHang kh = findKhachHangById(idKhachHang);
+        HoaDon hd = findHoaDonById(invoiceId);
+        if (kh != null && hd != null) {
+            DiaChi dc = kh.getDiaChi().get(0);
+            hd.setKhachHang(kh);
+            hd.setXa(dc.getXa());
+            hd.setQuan(dc.getHuyen());
+            hd.setTinh(dc.getTinh());
+            hd.setDiaChiNguoiNhan(dc.getDiaChiCuThe());
+            hd.setSdtNguoiNhan(kh.getTaiKhoan().getSdt());
+            hd.setTenNguoiNhan(kh.getTenKhachHang());
+            hd.setEmail(kh.getTaiKhoan().getEmail());
+            this.hoaDonRepository.save(hd);
+            log.info("Update success");
+        }
+    }
+
+    @Override
+    public void removeCustomer(Integer invoiceId) {
+        HoaDon hd = findHoaDonById(invoiceId);
+        hd.setKhachHang(null);
+        hd.setXa(null);
+        hd.setQuan(null);
+        hd.setTinh(null);
+        hd.setDiaChiNguoiNhan(null);
+        hd.setSdtNguoiNhan(null);
+        hd.setTenNguoiNhan(null);
+        hd.setEmail(null);
+        this.hoaDonRepository.save(hd);
+        log.info("Remove success");
+    }
+
     private HoaDonChiTiet findHoaDonChiTietById(int id) {
         return this.hoaDonChiTietRepository.findById(id).orElseThrow(() -> new EntityNotFound("Không tìm thấy hóa đơn!"));
     }
@@ -216,5 +274,9 @@ public class BanHangServiceImpl implements BanHangService {
 
     private SanPhamChiTiet findSanPhamChiTietById(Integer id) {
         return this.sanPhamChiTietRepository.findById(id).orElseThrow(() -> new EntityNotFound("Không tìm sản phẩm chi tiet!"));
+    }
+
+    private KhachHang findKhachHangById(Integer id) {
+        return this.khachHangRepository.findById(id).orElseThrow(() -> new EntityNotFound("Không tìm khách hàng!"));
     }
 }

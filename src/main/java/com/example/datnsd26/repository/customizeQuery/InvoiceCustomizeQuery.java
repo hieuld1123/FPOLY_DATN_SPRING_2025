@@ -28,14 +28,14 @@ public class InvoiceCustomizeQuery {
     private static final String LIKE_FORMAT = "%%%s%%";
 
     public InvoicePageResponse getInvoices(InvoiceParamRequest request) {
-        //log.info("pageable {} {} date {} {} id {} status {}", request.getCurrentPage(), request.getPageSize(), request.getStartDate(), request.getEndDate(), request.getInvoiceCode(), request.getStatus());
+        log.info("GET/hoa-don sort {}", request.getSortDirection());
         if (request.getCurrentPage() < 1) {
             request.setCurrentPage(1);
         }
         StringBuilder sql = new StringBuilder("SELECT i FROM HoaDon i");
 
         if (StringUtils.hasLength(request.getStatus())) {
-            sql.append(" WHERE i.trangThai = :status");
+            sql.append(" WHERE i.trangThai like :status");
         } else {
             sql.append(" WHERE i.trangThai not like :status");
         }
@@ -56,13 +56,13 @@ public class InvoiceCustomizeQuery {
             sql.append(" AND (i.tenNguoiNhan LIKE :customer OR i.sdtNguoiNhan LIKE :customer)");
         }
 
-        sql.append(" ORDER BY i.ngayTao ASC");
+        sql.append(String.format(" ORDER BY i.ngayTao %s", request.getSortDirection().equalsIgnoreCase("desc") ? "desc" : "asc"));
 
         TypedQuery<HoaDon> query = entityManager.createQuery(sql.toString(), HoaDon.class);
         if (StringUtils.hasLength(request.getStatus())) {
             query.setParameter("status", String.format(LIKE_FORMAT, request.getStatus()));
-        }else{
-            query.setParameter("status", String.format(LIKE_FORMAT, "Đang chờ"));
+        } else {
+            query.setParameter("status", String.format(LIKE_FORMAT, "Đang xử lý"));
         }
 
         if (StringUtils.hasLength(request.getInvoiceCode())) {
@@ -84,9 +84,10 @@ public class InvoiceCustomizeQuery {
         query.setFirstResult((request.getCurrentPage() - 1) * request.getPageSize());
         query.setMaxResults(request.getPageSize());
 
+
         List<InvoiceResponse> invoices = query.getResultList().stream().map(i -> InvoiceResponse.builder()
                 .id(i.getMaHoaDon())
-                .customer(i.getKhachHang1() == null ? null : i.getKhachHang1().getHoTen())
+                .customer((i.getKhachHang() == null) ? (i.getTenNguoiNhan() == null ? "Khách lẻ" : i.getTenNguoiNhan()) : i.getKhachHang().getTenKhachHang())
                 .purchaseMethod(i.getHinhThucMuaHang())
                 .creationDate(i.getNgayTao())
                 .status(i.getTrangThai())
@@ -99,7 +100,7 @@ public class InvoiceCustomizeQuery {
         // TODO count invoices
         StringBuilder countPage = new StringBuilder("SELECT count(i) FROM HoaDon i");
         if (StringUtils.hasLength(request.getStatus())) {
-            countPage.append(" WHERE i.trangThai = :status");
+            countPage.append(" WHERE i.trangThai like :status");
         } else {
             countPage.append(" WHERE i.trangThai not like :status");
         }
@@ -124,7 +125,7 @@ public class InvoiceCustomizeQuery {
         if (StringUtils.hasLength(request.getStatus())) {
             countQuery.setParameter("status", String.format(LIKE_FORMAT, request.getStatus()));
         } else {
-            countQuery.setParameter("status", String.format(LIKE_FORMAT, "Đang chờ"));
+            countQuery.setParameter("status", String.format(LIKE_FORMAT, "Đang xử lý"));
         }
 
         if (StringUtils.hasLength(request.getInvoiceCode())) {

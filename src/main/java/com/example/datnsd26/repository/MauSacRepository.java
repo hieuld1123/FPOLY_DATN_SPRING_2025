@@ -35,4 +35,8 @@ public interface MauSacRepository extends JpaRepository<MauSac, Integer> {
     @Query("UPDATE MauSac ms SET ms.trangThai = false WHERE ms.id = :id")
     void updateTrangThaiToFalseById(Integer id);
 
+    @Query("SELECT DISTINCT spct.mauSac FROM SanPhamChiTiet spct WHERE spct.sanPham.id = :idSanPham")
+    List<MauSac> findBySanPham_Id(@Param("idSanPham") Integer idSanPham);
+
+
 }

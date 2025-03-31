@@ -41,11 +41,11 @@
                             <div class="col-md-3 col-sm-6 mb-3">
                                 <label class="form-label">Trạng thái</label>
                                 <select class="form-select" id="filter-status">
-                                    <option value="All">Tất cả</option>
                                     <option value="Chờ xác nhận">Chờ xác nhận</option>
-                                    <option value="Đang xử lý">Đang xử lý</option>
                                     <option value="Đã xác nhận">Đã xác nhận</option>
+                                    <option value="Đã giao cho đơn vị vận chuyển">Đã giao cho đơn vị vận chuyển</option>
                                     <option value="Hoàn thành">Hoàn thành</option>
+                                    <option value="">Tất cả</option>
                                 </select>
                             </div>
                         </div>
@@ -87,7 +87,13 @@
                                     <th>Mã</th>
                                     <th>Khách hàng</th>
                                     <th>Hình thức mua hàng</th>
-                                    <th>Ngày tạo</th>
+                                    <!--                                    <th>Ngày tạo</th>-->
+                                    <th>
+                                        <a href="#" id="sort-creation-date" class="sort-link" data-sort="creationDate">
+                                            Ngày tạo
+                                            <span class="sort-icon">↕</span>
+                                        </a>
+                                    </th>
                                     <th>Trạng thái</th>
                                     <th>Giá trị</th>
                                 </tr>

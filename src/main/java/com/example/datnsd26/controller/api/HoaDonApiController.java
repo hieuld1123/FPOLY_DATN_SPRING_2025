@@ -22,4 +22,49 @@ public class HoaDonApiController {
                 .data(hoaDonService.getInvoices(request))
                 .build();
     }
+
+    @GetMapping("/{code}")
+    public ApiResponse getInvoice(@PathVariable String code) {
+        return ApiResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Hóa đơn")
+                .data(hoaDonService.getInvoice(code))
+                .build();
+    }
+
+    @PatchMapping("/confirm/{code}")
+    public ApiResponse confirmInvoice(@PathVariable String code) {
+        hoaDonService.confirmInvoice(code);
+        return ApiResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Xác nhận đơn hàng")
+                .build();
+    }
+
+    @PatchMapping("/delivery/{code}")
+    public ApiResponse delivery(@PathVariable String code) {
+        hoaDonService.confirmDelivery(code);
+        return ApiResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Xác nhận vận chuyển")
+                .build();
+    }
+
+    @PatchMapping("/cancel/{code}")
+    public ApiResponse cancel(@PathVariable String code) {
+        hoaDonService.cancel(code);
+        return ApiResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Xác nhận vận chuyển")
+                .build();
+    }
+
+    @PatchMapping("/payment/{code}")
+    public ApiResponse payment(@PathVariable String code) {
+        hoaDonService.payment(code);
+        return ApiResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Thanh toán")
+                .build();
+    }
 }

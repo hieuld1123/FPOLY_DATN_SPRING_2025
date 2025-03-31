@@ -4,7 +4,7 @@ spring:
   datasource:
     url: ${MSSQL_URL:jdbc:sqlserver://localhost;encrypt=true;trustServerCertificate=true;databaseName=DEMO_SECURITY;sendTimeAsDatetime=true;useUnicode=true;characterEncoding=UTF-8}
     username: ${MSSQL_USERNAME:sa}
-    password: ${MSSQL_PASSWORD:123456}
+    password: ${MSSQL_PASSWORD:sa123}
   jpa:
     show-sql: true
     hibernate:
@@ -22,3 +22,7 @@ spring:
           auth: true
           starttls:
             enable: true
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME:DUMMY_VALUE}
+  api-secret: ${CLOUDINARY_API_SECRET:DUMMY_VALUE}
+  api-key: ${CLOUDINARY_API_KEY:DUMMY_VALUE}

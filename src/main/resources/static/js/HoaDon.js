@@ -1,11 +1,13 @@
 let currentPage = 1;
 let pageSize = 5;
 let totalPages = 0;
+let sortField = 'creationDate';
+let sortDirection = 'asc';
 let filterParams = {
     invoiceCode: '',
     startDate: '',
     endDate: '',
-    status: 'All',
+    status: 'Chờ xác nhận',
     customer: ''
 };
 
@@ -25,11 +27,13 @@ function fetchInvoices(page, size, params) {
     const queryParams = new URLSearchParams({
         currentPage: page,
         pageSize: size,
-        invoiceCode: params.invoiceCode,
+        invoiceCode: params.invoiceCode.trim(),
         startDate: formattedStartDate,
         endDate: formattedEndDate,
-        status: params.status === 'All' ? '' : params.status,
-        customer: params.customer
+        status: params.status,
+        customer: params.customer,
+        sortBy: sortField,
+        sortDirection: sortDirection
     }).toString();
 
     $.ajax({
@@ -58,13 +62,20 @@ function loadInvoices(data, page, total) {
     data.forEach(invoice => {
         const customerName = invoice.customer === null ? "Khách lẻ" : invoice.customer;
         const formattedValue = invoice.value.toLocaleString('vi-VN') + " VNĐ";
-        const creationDate = new Date(invoice.creationDate).toLocaleDateString('vi-VN');
+        // const creationDate = new Date(invoice.creationDate).toLocaleDateString('vi-VN');
+        const creationDate = new Date(invoice.creationDate);
+        const formattedDate = `${creationDate.getDate().toString().padStart(2, '0')}/` +
+            `${(creationDate.getMonth() + 1).toString().padStart(2, '0')}/` +
+            `${creationDate.getFullYear()} ` +
+            `${creationDate.getHours().toString().padStart(2, '0')}:` +
+            `${creationDate.getMinutes().toString().padStart(2, '0')}:` +
+            `${creationDate.getSeconds().toString().padStart(2, '0')}`;
         const row = `
                 <tr>
                     <td><a href="/hoa-don/${invoice.id}">${invoice.id}</a></td>
                     <td>${customerName}</td>
                     <td>${invoice.purchaseMethod}</td>
-                    <td>${creationDate}</td>
+                    <td>${formattedDate}</td>
                     <td>${invoice.status}</td>
                     <td>${formattedValue}</td>
                 </tr>
@@ -75,6 +86,15 @@ function loadInvoices(data, page, total) {
     currentPage = page;
     totalPages = total;
     updatePagination(totalPages, page);
+}
+
+function updateSortIcons() {
+    const sortIcon = $("#sort-creation-date .sort-icon");
+    if (sortField === 'creationDate') {
+        sortIcon.text(sortDirection === 'asc' ? '↑' : '↓');
+    } else {
+        sortIcon.text('↕');
+    }
 }
 
 // Handle pagination
@@ -156,12 +176,12 @@ function applyFilters() {
     filterParams.customer = $("#filter-customer").val();
 
     currentPage = 1; // Return to the first page after filtering
-    fetchInvoices(currentPage, pageSize, filterParams);
+    fetchInvoices(currentPage, pageSize, filterParams, sortField, sortDirection);
 }
 
 // Download data for the first time and process events
 $(document).ready(function () {
-    fetchInvoices(currentPage, pageSize, filterParams);
+    fetchInvoices(currentPage, pageSize, filterParams, sortField, sortDirection);
 
     // Apply the filter
     $("#apply-filter").click(function () {
@@ -172,7 +192,7 @@ $(document).ready(function () {
     $("#page-size-select").change(function () {
         pageSize = parseInt($(this).val());
         currentPage = 1;
-        fetchInvoices(currentPage, pageSize, filterParams);
+        fetchInvoices(currentPage, pageSize, filterParams, sortField, sortDirection);
     });
 
     // Transfer
@@ -181,7 +201,20 @@ $(document).ready(function () {
         const page = $(this).data("page");
         if (page && page >= 1 && page <= totalPages) {
             currentPage = page;
-            fetchInvoices(currentPage, pageSize, filterParams);
+            fetchInvoices(currentPage, pageSize, filterParams, sortField, sortDirection);
         }
+    });
+    $("#sort-creation-date").click(function (e) {
+        e.preventDefault();
+        if (sortField === 'creationDate') {
+            // Nếu đã sort theo creationDate thì đổi hướng
+            sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            // Nếu chưa sort theo creationDate thì set mặc định desc
+            sortField = 'creationDate';
+            sortDirection = 'desc';
+        }
+        currentPage = 1;
+        fetchInvoices(currentPage, pageSize, filterParams, sortField, sortDirection);
     });
 });

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết sản phẩm</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+<div th:replace="components/navbar :: navbar"></div>
+<div class="page-wrapper">
+    <div class="container-xl">
+        <div class="row my-5">
+            <div class="col-5 px-2">
+                <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div th:each="anh, iterStat : ${spct.hinhAnh}" class="carousel-item"
+                             th:classappend="${iterStat.first} ? 'active'"
+                             th:attr="data-bs-interval=${iterStat.first} ? '3000' : '2000'">
+                            <img th:src="${anh.tenAnh}" class="d-block w-100" alt="Ảnh sản phẩm">
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval"
+                            data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval"
+                            data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-7 px-2">
+                <!-- Form chọn màu sắc & kích cỡ (Chỉ dùng để reload trang) -->
+                <form method="GET" action="/shop/product/details">
+                    <input type="hidden" name="idSanPham" th:value="${spct.sanPham.id}" />
+                    <h1 th:text="${spct.sanPham.tenSanPham}" class="mb-3 fs-1 text-uppercase"></h1>
+                    <p class="mb-3">Mã sản phẩm: <span th:text="${spct.maSanPhamChiTiet}" class="fw-bold"></span></p>
+
+                    <div class="mb-3">
+                            <span th:text="${#numbers.formatDecimal(spct.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')} + ' VND'"
+                                  class="text-orange fs-1 fw-bold"></span>
+                        <del th:text="${#numbers.formatDecimal(spct.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VND'"></del>
+                    </div>
+                    <hr />
+
+                    <!-- Chọn màu sắc -->
+                    <div class="mb-3">
+                        <label class="form-label">Màu sắc:</label>
+                        <div id="colorOptions" class="row g-2">
+                            <div class="col-auto" th:each="mau : ${danhSachMauSac}">
+                                <label class="form-colorinput">
+                                    <input type="radio" name="mauSac" th:value="${mau.id}"
+                                           class="form-colorinput-input" th:checked="${spct.mauSac.id == mau.id}"
+                                           onchange="this.form.submit()" />
+                                    <span class="form-colorinput-color rounded-circle"
+                                          th:style="'background-color:' + ${mau.ten}"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+
+                    <!-- Chọn kích cỡ -->
+                    <div class="mb-3">
+                        <label class="form-label">Kích cỡ:</label>
+                        <div class="form-selectgroup">
+                            <label th:each="kc : ${danhSachKichCo}" class="form-selectgroup-item"
+                                   th:classappend="${!kichCoTonTai.contains(kc.id)} ? 'text-decoration-line-through text-secondary'">
+                                <input type="radio" name="kichCo" th:value="${kc.id}" class="form-selectgroup-input"
+                                       th:checked="${spct.kichCo.id == kc.id}"
+                                       th:disabled="${!kichCoTonTai.contains(kc.id)}" onchange="this.form.submit()" />
+                                <span class="form-selectgroup-label" th:text="${kc.ten}"></span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+
+                <hr />
+
+                <!-- Form thêm vào giỏ hàng -->
+                <form id="addToCartForm" th:action="@{/cart/add}" method="POST">
+                    <input type="hidden" name="productId" th:value="${spct.id}" />
+                    <div class="mb-3">
+                        <label class="form-label">Số lượng: </label>
+                        <input type="number" class="form-control" id="inputQuantity" name="quantity" min="1" required />
+                        <small id="quantityWarning" class="text-danger d-none">Vui lòng nhập số hợp lệ</small>
+                    </div>
+                    <button type="submit" class="btn btn-orange btn-lg">Thêm vào giỏ hàng</button>
+                </form>
+
+                <hr />
+                <div class="mb-3">
+                    <label class="form-label">Mô tả:</label>
+                    <p>Thương hiệu: <span th:text="${spct.thuongHieu.ten}"></span></p>
+                    <p>Chất liệu: <span th:text="${spct.chatLieu.ten}"></span></p>
+                    <p>Loại đế giày: <span th:text="${spct.deGiay.ten}"></span></p>
+                    <p th:text="${spct.moTa}"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/js/tabler.min.js"></script>
+<script>
+    // document.getElementById("addToCartForm").addEventListener("submit", function(event) {
+    //     event.preventDefault(); // Ngăn form submit mặc định
+    //
+    //     let form = this;
+    //     let formData = new FormData(form);
+    //     let quantityInput = document.getElementById("inputQuantity");
+    //     let warningMessage = document.getElementById("quantityWarning");
+    //     let maxQuantity = [[${spct.soLuong}]]; // Lấy số lượng từ Thymeleaf
+    //
+    //     let quantity = parseInt(quantityInput.value);
+    //
+    //     if (isNaN(quantity) || quantity < 1) {
+    //         warningMessage.innerText = "Số lượng phải lớn hơn 0.";
+    //         warningMessage.classList.remove("d-none");
+    //         return;
+    //     }
+    //
+    //     if (quantity > maxQuantity) {
+    //         warningMessage.innerText = "Hiện sản phẩm chỉ còn " + maxQuantity + " sản phẩm.";
+    //         warningMessage.classList.remove("d-none");
+    //         return;
+    //     }
+    //
+    //     warningMessage.classList.add("d-none"); // Ẩn cảnh báo nếu hợp lệ
+    //
+    //     fetch(form.action, {
+    //         method: "POST",
+    //         body: formData
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         if (data.success) {
+    //             Swal.fire({
+    //                 title: "Thành công!",
+    //                 text: "Sản phẩm đã được thêm vào giỏ hàng.",
+    //                 icon: "success",
+    //                 confirmButtonColor: "#ff6600"
+    //             });
+    //         } else {
+    //             Swal.fire({
+    //                 title: "Lỗi!",
+    //                 text: data.message,
+    //                 icon: "error",
+    //                 confirmButtonColor: "#d33"
+    //             });
+    //         }
+    //     })
+    //     .catch(error => {
+    //         console.error("Error:", error);
+    //         Swal.fire({
+    //             title: "Lỗi!",
+    //             text: "Đã xảy ra lỗi khi thêm vào giỏ hàng.",
+    //             icon: "error",
+    //             confirmButtonColor: "#d33"
+    //         });
+    //     });
+    // });
+</script>
+</body>
+
+</html>

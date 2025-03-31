@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(data => {
             data.forEach(province => {
                 let option = document.createElement("option");
-                option.value = province.code; // Sử dụng code thay vì name
+                option.value = province.name; // Lưu bằng tên thay vì code
                 option.textContent = province.name;
                 provinceSelect.appendChild(option);
             });
@@ -20,24 +20,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Xử lý khi chọn tỉnh/thành
     provinceSelect.addEventListener("change", function () {
-        let selectedProvinceCode = this.value;
+        let selectedProvinceName = this.value;
         districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
         wardSelect.innerHTML = '<option value="">Chọn xã/phường</option>';
         districtSelect.disabled = true;
         wardSelect.disabled = true;
 
-        if (selectedProvinceCode) {
+        if (selectedProvinceName) {
             let provinceData = JSON.parse(localStorage.getItem("provinceData"));
-            let selectedProvince = provinceData.find(p => p.code == selectedProvinceCode);
+            let selectedProvince = provinceData.find(p => p.name === selectedProvinceName);
 
             if (selectedProvince) {
                 selectedProvince.districts.forEach(district => {
                     let option = document.createElement("option");
-                    option.value = district.code;
+                    option.value = district.name;
                     option.textContent = district.name;
                     districtSelect.appendChild(option);
                 });
-
                 districtSelect.disabled = false;
             }
         }
@@ -45,18 +44,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Xử lý khi chọn quận/huyện
     districtSelect.addEventListener("change", function () {
-        let selectedDistrictCode = this.value;
+        let selectedDistrictName = this.value;
         wardSelect.innerHTML = '<option value="">Chọn xã/phường</option>';
         wardSelect.disabled = true;
 
-        if (selectedDistrictCode) {
+        if (selectedDistrictName) {
             let provinceData = JSON.parse(localStorage.getItem("provinceData"));
             let selectedProvince = provinceData.find(p =>
-                p.districts.some(d => d.code == selectedDistrictCode)
+                p.districts.some(d => d.name === selectedDistrictName)
             );
 
             if (selectedProvince) {
-                let selectedDistrict = selectedProvince.districts.find(d => d.code == selectedDistrictCode);
+                let selectedDistrict = selectedProvince.districts.find(d => d.name === selectedDistrictName);
                 if (selectedDistrict) {
                     selectedDistrict.wards.forEach(ward => {
                         let option = document.createElement("option");
@@ -64,7 +63,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         option.textContent = ward.name;
                         wardSelect.appendChild(option);
                     });
-
                     wardSelect.disabled = false;
                 }
             }
