@@ -96,7 +96,7 @@
             <artifactId>javase</artifactId>
             <version>3.5.2</version>
         </dependency>
-<!--        Cloudinary-->
+        <!--        Cloudinary-->
         <dependency>
             <groupId>com.cloudinary</groupId>
             <artifactId>cloudinary-http5</artifactId>
