@@ -21,7 +21,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/shop/**", "/api/**")) // Disable CSRF if using REST API
+                        .ignoringRequestMatchers("/shop/**", "/api/**", "/san-pham/**")) // Disable CSRF if using REST API
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/shop/**", "/error/**", "/**", "/api/**").permitAll()  // Public access
                         .requestMatchers("/admin/**").hasAnyRole("ADMIN", "EMPLOYEE")  // Requires authentication

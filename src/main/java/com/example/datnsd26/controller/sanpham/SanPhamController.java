@@ -180,7 +180,7 @@ public class SanPhamController {
         return "admin/qlsanpham";
     }
 
-    @PostMapping("/addProduct")
+    @PostMapping("san-pham/addProduct")
     public String addProduct(@RequestParam(defaultValue = "0") int p, Model model,
                              @RequestParam Integer tensp,
                              @RequestParam String mota,
