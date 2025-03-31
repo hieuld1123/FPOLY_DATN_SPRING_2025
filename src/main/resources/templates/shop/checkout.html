@@ -1,176 +1,168 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css" />
 </head>
 
 <body>
-    <!DOCTYPE html>
-    <html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<div class="">
+    <div th:replace="components/navbar :: navbar"></div>
+    <div class="container py-5">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Thanh toán</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css" />
-    </head>
+        <h2>Thanh toán</h2>
+        <div class="row">
+            <div class="col-6">
+                <div class="card cart-summary">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Thông tin giao hàng</h5>
+                        <p th:if="${errorMessage}" class="text-danger" th:text="${errorMessage}"></p>
+                        <form th:action="@{/place-order}" method="post" th:object="${hoaDonBinhRequest}">
+                            <div class="mb-3">
+                                <label class="form-label">Họ và tên:</label>
+                                <input th:field="*{tenNguoiNhan}" type="text" class="form-control">
+                                <small th:errors="*{tenNguoiNhan}" class="text-danger"></small>
+                            </div>
 
-    <body>
-        <div th:replace="components/navbar :: navbar"></div>
-        <div class="container py-5">
+                            <div class="mb-3">
+                                <label class="form-label">Số điện thoại:</label>
+                                <input th:field="*{sdtNguoiNhan}" type="text" class="form-control">
+                                <small th:errors="*{sdtNguoiNhan}" class="text-danger"></small>
+                            </div>
 
-            <h2>Thanh toán</h2>
-            <div class="row">
-                <div class="col-6">
-                    <div class="card cart-summary">
-                        <div class="card-body">
-                            <h5 class="card-title mb-4">Thông tin giao hàng</h5>
-                            <p th:if="${errorMessage}" class="text-danger" th:text="${errorMessage}"></p>
-                            <form th:action="@{/shop/place-order}" method="post" th:object="${hoaDonBinhRequest}">
-                                <div class="mb-3">
-                                    <label class="form-label">Họ và tên:</label>
-                                    <input th:field="*{tenNguoiNhan}" type="text" class="form-control">
-                                    <small th:errors="*{tenNguoiNhan}" class="text-danger"></small>
-                                </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email:</label>
+                                <input th:field="*{email}" type="text" class="form-control">
+                                <small th:errors="*{email}" class="text-danger"></small>
+                            </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label">Số điện thoại:</label>
-                                    <input th:field="*{sdtNguoiNhan}" type="text" class="form-control">
-                                    <small th:errors="*{sdtNguoiNhan}" class="text-danger"></small>
-                                </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tỉnh/Thành phố:</label>
+                                <select th:field="*{tinh}" id="province" class="form-select">
+                                    <option value="">Chọn tỉnh/thành</option>
+                                </select>
+                                <small th:errors="*{tinh}" class="text-danger"></small>
+                            </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label">Email:</label>
-                                    <input th:field="*{email}" type="text" class="form-control">
-                                    <small th:errors="*{email}" class="text-danger"></small>
-                                </div>
+                            <div class="mb-3">
+                                <label class="form-label">Quận/Huyện:</label>
+                                <select th:field="*{quan}" id="district" class="form-select" disabled>
+                                    <option value="">Chọn quận/huyện</option>
+                                </select>
+                                <small th:errors="*{quan}" class="text-danger"></small>
+                            </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label">Tỉnh/Thành phố:</label>
-                                    <select th:field="*{tinh}" id="province" class="form-select">
-                                        <option value="">Chọn tỉnh/thành</option>
-                                    </select>
-                                    <small th:errors="*{tinh}" class="text-danger"></small>
-                                </div>
+                            <div class="mb-3">
+                                <label class="form-label">Xã/Phường:</label>
+                                <select th:field="*{xa}" id="ward" class="form-select" disabled>
+                                    <option value="">Chọn xã/phường</option>
+                                </select>
+                                <small th:errors="*{xa}" class="text-danger"></small>
+                            </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label">Quận/Huyện:</label>
-                                    <select th:field="*{quan}" id="district" class="form-select" disabled>
-                                        <option value="">Chọn quận/huyện</option>
-                                    </select>
-                                    <small th:errors="*{quan}" class="text-danger"></small>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Xã/Phường:</label>
-                                    <select th:field="*{xa}" id="ward" class="form-select" disabled>
-                                        <option value="">Chọn xã/phường</option>
-                                    </select>
-                                    <small th:errors="*{xa}" class="text-danger"></small>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Địa chỉ cụ thể:</label>
-                                    <input th:field="*{diaChiNguoiNhan}" type="text" class="form-select">
-                                    <small th:errors="*{diaChiNguoiNhan}" class="text-danger"></small>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Ghi chu</label>
-                                    <textarea th:field="*{ghiChu}" class="form-control" rows="3"></textarea>
-                                </div>
-                                <div class="mb-3 form-selectgroup">
-                                    Thanh toán khi nhận hàng
-                                </div>
-                                <div class="mb-3">
-                                    <button type="submit" class="btn btn-primary">Đặt hàng</button>
-                                </div>
-                            </form>
-                        </div>
+                            <div class="mb-3">
+                                <label class="form-label">Địa chỉ cụ thể:</label>
+                                <input th:field="*{diaChiNguoiNhan}" type="text" class="form-select">
+                                <small th:errors="*{diaChiNguoiNhan}" class="text-danger"></small>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Ghi chu</label>
+                                <textarea th:field="*{ghiChu}" class="form-control" rows="3"></textarea>
+                            </div>
+                            <div class="mb-3 form-selectgroup">
+                                Thanh toán khi nhận hàng
+                            </div>
+                            <div class="mb-3">
+                                <button type="submit" class="btn btn-primary">Đặt hàng</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-                <div class="col-6">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <div class="row cart-item mb-3" th:each="item : ${cart}">
-                                <div class="col-3">
-                                    <img src="" alt="Product 1" class="img-fluid rounded" />
-                                </div>
-                                <div class="col-6">
-                                    <h5 class="card-title" th:text="${item.sanPhamChiTiet.sanPham.tenSanPham}"></h5>
-                                    <p class="text-muted">
-                                        Giá:
-                                        <span
+            </div>
+            <div class="col-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row cart-item mb-3" th:each="item : ${cart}">
+                            <div class="col-3">
+                                <img src="" alt="Product 1" class="img-fluid rounded" />
+                            </div>
+                            <div class="col-6">
+                                <h5 class="card-title" th:text="${item.sanPhamChiTiet.sanPham.tenSanPham}"></h5>
+                                <p class="text-muted">
+                                    Giá:
+                                    <span
                                             th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
-                                    </p>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <span class="fw-bold">Size: <span th:text="${item.sanPhamChiTiet.kichCo.ten}"></span></span>
-                                        </div>
-                                        <div class="col-6 d-flex flex-row">
-                                            <!-- Số lượng hiển thị -->
-                                            <span class="form-label fw-bold">So luong: <span
-                                                    th:text="${item.soLuong}"></span></span>
-                                        </div>
+                                </p>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <span class="fw-bold">Size: <span th:text="${item.sanPhamChiTiet.kichCo.ten}"></span></span>
+                                    </div>
+                                    <div class="col-6 d-flex flex-row">
+                                        <!-- Số lượng hiển thị -->
+                                        <span class="form-label fw-bold">So luong: <span
+                                                th:text="${item.soLuong}"></span></span>
                                     </div>
                                 </div>
-                                <div class="col-md-3 text-end">
-                                    <p class="fw-bold">
-                                        <span th:id="'total-price-' + ${item.sanPhamChiTiet.id}"
-                                            th:data-total-price="${item.soLuong * item.sanPhamChiTiet.giaBanSauGiam}"
-                                            th:text="${#numbers.formatDecimal(item.soLuong * item.sanPhamChiTiet.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')}"></span>
-                                        VND
-                                    </p>
-                                </div>
                             </div>
-                            <hr />
+                            <div class="col-md-3 text-end">
+                                <p class="fw-bold">
+                                        <span th:id="'total-price-' + ${item.sanPhamChiTiet.id}"
+                                              th:data-total-price="${item.soLuong * item.sanPhamChiTiet.giaBanSauGiam}"
+                                              th:text="${#numbers.formatDecimal(item.soLuong * item.sanPhamChiTiet.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')}"></span>
+                                    VND
+                                </p>
+                            </div>
                         </div>
+                        <hr />
                     </div>
+                </div>
 
-                    <!-- Hiển thị tổng tiền -->
-                    <div class="card cart-summary">
-                        <div class="card-body">
-                            <h5 class="card-title mb-4">Order Summary</h5>
-                            <div class="d-flex justify-content-between mb-3">
-                                <span>Tạm tính</span>
-                                <span>
+                <!-- Hiển thị tổng tiền -->
+                <div class="card cart-summary">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Order Summary</h5>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Tạm tính</span>
+                            <span>
                                     <span class="cart-total-price" th:data-total-price="${tongTamTinh}"
-                                        th:text="${#numbers.formatDecimal(tongTamTinh, 0, 'COMMA', 0, 'POINT')}"></span>
+                                          th:text="${#numbers.formatDecimal(tongTamTinh, 0, 'COMMA', 0, 'POINT')}"></span>
                                     VND
                                 </span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-3">
-                                <span>Phí vận chuyển</span>
-                                <span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Phí vận chuyển</span>
+                            <span>
                                     <span class="cart-total-price"
-                                        th:text="${tongTamTinh > 1000000? '0' : '30.000'}"></span>
+                                          th:text="${tongTamTinh > 1000000? '0' : '30.000'}"></span>
                                     <span> VND</span>
                                 </span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-3">
-                                <span>Giảm giá</span>
-                                <span>0<span> VND</span></span>
-                            </div>
-                            <hr />
-                            <div class="d-flex justify-content-between mb-4">
-                                <strong>Tạm tính</strong>
-                                <strong>
-                                    <span class="cart-total-price" th:data-total-price="${tongTamTinh}"
-                                        th:text="${#numbers.formatDecimal(tongTamTinh, 0, 'COMMA', 0, 'POINT')}"></span>
-                                    VND
-                                </strong>
-                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Giảm giá</span>
+                            <span>0<span> VND</span></span>
+                        </div>
+                        <hr />
+                        <div class="d-flex justify-content-between mb-4">
+                            <strong>Tạm tính</strong>
+                            <strong>
+                                    <span class="cart-total-price"
+                                          th:text="${#numbers.formatDecimal(tongTamTinh + (tongTamTinh >= 1000000 ? 0 : 30000), 0, 'COMMA', 0, 'POINT')}"></span>
+                                VND
+                            </strong>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Form nhập thông tin đặt hàng -->
-
         </div>
 
-        <script src="/js/checkout.js"></script>
-    </body>
+        <!-- Form nhập thông tin đặt hàng -->
 
-    </html>
+    </div>
+</div>
+
+        <script src="/js/checkout.js"></script>
+</body>
+</html>
