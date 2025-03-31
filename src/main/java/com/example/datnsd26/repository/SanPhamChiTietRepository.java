@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -118,5 +119,28 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
 
     Page<SanPhamChiTiet> findAllBySoLuongGreaterThan(Integer soluong, Pageable p);
 
+
+
+
+    @Query("SELECT s FROM SanPhamChiTiet s WHERE NOT EXISTS " +
+            "(SELECT k FROM KhuyenMaiChitiet k WHERE k.sanPhamChiTiet = s " +
+            "AND k.khuyenMai.trangThai = 1 AND k.khuyenMai.thoiGianBatDau <= :now " +
+            "AND k.khuyenMai.thoiGianKetThuc >= :now) " +
+            "AND (LOWER(s.sanPham.tenSanPham) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+            "OR LOWER(s.maSanPhamChiTiet) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
+    Page<SanPhamChiTiet> findAvailableProductsWithSearch(
+            @Param("searchTerm") String searchTerm,
+            @Param("now") LocalDateTime now,
+            Pageable pageable
+    );
+
+    @Query("FROM SanPhamChiTiet sp WHERE sp.soLuong > 0")
+    Page<SanPhamChiTiet> findAvailableProducts(Pageable pageable);
+
+    @Query("SELECT sp FROM SanPhamChiTiet sp WHERE sp.sanPham IS NOT NULL AND LOWER(sp.sanPham.tenSanPham) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    Page<SanPhamChiTiet> findByTenSanPham(@Param("keyword") String keyword, Pageable pageable);
+
+
+    Page<SanPhamChiTiet> findAll(Pageable pageable);
 
 }
