@@ -66,9 +66,7 @@ const handlePayment = async () => {
   const payload = {
     invoiceId: formData.invoiceId,
     type: formData.type || "Offline",
-    ...Object.fromEntries(
-      Object.entries(formData).slice(5)
-    ),
+    ...Object.fromEntries(Object.entries(formData).slice(5)),
   };
 
   if (!confirm("Xác nhận thanh toán")) return;
@@ -194,8 +192,10 @@ const handleInvoiceChange = async (id) => {
       formData.customerId = customerId;
 
       const $customerInfo = $(".customer-info");
-        const hasCustomerInfo = true;
-      $customerInfo.html(`
+      const hasCustomerInfo = true;
+      $customerInfo
+        .html(
+          `
                 <div class="customer-name">
                     ${customer.tenKhachHang} - ${customer.soDienThoai} 
                     <span class="remove-customer-btn" style="cursor: pointer; color: #dc3545; margin-left: 5px;" data-customer-id="${customerId}">✕</span>
@@ -207,17 +207,21 @@ const handleInvoiceChange = async (id) => {
                     : '<div class="customer-address">Chưa có địa chỉ</div>'
                 }
                 <div class="add-address-btn" data-customer-id="${customerId}">Thay đổi</div>
-            `).removeClass("text-center text-start").addClass(hasCustomerInfo ? "text-start" : "text-center");
+            `
+        )
+        .removeClass("text-center text-start")
+        .addClass(hasCustomerInfo ? "text-start" : "text-center");
       // Handle remove customer
       $(document).on("click", ".remove-customer-btn", async function () {
         const customerId = $(this).data("customer-id");
         const invoiceId = formData.invoiceId;
-
-        if (!confirm("Bạn có chắc chắn muốn xóa khách hàng khỏi hóa đơn này?"))
+        if (
+          !confirm("Bạn có chắc chắn muốn xóa khách hàng khỏi hóa đơn này?")
+        ) {
           return;
+        }
 
         try {
-          // Gọi API để xóa khách hàng khỏi hóa đơn
           const response = await $.ajax({
             url: `http://localhost:8080/api/v1/ban-hang/hoa-don/${invoiceId}/remove-customer`,
             type: "DELETE",
@@ -228,10 +232,15 @@ const handleInvoiceChange = async (id) => {
           if (response.status === 204) {
             // Reset thông tin khách hàng
             const $customerInfo = $(".customer-info");
-            $customerInfo.html(`
+            $customerInfo
+              .html(
+                `
                 <img style="width: 50px" class="mt-3" src="/icon/id_card_icon.png" alt="Id Card Icon">
                 <div class="mt-3">Chưa có thông tin khách hàng</div>
-            `).removeClass("text-center text-start").addClass("text-center");
+            `
+              )
+              .removeClass("text-center text-start")
+              .addClass("text-center");
 
             formData.customer = null;
           } else {
@@ -245,10 +254,15 @@ const handleInvoiceChange = async (id) => {
     } else {
       const $customerInfo = $(".customer-info");
       const hasCustomerInfo = false;
-      $customerInfo.html(`
+      $customerInfo
+        .html(
+          `
                 <img style="width: 50px" class="mt-3" src="/icon/id_card_icon.png" alt="Id Card Icon">
                 <div class="mt-3">Chưa có thông tin khách hàng</div>
-            `).removeClass("text-center text-start").addClass(hasCustomerInfo ? "text-start" : "text-center");
+            `
+        )
+        .removeClass("text-center text-start")
+        .addClass(hasCustomerInfo ? "text-start" : "text-center");
       formData.customerId = null;
       formData.currentCustomerId = null;
     }
@@ -593,9 +607,15 @@ $(document).ready(() => {
         if (customers?.length) {
           $("#customer-suggestions")
             .html(
-              customers
-                .map(
-                  (customer) => `
+              `
+            <div class="customer-suggestion-item add-new-customer" style="font-weight: bold; color: #007bff;">
+                <div class="customer-info">
+                    <div>Thêm khách hàng mới</div>
+                </div>
+            </div>
+            ${customers
+              .map(
+                (customer) => `
                     <div class="customer-suggestion-item" data-id="${customer.id}">
                         <div class="customer-info">
                             <div>${customer.tenKhachHang}</div>
@@ -603,8 +623,9 @@ $(document).ready(() => {
                         </div>
                     </div>
                 `
-                )
-                .join("")
+              )
+              .join("")}
+        `
             )
             .show();
         } else {
@@ -650,5 +671,9 @@ $(document).ready(() => {
     $("#addAddressModal").modal("show");
   });
 
+    // Handle click on "Thêm khách hàng mới"
+    $(document).on('click', '.add-new-customer', function () {
+        $("#deliveryInfoModal").modal("show");
+    });
   loadInvoices();
 });
