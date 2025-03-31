@@ -26,9 +26,7 @@ public class ShopController {
     private final SanPhamChiTietRepository sanPhamChiTietRepository;
     private final GioHangService gioHangService;
     private final PublicSanPhamService publicSanPhamService;
-    private final SanPhamRepositoty sanPhamRepositoty;
     private final KichCoRepository kichCoRepository;
-    private final MauSacRepository mauSacRepository;
 
 
     @GetMapping("/homepage")
@@ -118,40 +116,40 @@ public class ShopController {
         return "/shop/product-details";
     }
 
-    @PostMapping("/add-to-cart")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> addToCart(@RequestParam("productId") Integer productId,
-                                                         @RequestParam("quantity") Integer quantity,
-                                                         HttpSession session) {
-        Map<String, Object> response = new HashMap<>();
-        Optional<SanPhamChiTiet> optionalProduct = sanPhamChiTietRepository.findById(productId);
-
-        if (optionalProduct.isEmpty()) {
-            response.put("success", false);
-            response.put("message", "Sản phẩm không tồn tại.");
-            return ResponseEntity.badRequest().body(response);
-        }
-
-        SanPhamChiTiet product = optionalProduct.get();
-
-        if (quantity == null || quantity < 1) {
-            response.put("success", false);
-            response.put("message", "Số lượng không hợp lệ.");
-            return ResponseEntity.badRequest().body(response);
-        }
-
-        if (quantity > product.getSoLuong()) {
-            response.put("success", false);
-            response.put("message", "Chỉ còn " + product.getSoLuong() + " sản phẩm.");
-            return ResponseEntity.badRequest().body(response);
-        }
-
-        gioHangService.addToCart(session, productId, quantity);
-
-        response.put("success", true);
-        response.put("message", "Thêm vào giỏ hàng thành công!");
-        return ResponseEntity.ok(response);
-    }
+//    @PostMapping("/add-to-cart")
+//    @ResponseBody
+//    public ResponseEntity<Map<String, Object>> addToCart(@RequestParam("productId") Integer productId,
+//                                                         @RequestParam("quantity") Integer quantity,
+//                                                         HttpSession session) {
+//        Map<String, Object> response = new HashMap<>();
+//        Optional<SanPhamChiTiet> optionalProduct = sanPhamChiTietRepository.findById(productId);
+//
+//        if (optionalProduct.isEmpty()) {
+//            response.put("success", false);
+//            response.put("message", "Sản phẩm không tồn tại.");
+//            return ResponseEntity.badRequest().body(response);
+//        }
+//
+//        SanPhamChiTiet product = optionalProduct.get();
+//
+//        if (quantity == null || quantity < 1) {
+//            response.put("success", false);
+//            response.put("message", "Số lượng không hợp lệ.");
+//            return ResponseEntity.badRequest().body(response);
+//        }
+//
+//        if (quantity > product.getSoLuong()) {
+//            response.put("success", false);
+//            response.put("message", "Chỉ còn " + product.getSoLuong() + " sản phẩm.");
+//            return ResponseEntity.badRequest().body(response);
+//        }
+//
+//        gioHangService.addToCart(session, productId, quantity);
+//
+//        response.put("success", true);
+//        response.put("message", "Thêm vào giỏ hàng thành công!");
+//        return ResponseEntity.ok(response);
+//    }
 
 
 }

@@ -2,17 +2,16 @@ package com.example.datnsd26.models;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Entity
+@ToString
 @Getter
 @Setter
-@ToString
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Entity
 @Table(name = "gio_hang")
 public class GioHang {
     @Id
@@ -20,21 +19,16 @@ public class GioHang {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "id_khach_hang", referencedColumnName = "id")
-    private KhachHang khachHang;
+    @JoinColumn(name = "id_tai_khoan", referencedColumnName = "id", nullable = true)
+    private TaiKhoan taiKhoan; // Có thể null nếu là khách vãng lai
+
+    @Column(name = "id_khach_vang_lai", unique = true, length = 36)
+    private String idKhachVangLai; // UUID nhận diện khách vãng lai
 
     @OneToMany(mappedBy = "gioHang", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<GioHangChiTiet> chiTietList = new ArrayList<>();
 
     @Column(name = "ngay_tao")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayTao;
-
-    @Column(name = "ngay_cap_nhat")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayCapNhat;
-
-    @Column(name = "trang_thai")
-    private Boolean trangThai;
-
+    private Date ngayTao = new Date();
 }
