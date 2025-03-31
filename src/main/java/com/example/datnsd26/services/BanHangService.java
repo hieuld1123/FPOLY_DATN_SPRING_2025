@@ -1,6 +1,7 @@
 package com.example.datnsd26.services;
 
 import com.example.datnsd26.controller.request.PaymentRequest;
+import com.example.datnsd26.controller.response.CustomerResponse;
 import com.example.datnsd26.controller.response.HoaDonChiTietResponse;
 import com.example.datnsd26.controller.response.HoaDonResponse;
 import com.example.datnsd26.controller.response.SanPhamResponse;
@@ -27,4 +28,10 @@ public interface BanHangService {
     void payment(PaymentRequest paymentRequest);
 
     void cancelInvoice(int invoiceId);
+
+    List<CustomerResponse> getCustomerByInfo(String keyword);
+
+    void addCustomerToInvoice(Integer invoiceId, Integer idKhachHang);
+
+    void removeCustomer(Integer invoiceId);
 }

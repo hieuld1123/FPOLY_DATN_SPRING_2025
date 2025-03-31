@@ -150,3 +150,95 @@
     min-width: 80px;
     text-align: right;
 }
+
+.address-list {
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+.address-item {
+    padding: 8px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.address-item:hover {
+    background-color: #f0f0f0;
+}
+
+.address-item.selected {
+    background-color: #e6f0fa;
+    font-weight: bold;
+}
+
+#existing-addresses {
+    display: none; /* Ẩn mặc định, chỉ hiển thị khi có địa chỉ */
+}
+
+#new-address-form {
+    margin-top: 1rem;
+}
+/*Customer*/
+.customer-suggestions {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    width: 80%;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.customer-suggestion-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.customer-suggestion-item:hover {
+    background-color: #f0f0f0;
+}
+
+.customer-suggestion-item .customer-info {
+    flex: 1;
+}
+
+.customer-suggestion-item .customer-info small {
+    display: block;
+    color: #888;
+    font-size: 12px;
+}
+
+.customer-info {
+    padding: 1rem;
+}
+
+.customer-info .customer-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #0054a6;
+}
+
+.customer-info .customer-address {
+    margin-top: 0.5rem;
+    color: #333;
+}
+
+.customer-info .add-address-btn {
+    margin-top: 0.5rem;
+    color: #0054a6;
+    cursor: pointer;
+    text-decoration: underline;
+    display: block;
+}
+
+.customer-info .add-address-btn:hover {
+    color: #003087;
+}

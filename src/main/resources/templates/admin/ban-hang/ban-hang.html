@@ -1,320 +1,532 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8"/>
+  <head>
+    <meta charset="UTF-8" />
     <title>Bán hàng</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"
+    />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" href="/css/BanHang.css">
-</head>
-<body>
-<div th:replace="~{components/admin-sidebar :: sidebar}"></div>
-<div class="page-wrapper">
-    <div class="container-xl">
+    <link rel="stylesheet" href="/css/BanHang.css" />
+  </head>
+  <body>
+    <div th:replace="~{components/admin-sidebar :: sidebar}"></div>
+    <div class="page-wrapper">
+      <div class="container-xl">
         <div class="row">
-            <div class="col-12 my-5">
-                <div class="page-pretitle">
-                    Admin
-                </div>
-                <h2 class="page-title">Bán hàng</h2>
-                <button type="button" class="btn btn-primary mt-3" id="createInvoiceBtn">
-                    <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="icon"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            stroke-width="2"
-                            stroke="currentColor"
-                            fill="none"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                    >
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                        <line x1="12" y1="5" x2="12" y2="19"/>
-                        <line x1="5" y1="12" x2="19" y2="12"/>
-                    </svg>
-                    Tạo đơn hàng
-                </button>
-            </div>
+          <div class="col-12 my-5">
+            <div class="page-pretitle">Admin</div>
+            <h2 class="page-title">Bán hàng</h2>
+            <button
+              type="button"
+              class="btn btn-primary mt-3"
+              id="createInvoiceBtn"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="icon"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Tạo đơn hàng
+            </button>
+          </div>
         </div>
 
         <div class="row row-equal-height">
-            <div class="col-8">
-                <div class="card equal-height">
-                    <div class="card-header">
-                        <h3 class="card-title">Thông tin khách hàng</h3>
-                    </div>
-                    <div class="card-body border-bottom py-3">
-                        <div class="input-icon mb-3">
-                            <span class="input-icon-addon">
-                              <svg
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      class="icon"
-                                      width="24"
-                                      height="24"
-                                      viewBox="0 0 24 24"
-                                      stroke-width="2"
-                                      stroke="currentColor"
-                                      fill="none"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                              >
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                <circle cx="10" cy="10" r="7"/>
-                                <line x1="21" y1="21" x2="15" y2="15"/>
-                              </svg>
-                            </span>
-                            <input type="text" class="form-control"
-                                   placeholder="Tìm theo tên, sđt, mã khách hàng…" disabled/>
-                        </div>
-                        <div class="text-center text-secondary p-3">
-                            <img style="width: 50px" class="mt-3" src="/icon/id_card_icon.png" alt="Id Card Icon">
-                            <div class="mt-3">Chưa có thông tin khách hàng</div>
-                        </div>
-                    </div>
+          <div class="col-8">
+            <div class="card equal-height">
+              <div class="card-header">
+                <h3 class="card-title">Thông tin khách hàng</h3>
+              </div>
+              <!-- Trong phần "Thông tin khách hàng" -->
+              <div class="card-body border-bottom py-3">
+                <div class="input-icon mb-3">
+                  <span class="input-icon-addon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="icon"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                      fill="none"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <circle cx="10" cy="10" r="7" />
+                      <line x1="21" y1="21" x2="15" y2="15" />
+                    </svg>
+                  </span>
+                  <input
+                    type="text"
+                    id="search-customer"
+                    class="form-control"
+                    placeholder="Tìm theo tên, sđt, mã khách hàng…"
+                    disabled
+                  />
                 </div>
+                <div id="customer-suggestions" class="suggestions"></div>
+                <div class="customer-info text-center">
+                  <img
+                    style="width: 50px"
+                    class="mt-3"
+                    src="/icon/id_card_icon.png"
+                    alt="Id Card Icon"
+                  />
+                  <div class="mt-3">Chưa có thông tin khách hàng</div>
+                </div>
+              </div>
             </div>
+          </div>
 
-            <div class="col-4">
-                <div class="card equal-height">
-                    <div class="card-header">
-                        <h3 class="card-title">Danh sách hóa đơn</h3>
-                    </div>
-                    <div class="card-body border-bottom py-3">
-                        <div id="div-invoice">
-                            <div id="invoices" class="form-selectgroup"></div>
-                        </div>
-                    </div>
+          <div class="col-4">
+            <div class="card equal-height">
+              <div class="card-header">
+                <h3 class="card-title">Danh sách hóa đơn</h3>
+              </div>
+              <div class="card-body border-bottom py-3">
+                <div id="div-invoice">
+                  <div id="invoices" class="form-selectgroup"></div>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
 
         <div class="row mt-3">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Thông tin sản phẩm</h3>
-                    </div>
-                    <div class="card-body border-bottom py-3">
-                        <div class="input-icon mb-3">
-                            <span class="input-icon-addon">
-                              <svg
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      class="icon"
-                                      width="24"
-                                      height="24"
-                                      viewBox="0 0 24 24"
-                                      stroke-width="2"
-                                      stroke="currentColor"
-                                      fill="none"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                              >
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                <circle cx="10" cy="10" r="7"/>
-                                <line x1="21" y1="21" x2="15" y2="15"/>
-                              </svg>
-                            </span>
-                            <input type="text" id="search-product" name="search-product" class="form-control"
-                                   placeholder="Tìm theo tên sản phẩm…" disabled/>
-                        </div>
-
-                        <div id="suggestions" class="suggestions"></div>
-                        <div class="table-responsive mt-3">
-                            <table class="product-table">
-                                <thead>
-                                <tr>
-                                    <th>STT</th>
-                                    <th>Ảnh</th>
-                                    <th>Tên sản phẩm</th>
-                                    <th>Số lượng</th>
-                                    <th>Đơn giá</th>
-                                    <th>Thành tiền</th>
-                                    <th>Thao tác</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td colspan="7" class="text-center text-secondary">
-                                        <img class="mt-3" src="/icon/empty_box_icon.png" alt="Empty Box Icon">
-                                        <div class="mt-3">Chưa có sản phẩm nào được thêm</div>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="card-header">
-                        <h3 class="card-title">Thông tin thanh toán</h3>
-                    </div>
-                    <div class="card-body financial-info">
-                        <div class="row financial-info-row">
-                            <div class="col-9">
-                                <div class="mb-3">
-                                    <label class="form-label">Ghi chú đơn hàng</label>
-                                    <textarea class="form-control" rows="3" id="input-note" disabled
-                                              placeholder="VD: Hàng tăng cổ riêng"></textarea>
-                                </div>
-                            </div>
-
-                            <div class="col-3">
-                                <div class="row">
-                                    <div class="col-8">Tổng tiền (<span id="count-product">X</span> sản phẩm)</div>
-                                    <div class="col-4" id="tongTien">X</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-8 text-muted">Phí giao hàng</div>
-                                    <div class="col-4 text-muted">0</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-8 text-muted">Mã giảm giá</div>
-                                    <div class="col-4 text-muted">0</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-8">Tổng</div>
-                                    <div class="col-4" id="tong">X</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Thông tin sản phẩm</h3>
+              </div>
+              <div class="card-body border-bottom py-3">
+                <div class="input-icon mb-3">
+                  <span class="input-icon-addon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="icon"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                      fill="none"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <circle cx="10" cy="10" r="7" />
+                      <line x1="21" y1="21" x2="15" y2="15" />
+                    </svg>
+                  </span>
+                  <input
+                    type="text"
+                    id="search-product"
+                    name="search-product"
+                    class="form-control"
+                    placeholder="Tìm theo tên sản phẩm…"
+                    disabled
+                  />
                 </div>
+
+                <div id="suggestions" class="suggestions"></div>
+                <div class="table-responsive mt-3">
+                  <table class="product-table">
+                    <thead>
+                      <tr>
+                        <th>STT</th>
+                        <th>Ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Số lượng</th>
+                        <th>Đơn giá</th>
+                        <th>Thành tiền</th>
+                        <th>Thao tác</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td colspan="7" class="text-center text-secondary">
+                          <img
+                            class="mt-3"
+                            src="/icon/empty_box_icon.png"
+                            alt="Empty Box Icon"
+                          />
+                          <div class="mt-3">Chưa có sản phẩm nào được thêm</div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="card-header">
+                <h3 class="card-title">Thông tin thanh toán</h3>
+              </div>
+              <div class="card-body financial-info">
+                <div class="row financial-info-row">
+                  <div class="col-9">
+                    <div class="mb-3">
+                      <label class="form-label">Ghi chú đơn hàng</label>
+                      <textarea
+                        class="form-control"
+                        rows="3"
+                        id="input-note"
+                        disabled
+                        placeholder="VD: Hàng tăng cổ riêng"
+                      ></textarea>
+                    </div>
+                  </div>
+
+                  <div class="col-3">
+                    <div class="row">
+                      <div class="col-8">
+                        Tổng tiền (<span id="count-product">X</span> sản phẩm)
+                      </div>
+                      <div class="col-4" id="tongTien">X</div>
+                    </div>
+                    <div class="row">
+                      <div class="col-8 text-muted">Phí giao hàng</div>
+                      <div class="col-4 text-muted">0</div>
+                    </div>
+                    <div class="row">
+                      <div class="col-8 text-muted">Mã giảm giá</div>
+                      <div class="col-4 text-muted">0</div>
+                    </div>
+                    <div class="row">
+                      <div class="col-8">Tổng</div>
+                      <div class="col-4" id="tong">X</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
 
         <div class="row mt-3">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Đóng gói và giao hàng</h3>
-                    </div>
-                    <div class="m-3 form-selectgroup">
-                        <label class="form-selectgroup-item">
-                            <input type="radio" name="icons" value="Offline"
-                                   class="form-selectgroup-input radio-order-type" checked/>
-                            <span class="form-selectgroup-label">
-                            <img width="24px" class="me-1" src="/icon/shoping_store_icon.png" alt="shoping_store_icon">
-                            Khách nhận tại cửa hàng
-                          </span>
-                        </label>
-                        <label class="form-selectgroup-item">
-                            <input type="radio" name="icons" value="Có giao hàng"
-                                   class="form-selectgroup-input radio-order-type"/>
-                            <span class="form-selectgroup-label">
-                            <img width="24px" class="me-1" src="/icon/delivery_icon.png" alt="">
-                            Giao hàng
-                          </span>
-                        </label>
-                    </div>
-                    <div id="div-address" style="display: none">
-                        <div class="card-header">
-                            <h3 class="card-title">Thông tin giao hàng</h3>
-                        </div>
-                        <div class="card-body">
-                            <!-- Thông tin người nhận -->
-                            <div class="mb-4">
-                                <h3 class="mb-3">Thông tin người nhận</h3>
-                                <div class="row mb-3">
-                                    <label for="recipient_name" class="col-sm-4 col-form-label">Tên người nhận:</label>
-                                    <div class="col-sm-8">
-                                        <input id="recipient_name" type="text" class="form-control"
-                                               placeholder="Nhập tên người nhận">
-                                        <small class="text-danger"></small>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <label for="phone_number" class="col-sm-4 col-form-label">Số điện thoại:</label>
-                                    <div class="col-sm-8">
-                                        <input id="phone_number" type="tel" class="form-control"
-                                               placeholder="0123456789" pattern="[0-9]{10,11}">
-                                        <small class="text-danger"></small>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <label for="phone_number" class="col-sm-4 col-form-label">Email:</label>
-                                    <div class="col-sm-8">
-                                        <input id="email" type="email" class="form-control" placeholder="abc@gmail.com">
-                                        <small class="text-danger"></small>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Địa chỉ -->
-                            <div class="mb-4">
-                                <h3 class="mb-3">Địa chỉ</h3>
-                                <div class="row mb-3">
-                                    <label for="province" class="col-sm-4 col-form-label">Tỉnh/Thành phố:</label>
-                                    <div class="col-sm-8">
-                                        <select id="province" class="form-select">
-                                            <option value="">Chọn tỉnh/thành</option>
-                                        </select>
-                                        <small class="text-danger"></small>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <label for="district" class="col-sm-4 col-form-label">Quận/Huyện:</label>
-                                    <div class="col-sm-8">
-                                        <select id="district" class="form-select" disabled>
-                                            <option value="">Chọn quận/huyện</option>
-                                        </select>
-                                        <small class="text-danger"></small>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <label for="ward" class="col-sm-4 col-form-label">Xã/Phường:</label>
-                                    <div class="col-sm-8">
-                                        <select id="ward" class="form-select" disabled>
-                                            <option value="">Chọn xã/phường</option>
-                                        </select>
-                                        <small class="text-danger"></small>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <label for="address-detail" class="col-sm-4 col-form-label">Địa chỉ cụ thể:</label>
-                                    <div class="col-sm-8">
-                                        <input id="address-detail" type="text" class="form-control"
-                                               placeholder="Nhập địa chỉ cụ thể">
-                                        <small class="text-danger"></small>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Thanh toán -->
-                            <div class="mb-4">
-                                <h3 class="mb-3">Khác</h3>
-                                <div class="row mb-3">
-                                    <label class="col-sm-4 col-form-label">Hình thức thanh toán:</label>
-                                    <div class="col-sm-8">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="paymentMethod"
-                                                   id="paymentStore" value="Thanh toán tại cửa hàng" checked required>
-                                            <label class="form-check-label" for="paymentStore">
-                                                Thanh toán tại cửa hàng
-                                            </label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="paymentMethod"
-                                                   id="paymentDelivery" value="Thanh toán khi nhận hàng">
-                                            <label class="form-check-label" for="paymentDelivery">
-                                                Thanh toán khi nhận hàng
-                                            </label>
-                                        </div>
-                                        <small class="text-danger"></small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Đóng gói và giao hàng</h3>
+              </div>
+              <div class="m-3 form-selectgroup">
+                <label class="form-selectgroup-item">
+                  <input
+                    type="radio"
+                    name="icons"
+                    value="Offline"
+                    class="form-selectgroup-input radio-order-type"
+                    checked
+                  />
+                  <span class="form-selectgroup-label">
+                    <img
+                      width="24px"
+                      class="me-1"
+                      src="/icon/shoping_store_icon.png"
+                      alt="shoping_store_icon"
+                    />
+                    Khách nhận tại cửa hàng
+                  </span>
+                </label>
+                <label class="form-selectgroup-item">
+                  <input
+                    type="radio"
+                    name="icons"
+                    value="Có giao hàng"
+                    class="form-selectgroup-input radio-order-type"
+                  />
+                  <span class="form-selectgroup-label">
+                    <img
+                      width="24px"
+                      class="me-1"
+                      src="/icon/delivery_icon.png"
+                      alt=""
+                    />
+                    Giao hàng
+                  </span>
+                </label>
+              </div>
             </div>
+          </div>
         </div>
         <div class="mt-3 mb-3 d-flex align-items-center justify-content-end">
-            <button class="btn btn-danger me-2" id="btnCancel" disabled>Hủy đơn</button>
-            <button class="btn btn-primary" id="btnPayment" onclick="handlePayment()" disabled>Thanh toán</button>
+          <button class="btn btn-danger me-2" id="btnCancel" disabled>
+            Hủy đơn
+          </button>
+          <button
+            class="btn btn-primary"
+            id="btnPayment"
+            onclick="handlePayment()"
+            disabled
+          >
+            Thanh toán
+          </button>
         </div>
-    </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
-<script src="/js/BanHang.js"></script>
-</body>
+      </div>
 
+      <!-- Thêm modal để nhập địa chỉ -->
+      <div
+        class="modal modal-blur fade"
+        id="addAddressModal"
+        tabindex="-1"
+        role="dialog"
+        aria-hidden="true"
+      >
+        <div
+          class="modal-dialog modal-lg modal-dialog-centered"
+          role="document"
+        >
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Thêm địa chỉ</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label class="form-label">Tỉnh/Thành phố</label>
+                <select id="modal-province" class="form-select">
+                  <option value="">Chọn tỉnh/thành</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Quận/Huyện</label>
+                <select id="modal-district" class="form-select" disabled>
+                  <option value="">Chọn quận/huyện</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Xã/Phường</label>
+                <select id="modal-ward" class="form-select" disabled>
+                  <option value="">Chọn xã/phường</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Địa chỉ cụ thể</label>
+                <input
+                  type="text"
+                  id="modal-address-detail"
+                  class="form-control"
+                  placeholder="Nhập địa chỉ cụ thể"
+                />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Hủy
+              </button>
+              <button type="button" class="btn btn-primary" id="saveAddressBtn">
+                Lưu địa chỉ
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Thông tin giao hàng -->
+      <div
+        class="modal modal-blur fade"
+        id="deliveryInfoModal"
+        tabindex="-1"
+        role="dialog"
+        aria-hidden="true"
+      >
+        <div
+          class="modal-dialog modal-lg modal-dialog-centered"
+          role="document"
+        >
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Thông tin giao hàng</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <!-- Thông tin người nhận -->
+              <div class="mb-4">
+                <h3 class="mb-3">Thông tin người nhận</h3>
+                <div class="row mb-3">
+                  <label for="recipient_name" class="col-sm-4 col-form-label"
+                    >Tên người nhận:</label
+                  >
+                  <div class="col-sm-8">
+                    <input
+                      id="recipient_name"
+                      type="text"
+                      class="form-control"
+                      placeholder="Nhập tên người nhận"
+                    />
+                    <small class="text-danger"></small>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <label for="phone_number" class="col-sm-4 col-form-label"
+                    >Số điện thoại:</label
+                  >
+                  <div class="col-sm-8">
+                    <input
+                      id="phone_number"
+                      type="tel"
+                      class="form-control"
+                      placeholder="0123456789"
+                      pattern="[0-9]{10,11}"
+                    />
+                    <small class="text-danger"></small>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <label for="email" class="col-sm-4 col-form-label"
+                    >Email:</label
+                  >
+                  <div class="col-sm-8">
+                    <input
+                      id="email"
+                      type="email"
+                      class="form-control"
+                      placeholder="abc@gmail.com"
+                    />
+                    <small class="text-danger"></small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Địa chỉ -->
+              <div class="mb-4">
+                <h3 class="mb-3">Địa chỉ</h3>
+                <div class="row mb-3">
+                  <label for="province" class="col-sm-4 col-form-label"
+                    >Tỉnh/Thành phố:</label
+                  >
+                  <div class="col-sm-8">
+                    <select id="province" class="form-select">
+                      <option value="">Chọn tỉnh/thành</option>
+                    </select>
+                    <small class="text-danger"></small>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <label for="district" class="col-sm-4 col-form-label"
+                    >Quận/Huyện:</label
+                  >
+                  <div class="col-sm-8">
+                    <select id="district" class="form-select" disabled>
+                      <option value="">Chọn quận/huyện</option>
+                    </select>
+                    <small class="text-danger"></small>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <label for="ward" class="col-sm-4 col-form-label"
+                    >Xã/Phường:</label
+                  >
+                  <div class="col-sm-8">
+                    <select id="ward" class="form-select" disabled>
+                      <option value="">Chọn xã/phường</option>
+                    </select>
+                    <small class="text-danger"></small>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <label for="address-detail" class="col-sm-4 col-form-label"
+                    >Địa chỉ cụ thể:</label
+                  >
+                  <div class="col-sm-8">
+                    <input
+                      id="address-detail"
+                      type="text"
+                      class="form-control"
+                      placeholder="Nhập địa chỉ cụ thể"
+                    />
+                    <small class="text-danger"></small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Thanh toán -->
+              <div class="mb-4">
+                <h3 class="mb-3">Khác</h3>
+                <div class="row mb-3">
+                  <label class="col-sm-4 col-form-label"
+                    >Hình thức thanh toán:</label
+                  >
+                  <div class="col-sm-8">
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="paymentMethod"
+                        id="paymentStore"
+                        value="Thanh toán tại cửa hàng"
+                        checked
+                        required
+                      />
+                      <label class="form-check-label" for="paymentStore">
+                        Thanh toán tại cửa hàng
+                      </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="paymentMethod"
+                        id="paymentDelivery"
+                        value="Thanh toán khi nhận hàng"
+                      />
+                      <label class="form-check-label" for="paymentDelivery">
+                        Thanh toán khi nhận hàng
+                      </label>
+                    </div>
+                    <small class="text-danger"></small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                id="saveDeliveryInfoBtn"
+              >
+                Lưu thông tin
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
+    <script src="/js/BanHang.js"></script>
+  </body>
 </html>
