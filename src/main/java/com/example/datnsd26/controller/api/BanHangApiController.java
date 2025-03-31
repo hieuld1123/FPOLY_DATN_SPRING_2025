@@ -103,4 +103,31 @@ public class BanHangApiController {
                 .message("Hủy hóa đơn thành công")
                 .build();
     }
+
+    @GetMapping("/khach-hang")
+    public ApiResponse getCustomer(@RequestParam String keyword) {
+        return ApiResponse.builder()
+                .status(HttpStatus.NO_CONTENT.value())
+                .message("Search customer")
+                .data(banHangService.getCustomerByInfo(keyword))
+                .build();
+    }
+
+    @PutMapping("/add-customer/{invoiceId}/{idKhachHang}")
+    public ApiResponse addCustomerToInvoice(@PathVariable Integer invoiceId, @PathVariable Integer idKhachHang) {
+        this.banHangService.addCustomerToInvoice(invoiceId, idKhachHang);
+        return ApiResponse.builder()
+                .status(HttpStatus.NO_CONTENT.value())
+                .message("Thêm thành công")
+                .build();
+    }
+
+    @DeleteMapping("/hoa-don/{invoiceId}/remove-customer")
+    public ApiResponse removeCustomer(@PathVariable Integer invoiceId) {
+        this.banHangService.removeCustomer(invoiceId);
+        return ApiResponse.builder()
+                .status(HttpStatus.NO_CONTENT.value())
+                .message("Thêm thành công")
+                .build();
+    }
 }
