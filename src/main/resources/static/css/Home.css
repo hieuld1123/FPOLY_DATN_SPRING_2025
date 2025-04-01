@@ -1,0 +1,284 @@
+.product-container {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+/* ----- Hình ảnh sản phẩm ----- */
+.image-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.product-image {
+    width: 100%;
+    max-width: 150px;
+    border-radius: 10px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.product-image:hover {
+    transform: scale(1.05); /* Phóng to nhẹ khi hover */
+}
+
+/* ----- Tiêu đề sản phẩm ----- */
+.product-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+    line-height: 1.2;
+}
+
+/* ----- Giá sản phẩm ----- */
+.product-price {
+    font-size: 14px;
+    color: #ff5733;
+    font-weight: bold;
+    margin-bottom: 10px;
+    line-height: 1.2;
+}
+
+/* ----- Nút bấm ----- */
+.btn-container-sanpham {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: 5px;
+}
+
+/* Nút giỏ hàng & mua ngay */
+.add-to-cart, .buy-now {
+    color: black;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Nút "Mua ngay" dài hơn */
+.buy-now {
+    color: black;
+    padding: 8px 18px;
+    border-radius: 25px;
+    font-weight: bold;
+}
+
+/* Hover cho nút */
+.add-to-cart:hover, .buy-now:hover {
+    text-decoration: none;
+    color: red;
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+/* Dấu phân cách | */
+.separator {
+    font-size: 16px;
+    color: #666;
+    margin: 0 5px;
+}
+
+
+.thuonghieu-img {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.thuonghieu-img img {
+    width: 100%;
+    border-radius: 10px; /* Bo góc ảnh */
+    display: block;
+    transition: transform 0.3s ease-in-out;
+}
+
+.thuonghieu-img img:hover {
+    transform: scale(1.05);
+}
+
+.button-container {
+    position: absolute;
+    bottom: 10px; /* Đẩy nút xuống sát đáy */
+    left: 50%;
+    transform: translateX(-50%); /* Căn giữa theo chiều ngang */
+    text-align: center;
+    width: 80%;
+}
+
+.button-container .btn {
+    background: rgba(255, 255, 255, 80%);
+    color: black;
+    padding: 8px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 20px;
+    width: 100%;
+    transition: background 0.3s ease-in-out;
+}
+
+/* Hiệu ứng khi hover */
+.button-container .btn:hover {
+    background-color: black;
+    color: white;
+}
+
+#thuongHieu2 .col-md-3 {
+    text-align: center;
+}
+
+#thuongHieu2 .col-md-3 img{
+    border-radius: 10px;
+}
+
+
+#thuongHieu2 .collection-title {
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    color: black;
+}
+
+.brand-slider {
+    background-color: #D3D3D3;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    width: 100%;
+    padding: 10px 20px;
+    margin-bottom: 60px;
+}
+
+.brand-track {
+    display: flex;
+    gap: 100px;
+    flex-wrap: nowrap;
+    align-items: center;
+    width: max-content; /* Tránh khoảng trống */
+    animation: slide 10s linear infinite; /* Chạy vô hạn */
+}
+
+@keyframes slide {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%); /* Dịch chuyển một nửa để tạo hiệu ứng lặp */
+    }
+}
+
+/*Câu hỏi*/
+.accordion-item {
+    border: none; /* Xóa tất cả viền của item */
+}
+
+/* Thêm gạch dưới mỗi câu hỏi */
+.accordion-item + .accordion-item {
+    border-top: 1px solid #ddd; /* Gạch ngăn cách giữa các câu hỏi */
+}
+
+.accordion-button {
+    background-color: transparent;
+    color: #333;
+    font-weight: 600;
+    border: none; /* Xóa viền của nút */
+    padding: 1rem 1.25rem; /* Giữ khoảng cách cho nút */
+    transition: all 0.3s ease;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: #f1f1f1; /* Đổi nền khi mở */
+    color: #0069d9; /* Màu chữ khi mở */
+}
+
+.accordion-button:hover {
+    background-color: #f1f1f1; /* Nền sáng khi hover */
+    color: #333; /* Màu chữ khi hover */
+}
+
+.accordion-body {
+    background-color: transparent; /* Xóa nền body */
+    color: #555;
+    padding: 15px 1.25rem;
+}
+
+.accordion-header {
+    background-color: transparent; /* Xóa nền header */
+    padding: 0; /* Xóa padding */
+}
+
+
+/*Tin tức*/
+/* Kích thước ảnh */
+.news-image {
+    width: 80px; /* Điều chỉnh kích thước ảnh */
+    height: 80px; /* Đảm bảo ảnh không bị méo */
+    object-fit: cover; /* Đảm bảo ảnh được cắt và giữ tỷ lệ */
+    border-radius: 50%; /* Bo góc ảnh thành hình tròn */
+}
+
+.news-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 15px; /* Tạo khoảng cách giữa ảnh và văn bản */
+}
+
+.news-link {
+    font-size: 18px;
+    font-weight: bold;
+    color: #007bff; /* Màu sắc cho link */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.news-link:hover {
+    color: #0056b3; /* Đổi màu khi hover */
+}
+
+.news-text p {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #555;
+}
+
+.news-text a {
+    font-size: 14px;
+    color: black;
+    text-decoration: none;
+    margin-top: 10px;
+    transition: color 0.3s ease;
+}
+
+.news-text a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.list-group-item {
+    display: flex;
+    align-items: center;
+    padding: 15px; /* Thêm khoảng cách cho mỗi phần tử */
+    border: none; /* Xóa viền cho mỗi item */
+    margin-bottom: 10px; /* Khoảng cách giữa các item */
+    background-color: #f9f9f9; /* Màu nền nhẹ */
+    border-radius: 8px; /* Bo góc */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Thêm bóng cho mỗi item */
+}
+
+.list-group-item:hover {
+    background-color: #e9ecef; /* Đổi màu nền khi hover */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* Tăng bóng khi hover */
+}

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Về chúng tôi | Nine Shoes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/Footer.css">
+    <link rel="stylesheet" href="/css/Navbar.css">
+    <style>
+        .about-section {
+            margin-top: 30px;
+            padding: 30px 0;
+            background-color: #f8f9fa;
+        }
+
+        .about-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .about-header h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #222;
+        }
+
+        .about-header p {
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        .about-text {
+            margin-bottom: 30px;
+        }
+
+        .about-text h2 {
+            font-size: 1.8rem;
+            color: #222;
+            margin-bottom: 20px;
+        }
+
+        .about-text p {
+            font-size: 1.1rem;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .contact-info p {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .social-icons i {
+            font-size: 1.5rem;
+            margin-right: 15px;
+            color: #555;
+        }
+
+        .social-icons i:hover {
+            color: #007bff;
+        }
+    </style>
+</head>
+
+<body>
+<div th:replace="~{components/navbar :: navbar}"></div>
+<!-- Header -->
+<div class="container mt-5">
+    <div class="about-header">
+        <h1>Về chúng tôi</h1>
+        <p>Giới thiệu về Nine Shoes – Cửa hàng giày sneaker thời trang hàng đầu</p>
+    </div>
+
+    <div class="about-section">
+        <div class="row">
+            <!-- Lịch sử ra đời -->
+            <div class="col-md-12 about-text">
+                <h2>Lịch sử ra đời</h2>
+                <p>Nine Shoes được thành lập vào năm 2024 với mục tiêu trở thành một thương hiệu giày sneaker nổi bật, cung cấp những sản phẩm giày thể thao cao cấp, phong cách và chất lượng. Chúng tôi bắt đầu với một nhóm chuyên gia đam mê thiết kế và sản xuất giày, không ngừng sáng tạo để mang lại những đôi giày không chỉ đẹp mà còn bền bỉ và thoải mái cho khách hàng.</p>
+            </div>
+
+            <!-- Sản phẩm -->
+            <div class="col-md-12 about-text">
+                <h2>Sản phẩm của chúng tôi</h2>
+                <p>Chúng tôi cung cấp các mẫu giày sneaker phong cách, từ những đôi giày thể thao năng động, đến những đôi giày thời trang phù hợp với mọi lứa tuổi. Các sản phẩm của Nine Shoes được làm từ chất liệu cao cấp, kiểm tra chất lượng nghiêm ngặt, mang đến sự thoải mái và bền bỉ cho người dùng.</p>
+            </div>
+
+            <!-- Cam kết -->
+            <div class="col-md-12 about-text">
+                <h2>Cam kết của Nine Shoes</h2>
+                <ul>
+                    <li><strong>Chất lượng sản phẩm:</strong> Mỗi đôi giày đều được kiểm tra chất lượng kỹ lưỡng trước khi đến tay khách hàng.</li>
+                    <li><strong>Dịch vụ khách hàng:</strong> Đội ngũ nhân viên hỗ trợ tận tình, sẵn sàng giải đáp mọi thắc mắc và giúp bạn lựa chọn sản phẩm phù hợp.</li>
+                    <li><strong>Giá cả hợp lý:</strong> Nine Shoes cam kết mang đến sản phẩm chất lượng cao với mức giá hợp lý nhất.</li>
+                </ul>
+            </div>
+
+            <!-- Tầm nhìn và sứ mệnh -->
+            <div class="col-md-12 about-text">
+                <h2>Tầm nhìn và sứ mệnh</h2>
+                <p>Với tầm nhìn trở thành thương hiệu giày sneaker hàng đầu tại Việt Nam, Nine Shoes không ngừng sáng tạo và phát triển để cung cấp những đôi giày thể thao với chất lượng vượt trội. Sứ mệnh của chúng tôi là mang đến cho khách hàng những sản phẩm giày thể thao không chỉ đẹp mà còn đảm bảo sự thoải mái, phù hợp với phong cách và nhu cầu sử dụng của từng cá nhân.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liên hệ -->
+    <div class="contact-info mt-5">
+        <h2>Liên hệ với chúng tôi</h2>
+        <p>Email: <a href="mailto:contact@sm4s.vn">contact@nineshoes.com</a></p>
+        <p>Hotline (Zalo): 0901191616</p>
+        <p>Điện thoại: 1900 6680</p>
+        <div class="social-icons">
+            <a href="#" class="text-white"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="text-white"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="text-white"><i class="fab fa-twitter"></i></a>
+        </div>
+    </div>
+</div>
+<br>
+<div th:replace="~{components/footer :: footer}"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -33,6 +33,14 @@ public class ShopController {
     public String homepage() {
         return "/shop/homepage";
     }
+    @GetMapping("/ve-chung-toi")
+    public String veChungToi() {
+        return "/shop/ve-chung-toi";
+    }
+    @GetMapping("/lien-he")
+    public String lienHe() {
+        return "/shop/lien-he";
+    }
 
     @GetMapping("/shop/product/all-product")
     public String allProduct(Model model) {

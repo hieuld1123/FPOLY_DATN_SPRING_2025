@@ -3,15 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <title>NineShoe</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="/css/Footer.css">
+    <link rel="stylesheet" href="/css/Home.css">
+    <link rel="stylesheet" href="/css/Navbar.css">
 </head>
 <body>
 <div th:replace="components/navbar :: navbar"></div>
-<div id="carouselExampleIndicators" class="carousel slide">
+<!--Slide-->
+<div id="carouselExampleIndicators" class="carousel slide mb-5">
     <div class="carousel-indicators">
-        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"
+                aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
+                aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
+                aria-label="Slide 3"></button>
     </div>
     <div class="carousel-inner">
         <div class="carousel-item active">
@@ -21,15 +31,263 @@
             <img th:src="@{/carousel/banner2.png}" class="d-block w-100" alt="..."/>
         </div>
     </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+            data-bs-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Previous</span>
     </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+            data-bs-slide="next">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Next</span>
     </button>
 </div>
+<!--Thương hiệu nổi bật-->
+<div class="container" id="thuongHieu">
+    <h3 class="text-center mt-5 mb-5">Thương hiệu nổi bật</h3>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="thuonghieu-img">
+                <img th:src="@{/trangchu/nike_1.webp}">
+                <!-- Nút nằm trên ảnh -->
+                <div class="button-container">
+                    <button class="btn">NIKE</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="thuonghieu-img">
+                <img th:src="@{/trangchu/Adidas.webp}">
+                <!-- Nút nằm trên ảnh -->
+                <div class="button-container">
+                    <button class="btn">ADIDAS</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="thuonghieu-img">
+                <img th:src="@{/trangchu/Balenciaga.webp}">
+                <!-- Nút nằm trên ảnh -->
+                <div class="button-container">
+                    <button class="btn">NEW BALENCIAGA</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row" id="thuongHieu2">
+        <div class="col-md-3">
+            <img th:src="@{/trangchu/Fila.webp}">
+            <div class="collection-title">FILA</div>
+        </div>
+        <div class="col-md-3">
+            <img th:src="@{/trangchu/ONiTsuka.webp}">
+            <div class="collection-title">ONITSUKA TIGER</div>
+        </div>
+        <div class="col-md-3">
+            <img th:src="@{/trangchu/Puma.webp}">
+            <div class="collection-title">PUMA</div>
+        </div>
+        <div class="col-md-3">
+            <img th:src="@{/trangchu/4.webp}">
+            <div class="collection-title">K-SWISS</div>
+        </div>
+    </div>
+</div>
+<br>
+<!--End thương hiệu-->
+
+<!--Logo-->
+<div class="brand-slider">
+    <div class="brand-track d-flex justify-content-between align-items-center brand-container">
+        <img th:src="@{/trangchu/Fila_logo.webp}" class="brand-logo" style="width: 50px;height: 50px">
+        <img th:src="@{/trangchu/conver_logo.png}" class="brand-logo" style="width: 100px">
+        <img th:src="@{/trangchu/Puma_logo.webp}" class="brand-logo" style="width: 100px">
+        <img th:src="@{/trangchu/vans_logo.webp}" class="brand-logo" style="width: 100px">
+
+        <!-- Lặp lại để tạo hiệu ứng vô tận -->
+        <img th:src="@{/trangchu/Fila_logo.webp}" class="brand-logo" style="width: 50px;height: 50px">
+        <img th:src="@{/trangchu/conver_logo.png}" class="brand-logo" style="width: 100px">
+        <img th:src="@{/trangchu/Puma_logo.webp}" class="brand-logo" style="width: 100px">
+        <img th:src="@{/trangchu/vans_logo.webp}" class="brand-logo" style="width: 100px">
+        <!-- Lặp lại để tạo hiệu ứng vô tận -->
+        <img th:src="@{/trangchu/Fila_logo.webp}" class="brand-logo" style="width: 50px;height: 50px">
+        <img th:src="@{/trangchu/conver_logo.png}" class="brand-logo" style="width: 100px">
+        <img th:src="@{/trangchu/Puma_logo.webp}" class="brand-logo" style="width: 100px">
+        <img th:src="@{/trangchu/vans_logo.webp}" class="brand-logo" style="width: 100px">
+    </div>
+</div>
+
+
+<!--End LoGo-->
+
+<!-- Sản phẩm nổi bật -->
+<div class="container-fluid">
+    <h3 class="text-center mb-5">Bộ sưu tập nổi bật</h3>
+    <div class="row justify-content-center">
+        <div class="col-md-2 text-center product-container">
+            <div class="image-wrapper">
+                <img th:src="@{/trangchu/sn1.webp}" class="product-image">
+            </div>
+            <h5 class="product-title">Sneaker 1</h5>
+            <p class="product-price">1.500.000 VNĐ</p>
+            <!--            <div class="btn-container-sanpham">-->
+            <!--                <a href="#" class="add-to-cart"><i class="fas fa-cart-plus"></i></a>-->
+            <!--                <span class="separator">|</span>-->
+            <!--                <a href="#" class="buy-now">Mua ngay</a>-->
+            <!--            </div>-->
+        </div>
+
+
+        <div class="col-md-2 text-center product-container">
+            <div class="image-wrapper">
+                <img th:src="@{/trangchu/sn1.webp}" class="product-image">
+            </div>
+            <h5 class="product-title">Sneaker 21</h5>
+            <p class="product-price">1.500.000 VNĐ</p>
+
+        </div>
+
+        <div class="col-md-2 text-center product-container">
+            <div class="image-wrapper">
+                <img th:src="@{/trangchu/sn1.webp}" class="product-image">
+            </div>
+            <h5 class="product-title">Sneaker 3</h5>
+            <p class="product-price">1.500.000 VNĐ</p>
+
+        </div>
+
+        <div class="col-md-2 text-center product-container">
+            <div class="image-wrapper">
+                <img th:src="@{/trangchu/sn1.webp}" class="product-image">
+            </div>
+            <h5 class="product-title">Sneaker 1</h5>
+            <p class="product-price">1.500.000 VNĐ</p>
+
+        </div>
+        <div class="col-md-2 text-center">
+            <img th:src="@{/trangchu/sn1.webp}" class="product-image" alt="Sneaker 5">
+            <h5 class="product-title">Sneaker 5</h5>
+            <p class="product-price">2.500.000 VNĐ</p>
+        </div>
+    </div>
+</div>
+<!--End-->
+
+
+<!--Giảm giá-->
+<div class="container">
+    <h3 class="text-center mt-5 mb-5">Ưu đãi giảm giá</h3>
+    <div class="row">
+        <div class="col-6"><img th:src="@{/trangchu/sale1.webp}" style="border-radius: 5px"></div>
+        <div class="col-6"><img th:src="@{/trangchu/sale2.webp}" style="border-radius: 5px"></div>
+    </div>
+</div>
+<!--End-->
+<br>
+<!--Tin tức-->
+<div class="container">
+    <div class="row mt-5 mb-5">
+        <!-- Câu hỏi thường gặp -->
+        <div class="col-md-4">
+            <h3 class="mb-4">Câu hỏi thường gặp</h3>
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                            Tôi có thể đổi trả sản phẩm không?
+                        </button>
+                    </h2>
+                    <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Bạn có thể đổi trả trong vòng 7 ngày kể từ khi nhận hàng. Sản phẩm phải còn nguyên tem, hộp và chưa qua sử dụng.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                            Tôi có thể thanh toán khi nhận hàng không?
+                        </button>
+                    </h2>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Có! Chúng tôi hỗ trợ thanh toán khi nhận hàng (COD) trên toàn quốc.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                            Thời gian giao hàng bao lâu?
+                        </button>
+                    </h2>
+                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Thời gian giao hàng từ 2 - 5 ngày tùy vào khu vực. Bạn sẽ nhận được mã vận đơn để theo dõi đơn hàng.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                            Xem kích thước sản phẩm như thế nào?
+                        </button>
+                    </h2>
+                    <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Vui lòng làm theo các bước sau:<br><br>
+                            1. Truy cập trang sản phẩm.<br>
+                            2. Nhấp vào phần "Size Guide" dưới tên sản phẩm để xem chính xác size của bạn.<br>
+                            3. Lưu ý kỹ mục giày Nam, Nữ, Unisex, dây size US hoặc UK v.v để tránh đặt sai kích thước.<br>
+                            Sau khi chọn đúng kích thước, chỉ cần nhấp vào tùy chọn kích thước và thêm sản phẩm vào giỏ hàng của bạn hoặc mua ngay để tránh hết size bạn nhé.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tin tức -->
+        <div class="col-md-8">
+            <h3 class="mb-4">Tin tức</h3>
+            <ul class="list-group">
+                <li class="list-group-item d-flex align-items-center">
+                    <img th:src="@{/trangchu/new1.webp}" class="news-image me-3">
+                    <div class="news-text">
+                        <a href="#" class="news-link">BỘ SƯU TẬP HÈ 2025</a>
+                        <p class="mt-2">Khám phá bộ sưu tập giày và thời trang mới nhất mùa hè 2025. </p>
+                        <a href="#">Xem thêm</a>
+                    </div>
+                </li>
+                <li class="list-group-item d-flex align-items-center">
+                    <img th:src="@{/trangchu/new3.webp}"  class="news-image me-3">
+                    <div class="news-text">
+                        <a href="#" class="news-link">OUT SPECIALITY</a>
+                        <p class="mt-2">Khám phá những sản phẩm đặc biệt chỉ có tại cửa hàng của chúng tôi.</p>
+                        <a href="#">Xem thêm</a>
+                    </div>
+                </li>
+                <li class="list-group-item d-flex align-items-center">
+                    <img th:src="@{/trangchu/new2.webp}" class="news-image me-3">
+                    <div class="news-text">
+                        <a href="#" class="news-link">OUT ART</a>
+                        <p class="mt-2">Khám phá bộ sưu tập nghệ thuật "OUT ART" – sự kết hợp giữa nghệ thuật và thời trang.</p>
+                        <a href="#">Xem thêm</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+
+    </div>
+</div>
+<!--End-->
+<br>
 <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/js/tabler.min.js"></script>
+<div th:replace="~{components/footer :: footer}"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
 </body>
 </html>

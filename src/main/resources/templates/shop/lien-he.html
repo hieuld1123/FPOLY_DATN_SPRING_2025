@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liên hệ | Nine Shoes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/Footer.css">
+    <link rel="stylesheet" href="/css/Navbar.css">
+    <style>
+        .contact-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .contact-header h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #222;
+        }
+
+        .contact-header p {
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        .contact-info {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .contact-info p {
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        .social-icons a {
+            font-size: 1.5rem;
+            margin-right: 20px;
+            color: #555;
+        }
+
+        .social-icons a:hover {
+            color: #007bff;
+        }
+
+        .contact-form {
+            background-color: #fff;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact-form .form-control {
+            margin-bottom: 20px;
+        }
+
+    </style>
+</head>
+
+<body>
+<div th:replace="~{components/navbar :: navbar}"></div>
+<!-- Header -->
+<div class="container mt-5 mb-5">
+    <div class="contact-header">
+        <h1>Liên hệ với Nine Shoes</h1>
+        <p>Chúng tôi luôn sẵn sàng hỗ trợ bạn mọi thắc mắc về sản phẩm và dịch vụ</p>
+    </div>
+
+    <!-- Thông tin liên hệ -->
+    <div class="contact-info">
+        <h2>Thông tin liên hệ</h2>
+        <p>Email: <a href="mailto:contact@sm4s.vn">contact@nineshoes.com</a></p>
+        <p>Hotline (Zalo): 0901191616</p>
+        <p>Điện thoại: 1900 6680</p>
+        <p>Địa chỉ: 1234 Đường ABC, Quận XYZ, TP.Hà Nội</p>
+    </div>
+<hr>
+    <!-- Form liên hệ -->
+    <div class="contact-form">
+        <h3>Gửi câu hỏi hoặc phản hồi của bạn</h3>
+        <form action="/submit-contact" method="POST">
+            <div class="mb-3">
+                <label for="name" class="form-label">Tên của bạn</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="message" class="form-label">Tin nhắn</label>
+                <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Gửi</button>
+        </form>
+    </div>
+</div>
+<br>
+<div th:replace="~{components/footer :: footer}"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
+
