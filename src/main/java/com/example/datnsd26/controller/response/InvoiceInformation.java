@@ -15,6 +15,8 @@ public class InvoiceInformation {
 
     private boolean allowCancel;
 
+    private boolean isCompleted;
+
     private String order_id;
 
     private String seller;

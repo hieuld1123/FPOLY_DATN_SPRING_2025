@@ -46,71 +46,15 @@ public class HoaDonServiceImp implements HoaDonService {
     public InvoiceInformation getInvoice(String code) {
         log.info("GET/hoa-don/{}", code);
         HoaDon hd = getHoaDonByCode(code);
-        List<InvoiceInformation.StatusTimeline> statusTimeline = new ArrayList<>();
-
-        statusTimeline.add(InvoiceInformation.StatusTimeline.builder()
-                .status("Đặt hàng")
-                .time(new Date())
-                .completed(true)
-                .build());
-        if (hd.getHinhThucMuaHang().equalsIgnoreCase("Offline") && hd.isThanhToan()) {
-            statusTimeline.add(InvoiceInformation.StatusTimeline.builder()
-                    .status("Hoàn thành")
-                    .time(new Date())
-                    .completed(true)
-                    .build());
-        }
-
-        if (hd.getHinhThucMuaHang().equalsIgnoreCase("Có giao hàng")) {
-            statusTimeline.add(InvoiceInformation.StatusTimeline.builder()
-                    .status("Đã xác nhận")
-                    .time(new Date())
-                    .completed(true)
-                    .build());
-            statusTimeline.add(InvoiceInformation.StatusTimeline.builder()
-                    .status("Đã giao cho đơn vị vận chuyển")
-                    .time(new Date())
-                    .completed(true)
-                    .build());
-            statusTimeline.add(InvoiceInformation.StatusTimeline.builder()
-                    .status("Hoàn thành")
-                    .time(new Date())
-                    .completed(hd.isThanhToan())
-                    .build());
-        }
-
-        boolean isOk = false;
-        if (hd.getHinhThucMuaHang().equalsIgnoreCase("Online")) {
-            isOk = hd.getTrangThai().equalsIgnoreCase("Đã giao cho đơn vị vận chuyển") || hd.getTrangThai().equalsIgnoreCase("Hoàn thành");
-            statusTimeline.add(InvoiceInformation.StatusTimeline.builder()
-                    .status("Chờ xác nhận")
-                    .time(new Date())
-                    .completed(true)
-                    .build());
-            statusTimeline.add(InvoiceInformation.StatusTimeline.builder()
-                    .status("Đã xác nhận")
-                    .time(new Date())
-                    .completed(isOk)
-                    .build());
-            statusTimeline.add(InvoiceInformation.StatusTimeline.builder()
-                    .status("Đã giao cho đơn vị vận chuyển")
-                    .time(new Date())
-                    .completed(isOk)
-                    .build());
-            statusTimeline.add(InvoiceInformation.StatusTimeline.builder()
-                    .status("Hoàn thành")
-                    .time(new Date())
-                    .completed(isOk && hd.isThanhToan())
-                    .build());
-        }
-
         boolean confirm = this.lichSuHoaDonRepository.findByStatusAndInvoice("Đã xác nhận", hd.getId()).isEmpty();
         boolean delivery = this.lichSuHoaDonRepository.findByStatusAndInvoice("Đã giao cho đơn vị vận chuyển", hd.getId()).isEmpty();
         boolean isCancel = this.lichSuHoaDonRepository.findByStatusAndInvoice("Đã hủy", hd.getId()).isEmpty();
+        boolean isCompleted = this.lichSuHoaDonRepository.findByStatusAndInvoice("Hoàn thành", hd.getId()).isEmpty();
         return InvoiceInformation.builder()
                 .isConfirm(!hd.getHinhThucMuaHang().equalsIgnoreCase("offline") && confirm && isCancel)
-                .isDelivery(!hd.getHinhThucMuaHang().equalsIgnoreCase("offline") && (!confirm && delivery))
-                .allowCancel(!hd.getHinhThucMuaHang().equalsIgnoreCase("offline") && confirm && isCancel) // Note can change
+                .isDelivery(!hd.getHinhThucMuaHang().equalsIgnoreCase("offline") && (!confirm && delivery) && isCancel)
+                .allowCancel(isCompleted && isCancel)
+                .isCompleted(!delivery && hd.isThanhToan() && isCompleted && isCancel)
                 .order_id(hd.getMaHoaDon())
                 .seller(hd.getNhanVien() == null ? "N/A" : hd.getNhanVien().getTenNhanVien())
                 .order_date(hd.getNgayTao())
@@ -169,10 +113,6 @@ public class HoaDonServiceImp implements HoaDonService {
         hd.setTrangThai(hd.getTrangThai().equalsIgnoreCase("Chờ xác nhận") ? hd.getTrangThai() : "Hoàn thành");
         hd.setThanhToan(true);
         hd.setNgayCapNhat(new Date());
-        boolean isExistsInvoice = lichSuHoaDonRepository.findByStatusAndInvoice("Đã giao cho đơn vị vận chuyển", hd.getId()).isPresent();
-        if (isExistsInvoice && hd.isThanhToan()) {
-            lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Hoàn thành").hoaDon(hd).build());
-        }
         this.hoaDonRepository.save(hd);
     }
 
@@ -180,12 +120,9 @@ public class HoaDonServiceImp implements HoaDonService {
     @Transactional(rollbackOn = Exception.class)
     public void confirmDelivery(String code) {
         HoaDon hd = getHoaDonByCode(code);
-        hd.setTrangThai(hd.isThanhToan() ? "Hoàn thành" : "Đã giao cho đơn vị vận chuyển");
+        hd.setTrangThai("Đã giao cho đơn vị vận chuyển");
         hd.setNgayCapNhat(new Date());
         lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Đã giao cho đơn vị vận chuyển").hoaDon(hd).build());
-        if (hd.isThanhToan()) {
-            lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Hoàn thành").hoaDon(hd).build());
-        }
         this.hoaDonRepository.save(hd);
     }
 
@@ -200,6 +137,15 @@ public class HoaDonServiceImp implements HoaDonService {
             this.sanPhamChiTietRepository.save(ct);
         });
         lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Đã hủy").hoaDon(hd).build());
+        this.hoaDonRepository.save(hd);
+    }
+
+    @Override
+    public void completed(String code) {
+        HoaDon hd = getHoaDonByCode(code);
+        hd.setTrangThai("Hoàn thành");
+        hd.setNgayCapNhat(new Date());
+        lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Hoàn thành").hoaDon(hd).build());
         this.hoaDonRepository.save(hd);
     }
 
