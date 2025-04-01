@@ -99,7 +99,14 @@ public class SanPhamController {
 
         String chuoiNgauNhien = taoChuoiNgauNhien(7, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
         LocalDateTime currentTime = LocalDateTime.now();
-        String maSanPham = "SP" + chuoiNgauNhien;
+//        String maSanPham = "SP" + chuoiNgauNhien;
+        String maSanPham = "";
+        if (sanPhamRepositoty.findAll().size() < 9) {
+            int index = sanPhamRepositoty.findAll().size() + 1;
+            maSanPham = "SP0" + index;
+        } else {
+            maSanPham = "SP" + sanPhamRepositoty.findAll().size();
+        }
         // Trim tên sản phẩm và thay thế nhiều khoảng trắng liên tiếp bằng một khoảng trắng
         String trimmedTenSanPham = (sanPham.getTenSanPham() != null)
                 ? sanPham.getTenSanPham().trim().replaceAll("\\s+", " ")
@@ -220,13 +227,17 @@ public class SanPhamController {
         if (nextId2 == null) {
             return "redirect:/error";
         }
+        int i = 0;
         if (sanPhamChiTietList.size() <= 0) {
+
             for (MauSac colorId : idMauSac) {
+                i++;
                 for (String sizeName : kichCoNames) {
                     KichCo kichCo = kichCoRepository.findByTen(sizeName);
                     if (kichCo != null) {
                         String chuoiNgauNhien = taoChuoiNgauNhien(7, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
-                        String maSanPhamCT = "SPCT" + chuoiNgauNhien;
+//                        String maSanPhamCT = "SPCT" + chuoiNgauNhien;
+                        String maSanPhamCT = sanPham.getMaSanPham() + "-" + "CT" + i + "-" + kichCo.getTen();
                         nextId2++;
                         SanPhamChiTiet spct = new SanPhamChiTiet();
                         spct.setId(nextId2);
@@ -234,6 +245,7 @@ public class SanPhamController {
                         spct.setSanPham(sanPham);
                         spct.setSoLuong(1);
                         spct.setGiaBan(100000F);
+                        spct.setGiaBanSauGiam(spct.getGiaBan());
                         spct.setMoTa(trimmedMota);
                         spct.setThuongHieu(idThuongHieu);
                         spct.setChatLieu(idChatLieu);
@@ -260,6 +272,7 @@ public class SanPhamController {
 
         } else {
             for (MauSac colorId : idMauSac) {
+               i++;
                 for (String sizeName : kichCoNames) {
                     KichCo kichCo = kichCoRepository.findByTen(sizeName);
                     if (kichCo != null) {
@@ -275,7 +288,8 @@ public class SanPhamController {
                         }
                         if (!found) {
                             String chuoiNgauNhien = taoChuoiNgauNhien(7, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
-                            String maSanPhamCT = "SPCT" + chuoiNgauNhien;
+//                            String maSanPhamCT = "SPCT" + chuoiNgauNhien;
+                            String maSanPhamCT = sanPham.getMaSanPham() + "-" + "CT" + i + "-" + kichCo.getTen();
                             int lastIndex = sanPhamChiTietList.size() - 1;
                             SanPhamChiTiet lastItem = sanPhamChiTietList.get(lastIndex);
                             int count = lastItem.getId();
@@ -286,6 +300,7 @@ public class SanPhamController {
                             spct.setMaSanPhamChiTiet(maSanPhamCT);
                             spct.setSoLuong(1);
                             spct.setGiaBan(100000F);
+                            spct.setGiaBanSauGiam(spct.getGiaBan());
                             spct.setMoTa(trimmedMota);
                             spct.setThuongHieu(idThuongHieu);
                             spct.setChatLieu(idChatLieu);

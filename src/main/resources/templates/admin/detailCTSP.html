@@ -93,7 +93,8 @@
 <!-- DataTables JS -->
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-
+<!-- Tabler (Nếu cần) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css">
 <style>
 
     .image-preview img {
@@ -150,16 +151,9 @@
 
 </style>
 
-<body class="hold-transition sidebar-mini" style="font-family: 'Bahnschrift'">
+<body>
+<div th:replace="~{components/admin-sidebar :: sidebar}"></div>
 <div class="wrapper">
-    <!-- Navbar -->
-    <!--    <nav th:replace="~{/layoutadmin/navbar.html}"></nav>-->
-    <!-- End navbar -->
-
-    <!--Menu bán hàng -->
-    <!--    <nav th:replace="~{/layoutadmin/menu.html}"></nav>-->
-    <!--end-->
-
     <!--Nội dung -->
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->

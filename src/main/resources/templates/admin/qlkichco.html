@@ -115,8 +115,10 @@
 <!-- DataTables JS -->
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-<body class="hold-transition sidebar-mini" style="font-family: 'Bahnschrift'">
-
+<!-- Tabler (Nếu cần) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css">
+<body>
+<div th:replace="~{components/admin-sidebar :: sidebar}"></div>
 <div class="wrapper">
     <!-- Navbar -->
 <!--    <nav th:replace="~{/layoutadmin/navbar.html}"></nav>-->
@@ -261,7 +263,7 @@
                             <!-- /.card-header -->
                             <div class="card-body">
                                 <table id="example2" style="width: 100%" class="table-bordered table-hover text-center">
-                                    <thead style="background-color:rgb(249,72,42);height: 50px;color: white">
+                                    <thead style="height: 50px;color: black">
                                     <tr>
                                         <th>STT</th>
                                         <th>Tên kích cỡ</th>
