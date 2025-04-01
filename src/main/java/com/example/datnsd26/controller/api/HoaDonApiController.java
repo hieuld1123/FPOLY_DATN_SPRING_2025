@@ -67,4 +67,13 @@ public class HoaDonApiController {
                 .message("Thanh toán")
                 .build();
     }
+
+    @PatchMapping("/completed/{code}")
+    public ApiResponse completed(@PathVariable String code) {
+        hoaDonService.completed(code);
+        return ApiResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Thanh toán")
+                .build();
+    }
 }

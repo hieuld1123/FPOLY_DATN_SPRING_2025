@@ -27,6 +27,7 @@
                 <button id="btn-modify-invoice" class="btn edit-btn" disabled>Sửa đơn hàng</button>
                 <button id="confirm-invoice" class="btn btn-primary" disabled>Xác nhận</button>
                 <button id="confirm-delivery" class="btn btn-primary" disabled>Giao cho đơn vị vận chuyển</button>
+                <button id="btn-completed" class="btn btn-primary" disabled>Hoàn thành</button>
             </div>
         </div>
 
@@ -200,6 +201,12 @@
 
             const btnCancelInvoice = document.getElementById("btn-cancel-invoice");
             btnCancelInvoice.disabled = !data.allowCancel;
+
+            const btnCompleted = document.getElementById("btn-completed");
+            btnCompleted.disabled = !data.completed;
+            if (!data.completed) {
+                btnCompleted.style.display = "none"
+            }
 
             // Hiển thị mã hóa đơn
             $('#order-id').text(data.order_id);
@@ -419,11 +426,10 @@
                     url: `http://localhost:8080/api/v1/hoa-don/confirm/${orderId}`,
                     method: 'PATCH',
                     contentType: 'application/json',
-                    data: JSON.stringify({}), // Nếu API yêu cầu body, thêm dữ liệu vào đây
+                    data: JSON.stringify({}),
                     success: function (response) {
                         if (response.status === 200) {
                             alert('Xác nhận hóa đơn thành công!');
-                            // Tải lại dữ liệu để cập nhật giao diện
                             window.location.reload();
                         } else {
                             alert('Xác nhận hóa đơn thất bại: ' + response.message);
@@ -504,6 +510,30 @@
                     error: function (xhr, status, error) {
                         console.error('Lỗi khi hủy hóa đơn:', error);
                         alert('Đã xảy ra lỗi khi hủy hóa đơn.');
+                    }
+                });
+            }
+        });
+
+        $('#btn-completed').on('click', function () {
+            const orderId = window.location.pathname.split('/').pop();
+            if (confirm('Xác nhận hoàn thành?')) {
+                $.ajax({
+                    url: `http://localhost:8080/api/v1/hoa-don/completed/${orderId}`,
+                    method: 'PATCH',
+                    contentType: 'application/json',
+                    data: JSON.stringify({}),
+                    success: function (response) {
+                        if (response.status === 200) {
+                            alert('Đơn hàng hoàn tất!');
+                            window.location.reload();
+                        } else {
+                            alert('Thất bại: ' + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Lỗi khi xác nhận hóa đơn:', error);
+                        alert('Đã xảy ra lỗi khi xác nhận hóa đơn.');
                     }
                 });
             }
