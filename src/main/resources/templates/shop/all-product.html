@@ -17,7 +17,102 @@
 <div th:replace="~{components/navbar :: navbar}"></div>
 <div class="container py-5">
     <div class="row">
-        <div class="col-3">Bộ lọc</div>
+        <div class="col-3 border-end border-2 border-dark">
+            <form method="get" action="/shop/product/all-product" class="filter-form">
+                <h4 class="text-center">Lọc sản phẩm</h4>
+                <div class="d-flex justify-content-end">
+                    <a href="#" style="font-size: 15px">Xóa tất cả</a>
+                </div>
+                <hr>
+                <!-- Lọc theo Thương hiệu -->
+                <div>
+                    <p class="fw-bold">Thương hiệu</p>
+                    <div class="row">
+                        <th:block th:each="brand : ${thuongHieu}">
+                            <div class="col-6">
+                                <label>
+                                    <input type="checkbox" name="filterBrand" th:value="${brand.id}">
+                                    <span th:text="${brand.ten}"></span>
+                                </label>
+                            </div>
+                            <br>
+                        </th:block>
+                    </div>
+                </div>
+                <hr>
+                <!-- Lọc theo Màu sắc -->
+                <div>
+                    <p class="fw-bold">Màu sắc</p>
+                    <div class="row">
+                        <th:block th:each="color : ${mauSac}">
+                            <div class="col-6">
+                                <label>
+                                    <input type="checkbox" name="filterColor" th:value="${color.id}">
+                                    <span th:text="${color.ten}"></span>
+                                </label>
+                            </div>
+                            <br>
+                        </th:block>
+                    </div>
+                </div>
+                <hr>
+                <!-- Lọc theo Kích cỡ -->
+                <div>
+                    <p class="fw-bold">Kích cỡ</p>
+                    <div class="row">
+                        <th:block th:each="size : ${kichCo}">
+                            <div class="col-6">
+                                <label style="margin-right: 10px;">
+                                    <input type="checkbox" name="filterSize" th:value="${size.id}">
+                                    <span th:text="${size.ten}"></span>
+                                </label>
+                            </div>
+                            <br>
+                        </th:block>
+                    </div>
+                </div>
+                <hr>
+                <!-- Lọc theo Đế giày -->
+                <div>
+                    <p class="fw-bold">Đế giày</p>
+                    <div class="row">
+                        <th:block th:each="sole : ${deGiay}">
+                            <div class="col-6">
+                                <label>
+                                    <input type="checkbox" name="filterSole" th:value="${sole.id}">
+                                    <span th:text="${sole.ten}"></span>
+                                </label>
+                            </div>
+                            <br>
+                        </th:block>
+                    </div>
+                </div>
+                <hr>
+                <!-- Lọc theo Chất liệu -->
+                <div>
+                    <p class="fw-bold">Chất liệu</p>
+                    <div class="row">
+                        <th:block th:each="material : ${chatLieu}">
+                            <div class="col-6">
+                                <label>
+                                    <input type="checkbox" name="filterMaterial" th:value="${material.id}">
+                                    <span th:text="${material.ten}"></span>
+                                </label>
+                            </div>
+                            <br>
+                        </th:block>
+                    </div>
+                </div>
+                <hr>
+                <!-- Submit button -->
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary">Áp dụng</button>
+                </div>
+            </form>
+
+
+        </div>
+
         <div class="col-9">
             <div class="row">
                 <div class="col-4" th:each="product : ${products}">

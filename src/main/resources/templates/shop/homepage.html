@@ -124,170 +124,144 @@
 <!-- Sản phẩm nổi bật -->
 <div class="container-fluid">
     <h3 class="text-center mb-5">Bộ sưu tập nổi bật</h3>
+
     <div class="row justify-content-center">
-        <div class="col-md-2 text-center product-container">
+        <div class="col-md-2 text-center product-container" th:each="product : ${products}">
             <div class="image-wrapper">
-                <img th:src="@{/trangchu/sn1.webp}" class="product-image">
+                <img th:src="${product.hinhAnh}" class="product-image">
             </div>
-            <h5 class="product-title">Sneaker 1</h5>
-            <p class="product-price">1.500.000 VNĐ</p>
-            <!--            <div class="btn-container-sanpham">-->
-            <!--                <a href="#" class="add-to-cart"><i class="fas fa-cart-plus"></i></a>-->
-            <!--                <span class="separator">|</span>-->
-            <!--                <a href="#" class="buy-now">Mua ngay</a>-->
-            <!--            </div>-->
-        </div>
-
-
-        <div class="col-md-2 text-center product-container">
-            <div class="image-wrapper">
-                <img th:src="@{/trangchu/sn1.webp}" class="product-image">
-            </div>
-            <h5 class="product-title">Sneaker 21</h5>
-            <p class="product-price">1.500.000 VNĐ</p>
-
-        </div>
-
-        <div class="col-md-2 text-center product-container">
-            <div class="image-wrapper">
-                <img th:src="@{/trangchu/sn1.webp}" class="product-image">
-            </div>
-            <h5 class="product-title">Sneaker 3</h5>
-            <p class="product-price">1.500.000 VNĐ</p>
-
-        </div>
-
-        <div class="col-md-2 text-center product-container">
-            <div class="image-wrapper">
-                <img th:src="@{/trangchu/sn1.webp}" class="product-image">
-            </div>
-            <h5 class="product-title">Sneaker 1</h5>
-            <p class="product-price">1.500.000 VNĐ</p>
-
-        </div>
-        <div class="col-md-2 text-center">
-            <img th:src="@{/trangchu/sn1.webp}" class="product-image" alt="Sneaker 5">
-            <h5 class="product-title">Sneaker 5</h5>
-            <p class="product-price">2.500.000 VNĐ</p>
+            <a th:href="@{/shop/product/details/{id}(id=${product.idSanPhamChiTiet})}" style="text-decoration: none">
+                <h5 class="product-title" th:text="${product.tenSanPham}"></h5>
+            </a>
+            <p class="product-price" th:text="${#numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+            </p>
         </div>
     </div>
-</div>
-<!--End-->
+    <!--End-->
 
 
-<!--Giảm giá-->
-<div class="container">
-    <h3 class="text-center mt-5 mb-5">Ưu đãi giảm giá</h3>
-    <div class="row">
-        <div class="col-6"><img th:src="@{/trangchu/sale1.webp}" style="border-radius: 5px"></div>
-        <div class="col-6"><img th:src="@{/trangchu/sale2.webp}" style="border-radius: 5px"></div>
+    <!--Giảm giá-->
+    <div class="container">
+        <h3 class="text-center mt-5 mb-5">Ưu đãi giảm giá</h3>
+        <div class="row">
+            <div class="col-6"><img th:src="@{/trangchu/sale1.webp}" style="border-radius: 5px"></div>
+            <div class="col-6"><img th:src="@{/trangchu/sale2.webp}" style="border-radius: 5px"></div>
+        </div>
     </div>
-</div>
-<!--End-->
-<br>
-<!--Tin tức-->
-<div class="container">
-    <div class="row mt-5 mb-5">
-        <!-- Câu hỏi thường gặp -->
-        <div class="col-md-4">
-            <h3 class="mb-4">Câu hỏi thường gặp</h3>
-            <div class="accordion" id="faqAccordion">
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
-                            Tôi có thể đổi trả sản phẩm không?
-                        </button>
-                    </h2>
-                    <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">
-                            Bạn có thể đổi trả trong vòng 7 ngày kể từ khi nhận hàng. Sản phẩm phải còn nguyên tem, hộp và chưa qua sử dụng.
+    <!--End-->
+    <br>
+    <!--Tin tức-->
+    <div class="container">
+        <div class="row mt-5 mb-5">
+            <!-- Câu hỏi thường gặp -->
+            <div class="col-md-4">
+                <h3 class="mb-4">Câu hỏi thường gặp</h3>
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#faq1">
+                                Tôi có thể đổi trả sản phẩm không?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Bạn có thể đổi trả trong vòng 7 ngày kể từ khi nhận hàng. Sản phẩm phải còn nguyên tem,
+                                hộp và chưa qua sử dụng.
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
-                            Tôi có thể thanh toán khi nhận hàng không?
-                        </button>
-                    </h2>
-                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">
-                            Có! Chúng tôi hỗ trợ thanh toán khi nhận hàng (COD) trên toàn quốc.
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#faq2">
+                                Tôi có thể thanh toán khi nhận hàng không?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Có! Chúng tôi hỗ trợ thanh toán khi nhận hàng (COD) trên toàn quốc.
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
-                            Thời gian giao hàng bao lâu?
-                        </button>
-                    </h2>
-                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">
-                            Thời gian giao hàng từ 2 - 5 ngày tùy vào khu vực. Bạn sẽ nhận được mã vận đơn để theo dõi đơn hàng.
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#faq3">
+                                Thời gian giao hàng bao lâu?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Thời gian giao hàng từ 2 - 5 ngày tùy vào khu vực. Bạn sẽ nhận được mã vận đơn để theo
+                                dõi đơn hàng.
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
-                            Xem kích thước sản phẩm như thế nào?
-                        </button>
-                    </h2>
-                    <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">
-                            Vui lòng làm theo các bước sau:<br><br>
-                            1. Truy cập trang sản phẩm.<br>
-                            2. Nhấp vào phần "Size Guide" dưới tên sản phẩm để xem chính xác size của bạn.<br>
-                            3. Lưu ý kỹ mục giày Nam, Nữ, Unisex, dây size US hoặc UK v.v để tránh đặt sai kích thước.<br>
-                            Sau khi chọn đúng kích thước, chỉ cần nhấp vào tùy chọn kích thước và thêm sản phẩm vào giỏ hàng của bạn hoặc mua ngay để tránh hết size bạn nhé.
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#faq4">
+                                Xem kích thước sản phẩm như thế nào?
+                            </button>
+                        </h2>
+                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Vui lòng làm theo các bước sau:<br><br>
+                                1. Truy cập trang sản phẩm.<br>
+                                2. Nhấp vào phần "Size Guide" dưới tên sản phẩm để xem chính xác size của bạn.<br>
+                                3. Lưu ý kỹ mục giày Nam, Nữ, Unisex, dây size US hoặc UK v.v để tránh đặt sai kích
+                                thước.<br>
+                                Sau khi chọn đúng kích thước, chỉ cần nhấp vào tùy chọn kích thước và thêm sản phẩm vào
+                                giỏ hàng của bạn hoặc mua ngay để tránh hết size bạn nhé.
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Tin tức -->
+            <div class="col-md-8">
+                <h3 class="mb-4">Tin tức</h3>
+                <ul class="list-group">
+                    <li class="list-group-item d-flex align-items-center">
+                        <img th:src="@{/trangchu/new1.webp}" class="news-image me-3">
+                        <div class="news-text">
+                            <a href="#" class="news-link">BỘ SƯU TẬP HÈ 2025</a>
+                            <p class="mt-2">Khám phá bộ sưu tập giày và thời trang mới nhất mùa hè 2025. </p>
+                            <a href="#">Xem thêm</a>
+                        </div>
+                    </li>
+                    <li class="list-group-item d-flex align-items-center">
+                        <img th:src="@{/trangchu/new3.webp}" class="news-image me-3">
+                        <div class="news-text">
+                            <a href="#" class="news-link">OUT SPECIALITY</a>
+                            <p class="mt-2">Khám phá những sản phẩm đặc biệt chỉ có tại cửa hàng của chúng tôi.</p>
+                            <a href="#">Xem thêm</a>
+                        </div>
+                    </li>
+                    <li class="list-group-item d-flex align-items-center">
+                        <img th:src="@{/trangchu/new2.webp}" class="news-image me-3">
+                        <div class="news-text">
+                            <a href="#" class="news-link">OUT ART</a>
+                            <p class="mt-2">Khám phá bộ sưu tập nghệ thuật "OUT ART" – sự kết hợp giữa nghệ thuật và
+                                thời trang.</p>
+                            <a href="#">Xem thêm</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+
         </div>
-
-        <!-- Tin tức -->
-        <div class="col-md-8">
-            <h3 class="mb-4">Tin tức</h3>
-            <ul class="list-group">
-                <li class="list-group-item d-flex align-items-center">
-                    <img th:src="@{/trangchu/new1.webp}" class="news-image me-3">
-                    <div class="news-text">
-                        <a href="#" class="news-link">BỘ SƯU TẬP HÈ 2025</a>
-                        <p class="mt-2">Khám phá bộ sưu tập giày và thời trang mới nhất mùa hè 2025. </p>
-                        <a href="#">Xem thêm</a>
-                    </div>
-                </li>
-                <li class="list-group-item d-flex align-items-center">
-                    <img th:src="@{/trangchu/new3.webp}"  class="news-image me-3">
-                    <div class="news-text">
-                        <a href="#" class="news-link">OUT SPECIALITY</a>
-                        <p class="mt-2">Khám phá những sản phẩm đặc biệt chỉ có tại cửa hàng của chúng tôi.</p>
-                        <a href="#">Xem thêm</a>
-                    </div>
-                </li>
-                <li class="list-group-item d-flex align-items-center">
-                    <img th:src="@{/trangchu/new2.webp}" class="news-image me-3">
-                    <div class="news-text">
-                        <a href="#" class="news-link">OUT ART</a>
-                        <p class="mt-2">Khám phá bộ sưu tập nghệ thuật "OUT ART" – sự kết hợp giữa nghệ thuật và thời trang.</p>
-                        <a href="#">Xem thêm</a>
-                    </div>
-                </li>
-            </ul>
-        </div>
-
-
     </div>
-</div>
-<!--End-->
-<br>
-<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/js/tabler.min.js"></script>
-<div th:replace="~{components/footer :: footer}"></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+    <!--End-->
+    <br>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/js/tabler.min.js"></script>
+    <div th:replace="~{components/footer :: footer}"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
 </body>
 </html>

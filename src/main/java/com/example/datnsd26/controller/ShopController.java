@@ -2,10 +2,7 @@ package com.example.datnsd26.controller;
 
 import com.example.datnsd26.controller.response.PublicSanPhamResponse;
 import com.example.datnsd26.models.*;
-import com.example.datnsd26.repository.KichCoRepository;
-import com.example.datnsd26.repository.MauSacRepository;
-import com.example.datnsd26.repository.SanPhamChiTietRepository;
-import com.example.datnsd26.repository.SanPhamRepositoty;
+import com.example.datnsd26.repository.*;
 import com.example.datnsd26.services.binhsanpham.PublicSanPhamService;
 import com.example.datnsd26.services.cart.GioHangService;
 import jakarta.servlet.http.HttpSession;
@@ -28,9 +25,15 @@ public class ShopController {
     private final PublicSanPhamService publicSanPhamService;
     private final KichCoRepository kichCoRepository;
 
+    private final ThuongHieuRepository thuongHieuRepository;
+    private final MauSacRepository mauSacRepository;
 
+    private final DeGiayRepository deGiayRepository;
+    private final ChatLieuRepository chatLieuRepository;
     @GetMapping("/homepage")
-    public String homepage() {
+    public String homepage(Model model) {
+        List<PublicSanPhamResponse> products = publicSanPhamService.getAllProducts();
+        model.addAttribute("products", products);
         return "/shop/homepage";
     }
     @GetMapping("/ve-chung-toi")
@@ -45,7 +48,17 @@ public class ShopController {
     @GetMapping("/shop/product/all-product")
     public String allProduct(Model model) {
         List<PublicSanPhamResponse> products = publicSanPhamService.getAllProducts();
+        List<ThuongHieu> listThuongHieu = thuongHieuRepository.getAll();
+        List<MauSac> listMauSac = mauSacRepository.getAll();
+        List<KichCo> listKichCo = kichCoRepository.getAll();
+        List<DeGiay> listDeGiay = deGiayRepository.getAll();
+        List<ChatLieu> listChatLieu = chatLieuRepository.getAll();
         model.addAttribute("products", products);
+        model.addAttribute("mauSac", listMauSac);
+        model.addAttribute("thuongHieu", listThuongHieu);
+        model.addAttribute("kichCo", listKichCo);
+        model.addAttribute("deGiay", listDeGiay);
+        model.addAttribute("chatLieu", listChatLieu);
         return "/shop/all-product";
     }
 
