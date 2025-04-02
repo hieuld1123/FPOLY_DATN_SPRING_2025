@@ -1,10 +1,12 @@
 package com.example.datnsd26.services;
 
 import com.example.datnsd26.controller.request.PaymentRequest;
+import com.example.datnsd26.controller.request.StoreCustomerRequest;
 import com.example.datnsd26.controller.response.CustomerResponse;
 import com.example.datnsd26.controller.response.HoaDonChiTietResponse;
 import com.example.datnsd26.controller.response.HoaDonResponse;
 import com.example.datnsd26.controller.response.SanPhamResponse;
+import jakarta.mail.MessagingException;
 
 import java.util.List;
 
@@ -34,4 +36,6 @@ public interface BanHangService {
     void addCustomerToInvoice(Integer invoiceId, Integer idKhachHang);
 
     void removeCustomer(Integer invoiceId);
+
+    Integer createCustomer(Integer invoiceId, StoreCustomerRequest request) throws MessagingException;
 }
