@@ -30,4 +30,5 @@ public class LichSuHoaDon {
     @ManyToOne
     @JoinColumn(name = "id_hoa_don")
     private HoaDon hoaDon;
+
 }

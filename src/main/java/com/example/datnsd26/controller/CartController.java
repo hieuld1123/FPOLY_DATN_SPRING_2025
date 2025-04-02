@@ -147,16 +147,13 @@ public class CartController {
 
         // Kiểm tra lỗi từ @Valid
         if (bindingResult.hasErrors()) {
-            System.out.println("Có lỗi không? " + bindingResult.hasErrors());
-            System.out.println("Danh sách lỗi: " + bindingResult.getAllErrors());
             model.addAttribute("cart", cart.getChiTietList());
             model.addAttribute("tongTamTinh", tongTamTinh);
-            model.addAttribute("hoaDonBinhRequest", hoaDonBinhRequest);  // Đảm bảo có Model
+            model.addAttribute("hoaDonBinhRequest", hoaDonBinhRequest);
             return "shop/checkout";
         }
 
-
-        // Tạo đối tượng HoaDon từ HoaDonRequest
+        // Tạo đối tượng HoaDon
         HoaDon hoaDon = HoaDon.builder()
                 .tenNguoiNhan(hoaDonBinhRequest.getTenNguoiNhan())
                 .sdtNguoiNhan(hoaDonBinhRequest.getSdtNguoiNhan())
@@ -174,31 +171,27 @@ public class CartController {
                 .trangThai("Chờ xác nhận")
                 .phiVanChuyen(tongTamTinh >= 1000000 ? 0.0f : 30000.0f)
                 .tongTien(tongTamTinh)
-                .phuongThucThanhToan(hoaDonBinhRequest.getPhuongThucThanhToan())
+                .phuongThucThanhToan("Thanh toán khi nhận hàng")
                 .thanhToan(false)
                 .ghiChu(hoaDonBinhRequest.getGhiChu())
                 .khachHang(null)
                 .nhanVien(null)
                 .build();
 
-        // Lưu hóa đơn
         hoaDonService.saveHoaDon(hoaDon);
-
         lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Đặt hàng").hoaDon(hoaDon).build());
         lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Chờ xác nhận").hoaDon(hoaDon).build());
 
-        // Lưu chi tiết hóa đơn
         // Lưu chi tiết hóa đơn và trừ số lượng sản phẩm
+        List<HoaDonChiTiet> chiTietList = new ArrayList<>();
         for (GioHangChiTiet item : cart.getChiTietList()) {
             SanPhamChiTiet sanPham = sanPhamChiTietRepository.findById(item.getSanPhamChiTiet().getId()).orElseThrow();
 
-            // Kiểm tra số lượng còn lại
             if (sanPham.getSoLuong() < item.getSoLuong()) {
                 model.addAttribute("errorMessage", "Sản phẩm " + sanPham.getSanPham().getTenSanPham() + " không đủ hàng.");
                 return "shop/checkout";
             }
 
-            // Trừ số lượng trong database
             sanPham.setSoLuong(sanPham.getSoLuong() - item.getSoLuong());
             sanPhamChiTietRepository.save(sanPham);
 
@@ -208,16 +201,17 @@ public class CartController {
             chiTiet.setSoLuong(item.getSoLuong());
             chiTiet.setGiaTienSauGiam(item.getSanPhamChiTiet().getGiaBanSauGiam());
             hoaDonChiTietRepository.save(chiTiet);
+
+            chiTietList.add(chiTiet);
         }
 
-        // Xóa giỏ hàng sau khi đặt hàng thành công
-//        gioHangService.clearCart(session);
+        // Gán danh sách sản phẩm vào hóa đơn và cập nhật lại trong DB
+        hoaDon.setDanhSachSanPham(chiTietList);
+        hoaDonService.saveHoaDon(hoaDon);
 
-        // Gửi email xác nhận
+        // Gửi email xác nhận đơn hàng
         try {
-            System.out.println("Đang gửi email xác nhận đến: " + hoaDon.getEmail());
-            mailService.sendOrderConfirmation(hoaDon.getEmail(), "Chi tiết đơn hàng: " + hoaDon.getMaHoaDon());
-            System.out.println("Email đã được gửi.");
+            mailService.sendOrderConfirmation(hoaDon);
         } catch (MessagingException e) {
             e.printStackTrace();
         }
