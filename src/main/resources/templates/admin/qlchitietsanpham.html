@@ -425,7 +425,7 @@
                                                   method="post"
                                                   onsubmit="return confirmUpdateKichCo(this);">
                                                 <button type="submit" style=" border: none;"
-                                                        th:classappend="${spct.trangThai == true ? 'badge badge-success' : 'badge badge-danger'}">
+                                                        th:classappend="${spct.trangThai == true ? 'bg-success' : 'bg-danger'}">
                                                     <span th:text="${spct.trangThai == true ? 'Đang kinh doanh' : 'Ngừng kinh doanh'}"></span>
                                                 </button>
                                             </form>
