@@ -200,7 +200,9 @@ public class BanHangServiceImpl implements BanHangService {
         hoaDon.setHinhThucMuaHang(paymentRequest.getType());
         hoaDon.setPhiVanChuyen(0f);
         hoaDon.setTrangThai(paymentRequest.getType().equalsIgnoreCase("Offline") ? "Hoàn thành" : "Chờ xác nhận");
-
+        if (hoaDon.getHinhThucMuaHang().equalsIgnoreCase("Có giao hàng")) {
+            hoaDon.setTrangThai("Đã xác nhận");
+        }
         if (hoaDon.getHinhThucMuaHang().equalsIgnoreCase("Có giao hàng") || hoaDon.getHinhThucMuaHang().equalsIgnoreCase("Online")) {
             hoaDon.setPhuongThucThanhToan(paymentRequest.getPaymentMethod());
         }
@@ -212,7 +214,7 @@ public class BanHangServiceImpl implements BanHangService {
             lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Hoàn thành").hoaDon(hoaDon).build());
         }
         if (hoaDon.getHinhThucMuaHang().equalsIgnoreCase("Có giao hàng")) {
-            lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Chờ xác nhận").hoaDon(hoaDon).build());
+            lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Đã xác nhận").hoaDon(hoaDon).build());
         }
         this.hoaDonRepository.save(hoaDon);
     }
