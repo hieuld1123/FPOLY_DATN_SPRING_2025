@@ -31,4 +31,7 @@ public interface KhachHangRepository extends JpaRepository<KhachHang, Integer> {
 
     @Query("FROM KhachHang kh WHERE (kh.tenKhachHang like %:keyword%) OR (kh.maKhachHang like %:keyword%) OR (kh.taiKhoan.sdt like %:keyword%)")
     List<KhachHang> findByNameOrCodeOrPhone(String keyword);
+
+    @Query("FROM KhachHang kh WHERE kh.taiKhoan.email LIKE :email")
+    Optional<KhachHang> findByEmail(String email);
 }
