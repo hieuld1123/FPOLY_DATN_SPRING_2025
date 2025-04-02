@@ -87,7 +87,8 @@
                     <div class="card-body">
                         <div class="row cart-item mb-3" th:each="item : ${cart}">
                             <div class="col-3">
-                                <img src="" alt="Product 1" class="img-fluid rounded" />
+<!--                                <img src="" alt="Product 1" class="img-fluid rounded" />-->
+                                <img th:src="@{'/upload' + ${item.sanPhamChiTiet.hinhAnh[0].tenAnh.substring(item.sanPhamChiTiet.hinhAnh[0].tenAnh.lastIndexOf('upload') + 6)}}" alt="Product 1" class="img-fluid rounded" />
                             </div>
                             <div class="col-6">
                                 <h5 class="card-title" th:text="${item.sanPhamChiTiet.sanPham.tenSanPham}"></h5>
