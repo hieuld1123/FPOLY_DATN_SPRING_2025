@@ -39,4 +39,7 @@ public class TaiKhoan {
             }
         }
     }
+    @Column(name = "reset_token")
+    private String resetToken;
+
 }

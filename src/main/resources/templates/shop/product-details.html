@@ -6,6 +6,9 @@
     <title>Chi tiết sản phẩm</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/Footer.css">
+    <link rel="stylesheet" href="/css/Navbar.css">
 </head>
 
 <body>
@@ -19,7 +22,8 @@
                         <div th:each="anh, iterStat : ${spct.hinhAnh}" class="carousel-item"
                              th:classappend="${iterStat.first} ? 'active'"
                              th:attr="data-bs-interval=${iterStat.first} ? '3000' : '2000'">
-                            <img th:src="${anh.tenAnh}" class="d-block w-100" alt="Ảnh sản phẩm">
+<!--                            <img th:src="${anh.tenAnh}" class="d-block w-100" alt="Ảnh sản phẩm">-->
+                            <img th:src="@{'/upload' + ${anh.tenAnh.substring(anh.tenAnh.lastIndexOf('upload') + 6)}}" alt="Ảnh sản phẩm">
                         </div>
                     </div>
                     <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval"
@@ -106,7 +110,8 @@
         </div>
     </div>
 </div>
-
+<div th:replace="~{components/footer :: footer}"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/js/tabler.min.js"></script>
 <script>
     // document.getElementById("addToCartForm").addEventListener("submit", function(event) {

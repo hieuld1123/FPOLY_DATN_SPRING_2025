@@ -1,0 +1,181 @@
+.navbar-nav {
+    gap: 40px;
+}
+
+.nav-item {
+    list-style: none;
+}
+
+.ms-auto {
+    margin-left: auto;
+}
+.navbar-brand a {
+    display: flex;
+    align-items: center; /* Căn giữa logo */
+    text-decoration: none; /* Xóa gạch chân cho liên kết */
+    color: #333; /* Màu chữ mặc định */
+}
+
+/* Logo văn bản */
+.logo-text {
+    font-family: 'Poppins', sans-serif; /* Chọn font đẹp */
+    font-size: 30px; /* Kích thước chữ */
+    font-weight: bold; /* Làm chữ đậm */
+    color: #333; /* Màu chữ mặc định */
+    letter-spacing: 2px; /* Tạo khoảng cách giữa các chữ */
+    text-transform: uppercase; /* Viết hoa tất cả chữ */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* Tạo hiệu ứng bóng cho chữ */
+}
+
+/*Menu*/
+
+/* Định dạng chung cho thanh điều hướng */
+.navbar-nav {
+    display: flex;
+    justify-content: center; /* Căn giữa các mục trong navbar */
+    align-items: center;
+    list-style-type: none; /* Loại bỏ dấu chấm của list */
+    margin: 0;
+    padding: 0;
+}
+
+/* Định dạng cho từng mục trong navbar */
+.nav-item {
+    margin-right: 30px; /* Tạo khoảng cách giữa các mục */
+    position: relative; /* Để có thể tạo hiệu ứng hover */
+}
+
+/* Định dạng cho liên kết (a) trong các mục */
+.nav-link {
+    text-decoration: none; /* Bỏ gạch chân */
+    font-size: 16px;
+    font-weight: 600;
+    color: #333; /* Màu chữ */
+    text-transform: uppercase; /* Viết hoa cho đẹp */
+    transition: color 0.3s ease-in-out, transform 0.3s ease-in-out; /* Thêm hiệu ứng khi hover */
+}
+
+/* Hiệu ứng hover cho liên kết */
+.nav-link:hover {
+    color: #ff5733; /* Màu chữ khi hover */
+    transform: translateY(-5px); /* Chuyển động nhẹ khi hover */
+}
+
+/* Thêm gạch dưới khi hover vào link */
+.nav-link:hover .nav-link-title::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #ff5733; /* Màu gạch dưới */
+    transition: width 0.3s ease-in-out; /* Hiệu ứng mở rộng gạch dưới */
+}
+
+/* Hiệu ứng gạch dưới */
+.nav-link-title {
+    position: relative;
+    display: inline-block;
+}
+
+/* Thiết kế input tìm kiếm */
+.input-icon-addon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-right: 8px;
+}
+
+.input-icon-addon svg {
+    color: #333; /* Màu của biểu tượng tìm kiếm */
+}
+
+/* Định dạng input tìm kiếm */
+.form-control {
+    padding-left: 15px;
+    padding-right: 40px;
+    border-radius: 50px; /* Viền bo tròn cho input */
+    border: 1px solid #ccc;
+    transition: border-color 0.3s ease-in-out;
+}
+
+/* Xóa khoảng cách bên phải của mục cuối cùng */
+.nav-item.ms-auto {
+    margin-left: auto;
+}
+
+/*Giỏ hàng + Tra cứu*/
+
+.navbar-nav {
+    display: flex;
+    align-items: center;
+}
+
+/* Định dạng nút trong btn-list */
+.btn-list .btn {
+    font-size: 14px;
+    padding: 8px 16px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+/* Hiệu ứng hover cho các nút */
+.btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #ff5733;
+    color: white;
+}
+
+/* Định dạng icon trong nút */
+.icon-tabler {
+    width: 20px;
+    height: 20px;
+    color: inherit;
+    transition: all 0.3s ease;
+}
+
+/* Hiệu ứng hover cho icon */
+.btn:hover .icon-tabler {
+    color: white;
+}
+
+/* Dropdown menu người dùng */
+.nav-item.dropdown .dropdown-menu {
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    min-width: 180px;
+    padding: 10px 0;
+}
+
+/* Cải thiện các mục dropdown */
+.dropdown-item {
+    font-size: 14px;
+    padding: 8px 16px;
+    transition: background-color 0.3s ease;
+}
+
+/* Hiệu ứng hover cho các mục dropdown */
+.dropdown-item:hover {
+    background-color: #f1f1f1;
+}
+
+/* Ẩn các phần tử trên màn hình nhỏ */
+.d-none.d-md-flex {
+    display: flex;
+}
+
+/* Điều chỉnh dropdown menu về phía cuối */
+.dropdown-menu-end {
+    right: 0;
+    left: auto;
+}
+
+/* Điều chỉnh vị trí của các mục giỏ hàng và tra cứu đơn hàng */
+.navbar-nav .nav-item {
+    margin-right: 20px;
+}

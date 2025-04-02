@@ -30,4 +30,6 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
 
     Optional<HoaDon> findHoaDonByMaHoaDon(String maHoaDon);
 
+    Optional<HoaDon> findByMaHoaDonAndSdtNguoiNhan(String maHoaDon, String sdtNguoiNhan);
+
 }
