@@ -1,15 +1,18 @@
 package com.example.datnsd26.controller.api;
 
+import com.example.datnsd26.controller.request.AddressRequest;
 import com.example.datnsd26.controller.request.PaymentRequest;
 import com.example.datnsd26.controller.request.StoreCustomerRequest;
 import com.example.datnsd26.controller.response.ApiResponse;
 import com.example.datnsd26.services.BanHangService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/${api.version}/ban-hang")
 @RequiredArgsConstructor
@@ -139,6 +142,33 @@ public class BanHangApiController {
                 .status(HttpStatus.OK.value())
                 .message("Customer created")
                 .data(this.banHangService.createCustomer(invoiceId, request))
+                .build();
+    }
+
+    @GetMapping("/customer-addresses/{customerId}")
+    public ApiResponse getCustomerAddresses(@PathVariable Integer customerId) {
+        return ApiResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Success")
+                .data(this.banHangService.customerAddresses(customerId))
+                .build();
+    }
+
+    @PutMapping("/update-address/{customerId}/{invoiceId}")
+    public ApiResponse updateAddress(@PathVariable Integer customerId, @PathVariable Integer invoiceId, @RequestBody AddressRequest request) {
+        this.banHangService.updateAddress(customerId, invoiceId, request);
+        return ApiResponse.builder()
+                .status(HttpStatus.ACCEPTED.value())
+                .message("Success")
+                .build();
+    }
+
+    @PutMapping("/update-phone/{customerId}/{phoneNumber}/{invoiceId}")
+    public ApiResponse updatePhone(@PathVariable Integer customerId, @PathVariable String phoneNumber, @PathVariable Integer invoiceId) {
+        this.banHangService.updatePhone(customerId, phoneNumber, invoiceId);
+        return ApiResponse.builder()
+                .status(HttpStatus.ACCEPTED.value())
+                .message("Success")
                 .build();
     }
 }

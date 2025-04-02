@@ -143,28 +143,91 @@ const handleInvoiceChange = async (id) => {
     $("#tongTien, #tong").html(`${invoice.tongTien.toLocaleString("vi-VN")} VNĐ`);
     const $productTableBody = $(".product-table tbody");
     formData.totalItem = invoice.listSanPham.length;
+
     if (invoice.khachHang && invoice.khachHang.id) {
       const customer = invoice.khachHang;
       const customerId = String(customer.id);
       formData.customerId = customerId;
       const $customerInfo = $(".customer-info");
       const hasCustomerInfo = true;
+
+      // Hiển thị thông tin khách hàng và địa chỉ
+      const addressDisplay = customer.diaChi && customer.diaChi !== "null, null, null, null"
+          ? `<div class="customer-address">${customer.diaChi}</div>`
+          : formData.province && formData.district && formData.ward && formData.addressDetail
+              ? `<div class="customer-address">${formData.addressDetail}, ${formData.ward}, ${formData.district}, ${formData.province}</div>`
+              : '<div class="customer-address">Chưa có địa chỉ</div>';
+
       $customerInfo
           .html(`
                     <div class="customer-name">
                         ${customer.tenKhachHang} - ${customer.soDienThoai} 
                         <span class="remove-customer-btn" style="cursor: pointer; color: #dc3545; margin-left: 5px;" data-customer-id="${customerId}">✕</span>
                     </div>
-                    ${
-              customer.diaChi && customer.diaChi !== "null, null, null, null"
-                  ? `<div class="customer-address">${customer.diaChi}</div>`
-                  : '<div class="customer-address">Chưa có địa chỉ</div>'
-          }
-                    <div class="add-address-btn" data-customer-id="${customerId}">Thay đổi</div>
+                    ${addressDisplay}
+                    <div class="add-address-btn" data-customer-id="${customerId}">Thay đổi địa chỉ</div>
+                    <div class="change-phone-btn" data-customer-id="${customerId}" style="display: inline-block; color: #dc3545 cursor: pointer;">Thay đổi số điện thoại</div>
                 `)
           .removeClass("text-center text-start")
           .addClass(hasCustomerInfo ? "text-start" : "text-center");
-      $(document).on("click", ".remove-customer-btn", async function () {
+
+      $(document).on("click", ".change-phone-btn", function () {
+        const customerId = $(this).data("customer-id");
+        formData.currentCustomerId = customerId;
+        $("#changePhoneModal").modal("show");
+      });
+
+      $('#changePhoneModal').on('show.bs.modal', function () {
+        $('#new-phone-number').val('');
+        $('#changePhoneModal .text-danger').text('');
+      });
+
+      $('#savePhoneBtn').on('click', async function () {
+        $('#changePhoneModal .text-danger').text('');
+
+        const newPhoneNumber = $('#new-phone-number').val().trim();
+        let isValid = true;
+
+        // Validate số điện thoại
+        if (!newPhoneNumber) {
+          $('#new-phone-number').siblings('.text-danger').text('Số điện thoại không được để trống!');
+          isValid = false;
+        } else {
+          const phonePattern = /^[0-9]{10,11}$/;
+          if (!phonePattern.test(newPhoneNumber)) {
+            $('#new-phone-number').siblings('.text-danger').text('Số điện thoại không hợp lệ! Vui lòng nhập 10-11 chữ số.');
+            isValid = false;
+          }
+        }
+
+        if (!isValid) return;
+
+        // Gọi API để cập nhật số điện thoại
+        try {
+          const response = await fetch(`http://localhost:8080/api/v1/ban-hang/update-phone/${formData.currentCustomerId}/${newPhoneNumber}/${formData.invoiceId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+          });
+
+          const result = await response.json();
+          if (result.status === 202) {
+            // Đóng modal và hiển thị thông báo
+            $('#changePhoneModal').modal('hide');
+            alert('Cập nhật số điện thoại thành công!');
+
+            // Cập nhật lại giao diện khách hàng
+            await handleInvoiceChange(formData.invoiceId);
+          } else {
+            alert('Cập nhật số điện thoại thất bại: ' + result.message);
+          }
+        } catch (error) {
+          console.error('Error updating phone number:', error);
+          alert('Đã có lỗi xảy ra khi cập nhật số điện thoại!');
+        }
+      });
+
+      $(document).off("click", ".remove-customer-btn").on("click", ".remove-customer-btn", async function () {
         const customerId = $(this).data("customer-id");
         const invoiceId = formData.invoiceId;
         if (!confirm("Bạn có chắc chắn muốn xóa khách hàng khỏi hóa đơn này?")) {
@@ -187,6 +250,12 @@ const handleInvoiceChange = async (id) => {
                 .removeClass("text-center text-start")
                 .addClass("text-center");
             formData.customer = null;
+            formData.customerId = null;
+            formData.currentCustomerId = null;
+            formData.province = null;
+            formData.district = null;
+            formData.ward = null;
+            formData.addressDetail = null;
           } else {
             alert("Xóa khách hàng thất bại!");
           }
@@ -207,7 +276,12 @@ const handleInvoiceChange = async (id) => {
           .addClass(hasCustomerInfo ? "text-start" : "text-center");
       formData.customerId = null;
       formData.currentCustomerId = null;
+      formData.province = null;
+      formData.district = null;
+      formData.ward = null;
+      formData.addressDetail = null;
     }
+
     if (!invoice.listSanPham.length) {
       $productTableBody.html(`
                 <tr>
@@ -216,6 +290,7 @@ const handleInvoiceChange = async (id) => {
             `);
       return;
     }
+
     $productTableBody.html(
         invoice.listSanPham
             .map(
@@ -244,6 +319,7 @@ const handleInvoiceChange = async (id) => {
             )
             .join("")
     );
+
     $(".quantity-input").on("input", function () {
       const $input = $(this);
       const maxValue = Number($input.attr("max"));
@@ -253,6 +329,7 @@ const handleInvoiceChange = async (id) => {
       $input.val(newQuantity);
       debounce(handleQuantityChange, 2000)($input.data("product-id"), newQuantity);
     });
+
     $(".remove-btn").on("click", function () {
       removeProduct($(this).data("id"));
     });
@@ -288,6 +365,70 @@ const removeProduct = async (itemId) => {
     if (res.status === 202) await handleInvoiceChange(formData.invoiceId);
   } catch (error) {
     console.error("Error removing product:", error);
+  }
+};
+
+// Hàm load danh sách tỉnh/thành
+const loadProvinces = async (provinceSelect, districtSelect, wardSelect, formDataKey) => {
+  try {
+    const response = await fetch('https://provinces.open-api.vn/api/?depth=3', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Không thể tải danh sách tỉnh/thành phố');
+    }
+
+    const data = await response.json();
+    provinceSelect.html(
+        '<option value="">Chọn tỉnh/thành</option>' +
+        data.map(p => `<option value="${p.code}">${p.name}</option>`).join('')
+    );
+    localStorage.setItem('provinceData', JSON.stringify(data));
+
+    provinceSelect.on('change', function () {
+      const code = this.value;
+      districtSelect.html('<option value="">Chọn quận/huyện</option>').prop('disabled', true);
+      wardSelect.html('<option value="">Chọn xã/phường</option>').prop('disabled', true);
+
+      if (code) {
+        const provinces = JSON.parse(localStorage.getItem('provinceData'));
+        const province = provinces.find(p => p.code == code);
+        formData[formDataKey + 'province'] = province.name;
+
+        districtSelect.html(
+            '<option value="">Chọn quận/huyện</option>' +
+            province.districts.map(d => `<option value="${d.code}">${d.name}</option>`).join('')
+        ).prop('disabled', false);
+      }
+    });
+
+    districtSelect.on('change', function () {
+      const code = this.value;
+      wardSelect.html('<option value="">Chọn xã/phường</option>').prop('disabled', true);
+
+      if (code) {
+        const provinces = JSON.parse(localStorage.getItem('provinceData'));
+        const district = provinces.flatMap(p => p.districts).find(d => d.code == code);
+        formData[formDataKey + 'district'] = district.name;
+
+        wardSelect.html(
+            '<option value="">Chọn xã/phường</option>' +
+            district.wards.map(w => `<option value="${w.name}">${w.name}</option>`).join('')
+        ).prop('disabled', false);
+      }
+    });
+
+    wardSelect.on('change', function (e) {
+      formData[formDataKey + 'ward'] = e.target.value;
+    });
+  } catch (error) {
+    console.error('Error loading provinces:', error);
+    provinceSelect.html('<option value="">Không thể tải tỉnh/thành</option>');
+    alert('Không thể tải danh sách tỉnh/thành phố. Vui lòng kiểm tra kết nối mạng hoặc thử lại sau!');
   }
 };
 
@@ -413,60 +554,12 @@ $(document).ready(() => {
     }
   });
 
+  // Load tỉnh/thành cho #deliveryInfoModal
   const $province = $("#province");
   const $district = $("#district");
   const $ward = $("#ward");
+  loadProvinces($province, $district, $ward, '');
 
-  fetch("https://provinces.open-api.vn/api/?depth=3")
-      .then((res) => res.json())
-      .then((data) => {
-        $province.html(
-            '<option value="">Chọn tỉnh/thành</option>' +
-            data.map((p) => `<option value="${p.code}">${p.name}</option>`).join("")
-        );
-        localStorage.setItem("provinceData", JSON.stringify(data));
-      });
-
-  $province.on("change", function () {
-    const code = this.value;
-    $district.html('<option value="">Chọn quận/huyện</option>').prop("disabled", true);
-    $ward.html('<option value="">Chọn xã/phường</option>').prop("disabled", true);
-    if (code) {
-      const provinces = JSON.parse(localStorage.getItem("provinceData"));
-      const province = provinces.find((p) => p.code == code);
-      formData.province = province.name;
-      $district
-          .html(
-              '<option value="">Chọn quận/huyện</option>' +
-              province.districts
-                  .map((d) => `<option value="${d.code}">${d.name}</option>`)
-                  .join("")
-          )
-          .prop("disabled", false);
-    }
-  });
-
-  $district.on("change", function () {
-    const code = this.value;
-    $ward.html('<option value="">Chọn xã/phường</option>').prop("disabled", true);
-    if (code) {
-      const provinces = JSON.parse(localStorage.getItem("provinceData"));
-      const district = provinces
-          .flatMap((p) => p.districts)
-          .find((d) => d.code == code);
-      formData.district = district.name;
-      $ward
-          .html(
-              '<option value="">Chọn xã/phường</option>' +
-              district.wards
-                  .map((w) => `<option value="${w.name}">${w.name}</option>`)
-                  .join("")
-          )
-          .prop("disabled", false);
-    }
-  });
-
-  $("#ward").on("change", (e) => (formData.ward = e.target.value));
   $("#address-detail").on("input", (e) => (formData.addressDetail = e.target.value));
   $("#recipient_name").on("input", (e) => (formData.recipient_name = e.target.value));
   $("#phone_number").on("input", (e) => (formData.phone_number = e.target.value));
@@ -630,7 +723,7 @@ $(document).ready(() => {
       province: province,
       district: district,
       ward: ward,
-      address_detail: addressDetail
+      addressDetail: addressDetail
     };
 
     if (!email) {
@@ -653,7 +746,6 @@ $(document).ready(() => {
       const result = await response.json();
 
       if (result.status === 200) {
-
         $('#recipient_name').val('');
         $('#phone_number').val('');
         $('#email').val('');
@@ -670,6 +762,153 @@ $(document).ready(() => {
     } catch (error) {
       console.error('Error creating customer:', error);
       alert('Đã có lỗi xảy ra khi tạo khách hàng!');
+    }
+  });
+
+  // Change Address
+  $('#addAddressModal').on('show.bs.modal', async function () {
+    $('#existing-addresses').val('');
+    $('#modal-province').val('');
+    $('#modal-district').val('').prop('disabled', true);
+    $('#modal-ward').val('').prop('disabled', true);
+    $('#modal-address-detail').val('');
+    $('#addAddressModal .text-danger').text('');
+
+    $('#existingAddress').prop('checked', true);
+    $('#existing-address-section').show();
+    $('#new-address-section').hide();
+
+    const $modalProvince = $('#modal-province');
+    const $modalDistrict = $('#modal-district');
+    const $modalWard = $('#modal-ward');
+    loadProvinces($modalProvince, $modalDistrict, $modalWard, 'modal_');
+
+    $('#modal-address-detail').on('input', (e) => (formData.modal_addressDetail = e.target.value));
+
+    try {
+      const response = await fetch(`http://localhost:8080/api/v1/ban-hang/customer-addresses/${formData.currentCustomerId}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const result = await response.json();
+      if (result.status === 200 && result.data?.length) {
+        const addresses = result.data;
+        console.log(addresses);
+        $('#existing-addresses').html(
+            '<option value="">Chọn địa chỉ</option>' +
+            addresses.map((address, index) => {
+              const fullAddress = `${address.addressDetail}, ${address.ward}, ${address.district}, ${address.province}`;
+              return `<option value="${index}" data-province="${address.province}" data-district="${address.district}" data-ward="${address.ward}" data-address-detail="${address.addressDetail}">${fullAddress}</option>`;
+            }).join('')
+        );
+      } else {
+        $('#existing-addresses').html('<option value="">Không có địa chỉ nào</option>');
+      }
+    } catch (error) {
+      console.error('Error loading addresses:', error);
+      $('#existing-addresses').html('<option value="">Không có địa chỉ nào</option>');
+    }
+  });
+
+  $('.address-option').on('change', function () {
+    const option = $(this).val();
+    if (option === 'existing') {
+      $('#existing-address-section').show();
+      $('#new-address-section').hide();
+    } else {
+      $('#existing-address-section').hide();
+      $('#new-address-section').show();
+    }
+  });
+
+  $('#saveAddressBtn').on('click', async function () {
+    $('#addAddressModal .text-danger').text('');
+    const option = $('.address-option:checked').val();
+    let addressData = {};
+
+    if (option === 'existing') {
+      const selectedAddress = $('#existing-addresses option:selected');
+      const addressIndex = selectedAddress.val();
+      if (!addressIndex) {
+        alert('Vui lòng chọn một địa chỉ!');
+        return;
+      }
+
+      addressData = {
+        province: selectedAddress.data('province'),
+        district: selectedAddress.data('district'),
+        ward: selectedAddress.data('ward'),
+        addressDetail: selectedAddress.data('address-detail')
+      };
+    } else {
+      const province = $('#modal-province option:selected').text();
+      const district = $('#modal-district option:selected').text();
+      const ward = $('#modal-ward option:selected').text();
+      const addressDetail = $('#modal-address-detail').val().trim();
+
+      let isValid = true;
+
+      if (!province || province === 'Chọn tỉnh/thành') {
+        $('#modal-province').siblings('.text-danger').text('Vui lòng chọn tỉnh/thành phố!');
+        isValid = false;
+      }
+
+      if (!district || district === 'Chọn quận/huyện') {
+        $('#modal-district').siblings('.text-danger').text('Vui lòng chọn quận/huyện!');
+        isValid = false;
+      }
+
+      if (!ward || ward === 'Chọn xã/phường') {
+        $('#modal-ward').siblings('.text-danger').text('Vui lòng chọn xã/phường!');
+        isValid = false;
+      }
+
+      if (!addressDetail) {
+        $('#modal-address-detail').siblings('.text-danger').text('Địa chỉ cụ thể không được để trống!');
+        isValid = false;
+      }
+
+      if (!isValid) return;
+
+      addressData = {
+        province: province,
+        district: district,
+        ward: ward,
+        addressDetail: addressDetail
+      };
+    }
+
+    try {
+      const response = await fetch(`http://localhost:8080/api/v1/ban-hang/update-address/${formData.currentCustomerId}/${formData.invoiceId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(addressData)
+      });
+
+      const result = await response.json();
+      if (result.status === 202) {
+        formData.province = addressData.province;
+        formData.district = addressData.district;
+        formData.ward = addressData.ward;
+        formData.addressDetail = addressData.addressDetail;
+
+        $('#existing-addresses').val('');
+        $('#modal-province').val('');
+        $('#modal-district').val('').prop('disabled', true);
+        $('#modal-ward').val('').prop('disabled', true);
+        $('#modal-address-detail').val('');
+        $('#addAddressModal .text-danger').text('');
+
+        $('#addAddressModal').modal('hide');
+        alert('Cập nhật địa chỉ thành công!');
+
+        await handleInvoiceChange(formData.invoiceId);
+      } else {
+        alert('Cập nhật địa chỉ thất bại: ' + result.message);
+      }
+    } catch (error) {
+      console.error('Error updating address:', error);
+      alert('Đã có lỗi xảy ra khi cập nhật địa chỉ!');
     }
   });
 
