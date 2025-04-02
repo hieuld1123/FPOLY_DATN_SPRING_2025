@@ -239,6 +239,19 @@
     display: block;
 }
 
+.customer-info .change-phone-btn {
+    margin-top: 0.5rem;
+    color: #0054a6;
+    cursor: pointer;
+    text-decoration: underline;
+    display: block;
+}
+
 .customer-info .add-address-btn:hover {
     color: #003087;
+}
+
+#existing-addresses {
+    display: block !important;
+    visibility: visible !important;
 }

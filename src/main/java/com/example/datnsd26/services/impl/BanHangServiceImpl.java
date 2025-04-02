@@ -1,5 +1,6 @@
 package com.example.datnsd26.services.impl;
 
+import com.example.datnsd26.controller.request.AddressRequest;
 import com.example.datnsd26.controller.request.PaymentRequest;
 import com.example.datnsd26.controller.request.StoreCustomerRequest;
 import com.example.datnsd26.controller.response.*;
@@ -283,9 +284,9 @@ public class BanHangServiceImpl implements BanHangService {
                 .build();
 
         // NOTE: If the email is null, the password can't be viewed. You must forget your password to be able to login.
-        if(StringUtils.hasLength(request.getEmail())) {
+        if (StringUtils.hasLength(request.getEmail())) {
             Optional<TaiKhoan> byEmail = this.taiKhoanRepository.findByEmail(request.getEmail());
-            if(byEmail.isPresent()) {
+            if (byEmail.isPresent()) {
                 throw new InvalidDataException("Email đã tồn tại");
             }
             String password = CommonUtils.generateRandomPassword(10);
@@ -298,6 +299,7 @@ public class BanHangServiceImpl implements BanHangService {
 
         KhachHang kh = KhachHang.builder()
                 .taiKhoan(tk)
+                .gioiTinh(true)
                 .tenKhachHang(request.getRecipient_name())
                 .maKhachHang(CommonUtils.generateCustomerCode())
                 .ngayTao(new Timestamp(System.currentTimeMillis()))
@@ -319,7 +321,7 @@ public class BanHangServiceImpl implements BanHangService {
         this.diaChiRepository.save(dc);
 
         HoaDon hd = findHoaDonById(invoiceId);
-        if(hd != null) {
+        if (hd != null) {
             hd.setKhachHang(kh);
             hd.setXa(dc.getXa());
             hd.setQuan(dc.getHuyen());
@@ -331,6 +333,60 @@ public class BanHangServiceImpl implements BanHangService {
             this.hoaDonRepository.save(hd);
         }
         return kh.getId();
+    }
+
+    @Override
+    public List<CustomerAddressResponse> customerAddresses(Integer customerId) {
+        return findKhachHangById(customerId).getDiaChi().stream().map(dc -> CustomerAddressResponse.builder()
+                .province(dc.getTinh())
+                .district(dc.getHuyen())
+                .ward(dc.getXa())
+                .addressDetail(dc.getDiaChiCuThe())
+                .build()).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(rollbackOn = Exception.class)
+    public void updateAddress(Integer customerId, Integer invoiceId, AddressRequest request) {
+        KhachHang kh = findKhachHangById(customerId);
+        DiaChi dc;
+        Optional<DiaChi> firstByValues = this.diaChiRepository.findFirstByValues(customerId,
+                request.getProvince(),
+                request.getDistrict(),
+                request.getWard(),
+                request.getAddressDetail());
+        if (firstByValues.isPresent()) {
+            dc = firstByValues.get();
+        }else{
+            dc = DiaChi.builder()
+                    .tinh(request.getProvince())
+                    .huyen(request.getDistrict())
+                    .xa(request.getWard())
+                    .diaChiCuThe(request.getAddressDetail())
+                    .khachHang(kh)
+                    .trangThai(true)
+                    .build();
+            dc = this.diaChiRepository.save(dc);
+        }
+        HoaDon hd = findHoaDonById(invoiceId);
+        hd.setXa(dc.getXa());
+        hd.setQuan(dc.getHuyen());
+        hd.setTinh(dc.getTinh());
+        hd.setDiaChiNguoiNhan(dc.getDiaChiCuThe());
+        this.hoaDonRepository.save(hd);
+    }
+
+    @Override
+    @Transactional(rollbackOn = Exception.class)
+    public void updatePhone(Integer customerId, String phoneNumber, Integer invoiceId) {
+        KhachHang kh = findKhachHangById(customerId);
+        TaiKhoan tk = kh.getTaiKhoan();
+        tk.setSdt(phoneNumber);
+        this.taiKhoanRepository.save(tk);
+        HoaDon hd = findHoaDonById(invoiceId);
+        hd.setSdtNguoiNhan(phoneNumber);
+        this.hoaDonRepository.save(hd);
+
     }
 
     private HoaDonChiTiet findHoaDonChiTietById(int id) {
