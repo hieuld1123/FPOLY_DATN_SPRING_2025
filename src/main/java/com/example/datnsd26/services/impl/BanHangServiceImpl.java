@@ -1,18 +1,25 @@
 package com.example.datnsd26.services.impl;
 
 import com.example.datnsd26.controller.request.PaymentRequest;
+import com.example.datnsd26.controller.request.StoreCustomerRequest;
 import com.example.datnsd26.controller.response.*;
 import com.example.datnsd26.exception.EntityNotFound;
+import com.example.datnsd26.exception.InvalidDataException;
 import com.example.datnsd26.models.*;
 import com.example.datnsd26.repository.*;
 import com.example.datnsd26.services.BanHangService;
+import com.example.datnsd26.services.EmailService;
 import com.example.datnsd26.utilities.AuthUtil;
+import com.example.datnsd26.utilities.CommonUtils;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +37,10 @@ public class BanHangServiceImpl implements BanHangService {
     private final AuthUtil authUtil;
     private final LichSuHoaDonRepository lichSuHoaDonRepository;
     private final KhachHangRepository khachHangRepository;
+    private final TaiKhoanRepository taiKhoanRepository;
+    private final DiaChiRepository diaChiRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     @Override
     public List<HoaDonResponse> getHoaDon() {
@@ -157,7 +168,6 @@ public class BanHangServiceImpl implements BanHangService {
         }
     }
 
-
     @Override
     public void deleteItem(int itemId) {
         HoaDonChiTiet hoaDonChiTiet = findHoaDonChiTietById(itemId);
@@ -193,7 +203,6 @@ public class BanHangServiceImpl implements BanHangService {
         if (hoaDon.getHinhThucMuaHang().equalsIgnoreCase("Có giao hàng") || hoaDon.getHinhThucMuaHang().equalsIgnoreCase("Online")) {
             hoaDon.setPhuongThucThanhToan(paymentRequest.getPaymentMethod());
         }
-        //hoaDon.setThanhToan(paymentRequest.getPaymentMethod().equalsIgnoreCase("Thanh toán tại cửa hàng"));
         hoaDon.setThanhToan(true);
         hoaDon.setNgayCapNhat(new Date());
         lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Đặt hàng").hoaDon(hoaDon).build());
@@ -262,6 +271,66 @@ public class BanHangServiceImpl implements BanHangService {
         hd.setEmail(null);
         this.hoaDonRepository.save(hd);
         log.info("Remove success");
+    }
+
+    @Override
+    @Transactional(rollbackOn = Exception.class)
+    public Integer createCustomer(Integer invoiceId, StoreCustomerRequest request) throws MessagingException {
+        TaiKhoan tk = TaiKhoan.builder()
+                .sdt(request.getPhone_number())
+                .trangThai(true)
+                .vaiTro(TaiKhoan.Role.CUSTOMER)
+                .build();
+
+        // NOTE: If the email is null, the password can't be viewed. You must forget your password to be able to login.
+        if(StringUtils.hasLength(request.getEmail())) {
+            Optional<TaiKhoan> byEmail = this.taiKhoanRepository.findByEmail(request.getEmail());
+            if(byEmail.isPresent()) {
+                throw new InvalidDataException("Email đã tồn tại");
+            }
+            String password = CommonUtils.generateRandomPassword(10);
+            tk.setEmail(request.getEmail());
+            tk.setMatKhau(this.passwordEncoder.encode(password));
+            emailService.sendNewCustomerAccountEmail(request.getEmail(), password);
+        }
+
+        tk = this.taiKhoanRepository.save(tk);
+
+        KhachHang kh = KhachHang.builder()
+                .taiKhoan(tk)
+                .tenKhachHang(request.getRecipient_name())
+                .maKhachHang(CommonUtils.generateCustomerCode())
+                .ngayTao(new Timestamp(System.currentTimeMillis()))
+                .ngayCapNhat(new Timestamp(System.currentTimeMillis()))
+                .trangThai(true)
+                .build();
+
+        kh = this.khachHangRepository.save(kh);
+
+        DiaChi dc = DiaChi.builder()
+                .tinh(request.getProvince())
+                .huyen(request.getDistrict())
+                .xa(request.getWard())
+                .diaChiCuThe(request.getAddress_detail())
+                .khachHang(kh)
+                .trangThai(true)
+                .build();
+
+        this.diaChiRepository.save(dc);
+
+        HoaDon hd = findHoaDonById(invoiceId);
+        if(hd != null) {
+            hd.setKhachHang(kh);
+            hd.setXa(dc.getXa());
+            hd.setQuan(dc.getHuyen());
+            hd.setTinh(dc.getTinh());
+            hd.setDiaChiNguoiNhan(dc.getDiaChiCuThe());
+            hd.setTenNguoiNhan(kh.getTaiKhoan().getSdt());
+            hd.setEmail(kh.getTaiKhoan().getEmail());
+            hd.setSdtNguoiNhan(kh.getTaiKhoan().getEmail());
+            this.hoaDonRepository.save(hd);
+        }
+        return kh.getId();
     }
 
     private HoaDonChiTiet findHoaDonChiTietById(int id) {

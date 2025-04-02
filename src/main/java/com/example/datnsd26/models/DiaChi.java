@@ -1,10 +1,7 @@
 package com.example.datnsd26.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.Timestamp;
 
@@ -14,6 +11,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @Table(name = "dia_chi")
 @Entity
+@Builder
 public class DiaChi {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

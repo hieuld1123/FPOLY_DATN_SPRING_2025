@@ -1,8 +1,10 @@
 package com.example.datnsd26.controller.api;
 
 import com.example.datnsd26.controller.request.PaymentRequest;
+import com.example.datnsd26.controller.request.StoreCustomerRequest;
 import com.example.datnsd26.controller.response.ApiResponse;
 import com.example.datnsd26.services.BanHangService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.http.HttpStatus;
@@ -128,6 +130,15 @@ public class BanHangApiController {
         return ApiResponse.builder()
                 .status(HttpStatus.NO_CONTENT.value())
                 .message("Thêm thành công")
+                .build();
+    }
+
+    @PostMapping("/create-customer/{invoiceId}")
+    public ApiResponse createCustomer(@PathVariable Integer invoiceId, @RequestBody StoreCustomerRequest request) throws MessagingException {
+        return ApiResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Customer created")
+                .data(this.banHangService.createCustomer(invoiceId, request))
                 .build();
     }
 }
