@@ -3,15 +3,15 @@
 <style>
 
     .btn-custom-warning {
-        background-color:rgb(222,255,206);
-        color:rgb(255,33,4);
-        border-color:rgb(255,33,4) ;
+        background-color: rgb(222, 255, 206);
+        color: rgb(255, 33, 4);
+        border-color: rgb(255, 33, 4);
     }
 
     .btn-custom-info {
-        background-color:rgb(222,255,206);
-        color:rgb(7,50,255);
-        border-color:rgb(7,50,255) ;
+        background-color: rgb(222, 255, 206);
+        color: rgb(7, 50, 255);
+        border-color: rgb(7, 50, 255);
     }
 </style>
 
@@ -36,16 +36,20 @@
 
 <!-- Select2 (Dropdown multiple) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap4-theme/1.1.1/select2-bootstrap4.min.css">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap4-theme/1.1.1/select2-bootstrap4.min.css">
 
 <!-- Bootstrap Color Picker -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.4.0/css/bootstrap-colorpicker.min.css">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.4.0/css/bootstrap-colorpicker.min.css">
 
 <!-- Tempusdominus Bootstrap 4 (DateTime Picker) -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/css/tempusdominus-bootstrap-4.min.css">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/css/tempusdominus-bootstrap-4.min.css">
 
 <!-- Bootstrap4 Duallistbox -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap4-duallistbox/4.0.2/bootstrap-duallistbox.min.css">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap4-duallistbox/4.0.2/bootstrap-duallistbox.min.css">
 
 <!-- BS-Stepper (Multi-step forms) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bs-stepper/1.7.0/css/bs-stepper.min.css">
@@ -104,14 +108,17 @@
 <!-- DataTables JS -->
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-<body class="hold-transition sidebar-mini" style="font-family: 'Bahnschrift'">
+<!-- Tabler (Nếu cần) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css">
+<body>
+<div th:replace="~{components/admin-sidebar :: sidebar}"></div>
 <div class="wrapper">
     <!-- Navbar -->
-<!--    <nav th:replace="~{/layoutadmin/navbar.html}"></nav>-->
+    <!--    <nav th:replace="~{/layoutadmin/navbar.html}"></nav>-->
     <!-- End navbar -->
 
     <!--Menu bán hàng -->
-<!--    <nav th:replace="~{/layoutadmin/menu.html}"></nav>-->
+    <!--    <nav th:replace="~{/layoutadmin/menu.html}"></nav>-->
     <!--end-->
 
     <!--Nội dung -->
@@ -141,14 +148,24 @@
                                     <div class="d-flex justify-content-between align-items-center mb-4">
                                         <div style="flex-grow: 1;">
                                             <label>Tìm kiếm:</label>
-                                            <input type="text" id="searchInput" placeholder="Tìm kiếm theo mã hoặc tên sản phẩm" class="form-control text-muted" name="key" th:value="${fillSearch}" style="height: 50px; width: 800px;">
+                                            <input type="text" id="searchInput"
+                                                   placeholder="Tìm kiếm theo mã hoặc tên sản phẩm"
+                                                   class="form-control text-muted" name="key" th:value="${fillSearch}"
+                                                   style="height: 50px; width: 800px;">
                                         </div>
                                         <div style="flex-grow: 0;">
                                             <label>Trạng thái:</label>
-                                            <select id="statusSelect" class="form-control" name="trangthai" style="color: red; font-weight: bold; height: 50px; width: 300px;">
+                                            <select id="statusSelect" class="form-control" name="trangthai"
+                                                    style="color: red; font-weight: bold; height: 50px; width: 300px;">
                                                 <option value="" th:selected="${fillTrangThai == null}">Tất cả</option>
-                                                <option value="true" th:selected="${fillTrangThai != null && fillTrangThai}">Đang kinh doanh</option>
-                                                <option value="false" th:selected="${fillTrangThai != null && !fillTrangThai}">Ngừng kinh doanh</option>
+                                                <option value="true"
+                                                        th:selected="${fillTrangThai != null && fillTrangThai}">Đang
+                                                    kinh doanh
+                                                </option>
+                                                <option value="false"
+                                                        th:selected="${fillTrangThai != null && !fillTrangThai}">Ngừng
+                                                    kinh doanh
+                                                </option>
                                             </select>
                                         </div>
                                     </div>
@@ -171,18 +188,14 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
-                            <div class="card-header">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <h5 style="margin-left: 10px; padding-top: 12px;">Danh sách sản phẩm</h5>
-                                    </div>
-                                    <a href="/viewaddSPGET" class="ms-auto">
-                                        <button type="button"
-                                                style="background-color: red;color: white; padding: 5px 10px; width: 170px; height: 40px; border-radius: 10px; border-color: red; font-weight: bold;">
-                                            + Thêm sản phẩm
-                                        </button>
-                                    </a>
-                                </div>
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h3 class="card-title fw-bold">Danh sách sản phẩm</h3>
+                                <a href="/viewaddSPGET" class="ms-auto">
+                                    <button type="button"
+                                            style="background-color: red;color: white; padding: 5px 10px; width: 170px; height: 40px; border-radius: 10px; border-color: red; font-weight: bold;">
+                                        + Thêm sản phẩm
+                                    </button>
+                                </a>
                             </div>
 
                             <!-- /.card-header -->
@@ -203,7 +216,8 @@
                                         <td th:text="${stt.index + 1}"></td>
                                         <th th:text="${sp[5]}"></th>
                                         <td>
-                                            <span th:if="${#strings.length(sp[1]) > 30}" th:text="${#strings.substring(sp[1], 0, 30)} + '...'"></span>
+                                            <span th:if="${#strings.length(sp[1]) > 30}"
+                                                  th:text="${#strings.substring(sp[1], 0, 30)} + '...'"></span>
                                             <span th:unless="${#strings.length(sp[1]) > 30}" th:text="${sp[1]}"></span>
                                         </td>
 
@@ -212,7 +226,8 @@
                                         </td>
                                         <td>
                                             <form name="updateTrangThaiForm"
-                                                  th:action="@{/san-pham/updateTrangThai/{id}(id=${sp[0]})}" method="post"
+                                                  th:action="@{/san-pham/updateTrangThai/{id}(id=${sp[0]})}"
+                                                  method="post"
                                                   onsubmit="return confirmUpdateKichCo(this);">
                                                 <button id="statusBtn_[[${sp[0]}]]" style=" border: none;"
                                                         class="btn-xs"
@@ -223,19 +238,22 @@
                                             </form>
 
                                         </td>
-<!--                                        trạng thái mới-->
-<!--                                        <td>-->
-<!--                                            <a>-->
-<!--                                                <div th:if="${sp[4] == 0}">-->
-<!--                                                    <p style=" font-family: 'Times New Roman'; font-size: 12px; border-radius: 14px; background-color: orange; padding: 2px 5px 2px 5px; color: white;">Ngừng kích hoạt</p>-->
-<!--                                                </div>-->
-<!--                                            </a>-->
-<!--                                        </td>-->
+                                        <!--                                        trạng thái mới-->
+                                        <!--                                        <td>-->
+                                        <!--                                            <a>-->
+                                        <!--                                                <div th:if="${sp[4] == 0}">-->
+                                        <!--                                                    <p style=" font-family: 'Times New Roman'; font-size: 12px; border-radius: 14px; background-color: orange; padding: 2px 5px 2px 5px; color: white;">Ngừng kích hoạt</p>-->
+                                        <!--                                                </div>-->
+                                        <!--                                            </a>-->
+                                        <!--                                        </td>-->
                                         <td>
-                                            <a style="color: red; font-size: 25px;" th:data-id="${sp[0]}" data-bs-toggle="modal" data-bs-target="#capnhatsanpham" onclick="fillShoeSoleNameSanPham(this)">
+                                            <a style="color: red; font-size: 25px;" th:data-id="${sp[0]}"
+                                               data-bs-toggle="modal" data-bs-target="#capnhatsanpham"
+                                               onclick="fillShoeSoleNameSanPham(this)">
                                                 <i class="bi bi-pencil-square"></i>
                                             </a>
-                                            <a th:href="@{/detailsanpham/{id}(id=${sp[0]})}" style="color:red;font-size: 25px;padding-left: 5px">
+                                            <a th:href="@{/detailsanpham/{id}(id=${sp[0]})}"
+                                               style="color:red;font-size: 25px;padding-left: 5px">
                                                 <i class="bi bi-eye-fill"></i>
                                             </a>
                                         </td>
@@ -255,7 +273,8 @@
                                             <div class="modal-body">
                                                 <input type="hidden" id="sanPhamId">
                                                 <div class="mb-3">
-                                                    <label for="tenSanPham" class="form-label"><span style="color: red">* </span>Tên sản phẩm</label>
+                                                    <label for="tenSanPham" class="form-label"><span style="color: red">* </span>Tên
+                                                        sản phẩm</label>
                                                     <input type="text" class="form-control" id="tenSanPham">
                                                     <div id="error-message" class="text-danger" style="display: none;">
                                                     </div>
@@ -270,10 +289,13 @@
                                             <div class="modal-footer">
                                                 <!--                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>-->
                                                 <div class="d-flex justify-content-end align-items-center mb-3">
-                                                    <button data-bs-dismiss="modal" type="button" style="background-color: black;color: white; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px; border-color: black; font-weight: bold;">
+                                                    <button data-bs-dismiss="modal" type="button"
+                                                            style="background-color: black;color: white; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px; border-color: black; font-weight: bold;">
                                                         Thoát
                                                     </button>
-                                                    <button onclick="updateShoeSoleNameSanPham()" id="updateButton" disabled type="button" style="margin-left:15px; background-color: red;color: white; padding: 5px 10px; width: 130px; height: 40px; border-radius: 10px; border-color: red; font-weight: bold;">
+                                                    <button onclick="updateShoeSoleNameSanPham()" id="updateButton"
+                                                            disabled type="button"
+                                                            style="margin-left:15px; background-color: red;color: white; padding: 5px 10px; width: 130px; height: 40px; border-radius: 10px; border-color: red; font-weight: bold;">
                                                         Cập nhật
                                                     </button>
                                                 </div>
@@ -298,7 +320,7 @@
         <!-- /.content -->
     </div>
     <!--end-->
-<!--    <nav th:replace="~{/layoutadmin/footer.html}"></nav>-->
+    <!--    <nav th:replace="~{/layoutadmin/footer.html}"></nav>-->
 </div>
 <!--script-->
 <!--<nav th:replace="~{/layoutadmin/script.html}"></nav>-->
@@ -315,10 +337,10 @@
 <!--tìm-->
 <script>
     // Lắng nghe sự kiện change trong các trường input
-    document.getElementById('searchInput').addEventListener('change', function() {
+    document.getElementById('searchInput').addEventListener('change', function () {
         document.getElementById('searchForm').submit(); // Gửi form khi có sự thay đổi
     });
-    document.getElementById('statusSelect').addEventListener('change', function() {
+    document.getElementById('statusSelect').addEventListener('change', function () {
         document.getElementById('searchForm').submit(); // Gửi form khi có sự thay đổi
     });
 </script>
@@ -355,9 +377,9 @@
 </html>
 <!--điều chỉnh trạng thái của sp-->
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         var statusButtons = document.querySelectorAll("[id^='statusBtn_']");
-        statusButtons.forEach(function(button) {
+        statusButtons.forEach(function (button) {
             var quantity = parseInt(button.parentElement.previousElementSibling.previousElementSibling.textContent); // Chỉnh lại vị trí của số lượng
             if (quantity === 0) {
                 button.classList.remove("btn-custom-info");
@@ -431,7 +453,7 @@
 
         if (!ten) {
             errorMessage.style.display = 'block';
-            errorMessage.innerText="Tên sản phẩm không được để trống";
+            errorMessage.innerText = "Tên sản phẩm không được để trống";
             return;
         }
 
@@ -443,7 +465,7 @@
             lengthErrorMessage.style.display = 'block';
             lengthErrorMessage.innerText = 'Tên sản phẩm không được vượt quá 50 ký tự.';
             return;
-        }else if (specialCharPattern.test(ten)) {
+        } else if (specialCharPattern.test(ten)) {
             lengthErrorMessage.style.display = 'block';
             lengthErrorMessage.innerText = 'Tên sản phẩm không được chứa ký tự đặc biệt.';
             return;
@@ -455,7 +477,7 @@
             .then(exists => {
                 if (exists) {
                     duplicateErrorMessage.style.display = 'block';
-                    duplicateErrorMessage.innerText='Tên sản phẩm không được trùng!';
+                    duplicateErrorMessage.innerText = 'Tên sản phẩm không được trùng!';
                     return;
                 }
 
