@@ -1,164 +1,237 @@
-<!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Sản Phẩm Chi Tiết</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<div th:replace="components/head :: head"></div>
+<meta charset="UTF-8"/>
+<title>NineShoes</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
-    <!--màu cho modal-->
-    <style>
-        /* CSS cho các tùy chọn được chọn và khi hover */
-        .select2-container--default .select2-results__option--highlighted {
-            background-color: wheat !important;
-            color: black !important;
+<!-- Google Font: Source Sans Pro -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+
+<!-- Bootstrap 5 (CSS) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+<!-- SweetAlert2 (CSS) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+<!-- iCheck (Checkbox & Radio Button Styling) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/icheck-bootstrap/3.0.1/icheck-bootstrap.min.css">
+
+<!-- Select2 (Dropdown multiple) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap4-theme/1.1.1/select2-bootstrap4.min.css">
+
+<!-- Bootstrap Color Picker -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.4.0/css/bootstrap-colorpicker.min.css">
+
+<!-- Tempusdominus Bootstrap 4 (DateTime Picker) -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/css/tempusdominus-bootstrap-4.min.css">
+
+<!-- Bootstrap4 Duallistbox -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap4-duallistbox/4.0.2/bootstrap-duallistbox.min.css">
+
+<!-- BS-Stepper (Multi-step forms) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bs-stepper/1.7.0/css/bs-stepper.min.css">
+
+<!-- Dropzone.js (File Upload) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css">
+
+<!-- AdminLTE Theme -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/css/adminlte.min.css">
+
+<!-- jQuery (Load First) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<!-- Bootstrap 5 (JS) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- SweetAlert2 (JS) -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+
+<!-- Moment.js (Required by Tempusdominus & DateRangePicker) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+
+<!-- Select2 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+
+<!-- Bootstrap Color Picker -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.4.0/js/bootstrap-colorpicker.min.js"></script>
+
+<!-- Tempusdominus Bootstrap 4 (Requires Moment.js & Bootstrap) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/js/tempusdominus-bootstrap-4.min.js"></script>
+
+<!-- Bootstrap4 Duallistbox -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap4-duallistbox/4.0.2/jquery.bootstrap-duallistbox.min.js"></script>
+
+<!-- InputMask -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
+
+<!-- DateRange Picker -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.1/daterangepicker.min.js"></script>
+
+<!-- Bootstrap Switch -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
+
+<!-- BS-Stepper -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bs-stepper/1.7.0/js/bs-stepper.min.js"></script>
+
+<!-- Dropzone.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
+
+<!-- AdminLTE App (Load Last) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/js/adminlte.min.js"></script>
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<!-- Tabler (Nếu cần) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css">
+<style>
+    /* Bố cục chính */
+    .admin-layout {
+        display: flex;
+        height: 100vh;
+    }
+
+    /* Sidebar bên trái */
+    .sidebar {
+        width: 250px;
+        background-color: #1E293B;
+        color: white;
+        padding: 20px;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+
+    /* Khu vực bên phải (navbar + nội dung) */
+    .right-content {
+        flex-grow: 1;
+        margin-left: 240px; /* Để tránh bị sidebar che */
+        display: flex;
+        flex-direction: column;
+        width: calc(100% - 250px);
+    }
+
+    /* Navbar cố định bên trên */
+    .navbar-custom {
+        height: 50px;
+        padding: 12px 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        width: calc(100% - 250px);
+        z-index: 1000;
+    }
+
+    /* Nội dung chính (có padding để tránh navbar che) */
+    .main-content {
+        margin-top: 30px;
+        padding: 50px 15px;
+        overflow-y: auto;
+        flex-grow: 1;
+    }
+
+
+    /* Responsive: Ẩn sidebar trên mobile */
+    @media (max-width: 768px) {
+        .sidebar {
+            width: 80px;
+            padding: 10px;
         }
-    </style>
 
-    <!--màu cho select2-->
-    <style>
-        .select2-container--default .select2-selection__choice {
-            background-color: white !important;
-            color: white !important;
-            border-color: white !important;
-        }
-    </style>
-
-    <!--màu cho checkbox-->
-    <style>
-        .size-button {
-            background-color: transparent !important;
-            border-color: #ddd !important;
-            color: black !important;
+        .right-content {
+            margin-left: 80px;
+            width: calc(100% - 80px);
         }
 
-        .btn-check:checked + .size-button {
-            background-color: blue !important;
-            color: white !important;
+        .navbar-custom {
+            width: calc(100% - 80px);
         }
-    </style>
+    }
+</style>
+<style>
+    /* CSS cho các tùy chọn được chọn và khi hover */
+    .select2-container--default .select2-results__option--highlighted {
+        background-color: wheat !important;
+        color: black !important;
+    }
+</style>
 
-    <!--css cho tên màu sắc trong table-->
-    <style>
-        .size-container {
-            display: flex;
-            flex-wrap: wrap; /* Tự động xuống dòng nếu thiếu chỗ */
-        }
+<!--màu cho select2-->
+<style>
+    .select2-container--default .select2-selection__choice {
+        background-color: white !important;
+        color: white !important;
+        border-color: white !important;
+    }
+</style>
 
-        .size-container button {
-            margin-right: 10px; /* Khoảng cách giữa các nút */
-            margin-bottom: 10px; /* Khoảng cách giữa các hàng */
-        }
+<!--màu cho checkbox-->
+<style>
+    .size-button {
+        background-color: transparent !important;
+        border-color: #ddd !important;
+        color: black !important;
+    }
+
+    .btn-check:checked + .size-button {
+        background-color: blue !important;
+        color: white !important;
+    }
+</style>
+
+<!--css cho tên màu sắc trong table-->
+<style>
+    .size-container {
+        display: flex;
+        flex-wrap: wrap; /* Tự động xuống dòng nếu thiếu chỗ */
+    }
+
+    .size-container button {
+        margin-right: 10px; /* Khoảng cách giữa các nút */
+        margin-bottom: 10px; /* Khoảng cách giữa các hàng */
+    }
 
 
-        .highlight-color {
-            color: white; /* Màu chữ cho tên màu sắc */
-            padding: 2px 5px; /* Khoảng cách bên trong */
-            border-radius: 3px; /* Bo góc */
-        }
-    </style>
+    .highlight-color {
+        color: white; /* Màu chữ cho tên màu sắc */
+        padding: 2px 5px; /* Khoảng cách bên trong */
+        border-radius: 3px; /* Bo góc */
+    }
+</style>
 
-    <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-
-    <!-- Bootstrap 5 (CSS) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
-    <!-- SweetAlert2 (CSS) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-
-    <!-- iCheck (Checkbox & Radio Button Styling) -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/icheck-bootstrap/3.0.1/icheck-bootstrap.min.css">
-
-    <!-- Select2 (Dropdown multiple) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap4-theme/1.1.1/select2-bootstrap4.min.css">
-
-    <!-- Bootstrap Color Picker -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.4.0/css/bootstrap-colorpicker.min.css">
-
-    <!-- Tempusdominus Bootstrap 4 (DateTime Picker) -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/css/tempusdominus-bootstrap-4.min.css">
-
-    <!-- Bootstrap4 Duallistbox -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap4-duallistbox/4.0.2/bootstrap-duallistbox.min.css">
-
-    <!-- BS-Stepper (Multi-step forms) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bs-stepper/1.7.0/css/bs-stepper.min.css">
-
-    <!-- Dropzone.js (File Upload) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css">
-
-    <!-- AdminLTE Theme -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/css/adminlte.min.css">
-
-    <!-- jQuery (Load First) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
-    <!-- Bootstrap 5 (JS) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- SweetAlert2 (JS) -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
-
-    <!-- Moment.js (Required by Tempusdominus & DateRangePicker) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
-
-    <!-- Select2 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
-
-    <!-- Bootstrap Color Picker -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.4.0/js/bootstrap-colorpicker.min.js"></script>
-
-    <!-- Tempusdominus Bootstrap 4 (Requires Moment.js & Bootstrap) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/js/tempusdominus-bootstrap-4.min.js"></script>
-
-    <!-- Bootstrap4 Duallistbox -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap4-duallistbox/4.0.2/jquery.bootstrap-duallistbox.min.js"></script>
-
-    <!-- InputMask -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
-
-    <!-- DateRange Picker -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.1/daterangepicker.min.js"></script>
-
-    <!-- Bootstrap Switch -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
-
-    <!-- BS-Stepper -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bs-stepper/1.7.0/js/bs-stepper.min.js"></script>
-
-    <!-- Dropzone.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-
-    <!-- AdminLTE App (Load Last) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/js/adminlte.min.js"></script>
-    <!-- Tabler (Nếu cần) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css">
-</head>
 <body>
-<div th:replace="~{components/admin-sidebar :: sidebar}"></div>
-<div class="page-wrapper">
-    <div class="container-fluid">
-        <div class="card m-5 h-100">
-            <div class="card-body" style="margin: 60px">
-                <h1 class="text-center">THÊM SẢN PHẨM</h1>
-                <form action="san-pham/addProduct" method="post" name="addProduct" onsubmit="return validateForm()">
 
+<div class="admin-layout">
+    <div th:replace="~{components/admin-sidebar :: admin-sidebar}" class="sidebar">
+        <!-- Nội dung sidebar -->
+    </div>
+    <!-- Khu vực bên phải -->
+    <div class="right-content">
+        <!-- Navbar -->
+        <nav class="navbar-custom"
+             th:replace="~{components/admin-navbar :: admin-navbar}">
+        </nav>
+
+        <!-- Main content -->
+        <div class="main-content">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="text-center">Thêm sản phẩm</h1>
+                <form action="san-pham/addProduct" method="post" name="addProduct" onsubmit="return validateForm()">
                     <!-- Tên sản phẩm -->
                     <div class="mb-3">
                         <!-- Hàng của label, select và button cùng 1 hàng -->
@@ -287,7 +360,7 @@
                         </div>
                     </div>
 
-                    <h1 class="text-center mt-5 mb-5">THÊM BIẾN THỂ</h1>
+                    <h1 class="text-center mt-5 mb-5">Thêm biến thể</h1>
                     <div class="row">
                         <!-- Màu sắc -->
                         <div class="col-md-6">
@@ -601,9 +674,8 @@
             </div>
         </div>
 
-        <div class="card m-5 h-100">
-            <div class="card-body" style="margin: 60px">
-
+        <div class="card">
+            <div class="card-body">
                 <!-- Modal chỉnh sửa giá số lượng -->
                 <div class="modal fade" id="chinhsuasoluongvagia" tabindex="-1" aria-labelledby="exampleModalLabel"
                      aria-hidden="true">
@@ -651,7 +723,7 @@
                       onsubmit="return validateForm2()">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center">
-                            <h3 style="margin-left: 10px; padding-top: 12px;">Danh sách biến thể sản phẩm</h3>
+                            <h3>Danh sách biến thể sản phẩm</h3>
                         </div>
                         <div class="d-flex align-items-center ms-auto">
                             <button id="editButton" class="btn btn-primary disabled" type="button"
@@ -670,7 +742,6 @@
                     </div>
 
                     <section class="content">
-                        <div class="container-fluid">
                             <table id="example2" style="width: 100%"
                                    class="table-bordered table-hover text-center">
                                 <thead style="height: 50px;color: black">
