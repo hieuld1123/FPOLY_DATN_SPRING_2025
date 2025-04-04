@@ -1,50 +1,112 @@
 <!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NineShoes</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css">
-    <style>
-        .profile-img {
-            width: 160px;
-            height: 160px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #007bff;
-            transition: transform 0.3s ease-in-out;
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="components/head :: head"></div>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NineShoes</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css">
+<style>
+    /* Bố cục chính */
+    .admin-layout {
+        display: flex;
+        height: 100vh;
+    }
+
+    /* Sidebar bên trái */
+    .sidebar {
+        width: 250px;
+        background-color: #1E293B;
+        color: white;
+        padding: 20px;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+
+    /* Khu vực bên phải (navbar + nội dung) */
+    .right-content {
+        flex-grow: 1;
+        margin-left: 240px; /* Để tránh bị sidebar che */
+        display: flex;
+        flex-direction: column;
+        width: calc(100% - 250px);
+    }
+
+    /* Navbar cố định bên trên */
+    .navbar-custom {
+        height: 50px;
+        padding: 12px 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        width: calc(100% - 250px);
+        z-index: 1000;
+    }
+
+    /* Nội dung chính (có padding để tránh navbar che) */
+    .main-content {
+        margin-top: 30px;
+        padding: 50px 15px;
+        overflow-y: auto;
+        flex-grow: 1;
+    }
+
+
+    /* Responsive: Ẩn sidebar trên mobile */
+    @media (max-width: 768px) {
+        .sidebar {
+            width: 80px;
+            padding: 10px;
         }
 
-        .profile-img:hover {
-            transform: scale(1.05);
+        .right-content {
+            margin-left: 80px;
+            width: calc(100% - 80px);
         }
 
-        .card-body {
-            padding: 24px;
+        .navbar-custom {
+            width: calc(100% - 80px);
         }
+    }
 
-    </style>
+    .profile-img {
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #007bff;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .profile-img:hover {
+        transform: scale(1.05);
+    }
+
+    .card-body {
+        padding: 24px;
+    }
+
+</style>
 </head>
 
 <body>
-<!-- Sidebar -->
-<div th:replace="~{components/admin-sidebar :: sidebar}"></div>
+<div class="admin-layout">
+    <div th:replace="~{components/admin-sidebar :: admin-sidebar}" class="sidebar">
+        <!-- Nội dung sidebar -->
+    </div>
+    <!-- Khu vực bên phải -->
+    <div class="right-content">
+        <!-- Navbar -->
+        <nav class="navbar-custom"
+             th:replace="~{components/admin-navbar :: admin-navbar}">
+        </nav>
 
-<div class="page-wrapper">
-    <div class="container-xl">
-        <div class="row my-4">
-            <div class="col-12 my-5">
-                <div class="page-pretitle">
-                    Admin
-                </div>
-                <h2 class="page-title">Quản lý nhân viên</h2>
-            </div>
-
-
+        <!-- Main content -->
+        <div class="main-content">
             <!-- Thẻ chứa thông tin nhân viên -->
-            <div class="col-12 mx-auto mt-3">
+            <div class="mx-auto mt-3">
                 <div class="card shadow-sm">
-                    <div class="card-header d-flex align-items-center">
+                    <div class="card-header bg-primary text-white">
                         <h3 class="card-title mb-0">Thông tin nhân viên</h3>
                     </div>
 
@@ -62,15 +124,18 @@
 
                                 <div class="row">
                                     <div class="col-6">
-                                        <p><strong>Mã nhân viên:</strong> <span th:text="${nhanVien.maNhanvien}"></span>
+                                        <p><strong>Mã nhân viên:</strong> <span
+                                                th:text="${nhanVien.maNhanvien}"></span>
                                         </p>
                                         <p><strong>Giới tính:</strong> <span
                                                 th:text="${nhanVien.gioiTinh} ? 'Nam' : 'Nữ'"></span></p>
-                                        <p><strong>Ngày sinh:</strong> <span th:text="${nhanVien.ngaySinh}"></span></p>
+                                        <p><strong>Ngày sinh:</strong> <span th:text="${nhanVien.ngaySinh}"></span>
+                                        </p>
                                         <p><strong>Email:</strong> <span th:text="${nhanVien.email}"></span></p>
                                     </div>
                                     <div class="col-6">
-                                        <p><strong>Số điện thoại:</strong> <span th:text="${nhanVien.sdt}"></span></p>
+                                        <p><strong>Số điện thoại:</strong> <span th:text="${nhanVien.sdt}"></span>
+                                        </p>
                                         <p><strong>Địa chỉ:</strong>
                                             <span th:text="${nhanVien.diaChiCuThe + ', ' + nhanVien.xa + ', ' + nhanVien.huyen + ', ' + nhanVien.tinh}"></span>
                                         </p>
@@ -83,7 +148,8 @@
 
                                         <!-- Ngày tạo và Ngày cập nhật -->
                                         <p class="text-muted small mb-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="16" height="16"
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="16"
+                                                 height="16"
                                                  viewBox="0 0 24 24" stroke-width="2"
                                                  stroke="currentColor" fill="none" stroke-linecap="round"
                                                  stroke-linejoin="round">
@@ -101,7 +167,8 @@
                                         </p>
 
                                         <p class="text-muted small">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="16" height="16"
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="16"
+                                                 height="16"
                                                  viewBox="0 0 24 24" stroke-width="2"
                                                  stroke="currentColor" fill="none" stroke-linecap="round"
                                                  stroke-linejoin="round">

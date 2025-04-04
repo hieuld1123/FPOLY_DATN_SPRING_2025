@@ -1,26 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
+<div th:fragment="admin-sidebar">
+    <style>
+        .navbar-brand-custom {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center; /* Căn giữa ngang */
+            align-items: center; /* Căn giữa dọc */
+            height: 60px; /* Điều chỉnh chiều cao */
+        }
 
-<head>
-    <meta charset="UTF-8">
-    <title>NineShoes</title>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        .navbar-brand-custom a {
+            color: white;
+            font-size: 1.5rem;
+            font-family: "Poppins", sans-serif;
+            letter-spacing: 2px;
+            text-decoration: none; /* Bỏ gạch chân mặc định */
+            font-weight: bold;
+        }
 
-</head>
+        .navbar-brand-custom a:hover {
+            color: #FF8C00;
+        }
 
-<body>
-    <aside class="navbar navbar-vertical navbar-expand-lg" data-bs-theme="dark" th:fragment="sidebar">
+        .nav-item {
+            transition: transform 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .nav-link {
+            padding: 10px;
+        }
+
+        .nav-item:hover > .nav-link {
+            background-color: #FF8C00;
+            transform: scale(1.05); /* Tăng kích thước nhẹ khi hover */
+            transition: all 0.3s ease; /* Hiệu ứng chuyển đổi mượt mà */
+        }
+
+        .nav-item {
+            transition: transform 0.3s ease; /* Thêm hiệu ứng cho .nav-item */
+        }
+    </style>
+
+    <aside class="navbar navbar-vertical navbar-expand-xxl navbar-dark"
+           style="background-color: #222831 ">
         <div class="container-fluid">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-menu"
-                aria-controls="sidebar-menu" aria-expanded="false" aria-label="Toggle navigation">
+                    aria-controls="sidebar-menu" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="navbar-brand navbar-brand-autodark">
-                <a href="#" style="color: white" mt-3>
-                    Nine Shoes
-                </a>
+            <div class="navbar-brand navbar-brand-autodark navbar-brand-custom">
+                <a th:href="@{/homepage}">NINE SHOES</a>
             </div>
-
             <div class="collapse navbar-collapse" id="sidebar-menu">
                 <ul class="navbar-nav pt-lg-3">
                     <li class="nav-item">
@@ -28,90 +58,92 @@
                             <span class="nav-link-icon d-md-none d-lg-inline-block">
                                 <!-- Download SVG icon from http://tabler.io/icons/icon/home -->
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    class="icon icon-tabler icons-tabler-outline icon-tabler-chart-pie">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                     stroke-linejoin="round"
+                                     class="icon icon-tabler icons-tabler-outline icon-tabler-chart-pie"
+                                     style="color: white">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                     <path
-                                        d="M10 3.2a9 9 0 1 0 10.8 10.8a1 1 0 0 0 -1 -1h-6.8a2 2 0 0 1 -2 -2v-7a.9 .9 0 0 0 -1 -.8" />
-                                    <path d="M15 3.5a9 9 0 0 1 5.5 5.5h-4.5a1 1 0 0 1 -1 -1v-4.5" />
+                                            d="M10 3.2a9 9 0 1 0 10.8 10.8a1 1 0 0 0 -1 -1h-6.8a2 2 0 0 1 -2 -2v-7a.9 .9 0 0 0 -1 -.8"/>
+                                    <path d="M15 3.5a9 9 0 0 1 5.5 5.5h-4.5a1 1 0 0 1 -1 -1v-4.5"/>
                                 </svg>
                             </span>
-                            <span class="nav-link-title">
+                            <span class="nav-link-title" style="color: white;font-size: 1.1rem">
                                 Thống kê
                             </span>
                         </a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item pt-2">
                         <a class="nav-link" th:href="@{/ban-hang}">
                             <span class="nav-link-icon d-md-none d-lg-inline-block">
                                 <!-- Download SVG icon from http://tabler.io/icons/icon/home -->
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-cart">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                    <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
-                                    <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
-                                    <path d="M17 17h-11v-14h-2" />
-                                    <path d="M6 5l14 1l-1 7h-13" />
+                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                     stroke-linejoin="round"
+                                     class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-cart"
+                                     style="color: white">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/>
+                                    <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/>
+                                    <path d="M17 17h-11v-14h-2"/>
+                                    <path d="M6 5l14 1l-1 7h-13"/>
                                 </svg>
                             </span>
-                            <span class="nav-link-title">
+                            <span class="nav-link-title" style="color: white;font-size: 1.1rem">
                                 Bán hàng
                             </span>
                         </a>
                     </li>
-                    <li class="nav-item dropdown">
+                    <li class="nav-item dropdown pt-2">
                         <a class="nav-link dropdown-toggle" href="#navbar-help" data-bs-toggle="dropdown"
-                            data-bs-auto-close="false" role="button" aria-expanded="false">
+                           data-bs-auto-close="false" role="button" aria-expanded="false">
                             <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                <!-- Download SVG icon from http://tabler.io/icons/icon/lifebuoy -->
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    class="icon icon-tabler icons-tabler-outline icon-tabler-package-import">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                    <path d="M12 21l-8 -4.5v-9l8 -4.5l8 4.5v4.5" />
-                                    <path d="M12 12l8 -4.5" />
-                                    <path d="M12 12v9" />
-                                    <path d="M12 12l-8 -4.5" />
-                                    <path d="M22 18h-7" />
-                                    <path d="M18 15l-3 3l3 3" />
+                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                     stroke-linejoin="round"
+                                     class="icon icon-tabler icons-tabler-outline icon-tabler-package-import"
+                                     style="color: white">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M12 21l-8 -4.5v-9l8 -4.5l8 4.5v4.5"/>
+                                    <path d="M12 12l8 -4.5"/>
+                                    <path d="M12 12v9"/>
+                                    <path d="M12 12l-8 -4.5"/>
+                                    <path d="M22 18h-7"/>
+                                    <path d="M18 15l-3 3l3 3"/>
                                 </svg>
                             </span>
-                            <span class="nav-link-title">
+                            <span class="nav-link-title" style="color: white;font-size: 1.1rem">
                                 Quản lý sản phẩm
                             </span>
                         </a>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" th:href="@{/listsanpham}" target="_blank" rel="noopener">
+                        <div class="dropdown-menu" style="color: white;font-size: 1rem">
+                            <a class="dropdown-item" th:href="@{/list}">
                                 Sản phẩm
                             </a>
-                            <a class="dropdown-item" th:href="@{/listthuonghieu}" target="_blank">
+                            <a class="dropdown-item" th:href="@{/listthuonghieu}">
                                 Thương hiệu
                             </a>
-                            <a class="dropdown-item" th:href="@{/chatlieu}" target="_blank">
+                            <a class="dropdown-item" th:href="@{/chatlieu}">
                                 Chất liệu
                             </a>
-                            <a class="dropdown-item" th:href="@{/listdegiay}" target="_blank">
+                            <a class="dropdown-item" th:href="@{/listdegiay}">
                                 Đế giày
                             </a>
-                            <a class="dropdown-item" th:href="@{/listMauSac}" target="_blank">
+                            <a class="dropdown-item" th:href="@{/listMauSac}">
                                 Màu sắc
                             </a>
-                            <a class="dropdown-item" th:href="@{/listKichCo}" target="_blank">
+                            <a class="dropdown-item" th:href="@{/listKichCo}">
                                 Kích cỡ
                             </a>
                         </div>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item pt-2">
                         <a class="nav-link" th:href="@{/hoa-don}">
                             <span class="nav-link-icon d-md-none d-lg-inline-block">
                                 <!-- Download SVG icon from http://tabler.io/icons/icon/home -->
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="icon icon-1">
+                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                     stroke-linejoin="round" class="icon icon-1" style="color: white">
                                     <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path>
                                     <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
                                     <path d="M15 15l3.35 3.35"></path>
@@ -120,33 +152,34 @@
                                     <path d="M18.35 5.65l-3.35 3.35"></path>
                                 </svg>
                             </span>
-                            <span class="nav-link-title">
+                            <span class="nav-link-title" style="color: white;font-size: 1.1rem">
                                 Quản lý hóa đơn
                             </span>
                         </a>
                     </li>
 
-                    <li class="nav-item dropdown">
+                    <li class="nav-item dropdown pt-2">
                         <a class="nav-link dropdown-toggle" href="#navbar-help" data-bs-toggle="dropdown"
-                            data-bs-auto-close="false" role="button" aria-expanded="false">
+                           data-bs-auto-close="false" role="button" aria-expanded="false">
                             <span class="nav-link-icon d-md-none d-lg-inline-block">
                                 <!-- Download SVG icon from http://tabler.io/icons/icon/lifebuoy -->
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    class="icon icon-tabler icons-tabler-outline icon-tabler-user-square">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                    <path d="M9 10a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
-                                    <path d="M6 21v-1a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v1" />
+                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                     stroke-linejoin="round"
+                                     class="icon icon-tabler icons-tabler-outline icon-tabler-user-square"
+                                     style="color: white">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M9 10a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/>
+                                    <path d="M6 21v-1a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v1"/>
                                     <path
-                                        d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14z" />
+                                            d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14z"/>
                                 </svg>
                             </span>
-                            <span class="nav-link-title">
+                            <span class="nav-link-title" style="color: white;font-size: 1.1rem">
                                 Quản lý người dùng
                             </span>
                         </a>
-                        <div class="dropdown-menu">
+                        <div class="dropdown-menu" style="color: white; font-size: 1rem;">
                             <a class="dropdown-item" href="/khach-hang/hien-thi">
                                 Khách hàng
                             </a>
@@ -155,107 +188,41 @@
                             </a>
                         </div>
                     </li>
-                    <li class="nav-item dropdown">
+                    <li class="nav-item dropdown pt-2">
                         <a class="nav-link dropdown-toggle" href="#navbar-help" data-bs-toggle="dropdown"
-                            data-bs-auto-close="false" role="button" aria-expanded="false">
+                           data-bs-auto-close="false" role="button" aria-expanded="false">
                             <span class="nav-link-icon d-md-none d-lg-inline-block">
                                 <!-- Download SVG icon from http://tabler.io/icons/icon/lifebuoy -->
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    class="icon icon-tabler icons-tabler-outline icon-tabler-rosette-discount">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                    <path d="M9 15l6 -6" />
-                                    <circle cx="9.5" cy="9.5" r=".5" fill="currentColor" />
-                                    <circle cx="14.5" cy="14.5" r=".5" fill="currentColor" />
+                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                     stroke-linejoin="round"
+                                     class="icon icon-tabler icons-tabler-outline icon-tabler-rosette-discount"
+                                     style="color: white">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M9 15l6 -6"/>
+                                    <circle cx="9.5" cy="9.5" r=".5" fill="currentColor"/>
+                                    <circle cx="14.5" cy="14.5" r=".5" fill="currentColor"/>
                                     <path
-                                        d="M5 7.2a2.2 2.2 0 0 1 2.2 -2.2h1a2.2 2.2 0 0 0 1.55 -.64l.7 -.7a2.2 2.2 0 0 1 3.12 0l.7 .7a2.2 2.2 0 0 0 1.55 .64h1a2.2 2.2 0 0 1 2.2 2.2v1a2.2 2.2 0 0 0 .64 1.55l.7 .7a2.2 2.2 0 0 1 0 3.12l-.7 .7a2.2 2.2 0 0 0 -.64 1.55v1a2.2 2.2 0 0 1 -2.2 2.2h-1a2.2 2.2 0 0 0 -1.55 .64l-.7 .7a2.2 2.2 0 0 1 -3.12 0l-.7 -.7a2.2 2.2 0 0 0 -1.55 -.64h-1a2.2 2.2 0 0 1 -2.2 -2.2v-1a2.2 2.2 0 0 0 -.64 -1.55l-.7 -.7a2.2 2.2 0 0 1 0 -3.12l.7 -.7a2.2 2.2 0 0 0 .64 -1.55v-1" />
+                                            d="M5 7.2a2.2 2.2 0 0 1 2.2 -2.2h1a2.2 2.2 0 0 0 1.55 -.64l.7 -.7a2.2 2.2 0 0 1 3.12 0l.7 .7a2.2 2.2 0 0 0 1.55 .64h1a2.2 2.2 0 0 1 2.2 2.2v1a2.2 2.2 0 0 0 .64 1.55l.7 .7a2.2 2.2 0 0 1 0 3.12l-.7 .7a2.2 2.2 0 0 0 -.64 1.55v1a2.2 2.2 0 0 1 -2.2 2.2h-1a2.2 2.2 0 0 0 -1.55 .64l-.7 .7a2.2 2.2 0 0 1 -3.12 0l-.7 -.7a2.2 2.2 0 0 0 -1.55 -.64h-1a2.2 2.2 0 0 1 -2.2 -2.2v-1a2.2 2.2 0 0 0 -.64 -1.55l-.7 -.7a2.2 2.2 0 0 1 0 -3.12l.7 -.7a2.2 2.2 0 0 0 .64 -1.55v-1"/>
                                 </svg>
                             </span>
-                            <span class="nav-link-title">
+                            <span class="nav-link-title" style="color: white;font-size: 1.1rem">
                                 Quản lý giảm giá
                             </span>
-                    </a>
-                    <div class="dropdown-menu">
-
-                        <a class="dropdown-item" href="/admin/khuyen-mai" target="_blank" rel="noopener">
-                            Đợt khuyến mãi
                         </a>
-                        <a class="dropdown-item" href="/admin/vouchers">
-                            Phiếu giảm giá
-                        </a>
-                    </div>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#navbar-help" data-bs-toggle="dropdown"
-                       data-bs-auto-close="false" role="button" aria-expanded="false">
-                            <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                <!-- Download SVG icon from http://tabler.io/icons/icon/lifebuoy -->
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-user">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                    <path d="M12 2a5 5 0 1 1 -5 5l.005 -.217a5 5 0 0 1 4.995 -4.783z" />
-                                    <path
-                                        d="M14 14a5 5 0 0 1 5 5v1a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-1a5 5 0 0 1 5 -5h4z" />
-                                </svg>
-                            </span>
-                            <span class="nav-link-title">
-                                Tài khoản
-                            </span>
-                        </a>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" href="#" target="_blank" rel="noopener">
-                                Thông tin của tôi
+                        <div class="dropdown-menu" style="color: white;font-size: 1rem">
+                            <a class="dropdown-item" href="/admin/khuyen-mai">
+                                Đợt khuyến mãi
                             </a>
-                            <a class="dropdown-item" href="#" target="_blank" rel="noopener">
-                                Đổi mật khẩu
+                            <a class="dropdown-item" href="/admin/vouchers">
+                                Phiếu giảm giá
                             </a>
                         </div>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/logout" onclick="confirmLogout(event)">
-                            <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                <!-- Tabler Icon Logout -->
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    class="icon icon-tabler icons-tabler-outline icon-tabler-logout">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                    <path d="M14 8l4 4m0 0l-4 4m4 -4h-11" />
-                                    <path d="M9 4h-4a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h4" />
-                                </svg>
-                            </span>
-                            <span class="nav-link-title">
-                                Đăng xuất
-                            </span>
-                        </a>
-                    </li>
-
                 </ul>
             </div>
         </div>
     </aside>
-</body>
-<script>
-    function confirmLogout(event) {
-        event.preventDefault(); // Ngăn chặn chuyển hướng ngay lập tức
 
-        Swal.fire({
-            title: "Bạn có chắc muốn đăng xuất?",
-            text: "Bạn sẽ cần đăng nhập lại để tiếp tục.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Đăng xuất",
-            cancelButtonText: "Hủy"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = "/logout"; // Chuyển hướng sau khi xác nhận
-            }
-        });
-    }
 
-</script>
-
-</html>
+</div>

@@ -1,15 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>NineShoes</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="components/head :: head"></div>
+<meta charset="UTF-8">
+<title>NineShoes</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-</head>
 <style>
+    /* Bố cục chính */
+    .admin-layout {
+        display: flex;
+        height: 100vh;
+    }
+
+    /* Sidebar bên trái */
+    .sidebar {
+        width: 250px;
+        background-color: #1E293B;
+        color: white;
+        padding: 20px;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+
+    /* Khu vực bên phải (navbar + nội dung) */
+    .right-content {
+        flex-grow: 1;
+        margin-left: 240px; /* Để tránh bị sidebar che */
+        display: flex;
+        flex-direction: column;
+        width: calc(100% - 250px);
+    }
+
+    /* Navbar cố định bên trên */
+    .navbar-custom {
+        height: 50px;
+        padding: 12px 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        width: calc(100% - 250px);
+        z-index: 1000;
+    }
+
+    /* Nội dung chính (có padding để tránh navbar che) */
+    .main-content {
+        margin-top: 30px;
+        padding: 50px 15px;
+        overflow-y: auto;
+        flex-grow: 1;
+    }
+
+
+    /* Responsive: Ẩn sidebar trên mobile */
+    @media (max-width: 768px) {
+        .sidebar {
+            width: 80px;
+            padding: 10px;
+        }
+
+        .right-content {
+            margin-left: 80px;
+            width: calc(100% - 80px);
+        }
+
+        .navbar-custom {
+            width: calc(100% - 80px);
+        }
+    }
+
     .img-preview {
         width: 150px;
         height: 150px;
@@ -21,149 +83,157 @@
     }
 </style>
 <body>
-<div th:replace="~{components/admin-sidebar :: sidebar}"></div>
-<div class="page-wrapper">
-    <div class="container-xl">
-        <div class="my-5">
-            <div class="page-pretitle">Admin</div>
-            <h2 class="page-title">Quản lý nhân viên</h2>
-        </div>
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Sửa nhân viên</h3>
-            </div>
-            <div class="card-body">
-                <form th:method="post" id="addForm" th:object="${nhanVienDto}"
-                      th:action="@{/nhan-vien/sua/{id}(id=${nhanVienDto.id})}"
-                      enctype="multipart/form-data" onsubmit="return validate(event);">
-                    <div class="row">
-                        <!-- Cột bên trái: Ảnh nhân viên -->
-                        <div class="col-md-4 text-center" style="margin-top: 50px">
-                            <div>
-                                <img id="uploadedImage" class="img-preview rounded-circle"
-                                     th:src="@{/uploads/{imageName}(imageName=${nhanVienDto.hinhAnh})}">
-                            </div>
-                            <input type="file" class="form-control mt-3" name="anh" id="fileInput"
-                                   accept="image/png, image/jpeg, image/jpg"/>
-                            <!-- Input hidden để giữ lại ảnh cũ -->
-                            <input type="hidden" name="oldImage" th:value="${nhanVienDto.hinhAnh}">
-                        </div>
-                        <!-- Cột bên phải: Thông tin nhân viên -->
-                        <div class="col-md-8">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Tên nhân viên</label>
-                                    <input type="text" class="form-control" th:field="*{tenNhanVien}"
-                                           id="inputTen" th:errorclass="is-invalid"
-                                           placeholder="Nhập tên nhân viên">
-                                    <p style="color: red; font-weight: initial;" id="errorTen"></p>
-                                </div>
+<div class="admin-layout">
+    <div th:replace="~{components/admin-sidebar :: admin-sidebar}" class="sidebar">
+        <!-- Nội dung sidebar -->
+    </div>
+    <!-- Khu vực bên phải -->
+    <div class="right-content">
+        <!-- Navbar -->
+        <nav class="navbar-custom"
+             th:replace="~{components/admin-navbar :: admin-navbar}">
+        </nav>
 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Ngày sinh</label>
-                                    <input type="date" class="form-control" th:field="*{ngaySinh}"
-                                           id="inputNgSinh" th:errorclass="is-invalid">
-                                    <p style="color: red; font-weight: initial;" id="errorNgSinh"></p>
+        <!-- Main content -->
+        <div class="main-content">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title">Cập nhật nhân viên</h3>
+                </div>
+                <div class="card-body">
+                    <form th:method="post" id="addForm" th:object="${nhanVienDto}"
+                          th:action="@{/nhan-vien/sua/{id}(id=${nhanVienDto.id})}"
+                          enctype="multipart/form-data" onsubmit="return validate(event);">
+                        <div class="row">
+                            <!-- Cột bên trái: Ảnh nhân viên -->
+                            <div class="col-md-4 text-center" style="margin-top: 50px">
+                                <div>
+                                    <img id="uploadedImage" class="img-preview rounded-circle"
+                                         th:src="@{/uploads/{imageName}(imageName=${nhanVienDto.hinhAnh})}">
                                 </div>
+                                <input type="file" class="form-control mt-3" name="anh" id="fileInput"
+                                       accept="image/png, image/jpeg, image/jpg"/>
+                                <!-- Input hidden để giữ lại ảnh cũ -->
+                                <input type="hidden" name="oldImage" th:value="${nhanVienDto.hinhAnh}">
                             </div>
+                            <!-- Cột bên phải: Thông tin nhân viên -->
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Tên nhân viên</label>
+                                        <input type="text" class="form-control" th:field="*{tenNhanVien}"
+                                               id="inputTen" th:errorclass="is-invalid"
+                                               placeholder="Nhập tên nhân viên">
+                                        <p style="color: red; font-weight: initial;" id="errorTen"></p>
+                                    </div>
 
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Giới tính</label>
-                                    <div class="d-flex">
-                                        <input class="form-check-input" type="radio" th:field="*{gioiTinh}" id="radioGT"
-                                               style="margin-right: 5px" th:value="true"> Nam
-                                        <input class="form-check-input ms-3" type="radio" th:field="*{gioiTinh}"
-                                               style="margin-right:5px" th:value="false"> Nữ
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Ngày sinh</label>
+                                        <input type="date" class="form-control" th:field="*{ngaySinh}"
+                                               id="inputNgSinh" th:errorclass="is-invalid">
+                                        <p style="color: red; font-weight: initial;" id="errorNgSinh"></p>
                                     </div>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Email</label>
-                                    <input type="email" class="form-control" th:field="*{email}"
-                                           id="inputEmail" th:errorclass="is-invalid"
-                                           placeholder="Nhập email"
-                                           th:attr="data-original=${nhanVienDto.email},
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Giới tính</label>
+                                        <div class="d-flex">
+                                            <input class="form-check-input" type="radio" th:field="*{gioiTinh}"
+                                                   id="radioGT"
+                                                   style="margin-right: 5px" th:value="true"> Nam
+                                            <input class="form-check-input ms-3" type="radio" th:field="*{gioiTinh}"
+                                                   style="margin-right:5px" th:value="false"> Nữ
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-control" th:field="*{email}"
+                                               id="inputEmail" th:errorclass="is-invalid"
+                                               placeholder="Nhập email"
+                                               th:attr="data-original=${nhanVienDto.email},
                                                             data-id=${nhanVienDto.id}">
 
-                                    <p style="color: red; font-weight: initial;" id="errorEmail"></p>
+                                        <p style="color: red; font-weight: initial;" id="errorEmail"></p>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Số điện thoại</label>
-                                    <input type="text" class="form-control" th:field="*{sdt}"
-                                           th:errorclass="is-invalid" id="inputSdt"
-                                           placeholder="Nhập số điện thoại"
-                                           th:attr="data-original=${nhanVienDto.sdt},
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Số điện thoại</label>
+                                        <input type="text" class="form-control" th:field="*{sdt}"
+                                               th:errorclass="is-invalid" id="inputSdt"
+                                               placeholder="Nhập số điện thoại"
+                                               th:attr="data-original=${nhanVienDto.sdt},
                                                             data-id=${nhanVienDto.id}">
-                                    <p style="color: red; font-weight: initial;" id="errorSdt"></p>
+                                        <p style="color: red; font-weight: initial;" id="errorSdt"></p>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Vai trò</label>
+                                        <select class="form-select" th:field="*{vaiTro}">
+                                            <option value="ADMIN">Admin</option>
+                                            <option value="EMPLOYEE">Nhân viên</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Vai trò</label>
-                                    <select class="form-select" th:field="*{vaiTro}">
-                                        <option value="ADMIN">Admin</option>
-                                        <option value="EMPLOYEE">Nhân viên</option>
-                                    </select>
-                                </div>
-                            </div>
 
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Trạng thái</label>
-                                    <select class="form-select" th:field="*{trangThai}">
-                                        <option th:selected="*{trangThai == true}" value="true">Đang làm việc</option>
-                                        <option th:selected="*{trangThai == false}" value="false">Đã nghỉ</option>
-                                    </select>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Trạng thái</label>
+                                        <select class="form-select" th:field="*{trangThai}">
+                                            <option th:selected="*{trangThai == true}" value="true">Đang làm việc
+                                            </option>
+                                            <option th:selected="*{trangThai == false}" value="false">Đã nghỉ</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <hr>
-                    <!-- Địa chỉ -->
-                    <h3>Địa chỉ</h3>
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Tỉnh/Thành phố</label>
-                            <select class="form-control form-select" id="city" th:field="*{tinh}">
-                                <option th:value="${nhanVienDto.tinh}" selected
-                                        th:text="${nhanVienDto.tinh}"></option>
-                            </select>
-                            <p style="color: red; font-weight: initial;" id="errorTinh"></p>
+                        <hr>
+                        <!-- Địa chỉ -->
+                        <h3>Địa chỉ</h3>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Tỉnh/Thành phố</label>
+                                <select class="form-control form-select" id="city" th:field="*{tinh}">
+                                    <option th:value="${nhanVienDto.tinh}" selected
+                                            th:text="${nhanVienDto.tinh}"></option>
+                                </select>
+                                <p style="color: red; font-weight: initial;" id="errorTinh"></p>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Quận/Huyện</label>
+                                <select class="form-control form-select" id="district" th:field="*{huyen}">
+                                    <option th:value="${nhanVienDto.huyen}" selected
+                                            th:text="${nhanVienDto.huyen}"></option>
+                                </select>
+                                <p style="color: red; font-weight: initial;" id="errorQuan"></p>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Xã/Phường</label>
+                                <select class="form-control form-select" id="ward" th:field="*{xa}">
+                                    <option th:value="${nhanVienDto.xa}" selected
+                                            th:text="${nhanVienDto.xa}"></option>
+                                </select>
+                                <p style="color: red; font-weight: initial;" id="errorPhuong"></p>
+                            </div>
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Quận/Huyện</label>
-                            <select class="form-control form-select" id="district" th:field="*{huyen}">
-                                <option th:value="${nhanVienDto.huyen}" selected
-                                        th:text="${nhanVienDto.huyen}"></option>
-                            </select>
-                            <p style="color: red; font-weight: initial;" id="errorQuan"></p>
+                        <div class="mb-3">
+                            <label class="form-label">Địa chỉ cụ thể</label>
+                            <input type="text" class="form-control" th:field="*{diaChiCuThe}"
+                                   id="inputDuong" th:errorclass="is-invalid" placeholder="Nhập địa chỉ cụ thể">
+                            <p style="color: red; font-weight: initial;" id="errorDuong"></p>
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Xã/Phường</label>
-                            <select class="form-control form-select" id="ward" th:field="*{xa}">
-                                <option th:value="${nhanVienDto.xa}" selected
-                                        th:text="${nhanVienDto.xa}"></option>
-                            </select>
-                            <p style="color: red; font-weight: initial;" id="errorPhuong"></p>
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary">Lưu</button>
+                            <a th:href="@{/nhan-vien/hien-thi}"
+                               class="btn btn-primary btn-secondary ms-2 me-2">Quay lại</a>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Địa chỉ cụ thể</label>
-                        <input type="text" class="form-control" th:field="*{diaChiCuThe}"
-                               id="inputDuong" th:errorclass="is-invalid" placeholder="Nhập địa chỉ cụ thể">
-                        <p style="color: red; font-weight: initial;" id="errorDuong"></p>
-                    </div>
-                    <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary">Lưu</button>
-                        <a th:href="@{/nhan-vien/hien-thi}"
-                           class="btn btn-primary btn-secondary ms-2 me-2">Quay lại</a>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
@@ -305,7 +375,6 @@
 
         return !isDuplicate;
     }
-
 
 
     function validate(event) {

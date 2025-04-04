@@ -11,7 +11,21 @@
     <link rel="stylesheet" href="/css/Navbar.css">
 
 </head>
+<style>
+    .color-circle {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: inline-block;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: 0.3s;
+    }
 
+    .color-circle.selected {
+        border: 2px solid black; /* Hiển thị viền khi được chọn */
+    }
+</style>
 <body>
 <!--Header-->
 <div th:replace="~{components/navbar :: navbar}"></div>
@@ -21,7 +35,7 @@
             <form method="get" action="/shop/product/all-product" class="filter-form">
                 <h4 class="text-center">Lọc sản phẩm</h4>
                 <div class="d-flex justify-content-end">
-                    <a href="#" style="font-size: 15px">Xóa tất cả</a>
+                    <a href="#" style="font-size: 13px;color: black" onclick="clearAllCheckboxes()">Xóa tất cả</a>
                 </div>
                 <hr>
                 <!-- Lọc theo Thương hiệu -->
@@ -40,38 +54,7 @@
                     </div>
                 </div>
                 <hr>
-                <!-- Lọc theo Màu sắc -->
-                <div>
-                    <p class="fw-bold">Màu sắc</p>
-                    <div class="row">
-                        <th:block th:each="color : ${mauSac}">
-                            <div class="col-6">
-                                <label>
-                                    <input type="checkbox" name="filterColor" th:value="${color.id}">
-                                    <span th:text="${color.ten}"></span>
-                                </label>
-                            </div>
-                            <br>
-                        </th:block>
-                    </div>
-                </div>
-                <hr>
-                <!-- Lọc theo Kích cỡ -->
-                <div>
-                    <p class="fw-bold">Kích cỡ</p>
-                    <div class="row">
-                        <th:block th:each="size : ${kichCo}">
-                            <div class="col-6">
-                                <label style="margin-right: 10px;">
-                                    <input type="checkbox" name="filterSize" th:value="${size.id}">
-                                    <span th:text="${size.ten}"></span>
-                                </label>
-                            </div>
-                            <br>
-                        </th:block>
-                    </div>
-                </div>
-                <hr>
+
                 <!-- Lọc theo Đế giày -->
                 <div>
                     <p class="fw-bold">Đế giày</p>
@@ -104,18 +87,59 @@
                     </div>
                 </div>
                 <hr>
-                <!-- Submit button -->
-                <div class="d-flex justify-content-center">
-                    <button type="submit" class="btn btn-primary">Áp dụng</button>
+                <!-- Lọc theo Màu sắc -->
+                <div>
+                    <p class="fw-bold">Màu sắc</p>
+                    <div class="row">
+                        <th:block th:each="color : ${mauSac}">
+                            <div class="col-3 d-flex justify-content-center">
+                                <button class="color-circle" th:style="'background-color:' + ${color.ten}"
+                                        th:data-color="${color.id}" onclick="toggleColor(this)">
+                                </button>
+                            </div>
+                        </th:block>
+                    </div>
                 </div>
+                <hr>
+                <!-- Lọc theo Kích cỡ -->
+                <div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <p class="fw-bold">Kích cỡ</p>
+                        <a href="#" style="font-size: 12px;color: black">Hướng dẫn chọn kích cỡ</a>
+                    </div>
+                    <div class="row">
+                        <th:block th:each="size : ${kichCo}">
+                            <div class="col-4">
+                                <label style="margin-right: 10px;">
+                                    <input type="checkbox" name="filterSize" th:value="${size.id}">
+                                    <span th:text="${size.ten}"></span>
+                                </label>
+                            </div>
+                            <br>
+                        </th:block>
+                    </div>
+                </div>
+                <hr>
             </form>
 
 
         </div>
 
         <div class="col-9">
+                <!--                Sắp xếp-->
+                <div class="d-flex justify-content-end">
+                    <select id="sort" class="form-select w-auto" onchange="sortData(this.value)">
+                        <option value="asc">Sắp xếp A-Z</option>
+                        <option value="desc">Sắp xếp Z-A</option>
+                        <option value="price-asc">Giá thấp đến cao</option>
+                        <option value="price-desc">Giá cao đến thấp</option>
+                    </select>
+                </div>
             <div class="row">
-                <div class="col-4" th:each="product : ${products}">
+                <p>Số lượng sản phẩm: <span th:text="${#lists.size(products)}"></span></p>
+
+                <div class="col-4 mt-5" th:each="product : ${products}">
+
                     <a th:href="@{/shop/product/details/{id}(id=${product.idSanPhamChiTiet})}"
                        class="text-decoration-none">
                         <div class="card" style="width: 18rem;">
@@ -140,7 +164,61 @@
 <div th:replace="~{components/footer :: footer}"></div>
 <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/js/tabler.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+<script>
+    let selectedColors = [];
 
+    function toggleColor(element) {
+        let colorId = element.getAttribute("data-color");
+
+        if (selectedColors.includes(colorId)) {
+            selectedColors = selectedColors.filter(id => id !== colorId);
+            element.classList.remove("selected");
+        } else {
+            selectedColors.push(colorId);
+            element.classList.add("selected");
+        }
+
+        console.log("Màu đã chọn:", selectedColors);
+    }
+    function clearAllCheckboxes() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = false;
+        });
+    }
+
+    function sortData(sortOrder) {
+        // Gửi yêu cầu GET với tham số sắp xếp
+        const url = `/shop/product/all-product?sortOrder=${sortOrder}`;
+
+        // Gửi yêu cầu tới server và nhận danh sách sản phẩm đã sắp xếp
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                // Cập nhật danh sách sản phẩm trên giao diện
+                updateProductList(data);
+            })
+            .catch(error => console.error('Error fetching sorted products:', error));
+    }
+
+    function updateProductList(products) {
+        // Xóa nội dung cũ trong danh sách sản phẩm
+        const productContainer = document.getElementById('product-list');
+        productContainer.innerHTML = '';
+
+        // Thêm các sản phẩm đã sắp xếp vào giao diện
+        products.forEach(product => {
+            const productElement = document.createElement('div');
+            productElement.classList.add('product');
+            productElement.innerHTML = `
+            <h5>${product.name}</h5>
+            <p>${product.price} VNĐ</p>
+        `;
+            productContainer.appendChild(productElement);
+        });
+    }
+
+</script>
 
 </body>
 

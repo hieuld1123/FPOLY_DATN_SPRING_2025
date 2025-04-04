@@ -47,12 +47,15 @@ public class ShopController {
 
     @GetMapping("/shop/product/all-product")
     public String allProduct(Model model) {
-        List<PublicSanPhamResponse> products = publicSanPhamService.getAllProducts();
+        List<PublicSanPhamResponse> products;
+            products = publicSanPhamService.getAllProducts();
+
         List<ThuongHieu> listThuongHieu = thuongHieuRepository.getAll();
         List<MauSac> listMauSac = mauSacRepository.getAll();
         List<KichCo> listKichCo = kichCoRepository.getAll();
         List<DeGiay> listDeGiay = deGiayRepository.getAll();
         List<ChatLieu> listChatLieu = chatLieuRepository.getAll();
+
         model.addAttribute("products", products);
         model.addAttribute("mauSac", listMauSac);
         model.addAttribute("thuongHieu", listThuongHieu);
