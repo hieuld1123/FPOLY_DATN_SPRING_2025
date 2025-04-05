@@ -1,14 +1,87 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>NineShoes</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
-</head>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<div th:replace="components/head :: head"></div>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nine Shoes</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+<style>
+    /* Bố cục chính */
+    .admin-layout {
+        display: flex;
+        height: 100vh;
+    }
+
+    /* Sidebar bên trái */
+    .sidebar {
+        width: 250px;
+        background-color: #1E293B;
+        color: white;
+        padding: 20px;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+
+    /* Khu vực bên phải (navbar + nội dung) */
+    .right-content {
+        flex-grow: 1;
+        margin-left: 240px; /* Để tránh bị sidebar che */
+        display: flex;
+        flex-direction: column;
+        width: calc(100% - 250px);
+    }
+
+    /* Navbar cố định bên trên */
+    .navbar-custom {
+        height: 50px;
+        padding: 12px 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        width: calc(100% - 250px);
+        z-index: 1000;
+    }
+
+    /* Nội dung chính (có padding để tránh navbar che) */
+    .main-content {
+        margin-top: 30px;
+        padding: 50px 15px;
+        overflow-y: auto;
+        flex-grow: 1;
+    }
+
+
+    /* Responsive: Ẩn sidebar trên mobile */
+    @media (max-width: 768px) {
+        .sidebar {
+            width: 80px;
+            padding: 10px;
+        }
+
+        .right-content {
+            margin-left: 80px;
+            width: calc(100% - 80px);
+        }
+
+        .navbar-custom {
+            width: calc(100% - 80px);
+        }
+    }
+</style>
 <body>
-    <div th:replace="~{components/admin-sidebar :: sidebar}"></div>
-    <div class="page-wrapper">
-        <div class="container-xl">
+<div class="admin-layout">
+    <div th:replace="~{components/admin-sidebar :: admin-sidebar}" class="sidebar">
+        <!-- Nội dung sidebar -->
+    </div>
+    <!-- Khu vực bên phải -->
+    <div class="right-content">
+        <!-- Navbar -->
+        <nav class="navbar-custom"
+             th:replace="~{components/admin-navbar :: admin-navbar}">
+        </nav>
+
+        <!-- Main content -->
+        <div class="main-content">
             <div class="row">
                 <div class="card mt-5">
                     <div class="card-header">
@@ -17,11 +90,11 @@
                     <div class="card-body border-bottom py-3">
                         <div class="row">
                             <div class="col-4">
-                                <div class="card-title">Doanh thu</div>
+                                <div class="card-title">Doanh thu trong ngày</div>
                                 <p th:text="${doanhThu} + ' VND'"></p>
                             </div>
                             <div class="col-4">
-                                <div class="card-title">Đơn hàng mới</div>
+                                <div class="card-title">Đơn hàng hoàn thành</div>
                                 <p th:text="${soDonHangMoi}"></p>
                             </div>
                             <div class="col-4">
@@ -33,7 +106,7 @@
                 </div>
                 <div class="card mt-5">
                     <div class="card-header">
-                        <h3 class="card-title">Thống kê doanh số</h3>
+                        <h3 class="card-title">Thống kê doanh thu</h3>
                     </div>
                     <div class="card-body border-bottom py-3">
                         <div class="row">
@@ -41,62 +114,76 @@
                                 <div class="card-body">
                                     <div id="chart"></div>
                                 </div>
-                            </div>                              
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="card mt-5">
-                    <div class="card-header">
-                        <h3 class="card-title">Top sản phẩm bán chạy</h3>
+                <div class="d-flex gap-3">
+                    <div class="card mt-5  w-50">
+                        <div class="card-header ">
+                            <h3 class="card-title">Top sản phẩm bán chạy</h3>
+                        </div>
+                        <div class="card-body border-bottom py-3">
+                            <div class="row">
+
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body border-bottom py-3">
-                        <div class="row">
-                            
+                    <div class="card mt-5  w-50">
+                        <div class="card-header">
+                            <h3 class="card-title">Top sản phẩm sắp hết</h3>
+                        </div>
+                        <div class="card-body border-bottom py-3">
+                            <div class="row">
+
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var options = {
-                series: [{
-                    name: 'Doanh thu',
-                    data: [45000, 52000, 48000, 60000, 57000, 62000, 70000] // Dữ liệu doanh thu theo tuần
-                }],
-                chart: {
-                    type: 'bar',
-                    height: 350
-                },
-                plotOptions: {
-                    bar: {
-                        distributed: true, // Kích hoạt chế độ phân phối màu sắc
-                        horizontal: false,
-                        columnWidth: '45%',
-                    }
-                },
-                xaxis: {
-                    categories: ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'],
-                    labels: {
-                        style: {
-                            fontSize: '14px'
-                        }
-                    }
-                },
-                colors: ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0', '#546E7A', '#26a69a'],
-                title: {
-                    text: 'Doanh thu theo tuần',
-                    align: 'center'
+</div>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var options = {
+            series: [{
+                name: 'Doanh thu',
+                data: [45000, 52000, 48000, 60000, 57000, 62000, 70000] // Dữ liệu doanh thu theo tuần
+            }],
+            chart: {
+                type: 'bar',
+                height: 350
+            },
+            plotOptions: {
+                bar: {
+                    distributed: true, // Kích hoạt chế độ phân phối màu sắc
+                    horizontal: false,
+                    columnWidth: '45%',
                 }
-            };
+            },
+            xaxis: {
+                categories: ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'],
+                labels: {
+                    style: {
+                        fontSize: '14px'
+                    }
+                }
+            },
+            colors: ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0', '#546E7A', '#26a69a'],
+            title: {
+                text: 'Doanh thu theo tuần',
+                align: 'center'
+            }
+        };
 
-            var chart = new ApexCharts(document.querySelector("#chart"), options);
-            chart.render();
-        });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
+
 
 </body>
 </html>

@@ -1,372 +1,451 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chỉnh Sửa Khuyến Mãi</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="components/head :: head"></div>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chỉnh Sửa Khuyến Mãi</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
-    <style>
-        .error-message {
-            color: red;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
+<style>
+    /* Bố cục chính */
+    .admin-layout {
+        display: flex;
+        height: 100vh;
+    }
+
+    /* Sidebar bên trái */
+    .sidebar {
+        width: 250px;
+        background-color: #1E293B;
+        color: white;
+        padding: 20px;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+
+    /* Khu vực bên phải (navbar + nội dung) */
+    .right-content {
+        flex-grow: 1;
+        margin-left: 240px; /* Để tránh bị sidebar che */
+        display: flex;
+        flex-direction: column;
+        width: calc(100% - 250px);
+    }
+
+    /* Navbar cố định bên trên */
+    .navbar-custom {
+        height: 50px;
+        padding: 12px 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        width: calc(100% - 250px);
+        z-index: 1000;
+    }
+
+    /* Nội dung chính (có padding để tránh navbar che) */
+    .main-content {
+        margin-top: 30px;
+        padding: 50px 15px;
+        overflow-y: auto;
+        flex-grow: 1;
+    }
+
+
+    /* Responsive: Ẩn sidebar trên mobile */
+    @media (max-width: 768px) {
+        .sidebar {
+            width: 80px;
+            padding: 10px;
         }
 
-        .table td {
-            vertical-align: middle;
+        .right-content {
+            margin-left: 80px;
+            width: calc(100% - 80px);
         }
 
-        #toastContainer {
-            top: 20px;
-            right: 20px;
+        .navbar-custom {
+            width: calc(100% - 80px);
         }
+    }
 
-        .toast {
-            min-width: 300px;
-            border-radius: 10px;
-            opacity: 0.95;
-        }
+    /*main*/
+    .error-message {
+        color: red;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
 
-        .toast-body {
-            font-size: 1rem;
-            padding: 10px 15px;
-        }
+    .table td {
+        vertical-align: middle;
+    }
 
-        .toast.show {
-            animation: fadeInUp 0.5s ease-in-out;
-        }
+    #toastContainer {
+        top: 20px;
+        right: 20px;
+    }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+    .toast {
+        min-width: 300px;
+        border-radius: 10px;
+        opacity: 0.95;
+    }
+
+    .toast-body {
+        font-size: 1rem;
+        padding: 10px 15px;
+    }
+
+    .toast.show {
+        animation: fadeInUp 0.5s ease-in-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
         }
-    </style>
-</head>
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
 <body>
-<div th:replace="~{components/admin-sidebar :: sidebar}"></div>
-<div class="page-wrapper">
-    <div class="container-xl mt-4">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h2 class="card-title mb-0">Sửa Khuyến Mãi </h2>
-            </div>
-            <div class="card-body">
-                <form th:action="@{/admin/khuyen-mai/edit/{id}(id=${khuyenMai.id})}" method="post" id="khuyenMaiForm">
-                    <div class="row">
-                        <div class="col-md-5">
-                            <div class="mb-3">
-                                <label class="form-label">Tên chiến dịch</label>
-                                <input type="text" class="form-control" name="tenChienDich" id="tenChienDich"
-                                       th:value="${khuyenMai.tenChienDich}" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Hình thức giảm</label>
-                                <select class="form-select" name="hinhThucGiam" id="hinhThucGiam">
-                                    <option value="Phần Trăm" th:selected="${khuyenMai.hinhThucGiam == 'Phần Trăm'}">
-                                        Phần
-                                        Trăm
-                                    </option>
-                                    <option value="Theo Giá Tiền"
-                                            th:selected="${khuyenMai.hinhThucGiam == 'Theo Giá Tiền'}">
-                                        Theo Giá Tiền
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Thời gian bắt đầu</label>
-                                <input type="datetime-local" class="form-control" name="thoiGianBatDau"
-                                       id="thoiGianBatDau"
-                                       th:value="${#temporals.format(khuyenMai.thoiGianBatDau, 'yyyy-MM-dd''T''HH:mm')}"
-                                       required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Thời gian kết thúc</label>
-                                <input type="datetime-local" class="form-control" name="thoiGianKetThuc"
-                                       id="thoiGianKetThuc"
-                                       th:value="${#temporals.format(khuyenMai.thoiGianKetThuc, 'yyyy-MM-dd''T''HH:mm')}"
-                                       required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Giá trị giảm chung</label>
-                                <input type="number" class="form-control" name="giaTriGiam" id="giaTriGiam"
-                                       th:value="${khuyenMai.giaTriGiam}" min="0" required>
-                            </div>
-                            <div class="text-end mt-3">
-                                <a href="/admin/khuyen-mai" class="btn btn-secondary">Hủy</a>
-                                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-                            </div>
-                        </div>
+<div class="admin-layout">
+    <div th:replace="~{components/admin-sidebar :: admin-sidebar}" class="sidebar">
+        <!-- Nội dung sidebar -->
+    </div>
+    <!-- Khu vực bên phải -->
+    <div class="right-content">
+        <!-- Navbar -->
+        <nav class="navbar-custom"
+             th:replace="~{components/admin-navbar :: admin-navbar}">
+        </nav>
 
-                        <div class="col-md-7">
-                            <!-- Bảng sản phẩm -->
-                            <div class="card mb-3">
-                                <input type="text" id="searchBox" class="form-control mb-3"
-                                       placeholder="Tìm kiếm sản phẩm...">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered" id="productTableBody">
-                                        <thead>
-                                        <tr>
-                                            <th style="width: 50px;">
-                                                <input type="checkbox" id="selectAll" class="form-check-input">
-                                            </th>
-                                            <th>Sản phẩm</th>
-                                            <th>Giá gốc</th>
-                                            <th style="width: 150px;">Mức giảm</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr th:each="sp : ${sanPhams}">
-                                            <td>
-                                                <input type="checkbox" class="form-check-input chonSanPham"
-                                                       th:name="'sanPham_' + ${sp.id}"
-                                                       th:value="on"
-                                                       th:data-id="${sp.id}"
-                                                       th:checked="${sanPhamGiamGiaMap.containsKey(sp.id)}">
-                                            </td>
-                                            <td th:text="${sp.sanPham.tenSanPham}"></td>
-                                            <td class="giaGoc"
-                                                th:text="${#numbers.formatDecimal(sp.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"
-                                                th:data-gia="${sp.giaBan}"></td>
-                                            <td>
-                                                <input type="number" class="form-control mucGiam"
-                                                       th:name="'mucGiam_' + ${sp.id}"
-                                                       th:value="${sanPhamGiamGiaMap.get(sp.id)}"
-                                                       th:data-original-value="${sanPhamGiamGiaMap.get(sp.id)}"
-                                                       min="0" step="0.1">
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                    <nav aria-label="Page navigation">
-                                        <ul class="pagination">
-                                            <li class="page-item"
-                                                th:classappend="${currentPage == 0} ? 'disabled'">
-                                                <a class="page-link"
-                                                   th:href="@{/admin/khuyen-mai/edit/{id}(id=${khuyenMai.id}, page=${currentPage - 1}, size=${size})}">←
-                                                    Trước</a>
-                                            </li>
+        <!-- Main content -->
+        <div class="main-content">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title mb-0">Cập nhật khuyến mãi </h2>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/admin/khuyen-mai/edit/{id}(id=${khuyenMai.id})}" method="post"
+                          id="khuyenMaiForm">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="mb-3">
+                                    <label class="form-label">Tên chiến dịch</label>
+                                    <input type="text" class="form-control" name="tenChienDich" id="tenChienDich"
+                                           th:value="${khuyenMai.tenChienDich}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Hình thức giảm</label>
+                                    <select class="form-select" name="hinhThucGiam" id="hinhThucGiam">
+                                        <option value="Phần Trăm"
+                                                th:selected="${khuyenMai.hinhThucGiam == 'Phần Trăm'}">
+                                            Phần
+                                            Trăm
+                                        </option>
+                                        <option value="Theo Giá Tiền"
+                                                th:selected="${khuyenMai.hinhThucGiam == 'Theo Giá Tiền'}">
+                                            Theo Giá Tiền
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Thời gian bắt đầu</label>
+                                    <input type="datetime-local" class="form-control" name="thoiGianBatDau"
+                                           id="thoiGianBatDau"
+                                           th:value="${#temporals.format(khuyenMai.thoiGianBatDau, 'yyyy-MM-dd''T''HH:mm')}"
+                                           required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Thời gian kết thúc</label>
+                                    <input type="datetime-local" class="form-control" name="thoiGianKetThuc"
+                                           id="thoiGianKetThuc"
+                                           th:value="${#temporals.format(khuyenMai.thoiGianKetThuc, 'yyyy-MM-dd''T''HH:mm')}"
+                                           required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Giá trị giảm chung</label>
+                                    <input type="number" class="form-control" name="giaTriGiam" id="giaTriGiam"
+                                           th:value="${khuyenMai.giaTriGiam}" min="0" required>
+                                </div>
+                                <div class="text-end mt-3">
+                                    <a href="/admin/khuyen-mai" class="btn btn-secondary">Hủy</a>
+                                    <button type="submit" class="btn btn-primary">Lưu</button>
+                                </div>
+                            </div>
 
-                                            <li class="page-item"
-                                                th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-                                                th:classappend="${currentPage == i} ? 'active'">
-                                                <a class="page-link"
-                                                   th:href="@{/admin/khuyen-mai/edit/{id}(id=${khuyenMai.id}, page=${i}, size=${size})}"
-                                                   th:text="${i + 1}"></a>
-                                            </li>
+                            <div class="col-md-7">
+                                <!-- Bảng sản phẩm -->
+                                <div class="card mb-3">
+                                    <input type="text" id="searchBox" class="form-control mb-3"
+                                           placeholder="Tìm kiếm sản phẩm...">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" id="productTableBody">
+                                            <thead>
+                                            <tr>
+                                                <th style="width: 50px;">
+                                                    <input type="checkbox" id="selectAll" class="form-check-input">
+                                                </th>
+                                                <th>Sản phẩm</th>
+                                                <th>Giá gốc</th>
+                                                <th style="width: 150px;">Mức giảm</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr th:each="sp : ${sanPhams}">
+                                                <td>
+                                                    <input type="checkbox" class="form-check-input chonSanPham"
+                                                           th:name="'sanPham_' + ${sp.id}"
+                                                           th:value="on"
+                                                           th:data-id="${sp.id}"
+                                                           th:checked="${sanPhamGiamGiaMap.containsKey(sp.id)}">
+                                                </td>
+                                                <td th:text="${sp.sanPham.tenSanPham}"></td>
+                                                <td class="giaGoc"
+                                                    th:text="${#numbers.formatDecimal(sp.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"
+                                                    th:data-gia="${sp.giaBan}"></td>
+                                                <td>
+                                                    <input type="number" class="form-control mucGiam"
+                                                           th:name="'mucGiam_' + ${sp.id}"
+                                                           th:value="${sanPhamGiamGiaMap.get(sp.id)}"
+                                                           th:data-original-value="${sanPhamGiamGiaMap.get(sp.id)}"
+                                                           min="0" step="0.1">
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                        <nav aria-label="Page navigation">
+                                            <ul class="pagination">
+                                                <li class="page-item"
+                                                    th:classappend="${currentPage == 0} ? 'disabled'">
+                                                    <a class="page-link"
+                                                       th:href="@{/admin/khuyen-mai/edit/{id}(id=${khuyenMai.id}, page=${currentPage - 1}, size=${size})}">←
+                                                        Trước</a>
+                                                </li>
 
-                                            <li class="page-item"
-                                                th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
-                                                <a class="page-link"
-                                                   th:href="@{/admin/khuyen-mai/edit/{id}(id=${khuyenMai.id}, page=${currentPage + 1}, size=${size})}">Sau
-                                                    →</a>
-                                            </li>
-                                        </ul>
-                                    </nav>
+                                                <li class="page-item"
+                                                    th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                                                    th:classappend="${currentPage == i} ? 'active'">
+                                                    <a class="page-link"
+                                                       th:href="@{/admin/khuyen-mai/edit/{id}(id=${khuyenMai.id}, page=${i}, size=${size})}"
+                                                       th:text="${i + 1}"></a>
+                                                </li>
+
+                                                <li class="page-item"
+                                                    th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
+                                                    <a class="page-link"
+                                                       th:href="@{/admin/khuyen-mai/edit/{id}(id=${khuyenMai.id}, page=${currentPage + 1}, size=${size})}">Sau
+                                                        →</a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 1050">
+        <div id="errorToast" class="toast align-items-center text-white bg-danger border-0 shadow-lg" role="alert"
+             aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body fw-bold"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
             </div>
         </div>
     </div>
 </div>
 
-<div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 1050">
-    <div id="errorToast" class="toast align-items-center text-white bg-danger border-0 shadow-lg" role="alert"
-         aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-            <div class="toast-body fw-bold"></div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
-                    aria-label="Close"></button>
-        </div>
-    </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    document.getElementById("searchBox").addEventListener("input", function () {
-        let keyword = this.value;
-        fetch(`/admin/khuyen-mai/tim-kiem-san-pham?keyword=${keyword}&page=0&size=5`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log("Dữ liệu API trả về:", data); // Kiểm tra dữ liệu trong console
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.getElementById("searchBox").addEventListener("input", function () {
+            let keyword = this.value;
+            fetch(`/admin/khuyen-mai/tim-kiem-san-pham?keyword=${keyword}&page=0&size=5`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Dữ liệu API trả về:", data); // Kiểm tra dữ liệu trong console
 
-                if (!data || !data.content || !Array.isArray(data.content)) {
-                    throw new Error("Dữ liệu trả về không hợp lệ");
-                }
-
-                let tableBody = document.getElementById("productTableBody");
-                tableBody.innerHTML = "";
-
-                data.content.forEach(sp => {
-                    if (!sp || !sp.sanPham || typeof sp.sanPham.tenSanPham !== "string") {
-                        console.error("Sản phẩm không hợp lệ:", sp);
-                        return; // Bỏ qua phần tử lỗi
+                    if (!data || !data.content || !Array.isArray(data.content)) {
+                        throw new Error("Dữ liệu trả về không hợp lệ");
                     }
 
+                    let tableBody = document.getElementById("productTableBody");
+                    tableBody.innerHTML = "";
 
-                    let row = `<tr>
+                    data.content.forEach(sp => {
+                        if (!sp || !sp.sanPham || typeof sp.sanPham.tenSanPham !== "string") {
+                            console.error("Sản phẩm không hợp lệ:", sp);
+                            return; // Bỏ qua phần tử lỗi
+                        }
+
+
+                        let row = `<tr>
                 <td><input type='checkbox' class='form-check-input chonSanPham' name='sanPham_${sp.id}' value='on' data-id='${sp.id}'></td>
                 <td>${sp.sanPham.tenSanPham}</td>
                 <td class='giaGoc' data-gia='${sp.giaBan}'>${sp.giaBan.toLocaleString()} VNĐ</td>
                 <td><input type='number' class='form-control mucGiam' name='mucGiam_${sp.id}' min='0' step='0.1'></td>
             </tr>`;
-                    tableBody.innerHTML += row;
+                        tableBody.innerHTML += row;
+                    });
+                })
+                .catch(error => console.error("Lỗi:", error));
+
+        });
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("khuyenMaiForm");
+            const hinhThucGiam = document.getElementById("hinhThucGiam");
+            const tenChienDich = document.getElementById("tenChienDich");
+            const giaTriGiam = document.getElementById("giaTriGiam");
+            const mucGiamInputs = document.querySelectorAll(".mucGiam");
+            const giaGocElements = document.querySelectorAll(".giaGoc");
+            const checkboxes = document.querySelectorAll(".chonSanPham");
+            const selectAll = document.getElementById("selectAll");
+
+            // Xử lý chọn tất cả
+            selectAll.addEventListener("change", function () {
+                checkboxes.forEach((checkbox, index) => {
+                    checkbox.checked = this.checked;
+                    mucGiamInputs[index].disabled = !this.checked;
                 });
-            })
-            .catch(error => console.error("Lỗi:", error));
+            });
 
-    });
-    document.addEventListener("DOMContentLoaded", function () {
-        const form = document.getElementById("khuyenMaiForm");
-        const hinhThucGiam = document.getElementById("hinhThucGiam");
-        const tenChienDich = document.getElementById("tenChienDich");
-        const giaTriGiam = document.getElementById("giaTriGiam");
-        const mucGiamInputs = document.querySelectorAll(".mucGiam");
-        const giaGocElements = document.querySelectorAll(".giaGoc");
-        const checkboxes = document.querySelectorAll(".chonSanPham");
-        const selectAll = document.getElementById("selectAll");
+            function showToastError(message) {
+                let toastEl = document.getElementById('errorToast');
+                let toastBody = toastEl.querySelector('.toast-body');
+                toastBody.textContent = message;
 
-        // Xử lý chọn tất cả
-        selectAll.addEventListener("change", function () {
+                let toast = new bootstrap.Toast(toastEl, {delay: 3000}); // Hiển thị 3 giây
+                toast.show();
+            }
+
+            // Xử lý từng checkbox
             checkboxes.forEach((checkbox, index) => {
-                checkbox.checked = this.checked;
-                mucGiamInputs[index].disabled = !this.checked;
-            });
-        });
-
-        function showToastError(message) {
-            let toastEl = document.getElementById('errorToast');
-            let toastBody = toastEl.querySelector('.toast-body');
-            toastBody.textContent = message;
-
-            let toast = new bootstrap.Toast(toastEl, {delay: 3000}); // Hiển thị 3 giây
-            toast.show();
-        }
-        // Xử lý từng checkbox
-        checkboxes.forEach((checkbox, index) => {
-            checkbox.addEventListener("change", function () {
-                mucGiamInputs[index].disabled = !this.checked;
-                updateSelectAllState();
-            });
-        });
-
-        // Cập nhật trạng thái "Chọn tất cả"
-        function updateSelectAllState() {
-            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
-            selectAll.checked = checkedCount === checkboxes.length;
-            selectAll.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
-        }
-
-        // Kiểm tra form trước khi submit
-        form.addEventListener("submit", function (event) {
-            event.preventDefault();
-
-            if (validateForm()) {
-                Swal.fire({
-                    title: 'Bạn có muốn Sửa không?',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Có',
-                    cancelButtonText: 'Không'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Sửa thành công!',
-                            text: 'Đợt khuyến mãi đã được Sửa vào hệ thống.',
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then(() => {
-                            this.submit();
-                        });
-                    }
+                checkbox.addEventListener("change", function () {
+                    mucGiamInputs[index].disabled = !this.checked;
+                    updateSelectAllState();
                 });
+            });
 
-            }
-        });
-
-        // Hàm kiểm tra form
-        function validateForm() {
-            const startDate = new Date(document.getElementById("thoiGianBatDau").value);
-            const endDate = new Date(document.getElementById("thoiGianKetThuc").value);
-
-            const tenChienDich = document.querySelector("input[name='tenChienDich']").value.trim();
-            if (tenChienDich === "") {
-                showToastError("Vui lòng nhập Tên Chiến Dịch.");
-                return false;
+            // Cập nhật trạng thái "Chọn tất cả"
+            function updateSelectAllState() {
+                const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+                selectAll.checked = checkedCount === checkboxes.length;
+                selectAll.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
             }
 
-            const giaTriGiam = document.getElementById("giaTriGiam").value;
-            if (!giaTriGiam || giaTriGiam <= 0) {
-                showToastError("Giá trị giảm chung phải lớn hơn 0.");
-                return false;
-            }
+            // Kiểm tra form trước khi submit
+            form.addEventListener("submit", function (event) {
+                event.preventDefault();
 
-            if (endDate <= startDate) {
-                showToastError("Thời gian kết thúc phải sau thời gian bắt đầu");
-                return false;
-            }
+                if (validateForm()) {
+                    Swal.fire({
+                        title: 'Bạn có muốn Sửa không?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Có',
+                        cancelButtonText: 'Không'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Sửa thành công!',
+                                text: 'Đợt khuyến mãi đã được Sửa vào hệ thống.',
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                this.submit();
+                            });
+                        }
+                    });
 
-            let hasSelectedProduct = false;
-            let isValid = true;
-
-            checkboxes.forEach((checkbox, index) => {
-                if (checkbox.checked) {
-                    hasSelectedProduct = true;
-                    const mucGiam = parseFloat(mucGiamInputs[index].value);
-                    const giaGoc = parseFloat(giaGocElements[index].dataset.gia);
-
-                    if (!mucGiam || mucGiam <= 0) {
-                        showToastError("Mức giảm phải lớn hơn 0");
-                        isValid = false;
-                        return;
-                    }
-
-                    if (hinhThucGiam.value === "Phần Trăm" && mucGiam > 100) {
-                        showToastError("Mức giảm không được vượt quá 100%");
-                        isValid = false;
-                        return;
-                    }
-
-                    if (hinhThucGiam.value === "Theo Giá Tiền" && mucGiam >= giaGoc) {
-                        showToastError("Mức giảm không được vượt quá giá gốc");
-                        isValid = false;
-                        return;
-                    }
                 }
             });
 
-            if (!hasSelectedProduct) {
-                showToastError("Vui lòng chọn ít nhất một sản phẩm");
-                return false;
+            // Hàm kiểm tra form
+            function validateForm() {
+                const startDate = new Date(document.getElementById("thoiGianBatDau").value);
+                const endDate = new Date(document.getElementById("thoiGianKetThuc").value);
+
+                const tenChienDich = document.querySelector("input[name='tenChienDich']").value.trim();
+                if (tenChienDich === "") {
+                    showToastError("Vui lòng nhập Tên Chiến Dịch.");
+                    return false;
+                }
+
+                const giaTriGiam = document.getElementById("giaTriGiam").value;
+                if (!giaTriGiam || giaTriGiam <= 0) {
+                    showToastError("Giá trị giảm chung phải lớn hơn 0.");
+                    return false;
+                }
+
+                if (endDate <= startDate) {
+                    showToastError("Thời gian kết thúc phải sau thời gian bắt đầu");
+                    return false;
+                }
+
+                let hasSelectedProduct = false;
+                let isValid = true;
+
+                checkboxes.forEach((checkbox, index) => {
+                    if (checkbox.checked) {
+                        hasSelectedProduct = true;
+                        const mucGiam = parseFloat(mucGiamInputs[index].value);
+                        const giaGoc = parseFloat(giaGocElements[index].dataset.gia);
+
+                        if (!mucGiam || mucGiam <= 0) {
+                            showToastError("Mức giảm phải lớn hơn 0");
+                            isValid = false;
+                            return;
+                        }
+
+                        if (hinhThucGiam.value === "Phần Trăm" && mucGiam > 100) {
+                            showToastError("Mức giảm không được vượt quá 100%");
+                            isValid = false;
+                            return;
+                        }
+
+                        if (hinhThucGiam.value === "Theo Giá Tiền" && mucGiam >= giaGoc) {
+                            showToastError("Mức giảm không được vượt quá giá gốc");
+                            isValid = false;
+                            return;
+                        }
+                    }
+                });
+
+                if (!hasSelectedProduct) {
+                    showToastError("Vui lòng chọn ít nhất một sản phẩm");
+                    return false;
+                }
+
+                return isValid;
             }
 
-            return isValid;
-        }
+            // Khởi tạo trạng thái ban đầu
+            updateSelectAllState();
+            checkboxes.forEach((checkbox, index) => {
+                mucGiamInputs[index].disabled = !checkbox.checked;
+            });
 
-        // Khởi tạo trạng thái ban đầu
-        updateSelectAllState();
-        checkboxes.forEach((checkbox, index) => {
-            mucGiamInputs[index].disabled = !checkbox.checked;
+
         });
-
-
-    });
-</script>
+    </script>
 </body>
 </html>

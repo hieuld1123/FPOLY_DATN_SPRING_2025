@@ -1,5 +1,6 @@
 package com.example.datnsd26.repository;
 
+import com.example.datnsd26.controller.response.PublicSanPhamResponse;
 import com.example.datnsd26.models.SanPhamChiTiet;
 import com.example.datnsd26.models.*;
 import jakarta.transaction.Transactional;
@@ -47,7 +48,7 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
 
 
     @Query(value = """
-            
+                        
             SELECT s FROM SanPhamChiTiet s WHERE  
             s.mauSac=?1 AND 
             s.kichCo=?2 AND 
@@ -120,8 +121,6 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
     Page<SanPhamChiTiet> findAllBySoLuongGreaterThan(Integer soluong, Pageable p);
 
 
-
-
     @Query("SELECT s FROM SanPhamChiTiet s WHERE NOT EXISTS " +
             "(SELECT k FROM KhuyenMaiChitiet k WHERE k.sanPhamChiTiet = s " +
             "AND k.khuyenMai.trangThai = 1 AND k.khuyenMai.thoiGianBatDau <= :now " +
@@ -142,5 +141,28 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
 
 
     Page<SanPhamChiTiet> findAll(Pageable pageable);
+    @Query("SELECT p FROM SanPhamChiTiet p WHERE "
+            + "( :filterBrand IS NULL OR p.thuongHieu.id IN :filterBrand ) "
+            + "AND ( :filterSole IS NULL OR p.deGiay.id IN :filterSole ) "
+            + "AND ( :filterMaterial IS NULL OR p.chatLieu.id IN :filterMaterial ) "
+            + "AND ( :filterColor IS NULL OR p.mauSac.id IN :filterColor ) "
+            + "AND ( :filterSize IS NULL OR p.kichCo.id IN :filterSize )")
+    List<PublicSanPhamResponse> filterProducts(@Param("filterBrand") List<Long> filterBrand,
+                                               @Param("filterSole") List<Long> filterSole,
+                                               @Param("filterMaterial") List<Long> filterMaterial,
+                                               @Param("filterColor") List<Long> filterColor,
+                                               @Param("filterSize") List<Long> filterSize);
+
+    @Query("SELECT p FROM SanPhamChiTiet p ORDER BY p.sanPham.tenSanPham ASC")
+    List<PublicSanPhamResponse> findAllSortedByNameAsc();
+
+    @Query("SELECT p FROM SanPhamChiTiet p ORDER BY p.sanPham.tenSanPham DESC")
+    List<PublicSanPhamResponse> findAllSortedByNameDesc();
+
+    @Query("SELECT p FROM SanPhamChiTiet p ORDER BY p.giaBan ASC")
+    List<PublicSanPhamResponse> findAllSortedByPriceAsc();
+
+    @Query("SELECT p FROM SanPhamChiTiet p ORDER BY p.giaBan DESC")
+    List<PublicSanPhamResponse> findAllSortedByPriceDesc();
 
 }

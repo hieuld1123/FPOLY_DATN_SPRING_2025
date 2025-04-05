@@ -11,136 +11,291 @@
     <link rel="stylesheet" href="/css/Navbar.css">
 
 </head>
+<style>
+    .color-circle {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: inline-block;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: 0.3s;
+    }
 
+    <
+    style >
+    .color-circle {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: inline-block;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: 0.3s;
+    }
+
+    .color-circle.selected {
+        border: 2px solid black;
+    }
+
+    .product-card {
+        transition: transform 0.3s ease;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .product-card img {
+        transition: transform 0.4s ease;
+    }
+
+    .product-card:hover img {
+        transform: scale(1.1);
+    }
+
+    .card-body {
+        text-align: center;
+    }
+
+    .card-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-price {
+        font-size: 14px;
+    }
+
+    .card-price .discounted {
+        color: #e63946;
+        font-weight: bold;
+    }
+
+    .card-price .original {
+        text-decoration: line-through;
+        color: #999;
+        font-size: 12px;
+        display: block;
+        margin-top: 2px;
+    }
+</style>
+
+</style>
 <body>
 <!--Header-->
 <div th:replace="~{components/navbar :: navbar}"></div>
 <div class="container py-5">
     <div class="row">
-        <div class="col-3 border-end border-2 border-dark">
-            <form method="get" action="/shop/product/all-product" class="filter-form">
-                <h4 class="text-center">Lọc sản phẩm</h4>
-                <div class="d-flex justify-content-end">
-                    <a href="#" style="font-size: 15px">Xóa tất cả</a>
+        <!-- FILTER -->
+        <div class="col-lg-3 mb-4">
+            <form method="get" action="/shop/product/all-product"
+                  class="filter-form p-3 border rounded shadow-sm bg-white">
+                <h5 class="text-center mb-3 fw-bold"> Bộ lọc</h5>
+                <div class="text-end mb-2">
+                    <a href="#" class="text-decoration-none text-muted small" onclick="clearAllCheckboxes()">Xóa tất
+                        cả</a>
                 </div>
                 <hr>
-                <!-- Lọc theo Thương hiệu -->
-                <div>
+
+                <!-- Filter Sections -->
+                <div class="mb-3">
                     <p class="fw-bold">Thương hiệu</p>
                     <div class="row">
                         <th:block th:each="brand : ${thuongHieu}">
                             <div class="col-6">
-                                <label>
-                                    <input type="checkbox" name="filterBrand" th:value="${brand.id}">
-                                    <span th:text="${brand.ten}"></span>
+                                <label class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="filterBrand"
+                                           th:value="${brand.id}">
+                                    <span class="form-check-label" th:text="${brand.ten}"></span>
                                 </label>
                             </div>
-                            <br>
                         </th:block>
                     </div>
                 </div>
-                <hr>
-                <!-- Lọc theo Màu sắc -->
-                <div>
-                    <p class="fw-bold">Màu sắc</p>
-                    <div class="row">
-                        <th:block th:each="color : ${mauSac}">
-                            <div class="col-6">
-                                <label>
-                                    <input type="checkbox" name="filterColor" th:value="${color.id}">
-                                    <span th:text="${color.ten}"></span>
-                                </label>
-                            </div>
-                            <br>
-                        </th:block>
-                    </div>
-                </div>
-                <hr>
-                <!-- Lọc theo Kích cỡ -->
-                <div>
-                    <p class="fw-bold">Kích cỡ</p>
-                    <div class="row">
-                        <th:block th:each="size : ${kichCo}">
-                            <div class="col-6">
-                                <label style="margin-right: 10px;">
-                                    <input type="checkbox" name="filterSize" th:value="${size.id}">
-                                    <span th:text="${size.ten}"></span>
-                                </label>
-                            </div>
-                            <br>
-                        </th:block>
-                    </div>
-                </div>
-                <hr>
-                <!-- Lọc theo Đế giày -->
-                <div>
+
+                <div class="mb-3">
                     <p class="fw-bold">Đế giày</p>
                     <div class="row">
                         <th:block th:each="sole : ${deGiay}">
                             <div class="col-6">
-                                <label>
-                                    <input type="checkbox" name="filterSole" th:value="${sole.id}">
-                                    <span th:text="${sole.ten}"></span>
+                                <label class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="filterSole"
+                                           th:value="${sole.id}">
+                                    <span class="form-check-label" th:text="${sole.ten}"></span>
                                 </label>
                             </div>
-                            <br>
                         </th:block>
                     </div>
                 </div>
-                <hr>
-                <!-- Lọc theo Chất liệu -->
-                <div>
+
+                <div class="mb-3">
                     <p class="fw-bold">Chất liệu</p>
                     <div class="row">
                         <th:block th:each="material : ${chatLieu}">
                             <div class="col-6">
-                                <label>
-                                    <input type="checkbox" name="filterMaterial" th:value="${material.id}">
-                                    <span th:text="${material.ten}"></span>
+                                <label class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="filterMaterial"
+                                           th:value="${material.id}">
+                                    <span class="form-check-label" th:text="${material.ten}"></span>
                                 </label>
                             </div>
-                            <br>
                         </th:block>
                     </div>
                 </div>
-                <hr>
-                <!-- Submit button -->
-                <div class="d-flex justify-content-center">
-                    <button type="submit" class="btn btn-primary">Áp dụng</button>
+
+                <div class="mb-3">
+                    <p class="fw-bold">Màu sắc</p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <th:block th:each="color : ${mauSac}">
+                            <button type="button" class="color-circle" th:style="'background-color:' + ${color.ten}"
+                                    th:data-color="${color.id}" onclick="toggleColor(this)"></button>
+                        </th:block>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <p class="fw-bold mb-1">Kích cỡ</p>
+                        <a href="#" class="text-decoration-none text-muted small">Hướng dẫn</a>
+                    </div>
+                    <div class="row">
+                        <th:block th:each="size : ${kichCo}">
+                            <div class="col-4">
+                                <label class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="filterSize"
+                                           th:value="${size.id}">
+                                    <span class="form-check-label" th:text="${size.ten}"></span>
+                                </label>
+                            </div>
+                        </th:block>
+                    </div>
                 </div>
             </form>
-
-
         </div>
 
-        <div class="col-9">
-            <div class="row">
-                <div class="col-4" th:each="product : ${products}">
-                    <a th:href="@{/shop/product/details/{id}(id=${product.idSanPhamChiTiet})}"
-                       class="text-decoration-none">
-                        <div class="card" style="width: 18rem;">
-                            <img th:src="${product.hinhAnh}" class="card-img-top" alt="Hình ảnh sản phẩm">
-                            <div class="card-body">
-                                <h5 class="card-title" th:text="${product.tenSanPham}"></h5>
-                                <p class="card-text">
-                                    <span th:text="${#numbers.formatDecimal(product.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')} + ' VND'"
-                                          class="fw-bold"></span>
-                                    <span th:text="${#numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VND'"
-                                          class="text-decoration-line-through"></span>
-                                </p>
+        <!-- PRODUCT LIST -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-end mb-3">
+                <select id="sort" class="form-select w-auto" onchange="sortData(this.value)">
+                    <option value="asc">Sắp xếp A-Z</option>
+                    <option value="desc">Sắp xếp Z-A</option>
+                    <option value="price-asc">Giá thấp đến cao</option>
+                    <option value="price-desc">Giá cao đến thấp</option>
+                </select>
+            </div>
+            <div class="row" id="product-list">
+                <div class="col-md-4 mb-4" th:each="product : ${products}">
+                    <div class="card product-card shadow-sm border-0 h-100 d-flex flex-column justify-content-between">
+                        <a th:href="@{/shop/product/details/{id}(id=${product.idSanPhamChiTiet})}"
+                           class="text-decoration-none text-dark">
+                            <div class="overflow-hidden" style="height: 220px;">
+                                <img th:src="${product.hinhAnh}" class="card-img-top" alt="Hình ảnh sản phẩm"
+                                     style="object-fit: cover; height: 100%; width: 100%;">
                             </div>
+                            <div class="card-body text-center">
+                                <h6 class="card-title" th:text="${product.tenSanPham}"></h6>
+                                <div class="d-flex justify-content-between align-items-center mt-2 px-2">
+                                    <!-- Giá -->
+                                    <div class="price-info">
+        <span class="discounted d-block"
+              th:text="${#numbers.formatDecimal(product.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+<!--                                        <span class="original d-block"-->
+<!--                                              th:text="${#numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>-->
+                                    </div>
+
+                                    <!-- Số lượng tồn -->
+                                    <div class="stock-info text-end">
+<!--        <span class="stock-status"-->
+<!--              th:text="'Còn lại: ' + ${product.soLuongTon} + ' sp'"-->
+<!--              th:classappend="${product.soLuongTon} &lt;= 5 ? ' text-danger' : ' text-success'"></span>-->
+                                    </div>
+                                </div>
+
+                            </div>
+                        </a>
+                        <div class="card-footer bg-white border-0 d-flex justify-content-around pb-3">
+                            <form th:action="@{/gio-hang/them}" method="post">
+                                <input type="hidden" name="idSanPhamChiTiet" th:value="${product.idSanPhamChiTiet}">
+                                <button type="submit" class="btn btn-outline-dark btn-sm">
+                                    <i class="fa fa-cart-plus me-1"></i> Thêm vào giỏ
+                                </button>
+                            </form>
+                            <a th:href="@{/checkout/now/{id}(id=${product.idSanPhamChiTiet})}"
+                               class="btn btn-danger btn-sm">
+                                Mua ngay
+                            </a>
                         </div>
-                    </a>
+                    </div>
                 </div>
+
+
             </div>
         </div>
     </div>
 </div>
+
 <!--Footer-->
 <div th:replace="~{components/footer :: footer}"></div>
 <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/js/tabler.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+<script>
+    let selectedColors = [];
 
+    function toggleColor(element) {
+        let colorId = element.getAttribute("data-color");
+
+        if (selectedColors.includes(colorId)) {
+            selectedColors = selectedColors.filter(id => id !== colorId);
+            element.classList.remove("selected");
+        } else {
+            selectedColors.push(colorId);
+            element.classList.add("selected");
+        }
+
+        console.log("Màu đã chọn:", selectedColors);
+    }
+
+    function clearAllCheckboxes() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = false;
+        });
+    }
+
+    function sortData(sortOrder) {
+        // Gửi yêu cầu GET với tham số sắp xếp
+        const url = `/shop/product/all-product?sortOrder=${sortOrder}`;
+
+        // Gửi yêu cầu tới server và nhận danh sách sản phẩm đã sắp xếp
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                // Cập nhật danh sách sản phẩm trên giao diện
+                updateProductList(data);
+            })
+            .catch(error => console.error('Error fetching sorted products:', error));
+    }
+
+    function updateProductList(products) {
+        // Xóa nội dung cũ trong danh sách sản phẩm
+        const productContainer = document.getElementById('product-list');
+        productContainer.innerHTML = '';
+
+        // Thêm các sản phẩm đã sắp xếp vào giao diện
+        products.forEach(product => {
+            const productElement = document.createElement('div');
+            productElement.classList.add('product');
+            productElement.innerHTML = `
+            <h5>${product.name}</h5>
+            <p>${product.price} VNĐ</p>
+        `;
+            productContainer.appendChild(productElement);
+        });
+    }
+
+</script>
 
 </body>
 

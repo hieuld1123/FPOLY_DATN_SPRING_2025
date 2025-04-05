@@ -1,0 +1,179 @@
+<div th:fragment="admin-navbar">
+    <style>
+        .navbar-custom {
+            background-color: #1F2937;
+            padding: 12px 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .navbar-left a {
+            color: white;
+            font-size: 18px;
+            text-decoration: none;
+            font-weight: 400;
+            transition: color 0.3s;
+        }
+
+        .navbar-left a:hover {
+            color: #FF8C00;
+        }
+
+        /* Ô tìm kiếm */
+        .search-box-navbar {
+            position: relative;
+            width: 280px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .search-box-navbar input {
+            width: 100%;
+            padding: 10px 45px;
+            border-radius: 25px;
+            border: 2px solid #64748B;
+            background: #1E293B;
+            color: white;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-box-navbar input:focus {
+            border-color: #FF8C00;
+            background: #0F172A;
+        }
+
+        .search-box-navbar svg {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94A3B8;
+            transition: all 0.3s;
+        }
+
+        .search-box-navbar input:focus + svg {
+            color: #FF8C00;
+        }
+
+        /* Dropdown tài khoản */
+        .account-dropdown {
+            font-size: 18px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .account-dropdown:hover {
+            color: #FF8C00;
+        }
+
+        .dropdown-menu {
+            border-radius: 10px;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .dropdown-item {
+            padding: 12px 20px;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .dropdown-item:hover {
+            background: #FF8C00;
+            color: white;
+        }
+
+        /* Avatar tròn */
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .search-box-navbar {
+                width: 100%;
+            }
+        }
+    </style>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+
+            <div class="navbar-left">
+                <a th:href="@{/homepage}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="icon icon-tabler icons-tabler-outline icon-tabler-home">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M5 12l-2 0l9 -9l9 9l-2 0"/>
+                        <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7"/>
+                        <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"/>
+                    </svg>
+                </a>
+                <!-- Thanh tìm kiếm -->
+                <div class="search-box-navbar">
+                    <input type="text" class="form-control" placeholder="Tìm kiếm...">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="icon icon-tabler icons-tabler-outline icon-tabler-search">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"/>
+                        <path d="M21 21l-6 -6"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Tài khoản (bên phải) -->
+            <div class="dropdown">
+                <a href="#" class="nav-link dropdown-toggle account-dropdown" id="dropdownAccount"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="https://i.pravatar.cc/40" alt="Avatar" class="avatar">
+                    <span>Admin</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
+                    <li><a class="dropdown-item" href="#">Cài đặt</a></li>
+                    <li><a class="dropdown-item" href="#">Đổi mật khẩu</a></li>
+                    <li><a class="dropdown-item" href="/logout" onclick="confirmLogout(event)">Đăng xuất</a></li>
+                </ul>
+            </div>
+
+        </div>
+    </nav>
+
+    <script>
+        function confirmLogout(event) {
+            event.preventDefault(); // Ngăn chặn chuyển hướng ngay lập tức
+
+            Swal.fire({
+                title: "Bạn có chắc muốn đăng xuất?",
+                text: "Bạn sẽ cần đăng nhập lại để tiếp tục.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Đăng xuất",
+                cancelButtonText: "Hủy"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "/logout"; // Chuyển hướng sau khi xác nhận
+                }
+            });
+        }
+
+    </script>
+</div>

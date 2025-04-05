@@ -1,35 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<div th:replace="components/head :: head"></div>
+<meta charset="UTF-8"/>
+<title>NineShoes</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
-<style>
-    .custom-confirm-button {
-        background-color: rgb(249, 72, 42) !important;
-        color: white !important;
-    }
-
-    .custom-cancel-button {
-        background-color: black !important; /* Màu mặc định của nút "Không" nếu cần */
-        color: white !important;
-    }
-</style>
-
-<style>
-
-    .btn-custom-warning {
-        background-color: rgb(222, 255, 206);
-        color: rgb(255, 33, 4);
-        border-color: rgb(255, 33, 4);
-    }
-
-    .btn-custom-info {
-        background-color: rgb(222, 255, 206);
-        color: rgb(7, 50, 255);
-        border-color: rgb(7, 50, 255);
-    }
-</style>
 <!-- Google Font: Source Sans Pro -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
 
@@ -47,16 +24,20 @@
 
 <!-- Select2 (Dropdown multiple) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap4-theme/1.1.1/select2-bootstrap4.min.css">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap4-theme/1.1.1/select2-bootstrap4.min.css">
 
 <!-- Bootstrap Color Picker -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.4.0/css/bootstrap-colorpicker.min.css">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.4.0/css/bootstrap-colorpicker.min.css">
 
 <!-- Tempusdominus Bootstrap 4 (DateTime Picker) -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/css/tempusdominus-bootstrap-4.min.css">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/css/tempusdominus-bootstrap-4.min.css">
 
 <!-- Bootstrap4 Duallistbox -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap4-duallistbox/4.0.2/bootstrap-duallistbox.min.css">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap4-duallistbox/4.0.2/bootstrap-duallistbox.min.css">
 
 <!-- BS-Stepper (Multi-step forms) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bs-stepper/1.7.0/css/bs-stepper.min.css">
@@ -117,52 +98,114 @@
 
 <!-- Tabler (Nếu cần) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css">
+<style>
+    /* Bố cục chính */
+    .admin-layout {
+        display: flex;
+        height: 100vh;
+    }
+
+    /* Sidebar bên trái */
+    .sidebar {
+        width: 250px;
+        background-color: #1E293B;
+        color: white;
+        padding: 20px;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+
+    /* Khu vực bên phải (navbar + nội dung) */
+    .right-content {
+        flex-grow: 1;
+        margin-left: 240px; /* Để tránh bị sidebar che */
+        display: flex;
+        flex-direction: column;
+        width: calc(100% - 250px);
+    }
+
+    /* Navbar cố định bên trên */
+    .navbar-custom {
+        height: 50px;
+        padding: 12px 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        width: calc(100% - 250px);
+        z-index: 1000;
+    }
+
+    /* Nội dung chính (có padding để tránh navbar che) */
+    .main-content {
+        margin-top: 30px;
+        padding: 50px 15px;
+        overflow-y: auto;
+        flex-grow: 1;
+    }
+
+
+    /* Responsive: Ẩn sidebar trên mobile */
+    @media (max-width: 768px) {
+        .sidebar {
+            width: 80px;
+            padding: 10px;
+        }
+
+        .right-content {
+            margin-left: 80px;
+            width: calc(100% - 80px);
+        }
+
+        .navbar-custom {
+            width: calc(100% - 80px);
+        }
+    }
+</style>
 <body>
-<div th:replace="~{components/admin-sidebar :: sidebar}"></div>
-<div class="wrapper">
-    <!-- Navbar -->
-    <!-- End navbar -->
+<div class="admin-layout">
+    <div th:replace="~{components/admin-sidebar :: admin-sidebar}" class="sidebar">
+        <!-- Nội dung sidebar -->
+    </div>
+    <!-- Khu vực bên phải -->
+    <div class="right-content">
+        <!-- Navbar -->
+        <nav class="navbar-custom"
+             th:replace="~{components/admin-navbar :: admin-navbar}">
+        </nav>
 
-    <!--Menu bán hàng -->
-    <!--end-->
-
-    <!--Nội dung -->
-    <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
-        <section class="content-header">
-            <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h1>
-                            QUẢN LÝ ĐẾ GIÀY
-                        </h1>
-                    </div>
+        <!-- Main content -->
+        <div class="main-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title" style="font-weight: bold">
+                        Bộ lọc
+                    </h3>
                 </div>
-            </div><!-- /.container-fluid -->
-        </section>
-        <!---filter-->
-        <section class="content">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title" style="font-weight: bold">
-                                    Bộ lọc
-                                </h3>
-                                <br>
-                                <hr class="border border-black border opacity-50">
+                <div class="card-body border-bottom py-3">
+                    <div class="d-flex">
+                        <div class="d-inline-block w-100">
+                            <div class="d-flex justify-content-between align-items-center">
                                 <form id="searchForm" method="get" th:object="${tim}">
-                                    <h3 class="card-title">
-                                        <span style="font-weight: bold">Tìm kiếm theo tên:</span>
-                                        <input type="text" id="searchInput" placeholder="Tìm kiếm đế giày"
-                                               class="form-control" name="key" style="width: 1000px"
-                                               th:value="${fillSearch}">
-                                    </h3>
-                                    <h3 class="card-title" style="margin-left: 30px;font-weight: bold">
-                                        <span style="font-weight: bold">Trạng thái:</span>
-                                        <select id="statusSelect" class="form-control" name="trangthai"
-                                                style="color: red; font-weight: bold; width: 150px">
+                                    <div class="d-flex gap-3">
+                                        <div class="input-icon" style="width: 400px">
+                                                    <span class="input-icon-addon">
+                                                        <!-- Download SVG icon from http://tabler.io/icons/icon/search -->
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                             stroke-width="2" stroke-linecap="round"
+                                                             stroke-linejoin="round"
+                                                             class="icon icon-1">
+                                                            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                                            <path d="M21 21l-6 -6"></path>
+                                                        </svg>
+                                                    </span>
+                                            <input type="text" id="searchInput" placeholder="Tìm kiếm đế giày"
+                                                   class="form-control" name="key" th:value="${fillSearch}">
+                                        </div>
+
+                                        <select id="statusSelect" class="form-select mx-2" name="trangthai"
+                                                style="width: 250px">
                                             <option value="" th:selected="${fillTrangThai == null}">Tất cả</option>
                                             <option value="true"
                                                     th:selected="${fillTrangThai != null && fillTrangThai}">Đang kinh
@@ -173,162 +216,146 @@
                                                 doanh
                                             </option>
                                         </select>
-                                    </h3>
-                                </form>
-                            </div>
-                        </div>
-                        <!-- /.card -->
-                    </div>
-                    <!-- /.col -->
-                </div>
-                <!-- /.row -->
-            </div>
-            <!-- /.container-fluid -->
-        </section>
-        <!-- Main content -->
-        <section class="content">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title" style="font-weight: bold">
-                                    Danh sách đế giày
-                                </h3>
-                                <a class="btn"
-                                   style="margin-left: 870px;background-color:red;color: white"
-                                   data-bs-toggle="modal" data-bs-target="#themdegiay">
-                                    + Thêm đế giày</a>
-                            </div>
-
-                            <!-- Modal -->
-                            <div class="modal fade" id="themdegiay" tabindex="-1" aria-labelledby="exampleModalLabel"
-                                 aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Thêm đế giày</h1>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form id="addForm" name="addDeGiay" th:method="post" th:object="${degiay}"
-                                                  th:action="@{/addSave}" onsubmit="return validateTrung()">
-                                                <p style="font-weight: bold">
-                                                    <span style="color: red">* </span>
-                                                    Tên đế giày:
-                                                    <input id="tenInput" class="form-control" th:field="*{ten}"/>
-                                                <div style="color: red; font-weight: initial;font-style: italic"
-                                                     id="errorTen"></div>
-                                                </p>
-                                                <button id="submitButton" class="btn"
-                                                        style="margin-left: 400px;background-color:red;color: white">
-                                                    Thêm
-                                                </button>
-                                            </form>
-                                        </div>
                                     </div>
-                                </div>
-                            </div>
-
-                            <!-- /.card-header -->
-                            <div class="card-body">
-                                <table id="example2" style="width: 100%" class="table-bordered table-hover text-center">
-                                    <thead style="height: 50px;color: black">
-                                    <tr>
-                                        <th>STT</th>
-                                        <th>Tên đế giày</th>
-                                        <th>Trạng thái</th>
-                                        <th>Thao tác</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr th:each="dg,stt:${list}">
-                                        <td th:text="${stt.index+1}"></td>
-                                        <td>
-                                            <span th:if="${#strings.length(dg.ten) > 20}"
-                                                  th:text="${#strings.substring(dg.ten, 0, 20)} + '...'"></span>
-                                            <span th:unless="${#strings.length(dg.ten) > 20}"
-                                                  th:text="${dg.ten}"></span>
-                                        </td>
-                                        <td class="tdSameWidth">
-                                            <form name="updateTrangThaiForm"
-                                                  th:action="@{/degiay/updateTrangThai/{id}(id=${dg.id})}" method="post"
-                                                  onsubmit="return confirmUpdate(this);">
-                                                <button type="submit" style=" border: none;"
-                                                        th:classappend="${dg.trangThai == true ? 'badge badge-success' : 'badge badge-danger'}">
-                                                    <span th:text="${dg.trangThai == true ? 'Đang kinh doanh' : 'Ngừng kinh doanh'}"></span>
-                                                </button>
-                                            </form>
-                                        </td>
-                                        <td>
-                                            <a style="color: red; font-size: 25px;" th:data-id="${dg.id}"
-                                               data-bs-toggle="modal" data-bs-target="#capnhatdegiay"
-                                               onclick="fillShoeSoleName(this)">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                    </tfoot>
-                                </table>
-                                <!-- Modal -->
-                                <div class="modal fade" id="capnhatdegiay" tabindex="-1"
-                                     aria-labelledby="capnhatdegiayLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="capnhatdegiayLabel">Cập nhật đế giày</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <input type="hidden" id="deGiayId">
-                                                <div class="mb-3">
-                                                    <span style="color: red">* </span>
-                                                    <label for="tenDeGiay" class="form-label">Tên đế giày:</label>
-                                                    <input type="text" class="form-control" id="tenDeGiay">
-                                                    <div id="error-message" class="text-danger" style="display: none;">
-                                                    </div>
-                                                    <div id="length-error-message" class="text-danger"
-                                                         style="display: none;">
-                                                    </div>
-                                                    <div id="duplicate-error-message" class="text-danger"
-                                                         style="display: none;">
-                                                    </div>
+                                </form>
+                                <div class="ms-3">
+                                    <a class="btn btn-primary"
+                                       data-bs-toggle="modal" data-bs-target="#themdegiay">
+                                        + Thêm mới</a>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="themdegiay" tabindex="-1"
+                                         aria-labelledby="exampleModalLabel"
+                                         aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">Thêm đế giày</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form id="addForm" name="addDeGiay" th:method="post"
+                                                          th:object="${degiay}"
+                                                          th:action="@{/addSave}" onsubmit="return validateTrung()">
+                                                        <p style="font-weight: bold">
+                                                            <span style="color: red">* </span>
+                                                            Tên đế giày:
+                                                            <input id="tenInput" class="form-control"
+                                                                   th:field="*{ten}"/>
+                                                        <div style="color: red; font-weight: initial;font-style: italic"
+                                                             id="errorTen"></div>
+                                                        </p>
+                                                        <button id="submitButton" class="btn btn-primary">
+                                                            Thêm
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             </div>
-                                            <div class="modal-footer">
-                                                <!--                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>-->
-                                                <button type="button" class="btn btn-primary"
-                                                        onclick="updateShoeSoleName()"
-                                                        style="background-color:red;color: white;border-color:red"
-                                                        id="updateButton" disabled>Cập nhật
-                                                </button>
-
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
-                            <!-- /.card-body -->
                         </div>
-                        <!-- /.card -->
                     </div>
-                    <!-- /.col -->
                 </div>
-                <!-- /.row -->
             </div>
-            <!-- /.container-fluid -->
-        </section>
-        <!-- /.content -->
-    </div>
-    <!--end-->
-</div>
-<!--script-->
-<!--end-->
 
+            <div class="card mt-5">
+                <div class="card-header">
+                    <h3 class="card-title" style="font-weight: bold">
+                        Danh sách đế giày
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <table id="example2" style="width: 100%"
+                           class="table-bordered table-hover text-center">
+                        <thead style="height: 50px;color: black">
+                        <tr>
+                            <th>STT</th>
+                            <th>Tên đế giày</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="dg,stt:${list}">
+                            <td th:text="${stt.index+1}"></td>
+                            <td>
+                                            <span th:if="${#strings.length(dg.ten) > 20}"
+                                                  th:text="${#strings.substring(dg.ten, 0, 20)} + '...'"></span>
+                                <span th:unless="${#strings.length(dg.ten) > 20}"
+                                      th:text="${dg.ten}"></span>
+                            </td>
+                            <td class="tdSameWidth">
+                                <form name="updateTrangThaiForm"
+                                      th:action="@{/degiay/updateTrangThai/{id}(id=${dg.id})}"
+                                      method="post"
+                                      onsubmit="return confirmUpdate(this);">
+                                    <button type="submit" style=" border: none;"
+                                            th:classappend="${dg.trangThai == true ?'bg-success' : 'bg-danger'}">
+                                        <span th:text="${dg.trangThai == true ? 'Đang kinh doanh' : 'Ngừng kinh doanh'}"></span>
+                                    </button>
+                                </form>
+                            </td>
+                            <td>
+                                <a style="font-size: 18px;" th:data-id="${dg.id}"
+                                   data-bs-toggle="modal" data-bs-target="#capnhatdegiay"
+                                   onclick="fillShoeSoleName(this)">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                        </tfoot>
+                    </table>
+                    <!-- Modal -->
+                    <div class="modal fade" id="capnhatdegiay" tabindex="-1"
+                         aria-labelledby="capnhatdegiayLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="capnhatdegiayLabel">Cập nhật đế
+                                        giày</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="hidden" id="deGiayId">
+                                    <div class="mb-3">
+                                        <label for="tenDeGiay" class="form-label">Tên đế giày:</label>
+                                        <input type="text" class="form-control" id="tenDeGiay">
+                                        <div id="error-message" class="text-danger"
+                                             style="display: none;">
+                                        </div>
+                                        <div id="length-error-message" class="text-danger"
+                                             style="display: none;">
+                                        </div>
+                                        <div id="duplicate-error-message" class="text-danger"
+                                             style="display: none;">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <!--                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>-->
+                                    <button type="button" class="btn btn-primary"
+                                            onclick="updateShoeSoleName()"
+                                            id="updateButton" disabled>Cập nhật
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+</div>
 <script>
     function clearSearch() {
         document.getElementById("searchInput").value = "";
@@ -646,7 +673,7 @@
     });
 </script>
 
-</html>
+
 <!--câp nhật trạng thái-->
 <script>
     function confirmUpdate(form) {
@@ -690,3 +717,4 @@
 </script>
 
 
+</html>

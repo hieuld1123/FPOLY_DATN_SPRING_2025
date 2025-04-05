@@ -47,4 +47,32 @@ public class PublicSanPhamService {
     }
 
 
+    public List<PublicSanPhamResponse> filterProducts(List<Long> filterBrand, List<Long> filterSole,
+                                               List<Long> filterMaterial, List<Long> filterColor,
+                                               List<Long> filterSize) {
+        return sanPhamChiTietRepository.filterProducts(filterBrand, filterSole, filterMaterial, filterColor, filterSize);
+    }
+
+
+    // Phương thức lấy tất cả sản phẩm sắp xếp theo tên A-Z
+    public List<PublicSanPhamResponse> getAllProductsSortedByNameAsc() {
+        return sanPhamChiTietRepository.findAllSortedByNameAsc();
+    }
+
+    // Phương thức lấy tất cả sản phẩm sắp xếp theo tên Z-A
+    public List<PublicSanPhamResponse> getAllProductsSortedByNameDesc() {
+        return sanPhamChiTietRepository.findAllSortedByNameDesc();
+    }
+
+    // Phương thức lấy tất cả sản phẩm sắp xếp theo giá từ thấp đến cao
+    public List<PublicSanPhamResponse> getAllProductsSortedByPriceAsc() {
+        return sanPhamChiTietRepository.findAllSortedByPriceAsc();
+    }
+
+    // Phương thức lấy tất cả sản phẩm sắp xếp theo giá từ cao đến thấp
+    public List<PublicSanPhamResponse> getAllProductsSortedByPriceDesc() {
+        return sanPhamChiTietRepository.findAllSortedByPriceDesc();
+    }
+    // Phương thức chung xử lý theo yêu cầu sắp xếp từ frontend
+
 }

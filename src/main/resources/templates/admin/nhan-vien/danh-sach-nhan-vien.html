@@ -1,35 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="components/head :: head"></div>
+<meta charset="UTF-8"/>
+<title>NineShoes</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Tabler JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
+<style>
+    /* Bố cục chính */
+    .admin-layout {
+        display: flex;
+        height: 100vh;
+    }
 
-<head>
-    <meta charset="UTF-8"/>
-    <title>NineShoes</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
+    /* Sidebar bên trái */
+    .sidebar {
+        width: 250px;
+        background-color: #1E293B;
+        color: white;
+        padding: 20px;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+
+    /* Khu vực bên phải (navbar + nội dung) */
+    .right-content {
+        flex-grow: 1;
+        margin-left: 240px; /* Để tránh bị sidebar che */
+        display: flex;
+        flex-direction: column;
+        width: calc(100% - 250px);
+    }
+
+    /* Navbar cố định bên trên */
+    .navbar-custom {
+        height: 50px;
+        padding: 12px 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        width: calc(100% - 250px);
+        z-index: 1000;
+    }
+
+    /* Nội dung chính (có padding để tránh navbar che) */
+    .main-content {
+        margin-top: 30px;
+        padding: 50px 15px;
+        overflow-y: auto;
+        flex-grow: 1;
+    }
+
+    /* Responsive: Ẩn sidebar trên mobile */
+    @media (max-width: 768px) {
+        .sidebar {
+            width: 80px;
+            padding: 10px;
+        }
+
+        .right-content {
+            margin-left: 80px;
+            width: calc(100% - 80px);
+        }
+
+        .navbar-custom {
+            width: calc(100% - 80px);
+        }
+    }
+</style>
 <body>
-<div th:replace="~{components/admin-sidebar :: sidebar}"></div>
-<div class="page-wrapper">
-    <div class="container-xl">
-        <div class="row">
-            <div class="col-12 my-5">
-                <div class="page-pretitle">
-                    Admin
+<div class="admin-layout">
+    <div th:replace="~{components/admin-sidebar :: admin-sidebar}" class="sidebar">
+        <!-- Nội dung sidebar -->
+    </div>
+    <!-- Khu vực bên phải -->
+    <div class="right-content">
+        <!-- Navbar -->
+        <nav class="navbar-custom"
+             th:replace="~{components/admin-navbar :: admin-navbar}">
+        </nav>
+
+        <!-- Main content -->
+        <div class="main-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Bộ lọc</h3>
                 </div>
-                <h2 class="page-title">Quản lý nhân viên</h2>
-            </div>
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Danh sách nhân viên</h3>
-                    </div>
-                    <div class="card-body border-bottom py-3">
-                        <div class="d-flex">
-                            <div class="text-secondary">
-                                <div class="d-inline-block">
-                                    <div class="my-2 my-md-0 flex-grow-1 flex-md-grow-0 order-first order-md-last">
-                                        <form action="./" method="get">
-                                            <div class="input-icon">
+
+                <div class="card-body border-bottom py-3">
+                    <div class="d-flex">
+                        <div class="text-secondary">
+                            <div class="d-inline-block">
+                                <div class="my-2 my-md-0 flex-grow-1 flex-md-grow-0 order-first order-md-last">
+                                    <form action="./" method="get">
+                                        <div class="input-icon">
                                                     <span class="input-icon-addon">
                                                         <!-- Download SVG icon from http://tabler.io/icons/icon/search -->
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -41,136 +107,160 @@
                                                             <path d="M21 21l-6 -6"></path>
                                                         </svg>
                                                     </span>
-                                                <input type="text" value="" class="form-control"
-                                                       th:attr="value=${searchInput}"
-                                                       placeholder="Tìm kiếm theo Tên/Mã/SĐT/Email"
-                                                       id="searchInput"/>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                                <div class="d-inline-block">
-                                    <select id="statusSelect" name="statusOption" class="form-select mx-2">
-                                        <option value="" >Tất cả</option>
-                                        <option value="true">Đang làm việc</option>
-                                        <option value="false">Đã nghỉ</option>
-                                    </select>
-                                </div>
-                                <div class="d-inline-block">
-                                        <select id="roleSelect" name="roleOption" class="form-select mx-3">
-                                            <option value="" >Tất cả</option>
-                                            <option value="Admin">Admin</option>
-                                            <option value="EMPLOYEE">Nhân viên</option>
-                                        </select>
+                                            <input type="text" value="" class="form-control"
+                                                   th:attr="value=${searchInput}"
+                                                   placeholder="Tìm kiếm theo Tên/Mã/SĐT/Email"
+                                                   id="searchInput"/>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
-                            <div class="ms-auto text-secondary">
-                                <a th:href="@{/nhan-vien/them}" class="btn btn-primary btn-5 d-none d-sm-inline-block">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                         stroke-linejoin="round" class="icon icon-2">
-                                        <path d="M12 5l0 14"></path>
-                                        <path d="M5 12l14 0"></path>
-                                    </svg>
-                                    Thêm nhân viên</a>
+                            <div class="d-inline-block">
+                                <select id="statusSelect" name="statusOption" class="form-select mx-2">
+                                    <option value="">Tất cả</option>
+                                    <option value="true">Đang làm việc</option>
+                                    <option value="false">Đã nghỉ</option>
+                                </select>
+                            </div>
+                            <div class="d-inline-block">
+                                <select id="roleSelect" name="roleOption" class="form-select mx-3">
+                                    <option value="">Tất cả</option>
+                                    <option value="Admin">Admin</option>
+                                    <option value="EMPLOYEE">Nhân viên</option>
+                                </select>
                             </div>
                         </div>
+                        <div class="ms-auto text-secondary">
+                            <a th:href="@{/nhan-vien/them}"
+                               class="btn btn-primary btn-5 d-none d-sm-inline-block">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                     viewBox="0 0 24 24"
+                                     fill="none" stroke="currentColor" stroke-width="2"
+                                     stroke-linecap="round"
+                                     stroke-linejoin="round" class="icon icon-2">
+                                    <path d="M12 5l0 14"></path>
+                                    <path d="M5 12l14 0"></path>
+                                </svg>
+                                Thêm mới</a>
+                        </div>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table card-table table-vcenter text-nowrap datatable table-hover">
-                            <thead>
-                            <tr>
-                                <th class="w-1">
-                                    STT
-                                    <!-- Download SVG icon from http://tabler.io/icons/icon/chevron-up -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                         stroke-linecap="round" stroke-linejoin="round"
-                                         class="icon icon-sm icon-thick icon-2">
-                                        <path d="M6 15l6 -6l6 6"></path>
-                                    </svg>
-                                </th>
-                                <th>Mã nhân viên</th>
-                                <th>Họ tên</th>
-                                <th>Email</th>
-                                <th>Số điện thoại</th>
-                                <th>Giới tính</th>
-                                <th>Vai trò</th>
-                                <th>Trạng thái</th>
-                            </tr>
-                            </thead>
+                </div>
+            </div>
 
-                            <tbody  id="nhanVienTable">
-                            <tr th:each="nv,indexStat : ${nhanVien}"  th:data-href="@{'/nhan-vien/chi-tiet/' + ${nv.id}}" class="cursor-pointer">
-                                <td>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card mt-5">
+                        <div class="card-header">
+                            <h3 class="card-title">Danh sách nhân viên</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table card-table table-vcenter text-nowrap datatable table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th class="w-1">
+                                            STT
+                                            <!-- Download SVG icon from http://tabler.io/icons/icon/chevron-up -->
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                 stroke-width="2"
+                                                 stroke-linecap="round" stroke-linejoin="round"
+                                                 class="icon icon-sm icon-thick icon-2">
+                                                <path d="M6 15l6 -6l6 6"></path>
+                                            </svg>
+                                        </th>
+                                        <th>Mã nhân viên</th>
+                                        <th>Họ tên</th>
+                                        <th>Email</th>
+                                        <th>Số điện thoại</th>
+                                        <th>Giới tính</th>
+                                        <th>Vai trò</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody id="nhanVienTable">
+                                    <tr th:each="nv,indexStat : ${nhanVien}"
+                                        th:data-href="@{'/nhan-vien/chi-tiet/' + ${nv.id}}" class="cursor-pointer">
+                                        <td>
                                     <span class="text-secondary"
                                           th:text="${nhanVien.number * nhanVien.size + indexStat.index + 1}"></span>
-                                </td>
+                                        </td>
 
-                                <td th:text="${nv.maNhanvien}"></td>
-                                <td th:text="${nv.tenNhanVien}"></td>
-                                <td th:text="${nv.idTaiKhoan.email}"></td>
-                                <td th:text="${nv.idTaiKhoan.sdt}"></td>
-                                <td th:text="${nv.gioiTinh ? 'Nam' : 'Nữ'}"></td>
-                                <td th:text="${nv.idTaiKhoan.vaiTro.getDisplayName()}"></td>
-                                <td th:text="${nv.trangThai ? 'Đang làm việc' : 'Đã nghỉ'}"></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="card-footer d-flex align-items-center">
-                        <!--                            Bản ghi-->
-                        <p class="m-0 text-secondary">
-                            Hiển thị từ
-                            <span th:text="${(nhanVien.number * nhanVien.size) + 1}"></span>
-                            đến
-                            <span th:text="${(nhanVien.totalElements < (nhanVien.number + 1) * nhanVien.size) ? nhanVien.totalElements : (nhanVien.number + 1) * nhanVien.size}"></span>
-                            trong
-                            <span th:text="${nhanVien.totalElements}"></span> mục
-                        </p>
+                                        <td th:text="${nv.maNhanvien}"></td>
+                                        <td th:text="${nv.tenNhanVien}"></td>
+                                        <td th:text="${nv.idTaiKhoan.email}"></td>
+                                        <td th:text="${nv.idTaiKhoan.sdt}"></td>
+                                        <td th:text="${nv.gioiTinh ? 'Nam' : 'Nữ'}"></td>
+                                        <td th:text="${nv.idTaiKhoan.vaiTro.getDisplayName()}"></td>
+                                        <td th:text="${nv.trangThai ? 'Đang làm việc' : 'Đã nghỉ'}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="card-footer d-flex align-items-center">
+                                <!--                            Bản ghi-->
+                                <p class="m-0 text-secondary">
+                                    Hiển thị từ
+                                    <span th:text="${(nhanVien.number * nhanVien.size) + 1}"></span>
+                                    đến
+                                    <span th:text="${(nhanVien.totalElements < (nhanVien.number + 1) * nhanVien.size) ? nhanVien.totalElements : (nhanVien.number + 1) * nhanVien.size}"></span>
+                                    trong
+                                    <span th:text="${nhanVien.totalElements}"></span> mục
+                                </p>
 
 
-                        <!--                            Phân trang-->
-                        <ul class="pagination m-0 ms-auto">
-                            <li class="page-item" th:class="${nhanVien.first} ? 'page-item disabled' : 'page-item'">
-                                <a class="page-link" th:href="@{/nhan-vien/hien-thi(page=${nhanVien.number - 1})}"
-                                   tabindex="-1" aria-disabled="true">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                         stroke-linejoin="round" class="icon icon-1">
-                                        <path d="M15 6l-6 6l6 6"></path>
-                                    </svg>
-                                    Trước
-                                </a>
-                            </li>
+                                <!--                            Phân trang-->
+                                <ul class="pagination m-0 ms-auto">
+                                    <li class="page-item"
+                                        th:class="${nhanVien.first} ? 'page-item disabled' : 'page-item'">
+                                        <a class="page-link"
+                                           th:href="@{/nhan-vien/hien-thi(page=${nhanVien.number - 1})}"
+                                           tabindex="-1" aria-disabled="true">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                 viewBox="0 0 24 24"
+                                                 fill="none" stroke="currentColor" stroke-width="2"
+                                                 stroke-linecap="round"
+                                                 stroke-linejoin="round" class="icon icon-1">
+                                                <path d="M15 6l-6 6l6 6"></path>
+                                            </svg>
+                                            Trước
+                                        </a>
+                                    </li>
 
-                            <!-- Danh sách số trang -->
-                            <ul class="pagination m-0 mx-3">
-                                <li th:each="i : ${#numbers.sequence(0, nhanVien.totalPages - 1)}"
-                                    th:classappend="${i == nhanVien.number} ? 'active'" class="page-item">
-                                    <a class="page-link" th:href="@{/nhan-vien/hien-thi(page=${i})}"
-                                       th:text="${i + 1}"></a>
-                                </li>
-                            </ul>
+                                    <!-- Danh sách số trang -->
+                                    <ul class="pagination m-0 mx-3">
+                                        <li th:each="i : ${#numbers.sequence(0, nhanVien.totalPages - 1)}"
+                                            th:classappend="${i == nhanVien.number} ? 'active'" class="page-item">
+                                            <a class="page-link" th:href="@{/nhan-vien/hien-thi(page=${i})}"
+                                               th:text="${i + 1}"></a>
+                                        </li>
+                                    </ul>
 
-                            <li class="page-item" th:class="${nhanVien.last} ? 'page-item disabled' : 'page-item'">
-                                <a class="page-link" th:href="@{/nhan-vien/hien-thi(page=${nhanVien.number + 1})}">
-                                    Sau
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                         stroke-linejoin="round" class="icon icon-1">
-                                        <path d="M9 6l6 6l-6 6"></path>
-                                    </svg>
-                                </a>
-                            </li>
-                        </ul>
+                                    <li class="page-item"
+                                        th:class="${nhanVien.last} ? 'page-item disabled' : 'page-item'">
+                                        <a class="page-link"
+                                           th:href="@{/nhan-vien/hien-thi(page=${nhanVien.number + 1})}">
+                                            Sau
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                 viewBox="0 0 24 24"
+                                                 fill="none" stroke="currentColor" stroke-width="2"
+                                                 stroke-linecap="round"
+                                                 stroke-linejoin="round" class="icon icon-1">
+                                                <path d="M9 6l6 6l-6 6"></path>
+                                            </svg>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         function searchNhanVien() {
