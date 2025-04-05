@@ -253,6 +253,12 @@
                                                             <input type="color" id="colorInput" th:field="*{ten}"
                                                                    style="width:100%;" class="form-control">
                                                         </p>
+                                                        <p style="font-weight: bold">
+                                                            <span style="color: red">* </span>
+                                                            Tên màu sắc:
+                                                            <input type="text" id="nameColorInput" th:field="*{tenMauSac}"
+                                                                   style="width:100%;" class="form-control">
+                                                        </p>
                                                         <button id="submitButton" class="btn btn-primary">
                                                             Thêm
                                                         </button>
@@ -291,7 +297,7 @@
                             <td>
                                 <input type="color" th:value="${ms.ten}" class="form-control"
                                        disabled>
-                                <p th:text="${ms.ten}" style="color: red">
+                                <p th:text="${ms.tenMauSac + ' - ' + ms.ten}" style="color: red">
                             </td>
                             <td class="tdSameWidth">
                                 <form name="updateTrangThaiForm"

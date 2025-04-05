@@ -228,520 +228,526 @@
 
         <!-- Main content -->
         <div class="main-content">
-        <div class="card">
-            <div class="card-body">
-                <h1 class="text-center">Thêm sản phẩm</h1>
-                <form action="san-pham/addProduct" method="post" name="addProduct" onsubmit="return validateForm()">
-                    <!-- Tên sản phẩm -->
-                    <div class="mb-3">
-                        <!-- Hàng của label, select và button cùng 1 hàng -->
-                        <div class="d-flex align-items-center gap-3">
-                            <label class="fw-bold mb-0" style="white-space: nowrap;">
-                                <span style="color: red">* </span>Tên sản phẩm:
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="text-center">Thêm sản phẩm</h1>
+                    <form action="san-pham/addProduct" method="post" name="addProduct" onsubmit="return validateForm()">
+                        <!-- Tên sản phẩm -->
+                        <div class="mb-3">
+                            <!-- Hàng của label, select và button cùng 1 hàng -->
+                            <div class="d-flex align-items-center gap-3">
+                                <label class="fw-bold mb-0" style="white-space: nowrap;">
+                                    <span style="color: red">* </span>Tên sản phẩm:
+                                </label>
+
+                                <select class="form-control select2 select2-primary flex-grow-1"
+                                        data-dropdown-css-class="select2-primary"
+                                        name="tensp" data-placeholder="Nhập tên sản phẩm"
+                                        onchange="clearErrorMessageTenSP()">
+                                    <option></option>
+                                    <option th:each="sanPham : ${sp}" th:value="${sanPham.id}"
+                                            th:text="${sanPham.tenSanPham}"
+                                            th:selected="${sanPham.id == selectedTensp}"></option>
+                                </select>
+
+                                <!-- Nút thêm sản phẩm -->
+                                <button type="button" data-bs-toggle="modal" data-bs-target="#themtensp"
+                                        class="btn btn-primary d-flex justify-content-center align-items-center"
+                                        style="width: 45px; height: 45px; border-radius: 10px; font-weight: bold;">
+                                    +
+                                </button>
+                            </div>
+
+                            <!-- Hiển thị lỗi -->
+                            <span id="tenspError" style="color: red; font-weight: bold;"></span>
+                        </div>
+
+                        <!-- Giới tính -->
+                        <div class="mb-3 d-flex align-items-center">
+                            <label class="fw-bold me-5"><span style="color: red">* </span>Giới tính:</label>
+                            <div class="form-check me-3">
+                                <input class="form-check-input" type="radio" name="gioitinh"
+                                       id="gioitinhNam" value="true"
+                                       th:checked="${gioiTinh == null || gioiTinh}"
+                                       onchange="clearErrorMessageGioiTinh()">
+                                <label for="gioitinhNam" class="form-check-label">
+                                    Nam
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="gioitinh"
+                                       style="width: 15px;height: 15px"
+                                       id="gioitinhNu" value="false"
+                                       th:checked="${gioiTinh != null && !gioiTinh}"
+                                       onchange="clearErrorMessageGioiTinh()">
+                                <label for="gioitinhNu" class="form-check-label">
+                                    Nữ
+                                </label>
+                            </div>
+                            <span id="gioitinhError"
+                                  style="color: red;font-style: italic;font-weight: bold"></span>
+                        </div>
+
+                        <!-- Mô tả -->
+                        <div class="mb-3 d-flex flex-column">
+                            <label class="fw-bold">
+                                <span style="color: red">* </span>Mô tả:
                             </label>
+                            <textarea class="form-control" rows="4" name="mota"
+                                      th:text="${motas}"
+                                      oninput="clearErrorMessageMoTa()"></textarea>
+                            <span id="motaError" style="color: red; font-weight: bold;"></span>
+                        </div>
 
-                            <select class="form-control select2 select2-primary flex-grow-1"
-                                    data-dropdown-css-class="select2-primary"
-                                    name="tensp" data-placeholder="Nhập tên sản phẩm"
-                                    onchange="clearErrorMessageTenSP()">
-                                <option></option>
-                                <option th:each="sanPham : ${sp}" th:value="${sanPham.id}"
-                                        th:text="${sanPham.tenSanPham}"
-                                        th:selected="${sanPham.id == selectedTensp}"></option>
-                            </select>
 
-                            <!-- Nút thêm sản phẩm -->
-                            <button type="button" data-bs-toggle="modal" data-bs-target="#themtensp"
-                                    class="btn btn-primary d-flex justify-content-center align-items-center"
-                                    style="width: 45px; height: 45px; border-radius: 10px; font-weight: bold;">
-                                +
+                        <!-- Thuộc tính-->
+                        <div class="row">
+                            <!-- Thương hiệu -->
+                            <div class="col-md-4 mt-3">
+                                <div class="mb-2">
+                                    <label class="fw-bold"><span style="color: red;">* </span>Thương hiệu:</label>
+                                </div>
+                                <div class="d-flex">
+                                    <select id="idThuongHieu" class="form-control me-2" name="idThuongHieu">
+                                        <option th:each="th : ${th}" th:value="${th.id}"
+                                                th:text="${th.ten}"
+                                                th:selected="${th.id == selectedThuongHieu}"></option>
+                                    </select>
+                                    <button type="button" data-bs-toggle="modal" data-bs-target="#themthuonghieu"
+                                            class="btn btn-primary d-flex align-items-center justify-content-center"
+                                            style="width: 45px; height: 45px; border-radius: 10px;">
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Chất liệu -->
+                            <div class="col-md-4 mt-3">
+                                <div class="mb-2">
+                                    <label class="fw-bold"><span style="color: red;">* </span>Chất liệu:</label>
+                                </div>
+                                <div class="d-flex">
+                                    <select id="idChatLieu" class="form-control me-2" name="idChatLieu">
+                                        <option th:each="cl : ${cl}" th:value="${cl.id}"
+                                                th:text="${cl.ten}"
+                                                th:selected="${cl.id == selectedChatLieu}"></option>
+                                    </select>
+                                    <button type="button" data-bs-toggle="modal" data-bs-target="#themchatlieu"
+                                            class="btn btn-primary d-flex align-items-center justify-content-center"
+                                            style="width: 45px; height: 45px; border-radius: 10px;">
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Đế giày -->
+                            <div class="col-md-4 mt-3">
+                                <div class="mb-2">
+                                    <label class="fw-bold"><span style="color: red;">* </span>Đế giày:</label>
+                                </div>
+                                <div class="d-flex">
+                                    <select id="idDeGiay" class="form-control me-2" name="idDeGiay">
+                                        <option th:each="dg : ${dg}" th:value="${dg.id}"
+                                                th:text="${dg.ten}"
+                                                th:selected="${dg.id == selectedDeGiay}"></option>
+                                    </select>
+                                    <button type="button" data-bs-toggle="modal" data-bs-target="#themdegiay"
+                                            class="btn btn-primary d-flex align-items-center justify-content-center"
+                                            style="width: 45px; height: 45px; border-radius: 10px;">
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h1 class="text-center mt-5 mb-5">Thêm biến thể</h1>
+                        <div class="row">
+                            <!-- Màu sắc -->
+                            <div class="col-md-6">
+                                <label class="fw-bold mb-2 d-block"><span style="color: red">* </span>Màu sắc:</label>
+                                <div class="d-flex align-items-center gap-2">
+                                    <select id="colorSelect" class="select2 form-control flex-grow-1"
+                                            multiple="multiple" data-placeholder="Màu sắc" name="idMauSac"
+                                            onchange="clearErrorMessageMauSac()">
+                                        <option th:each="ms : ${ms}" th:value="${ms.id}" th:data-color="${ms.ten}" th:text="${'   -   ' + ms.tenMauSac}"></option>
+                                    </select>
+                                    <button type="button" data-bs-toggle="modal" data-bs-target="#themmausac"
+                                            class="btn btn-primary d-flex align-items-center justify-content-center h-100"
+                                            style="width: 45px; border-radius: 10px;">
+                                        +
+                                    </button>
+                                </div>
+                                <span id="mausacError" style="color: red; font-weight: bold;"></span>
+                            </div>
+
+                            <!-- Kích cỡ -->
+                            <div class="col-md-6">
+                                <label class="fw-bold mb-2 d-block"><span style="color: red">* </span>Kích cỡ:</label>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="flex-grow-1 d-flex align-items-center size-container"
+                                         style="min-height: 45px; border: 1px solid #ced4da; border-radius: 5px; padding: 10px;">
+                                        <h6 id="displayValue" class="m-0"></h6>
+                                    </div>
+                                    <button type="button" data-bs-toggle="modal" data-bs-target="#themkichco2"
+                                            class="btn btn-primary d-flex align-items-center justify-content-center h-100"
+                                            style="width: 100px; border-radius: 10px;">
+                                        Chọn size
+                                    </button>
+                                    <button type="button" data-bs-toggle="modal" data-bs-target="#themnhanhkichco"
+                                            class="btn btn-primary d-flex align-items-center justify-content-center h-100"
+                                            style="width: 45px; border-radius: 10px;">
+                                        +
+                                    </button>
+                                </div>
+                                <span id="kichcoError" style="color: red; font-weight: bold;"></span>
+                            </div>
+                        </div>
+
+                        <!-- Button xác nhận thêm biến thể -->
+                        <div class="d-flex justify-content-end mt-5">
+                            <button type="submit" class="btn btn-primary"
+                                    style="padding: 5px 10px; width: 120px; height: 45px; border-radius: 10px;">
+                                Thêm
                             </button>
                         </div>
 
-                        <!-- Hiển thị lỗi -->
-                        <span id="tenspError" style="color: red; font-weight: bold;"></span>
-                    </div>
-
-                    <!-- Giới tính -->
-                    <div class="mb-3 d-flex align-items-center">
-                        <label class="fw-bold me-5"><span style="color: red">* </span>Giới tính:</label>
-                        <div class="form-check me-3">
-                            <input class="form-check-input" type="radio" name="gioitinh"
-                                   id="gioitinhNam" value="true"
-                                   th:checked="${gioiTinh == null || gioiTinh}"
-                                   onchange="clearErrorMessageGioiTinh()">
-                            <label for="gioitinhNam" class="form-check-label">
-                                Nam
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="gioitinh"
-                                   style="width: 15px;height: 15px"
-                                   id="gioitinhNu" value="false"
-                                   th:checked="${gioiTinh != null && !gioiTinh}"
-                                   onchange="clearErrorMessageGioiTinh()">
-                            <label for="gioitinhNu" class="form-check-label">
-                                Nữ
-                            </label>
-                        </div>
-                        <span id="gioitinhError"
-                              style="color: red;font-style: italic;font-weight: bold"></span>
-                    </div>
-
-                    <!-- Mô tả -->
-                    <div class="mb-3 d-flex flex-column">
-                        <label class="fw-bold">
-                            <span style="color: red">* </span>Mô tả:
-                        </label>
-                        <textarea class="form-control" rows="4" name="mota"
-                                  th:text="${motas}"
-                                  oninput="clearErrorMessageMoTa()"></textarea>
-                        <span id="motaError" style="color: red; font-weight: bold;"></span>
-                    </div>
-
-
-                    <!-- Thuộc tính-->
-                    <div class="row">
-                        <!-- Thương hiệu -->
-                        <div class="col-md-4 mt-3">
-                            <div class="mb-2">
-                                <label class="fw-bold"><span style="color: red;">* </span>Thương hiệu:</label>
-                            </div>
-                            <div class="d-flex">
-                                <select id="idThuongHieu" class="form-control me-2" name="idThuongHieu">
-                                    <option th:each="th : ${th}" th:value="${th.id}"
-                                            th:text="${th.ten}"
-                                            th:selected="${th.id == selectedThuongHieu}"></option>
-                                </select>
-                                <button type="button" data-bs-toggle="modal" data-bs-target="#themthuonghieu"
-                                        class="btn btn-primary d-flex align-items-center justify-content-center"
-                                        style="width: 45px; height: 45px; border-radius: 10px;">
-                                    +
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Chất liệu -->
-                        <div class="col-md-4 mt-3">
-                            <div class="mb-2">
-                                <label class="fw-bold"><span style="color: red;">* </span>Chất liệu:</label>
-                            </div>
-                            <div class="d-flex">
-                                <select id="idChatLieu" class="form-control me-2" name="idChatLieu">
-                                    <option th:each="cl : ${cl}" th:value="${cl.id}"
-                                            th:text="${cl.ten}"
-                                            th:selected="${cl.id == selectedChatLieu}"></option>
-                                </select>
-                                <button type="button" data-bs-toggle="modal" data-bs-target="#themchatlieu"
-                                        class="btn btn-primary d-flex align-items-center justify-content-center"
-                                        style="width: 45px; height: 45px; border-radius: 10px;">
-                                    +
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Đế giày -->
-                        <div class="col-md-4 mt-3">
-                            <div class="mb-2">
-                                <label class="fw-bold"><span style="color: red;">* </span>Đế giày:</label>
-                            </div>
-                            <div class="d-flex">
-                                <select id="idDeGiay" class="form-control me-2" name="idDeGiay">
-                                    <option th:each="dg : ${dg}" th:value="${dg.id}"
-                                            th:text="${dg.ten}"
-                                            th:selected="${dg.id == selectedDeGiay}"></option>
-                                </select>
-                                <button type="button" data-bs-toggle="modal" data-bs-target="#themdegiay"
-                                        class="btn btn-primary d-flex align-items-center justify-content-center"
-                                        style="width: 45px; height: 45px; border-radius: 10px;">
-                                    +
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <h1 class="text-center mt-5 mb-5">Thêm biến thể</h1>
-                    <div class="row">
-                        <!-- Màu sắc -->
-                        <div class="col-md-6">
-                            <label class="fw-bold mb-2 d-block"><span style="color: red">* </span>Màu sắc:</label>
-                            <div class="d-flex align-items-center gap-2">
-                                <select id="colorSelect" class="select2 form-control flex-grow-1"
-                                        multiple="multiple" data-placeholder="Màu sắc" name="idMauSac"
-                                        onchange="clearErrorMessageMauSac()">
-                                    <option th:each="ms : ${ms}" th:value="${ms.id}" th:data-color="${ms.ten}"></option>
-                                </select>
-                                <button type="button" data-bs-toggle="modal" data-bs-target="#themmausac"
-                                        class="btn btn-primary d-flex align-items-center justify-content-center h-100"
-                                        style="width: 45px; border-radius: 10px;">
-                                    +
-                                </button>
-                            </div>
-                            <span id="mausacError" style="color: red; font-weight: bold;"></span>
-                        </div>
-
-                        <!-- Kích cỡ -->
-                        <div class="col-md-6">
-                            <label class="fw-bold mb-2 d-block"><span style="color: red">* </span>Kích cỡ:</label>
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="flex-grow-1 d-flex align-items-center size-container"
-                                     style="min-height: 45px; border: 1px solid #ced4da; border-radius: 5px; padding: 10px;">
-                                    <h6 id="displayValue" class="m-0"></h6>
-                                </div>
-                                <button type="button" data-bs-toggle="modal" data-bs-target="#themkichco2"
-                                        class="btn btn-primary d-flex align-items-center justify-content-center h-100"
-                                        style="width: 100px; border-radius: 10px;">
-                                    Chọn size
-                                </button>
-                                <button type="button" data-bs-toggle="modal" data-bs-target="#themnhanhkichco"
-                                        class="btn btn-primary d-flex align-items-center justify-content-center h-100"
-                                        style="width: 45px; border-radius: 10px;">
-                                    +
-                                </button>
-                            </div>
-                            <span id="kichcoError" style="color: red; font-weight: bold;"></span>
-                        </div>
-                    </div>
-
-                    <!-- Button xác nhận thêm biến thể -->
-                    <div class="d-flex justify-content-end mt-5">
-                        <button type="submit" class="btn btn-primary"
-                                style="padding: 5px 10px; width: 120px; height: 45px; border-radius: 10px;">
-                            Thêm
-                        </button>
-                    </div>
-
-                    <!-- Modal thêm kích cỡ 2-->
-                    <div class="modal fade" id="themkichco2" tabindex="-1"
-                         aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5">Chọn kích cỡ</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="d-flex flex-wrap">
-                                        <!-- Lặp qua danh sách kích cỡ và tạo các checkbox -->
-                                        <div th:each="size : ${kc}">
-                                            <div class="form-check">
-                                                <input type="checkbox" class="btn-check"
-                                                       th:id="'btn-check-' + ${size.id}" th:value="${size.ten}"
-                                                       name="kichCoId" autocomplete="off"
-                                                       onchange="handleCheckboxChange()">
-                                                <label class="btn btn-outline-primary size-button"
-                                                       th:for="'btn-check-' + ${size.id}"
-                                                       th:text="${size.ten}"></label>
+                        <!-- Modal thêm kích cỡ 2-->
+                        <div class="modal fade" id="themkichco2" tabindex="-1"
+                             aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5">Chọn kích cỡ</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="d-flex flex-wrap">
+                                            <!-- Lặp qua danh sách kích cỡ và tạo các checkbox -->
+                                            <div th:each="size : ${kc}">
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="btn-check"
+                                                           th:id="'btn-check-' + ${size.id}" th:value="${size.ten}"
+                                                           name="kichCoId" autocomplete="off"
+                                                           onchange="handleCheckboxChange()">
+                                                    <label class="btn btn-outline-primary size-button"
+                                                           th:for="'btn-check-' + ${size.id}"
+                                                           th:text="${size.ten}"></label>
+                                                </div>
                                             </div>
                                         </div>
+                                        <!--                                            <div id="displayValue"></div>-->
                                     </div>
-                                    <!--                                            <div id="displayValue"></div>-->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-
-                <!-- Modal thêm Tên sản phẩm-->
-                <div class="modal fade" id="themtensp" tabindex="-1" aria-labelledby="exampleModalLabelTenSP"
-                     aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="exampleModalLabelTenSP">Thêm tên sản phẩm</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="addFormTenSP" th:method="post" name="addTenSP" th:object="${sanpham}"
-                                      th:action="@{/addTenSPModal}" onsubmit="return validateTrungTenSP()">
-                                    <p class="mb-2 fw-bold">
-                                        <span style="color: red">* </span>
-                                        Tên sản phẩm:
-                                        <input id="tenInputTenSP" class="form-control"
-                                               th:field="*{tenSanPham}"/>
-                                    <div style="color: red; font-weight: initial"
-                                         id="errorTenSP"></div>
-                                    </p>
-
-
-                                    <div class="d-flex justify-content-end align-items-center mt-5">
-                                        <button data-bs-dismiss="modal" class="btn btn-secondary"
-                                                style="padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px;">
-                                            Thoát
-                                        </button>
-                                        <button id="submitButtonTenSP" class="btn btn-primary"
-                                                style="margin-left:15px; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px;">
-                                            Thêm
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Modal thêm Thương hiệu-->
-                <div class="modal fade" id="themthuonghieu" tabindex="-1"
-                     aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="exampleModalLabel">Thêm thương hiệu</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="addFormThuongHieu" name="addThuongHieu" th:method="post"
-                                      th:object="${thuonghieu}"
-                                      th:action="@{/addThuongHieuModal}"
-                                      onsubmit="return validateTrungThuongHieu()">
-                                    <p style="font-weight: bold">
-                                        <span style="color: red">* </span>
-                                        Tên thương hiệu:
-                                        <input id="tenInputThuongHieu" class="form-control" th:field="*{ten}"/>
-                                    <div style="color: red; font-weight: initial;font-style: italic"
-                                         id="errorTenThuongHieu"></div>
-                                    </p>
-                                    <div class="d-flex justify-content-end align-items-center mt-5">
-                                        <button data-bs-dismiss="modal" class="btn btn-secondary"
-                                                style="padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px; border-color: black;">
-                                            Thoát
-                                        </button>
-                                        <button id="submitButtonThuongHieu" class="btn btn-primary"
-                                                style="margin-left:15px;padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px;">
-                                            Thêm
-                                        </button>
-                                    </div>
-                                </form>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Modal thêm Chất liệu-->
-                <div class="modal fade" id="themchatlieu" tabindex="-1"
-                     aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="exampleModalLabelChatLieu">Thêm chất liệu</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="addFormChatLieu" name="addChatLieu" th:method="post"
-                                      th:action="@{/addChatLieuModal}" th:object="${chatlieu}"
-                                      onsubmit="return validateTrungChatLieu()">
-                                    <p style="font-weight: bold">
-                                        <span style="color: red">* </span>
-                                        Tên chất liệu:
-                                        <input id="tenInputChatLieu" th:field="*{ten}" class="form-control">
-                                    <div style="color: red; font-weight: initial;font-style: italic"
-                                         id="errorTenChatLieu"></div>
-                                    </p>
-
-                                    <div class="d-flex justify-content-end align-items-center mt-5">
-                                        <button data-bs-dismiss="modal" class="btn btn-secondary"
-                                                style="padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px;">
-                                            Thoát
-                                        </button>
-                                        <button type="submit" class="btn btn-primary"
-                                                style="margin-left:15px;padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px; ">
-                                            Thêm
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Modal thêm Đế giày-->
-                <div class="modal fade" id="themdegiay" tabindex="-1" aria-labelledby="exampleModalLabel"
-                     aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="exampleModalLabel2">Thêm đế giày</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="addFormDeGiay" name="addDeGiay" th:method="post" th:object="${degiay}"
-                                      th:action="@{/addDeGiayModal}" onsubmit="return validateTrungDeGiay()">
-                                    <p>
-                                        <span style="color: red">* </span>
-                                        Tên đế giày:
-                                        <input id="tenInputDeGiay" class="form-control" th:field="*{ten}"/>
-                                    <div style="color: red; font-weight: initial;font-style: italic"
-                                         id="errorTenDeGiay"></div>
-                                    </p>
-
-                                    <div class="d-flex justify-content-end align-items-center mt-5">
-                                        <button data-bs-dismiss="modal" class="btn btn-secondary"
-                                                style="padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px;">
-                                            Thoát
-                                        </button>
-                                        <button id="submitButtonDeGiay" class="btn btn-primary"
-                                                style="margin-left:15px; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px;">
-                                            Thêm
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Modal thêm Màu sắc-->
-                <div class="modal fade" id="themmausac" tabindex="-1" aria-labelledby="exampleModalLabelMauSac"
-                     aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="exampleModalLabelMauSac">Thêm màu sắc</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="addFormMauSac" th:method="post" name="addMauSac" th:object="${mausac}"
-                                      th:action="@{/addMauSacModal}" onsubmit="return validateTrungMauSac()">
-                                    <p style="font-weight: bold">
-                                        <span style="color: red">* </span>
-                                        Mã màu sắc:
-                                        <input type="color" id="tenInputMauSac" th:field="*{ten}"
-                                               style="width: 100%" class="form-control"/>
-                                    </p>
-
-
-                                    <div class="d-flex justify-content-end align-items-center mt-5">
-                                        <button data-bs-dismiss="modal" class="btn btn-secondary"
-                                                style="padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px;">
-                                            Thoát
-                                        </button>
-                                        <button id="submitButtonMauSac" class="btn btn-primary"
-                                                style="margin-left:15px; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px; ">
-                                            Thêm
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Modal thêm Kích cỡ-->
-                <div class="modal fade" id="themnhanhkichco" tabindex="-1"
-                     aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5">Thêm kích cỡ</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="addFormKichCo" name="addKichCo"
-                                      onsubmit="return validateTrungKichCo()"
-                                      method="post" th:action="@{/addKichCoModal}" th:object="${kichco}">
-                                    <p style="font-weight: bold">
-                                        <span style="color: red">* </span>
-                                        Tên kích cỡ:
-                                        <input id="tenInputKichCo" class="form-control" th:field="*{ten}"/>
-                                    <div style="color: red; font-weight: initial;font-style: italic"
-                                         id="errorTenKichCo"></div>
-                                    </p>
-
-                                    <div class="d-flex justify-content-end align-items-center mt-5">
-                                        <button data-bs-dismiss="modal" class="btn btn-secondary"
-                                                style=" padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px;">
-                                            Thoát
-                                        </button>
-                                        <button id="submitButtonKichCo" class="btn btn-primary"
-                                                style="margin-left:15px; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px;">
-                                            Thêm
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-body">
-                <!-- Modal chỉnh sửa giá số lượng -->
-                <div class="modal fade" id="chinhsuasoluongvagia" tabindex="-1" aria-labelledby="exampleModalLabel"
-                     aria-hidden="true">
-                    <form method="post" th:action="@{/updateGiaAndSoLuong}" id="submitid">
-                        <input type="hidden" name="choncheckbox" value="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5">Chỉnh sửa giá và số lượng sản phẩm</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>Số lượng:
-                                        <input type="number" class="form-control" name="soluong" id="soluongInput"
-                                               min="1"
-                                               max="100">
-                                        <span id="soluongError" style="color: red"></span>
-                                    </p>
-                                    <p>Đơn giá:
-                                        <input class="form-control" name="giatienDisplay" id="giatienInput"
-                                               onkeyup="formatCurrency('giatienInput')">
-                                        <input type="hidden" name="giatien" id="giatienRawInput">
-                                        <span id="giatienError" style="color: red"></span>
-                                    </p>
-                                </div>
-
-
-                                <div class="d-flex justify-content-end align-items-center mb-3">
-                                    <button data-bs-dismiss="modal" type="button"
-                                            class="btn btn-secondary"
-                                            style="padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px;">
-                                        Đóng
-                                    </button>
-                                    <button onclick="validateAndSubmit()" type="button" class="btn btn-primary"
-                                            style="margin-left:15px; margin-right: 15px; padding: 5px 10px; width: 130px; height: 40px; border-radius: 10px;">
-                                        Cập nhật
-                                    </button>
                                 </div>
                             </div>
                         </div>
                     </form>
-                </div>
-                <form th:action="@{/addImage}" name="addImage" method="post" enctype="multipart/form-data"
-                      onsubmit="return validateForm2()">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <div class="d-flex align-items-center">
-                            <h3>Danh sách biến thể sản phẩm</h3>
-                        </div>
-                        <div class="d-flex align-items-center ms-auto">
-                            <button id="editButton" class="btn btn-primary disabled" type="button"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#chinhsuasoluongvagia"
-                                    style="padding: 5px 10px; width: 180px; height: 40px; border-radius: 10px;">
-                                Chỉnh sửa chung
-                            </button>
 
-                            <button id="submitButton" type="submit"
-                                    class="btn btn-primary"
-                                    style="margin-left: 15px; padding: 5px 10px; width: 120px; height: 40px; border-radius: 10px;">
-                                Hoàn tất
-                            </button>
+                    <!-- Modal thêm Tên sản phẩm-->
+                    <div class="modal fade" id="themtensp" tabindex="-1" aria-labelledby="exampleModalLabelTenSP"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabelTenSP">Thêm tên sản phẩm</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="addFormTenSP" th:method="post" name="addTenSP" th:object="${sanpham}"
+                                          th:action="@{/addTenSPModal}" onsubmit="return validateTrungTenSP()">
+                                        <p class="mb-2 fw-bold">
+                                            <span style="color: red">* </span>
+                                            Tên sản phẩm:
+                                            <input id="tenInputTenSP" class="form-control"
+                                                   th:field="*{tenSanPham}"/>
+                                        <div style="color: red; font-weight: initial"
+                                             id="errorTenSP"></div>
+                                        </p>
+
+
+                                        <div class="d-flex justify-content-end align-items-center mt-5">
+                                            <button data-bs-dismiss="modal" class="btn btn-secondary"
+                                                    style="padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px;">
+                                                Thoát
+                                            </button>
+                                            <button id="submitButtonTenSP" class="btn btn-primary"
+                                                    style="margin-left:15px; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px;">
+                                                Thêm
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <section class="content">
+                    <!-- Modal thêm Thương hiệu-->
+                    <div class="modal fade" id="themthuonghieu" tabindex="-1"
+                         aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Thêm thương hiệu</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="addFormThuongHieu" name="addThuongHieu" th:method="post"
+                                          th:object="${thuonghieu}"
+                                          th:action="@{/addThuongHieuModal}"
+                                          onsubmit="return validateTrungThuongHieu()">
+                                        <p style="font-weight: bold">
+                                            <span style="color: red">* </span>
+                                            Tên thương hiệu:
+                                            <input id="tenInputThuongHieu" class="form-control" th:field="*{ten}"/>
+                                        <div style="color: red; font-weight: initial;font-style: italic"
+                                             id="errorTenThuongHieu"></div>
+                                        </p>
+                                        <div class="d-flex justify-content-end align-items-center mt-5">
+                                            <button data-bs-dismiss="modal" class="btn btn-secondary"
+                                                    style="padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px; border-color: black;">
+                                                Thoát
+                                            </button>
+                                            <button id="submitButtonThuongHieu" class="btn btn-primary"
+                                                    style="margin-left:15px;padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px;">
+                                                Thêm
+                                            </button>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal thêm Chất liệu-->
+                    <div class="modal fade" id="themchatlieu" tabindex="-1"
+                         aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabelChatLieu">Thêm chất liệu</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="addFormChatLieu" name="addChatLieu" th:method="post"
+                                          th:action="@{/addChatLieuModal}" th:object="${chatlieu}"
+                                          onsubmit="return validateTrungChatLieu()">
+                                        <p style="font-weight: bold">
+                                            <span style="color: red">* </span>
+                                            Tên chất liệu:
+                                            <input id="tenInputChatLieu" th:field="*{ten}" class="form-control">
+                                        <div style="color: red; font-weight: initial;font-style: italic"
+                                             id="errorTenChatLieu"></div>
+                                        </p>
+
+                                        <div class="d-flex justify-content-end align-items-center mt-5">
+                                            <button data-bs-dismiss="modal" class="btn btn-secondary"
+                                                    style="padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px;">
+                                                Thoát
+                                            </button>
+                                            <button type="submit" class="btn btn-primary"
+                                                    style="margin-left:15px;padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px; ">
+                                                Thêm
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal thêm Đế giày-->
+                    <div class="modal fade" id="themdegiay" tabindex="-1" aria-labelledby="exampleModalLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel2">Thêm đế giày</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="addFormDeGiay" name="addDeGiay" th:method="post" th:object="${degiay}"
+                                          th:action="@{/addDeGiayModal}" onsubmit="return validateTrungDeGiay()">
+                                        <p>
+                                            <span style="color: red">* </span>
+                                            Tên đế giày:
+                                            <input id="tenInputDeGiay" class="form-control" th:field="*{ten}"/>
+                                        <div style="color: red; font-weight: initial;font-style: italic"
+                                             id="errorTenDeGiay"></div>
+                                        </p>
+
+                                        <div class="d-flex justify-content-end align-items-center mt-5">
+                                            <button data-bs-dismiss="modal" class="btn btn-secondary"
+                                                    style="padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px;">
+                                                Thoát
+                                            </button>
+                                            <button id="submitButtonDeGiay" class="btn btn-primary"
+                                                    style="margin-left:15px; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px;">
+                                                Thêm
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal thêm Màu sắc-->
+                    <div class="modal fade" id="themmausac" tabindex="-1" aria-labelledby="exampleModalLabelMauSac"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabelMauSac">Thêm màu sắc</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="addFormMauSac" th:method="post" name="addMauSac" th:object="${mausac}"
+                                          th:action="@{/addMauSacModal}" onsubmit="return validateTrungMauSac()">
+                                        <p style="font-weight: bold">
+                                            <span style="color: red">* </span>
+                                            Mã màu sắc:
+                                            <input type="color" id="tenInputMauSac" th:field="*{ten}"
+                                                   style="width: 100%" class="form-control"/>
+                                        </p>
+                                        <p style="font-weight: bold">
+                                            <span style="color: red">* </span>
+                                            Tên màu sắc:
+                                            <input type="text" id="tenMauSacInput" th:field="*{tenMauSac}"
+                                                   style="width: 100%" class="form-control"/>
+                                        </p>
+
+
+                                        <div class="d-flex justify-content-end align-items-center mt-5">
+                                            <button data-bs-dismiss="modal" class="btn btn-secondary"
+                                                    style="padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px;">
+                                                Thoát
+                                            </button>
+                                            <button id="submitButtonMauSac" class="btn btn-primary"
+                                                    style="margin-left:15px; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px; ">
+                                                Thêm
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal thêm Kích cỡ-->
+                    <div class="modal fade" id="themnhanhkichco" tabindex="-1"
+                         aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5">Thêm kích cỡ</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="addFormKichCo" name="addKichCo"
+                                          onsubmit="return validateTrungKichCo()"
+                                          method="post" th:action="@{/addKichCoModal}" th:object="${kichco}">
+                                        <p style="font-weight: bold">
+                                            <span style="color: red">* </span>
+                                            Tên kích cỡ:
+                                            <input id="tenInputKichCo" class="form-control" th:field="*{ten}"/>
+                                        <div style="color: red; font-weight: initial;font-style: italic"
+                                             id="errorTenKichCo"></div>
+                                        </p>
+
+                                        <div class="d-flex justify-content-end align-items-center mt-5">
+                                            <button data-bs-dismiss="modal" class="btn btn-secondary"
+                                                    style=" padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px;">
+                                                Thoát
+                                            </button>
+                                            <button id="submitButtonKichCo" class="btn btn-primary"
+                                                    style="margin-left:15px; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px;">
+                                                Thêm
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <!-- Modal chỉnh sửa giá số lượng -->
+                    <div class="modal fade" id="chinhsuasoluongvagia" tabindex="-1" aria-labelledby="exampleModalLabel"
+                         aria-hidden="true">
+                        <form method="post" th:action="@{/updateGiaAndSoLuong}" id="submitid">
+                            <input type="hidden" name="choncheckbox" value="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5">Chỉnh sửa giá và số lượng sản phẩm</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Số lượng:
+                                            <input type="number" class="form-control" name="soluong" id="soluongInput"
+                                                   min="1"
+                                                   max="100">
+                                            <span id="soluongError" style="color: red"></span>
+                                        </p>
+                                        <p>Đơn giá:
+                                            <input class="form-control" name="giatienDisplay" id="giatienInput"
+                                                   onkeyup="formatCurrency('giatienInput')">
+                                            <input type="hidden" name="giatien" id="giatienRawInput">
+                                            <span id="giatienError" style="color: red"></span>
+                                        </p>
+                                    </div>
+
+
+                                    <div class="d-flex justify-content-end align-items-center mb-3">
+                                        <button data-bs-dismiss="modal" type="button"
+                                                class="btn btn-secondary"
+                                                style="padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px;">
+                                            Đóng
+                                        </button>
+                                        <button onclick="validateAndSubmit()" type="button" class="btn btn-primary"
+                                                style="margin-left:15px; margin-right: 15px; padding: 5px 10px; width: 130px; height: 40px; border-radius: 10px;">
+                                            Cập nhật
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <form th:action="@{/addImage}" name="addImage" method="post" enctype="multipart/form-data"
+                          onsubmit="return validateForm2()">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <h3>Danh sách biến thể sản phẩm</h3>
+                            </div>
+                            <div class="d-flex align-items-center ms-auto">
+                                <button id="editButton" class="btn btn-primary disabled" type="button"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#chinhsuasoluongvagia"
+                                        style="padding: 5px 10px; width: 180px; height: 40px; border-radius: 10px;">
+                                    Chỉnh sửa chung
+                                </button>
+
+                                <button id="submitButton" type="submit"
+                                        class="btn btn-primary"
+                                        style="margin-left: 15px; padding: 5px 10px; width: 120px; height: 40px; border-radius: 10px;">
+                                    Hoàn tất
+                                </button>
+                            </div>
+                        </div>
+
+                        <section class="content">
                             <table id="example2" style="width: 100%"
                                    class="table-bordered table-hover text-center">
                                 <thead style="height: 50px;color: black">
@@ -773,19 +779,23 @@
                                                               th:text="${stt.index + 1}"></span>
                                     </td>
                                     <td>
-                                                         <span th:if="${#strings.length(spctt.sanPham.tenSanPham + spctt.kichCo.ten + ' -' + spctt.mauSac.ten) > 40}">
-    <span th:text="${#strings.substring(spctt.sanPham.tenSanPham  + spctt.kichCo.ten + ' -' + spctt.mauSac.ten, 0, 40)} + '...'"></span>
+                                                         <span th:if="${#strings.length(spctt.sanPham.tenSanPham + spctt.kichCo.ten + ' -' + spctt.mauSac.ten + ' - ' + spctt.mauSac.tenMauSac) > 40}">
+    <span th:text="${#strings.substring(spctt.sanPham.tenSanPham  + spctt.kichCo.ten + ' -' + spctt.mauSac.ten + ' - ' + spctt.mauSac.tenMauSac, 0, 40)} + '...'"></span>
     <span th:text="${spctt.kichCo.ten} + ' -'"
           th:style="'background-color:' + ${spctt.kichCo.ten} + '; color: black; padding: 2px 5px; border-radius: 3px;'"></span>
     <span th:text="${spctt.mauSac.ten}"
           th:style="'background-color:' + ${spctt.mauSac.ten} + '; color: white; padding: 2px 5px; border-radius: 3px;'"></span>
+    <span th:text="${spctt.mauSac.tenMauSac}"
+          th:style="'background-color:' + ${spctt.mauSac.tenMauSac} + '; color: black; padding: 2px 5px; border-radius: 3px;'"></span>
 </span>
-                                        <span th:unless="${#strings.length(spctt.sanPham.tenSanPham + spctt.kichCo.ten + ' -' + spctt.mauSac.ten) > 40}">
+                                        <span th:unless="${#strings.length(spctt.sanPham.tenSanPham + spctt.kichCo.ten + ' -' + spctt.mauSac.ten + ' - ' + spctt.mauSac.tenMauSac) > 40}">
     <span th:text="${spctt.sanPham.tenSanPham}"></span>
     <span th:text="${spctt.kichCo.ten} + ' -'"
           th:style="'background-color:' + ${spctt.kichCo.ten} + '; color: black; padding: 2px 5px; border-radius: 3px;'"></span>
     <span th:text="${spctt.mauSac.ten}"
           th:style="'background-color:' + ${spctt.mauSac.ten} + '; color: white; padding: 2px 5px; border-radius: 3px;'"></span>
+    <span th:text="${spctt.mauSac.tenMauSac}"
+          th:style="'background-color:' + ${spctt.mauSac.tenMauSac} + '; color: black; padding: 2px 5px; border-radius: 3px;'"></span>
 </span>
                                     </td>
                                     <td>
@@ -830,8 +840,8 @@
                                 </tr>
                                 </tbody>
                             </table>
-                        </div>
-                    </section>
+                </div>
+                </section>
                 </form>
             </div>
         </div>
@@ -2347,8 +2357,10 @@
             }
             var color = $(state.element).data('color');
             var $state = $(
+                '<div class="d-flex align-items-center gap-2">' +
                 '<span style="background-color:' + color + '; display: inline-block; width: 50px;margin-top: 5px; height: 20px; border-radius: 3px;"></span>' +
-                '<span>' + state.text + '</span>'
+                '<span style="color: black">' + state.text + '</span>' +
+                ' </div>'
             );
             return $state;
         }
