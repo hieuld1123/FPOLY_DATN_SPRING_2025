@@ -172,7 +172,7 @@ public class CartController {
                 .phiVanChuyen(tongTamTinh >= 1000000 ? 0.0f : 30000.0f)
                 .tongTien(tongTamTinh)
                 .phuongThucThanhToan("Thanh toán khi nhận hàng")
-                .thanhToan(false)
+                .thanhToan(true)
                 .ghiChu(hoaDonBinhRequest.getGhiChu())
                 .khachHang(null)
                 .nhanVien(null)
