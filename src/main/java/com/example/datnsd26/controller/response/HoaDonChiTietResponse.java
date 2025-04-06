@@ -10,6 +10,8 @@ import java.util.List;
 public class HoaDonChiTietResponse {
     private float tongTien;
 
+    private float shippingFee;
+
     private String ghiChu;
 
     private Customer khachHang;

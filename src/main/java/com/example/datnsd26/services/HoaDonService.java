@@ -17,5 +17,8 @@ public interface HoaDonService {
 
     void cancel(String code);
 
+    void edit(String code);
+
     void completed(String code);
+
 }

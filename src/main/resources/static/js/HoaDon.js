@@ -7,13 +7,12 @@ let filterParams = {
     invoiceCode: '',
     startDate: '',
     endDate: '',
-    status: 'Chờ xác nhận',
+    status: '',
     customer: ''
 };
 
 function formatDateToISO(dateString) {
     if (!dateString) return '';
-    // Convert yyyy-MM-dd to yyyy-MM-ddT00:00:00.000Z
     const date = new Date(dateString);
     return date.toISOString();
 }
@@ -59,20 +58,28 @@ function loadInvoices(data, page, total) {
     const tbody = $("#invoice-table");
     tbody.empty();
 
-    data.forEach(invoice => {
-        const customerName = invoice.customer === null ? "Khách lẻ" : invoice.customer;
-        const formattedValue = invoice.value.toLocaleString('vi-VN') + " VNĐ";
-        // const creationDate = new Date(invoice.creationDate).toLocaleDateString('vi-VN');
-        const creationDate = new Date(invoice.creationDate);
-        const formattedDate = `${creationDate.getDate().toString().padStart(2, '0')}/` +
-            `${(creationDate.getMonth() + 1).toString().padStart(2, '0')}/` +
-            `${creationDate.getFullYear()} ` +
-            `${creationDate.getHours().toString().padStart(2, '0')}:` +
-            `${creationDate.getMinutes().toString().padStart(2, '0')}:` +
-            `${creationDate.getSeconds().toString().padStart(2, '0')}`;
-        const row = `
+    if (data.length === 0) {
+        // Nếu không có dữ liệu, hiển thị thông báo
+        tbody.append(`
+            <tr>
+                <td colspan="6" class="text-center text-muted">Không có dữ liệu</td>
+            </tr>
+        `);
+    } else {
+        // Nếu có dữ liệu, hiển thị danh sách hóa đơn
+        data.forEach(invoice => {
+            const customerName = invoice.customer === null ? "Khách lẻ" : invoice.customer;
+            const formattedValue = invoice.value.toLocaleString('vi-VN') + " VNĐ";
+            const creationDate = new Date(invoice.creationDate);
+            const formattedDate = `${creationDate.getDate().toString().padStart(2, '0')}/` +
+                `${(creationDate.getMonth() + 1).toString().padStart(2, '0')}/` +
+                `${creationDate.getFullYear()} ` +
+                `${creationDate.getHours().toString().padStart(2, '0')}:` +
+                `${creationDate.getMinutes().toString().padStart(2, '0')}:` +
+                `${creationDate.getSeconds().toString().padStart(2, '0')}`;
+            const row = `
                 <tr>
-                    <td><a href="/hoa-don/${invoice.id}">${invoice.id}</a></td>
+                    <td><a href="/admin/hoa-don/${invoice.id}">${invoice.id}</a></td>
                     <td>${customerName}</td>
                     <td>${invoice.purchaseMethod}</td>
                     <td>${formattedDate}</td>
@@ -80,8 +87,9 @@ function loadInvoices(data, page, total) {
                     <td>${formattedValue}</td>
                 </tr>
             `;
-        tbody.append(row);
-    });
+            tbody.append(row);
+        });
+    }
 
     currentPage = page;
     totalPages = total;
@@ -102,21 +110,28 @@ function updatePagination(totalPages, currentPage) {
     const pagination = $("#pagination");
     pagination.empty();
 
+    if (totalPages < 2) {
+        pagination.hide();
+        return;
+    }
+
+    pagination.show();
+
     const maxVisiblePages = 5;
 
     // Button Previous
     pagination.append(`
-            <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                <a class="page-link" href="#" data-page="${currentPage - 1}">Previous</a>
-            </li>
-        `);
+        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+            <a class="page-link" href="#" data-page="${currentPage - 1}">Previous</a>
+        </li>
+    `);
 
     // First page
     pagination.append(`
-            <li class="page-item ${1 === currentPage ? 'active' : ''}">
-                <a class="page-link" href="#" data-page="1">1</a>
-            </li>
-        `);
+        <li class="page-item ${1 === currentPage ? 'active' : ''}">
+            <a class="page-link" href="#" data-page="1">1</a>
+        </li>
+    `);
 
     if (totalPages > 1) {
         let startPage = Math.max(2, currentPage - Math.floor(maxVisiblePages / 2));
@@ -130,41 +145,41 @@ function updatePagination(totalPages, currentPage) {
 
         if (startPage > 2) {
             pagination.append(`
-                    <li class="page-item disabled">
-                        <span class="page-link">...</span>
-                    </li>
-                `);
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+            `);
         }
 
         for (let i = startPage; i <= endPage; i++) {
             pagination.append(`
-                    <li class="page-item ${i === currentPage ? 'active' : ''}">
-                        <a class="page-link" href="#" data-page="${i}">${i}</a>
-                    </li>
-                `);
+                <li class="page-item ${i === currentPage ? 'active' : ''}">
+                    <a class="page-link" href="#" data-page="${i}">${i}</a>
+                </li>
+            `);
         }
 
         if (endPage < totalPages - 1) {
             pagination.append(`
-                    <li class="page-item disabled">
-                        <span class="page-link">...</span>
-                    </li>
-                `);
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+            `);
         }
 
         pagination.append(`
-                <li class="page-item ${totalPages === currentPage ? 'active' : ''}">
-                    <a class="page-link" href="#" data-page="${totalPages}">${totalPages}</a>
-                </li>
-            `);
+            <li class="page-item ${totalPages === currentPage ? 'active' : ''}">
+                <a class="page-link" href="#" data-page="${totalPages}">${totalPages}</a>
+            </li>
+        `);
     }
 
     // Button Next
     pagination.append(`
-            <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-                <a class="page-link" href="#" data-page="${currentPage + 1}">Next</a>
-            </li>
-        `);
+        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+            <a class="page-link" href="#" data-page="${currentPage + 1}">Next</a>
+        </li>
+    `);
 }
 
 // The function applies the filter

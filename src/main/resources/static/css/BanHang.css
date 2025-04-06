@@ -255,3 +255,20 @@
     display: block !important;
     visibility: visible !important;
 }
+
+.shipping-fee-input {
+    border: 2px solid #007bff;
+    max-width: 300px;
+    transition: border-color 0.3s ease;
+}
+
+.shipping-fee-input:hover, .shipping-fee-input:focus {
+    border-color: #0056b3;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+.input-group-text {
+    background-color: #f8f9fa;
+    border: 2px solid #007bff;
+    border-right: none;
+}

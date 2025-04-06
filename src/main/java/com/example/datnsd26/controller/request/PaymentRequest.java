@@ -10,4 +10,5 @@ public class PaymentRequest {
     private int employeeId;
     private String type;
     private String paymentMethod;
+    private float shippingFee;
 }

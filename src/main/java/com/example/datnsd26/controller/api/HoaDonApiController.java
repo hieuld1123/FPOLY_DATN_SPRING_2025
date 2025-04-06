@@ -55,7 +55,16 @@ public class HoaDonApiController {
         hoaDonService.cancel(code);
         return ApiResponse.builder()
                 .status(HttpStatus.OK.value())
-                .message("Xác nhận vận chuyển")
+                .message("Hủy hóa đơn thành công")
+                .build();
+    }
+
+    @PatchMapping("/edit/{code}")
+    public ApiResponse edit(@PathVariable String code) {
+        hoaDonService.edit(code);
+        return ApiResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Xác nhận chỉnh sửa hóa đơn")
                 .build();
     }
 
