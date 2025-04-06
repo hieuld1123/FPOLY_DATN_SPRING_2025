@@ -58,7 +58,7 @@ public class HoaDonServiceImp implements HoaDonService {
         return InvoiceInformation.builder()
                 .isConfirm(!hd.getHinhThucMuaHang().equalsIgnoreCase("offline") && confirm && isCancel)
                 .isDelivery(!hd.getHinhThucMuaHang().equalsIgnoreCase("offline") && (!confirm && delivery) && isCancel)
-                .allowCancel(delivery && isCancel)
+                .allowCancel(delivery && isCancel && isCompleted)
                 .isCompleted(!delivery && hd.isThanhToan() && isCompleted && isCancel)
                 .order_id(hd.getMaHoaDon())
                 .seller(hd.getNhanVien() == null ? "N/A" : hd.getNhanVien().getTenNhanVien())

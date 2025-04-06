@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/hoa-don")
+@RequestMapping("/admin/hoa-don")
 @Slf4j(topic = "HOA-DON-CONTROLLER")
 @RequiredArgsConstructor
 public class HoaDonController {

@@ -23,10 +23,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers("/shop/**", "/api/**", "/san-pham/**")) // Disable CSRF if using REST API
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/ban-hang/**", "/hoa-don/**").authenticated()
                         .requestMatchers("/shop/**", "/error/**", "/**", "/api/**").permitAll()  // Public access
-                        .requestMatchers("/admin/**").hasAnyRole("ADMIN", "EMPLOYEE")  // Requires authentication
-                        .requestMatchers("/admin/ban-hang").hasRole("EMPLOYEE") // Only Employee role
+                        .requestMatchers("/admin/**").authenticated()
                         .requestMatchers("/doi-mat-khau").permitAll() // Cho phép đổi mật khẩu mà không cần đăng nhập
                         .anyRequest().authenticated() // All other pages require login
                 )

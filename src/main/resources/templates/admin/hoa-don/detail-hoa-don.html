@@ -74,7 +74,7 @@
         <div class="main-content">
             <div class="row mt-2 align-items-center">
                 <div class="col-6">
-                    <a th:href="@{/hoa-don}" class="back-link">
+                    <a th:href="@{/admin/hoa-don}" class="back-link">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                              class="bi bi-arrow-left" viewBox="0 0 16 16">
                             <path fill-rule="evenodd"
@@ -272,20 +272,30 @@
 
             $('#order-id').text(data.order_id);
 
+            // Xử lý thông tin khách hàng
+            const customer = data.customer || {};
+            const customerName = customer.name || "Khách lẻ";
+            const customerPhone = customer.phone || "Chưa có số điện thoại";
+            const customerAddress = customer.delivery_address && customer.delivery_address !== "null, null, null, null"
+                ? customer.delivery_address
+                : "Chưa có địa chỉ";
+
             $('#customer-header').html(`
-                <span class="text-primary fs-3 fw-bold">${data.customer.name}</span>
-                <span class="ms-2 me-2">-</span>
-                <span class="fs-3 fw-bold">${data.customer.phone}</span>
-            `);
+        <span class="text-primary fs-3 fw-bold">${customerName}</span>
+        <span class="ms-2 me-2">-</span>
+        <span class="fs-3 fw-bold">${customerPhone}</span>
+    `);
             $('#customer-information').html(`
-                <h4 class="text-uppercase">Địa chỉ giao hàng</h4>
-                <div class="mt-2">
-                    <span>${data.customer.name}</span>
-                    <span class="ms-2 me-2">-</span>
-                    <span>${data.customer.phone}</span>
-                </div>
-                <span>${data.customer.delivery_address}</span>
-            `);
+        <h4 class="text-uppercase">Địa chỉ giao hàng</h4>
+        <div class="mt-2">
+            <span>${customerName}</span>
+            <span class="ms-2 me-2">-</span>
+            <span>${customerPhone}</span>
+        </div>
+        <div class="mt-1">
+            <span>${customerAddress}</span>
+        </div>
+    `);
 
             let timelineHtml = '';
             data.status_timeline.forEach(item => {
@@ -577,7 +587,7 @@
                     success: function (response) {
                         if (response.status === 200) {
                             alert('Vui lòng quay lại trang bán hàng để chỉnh sửa!');
-                            window.location.href = '/ban-hang';
+                            window.location.href = '/admin/ban-hang';
                         } else {
                             alert('Sửa hóa đơn thất bại: ' + response.message);
                         }
