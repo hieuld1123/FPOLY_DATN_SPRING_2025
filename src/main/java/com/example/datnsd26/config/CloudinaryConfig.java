@@ -21,9 +21,6 @@ public class CloudinaryConfig {
 
     @Bean
     public Cloudinary cloudinaryInstance() {
-        log.info("cloudName: {}", cloudName);
-        log.info("apiKey: {}", apiKey);
-        log.info("apiSecret: {}", apiSecret);
         return new Cloudinary(ObjectUtils.asMap(
                 "cloud_name", cloudName,
                 "api_key", apiKey,

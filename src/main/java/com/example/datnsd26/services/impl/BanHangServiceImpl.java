@@ -69,6 +69,7 @@ public class BanHangServiceImpl implements BanHangService {
         KhachHang kh = hoaDon.getKhachHang();
         return HoaDonChiTietResponse.builder()
                 .tongTien(hoaDon.getTongTien())
+                .shippingFee(hoaDon.getPhiVanChuyen())
                 .ghiChu(hoaDon.getGhiChu() == null ? null : hoaDon.getGhiChu().trim())
                 .khachHang(kh == null ? null : HoaDonChiTietResponse.Customer.builder()
                         .id(kh.getId())
@@ -87,6 +88,7 @@ public class BanHangServiceImpl implements BanHangService {
                 .maHoaDon(generateInvoiceCode())
                 .trangThai("Đang xử lý")
                 .tongTien(0f)
+                .phiVanChuyen(0f)
                 .ngayTao(new Date())
                 .ngayCapNhat(new Date())
                 .build();
@@ -195,10 +197,10 @@ public class BanHangServiceImpl implements BanHangService {
     @Transactional(rollbackOn = Exception.class)
     public void payment(PaymentRequest paymentRequest) {
         HoaDon hoaDon = findHoaDonById(paymentRequest.getInvoiceId());
-        // TODO Customer
         hoaDon.setNhanVien(authUtil.getNhanVien());
         hoaDon.setHinhThucMuaHang(paymentRequest.getType());
         hoaDon.setPhiVanChuyen(0f);
+        hoaDon.setPhiVanChuyen(paymentRequest.getShippingFee());
         hoaDon.setTrangThai(paymentRequest.getType().equalsIgnoreCase("Offline") ? "Hoàn thành" : "Chờ xác nhận");
         if (hoaDon.getHinhThucMuaHang().equalsIgnoreCase("Có giao hàng")) {
             hoaDon.setTrangThai("Đã xác nhận");
@@ -223,6 +225,7 @@ public class BanHangServiceImpl implements BanHangService {
     @Transactional(rollbackOn = Exception.class)
     public void cancelInvoice(int invoiceId) {
         HoaDon hoaDon = findHoaDonById(invoiceId);
+        this.lichSuHoaDonRepository.deleteByInvoiceCode(hoaDon.getMaHoaDon());
         hoaDon.getDanhSachSanPham().forEach(hdct -> {
             SanPhamChiTiet spct = findSanPhamChiTietById(hdct.getSanPhamChiTiet().getId());
             spct.setSoLuong(spct.getSoLuong() + hdct.getSoLuong());
@@ -315,7 +318,7 @@ public class BanHangServiceImpl implements BanHangService {
                 .tinh(request.getProvince())
                 .huyen(request.getDistrict())
                 .xa(request.getWard())
-                .diaChiCuThe(request.getAddress_detail())
+                .diaChiCuThe(request.getAddressDetail())
                 .khachHang(kh)
                 .trangThai(true)
                 .build();

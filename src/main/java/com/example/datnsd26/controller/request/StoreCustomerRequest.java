@@ -16,5 +16,5 @@ public class StoreCustomerRequest {
 
     private String ward;
 
-    private String address_detail;
+    private String addressDetail;
 }

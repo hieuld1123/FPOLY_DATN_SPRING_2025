@@ -13,7 +13,6 @@ let filterParams = {
 
 function formatDateToISO(dateString) {
     if (!dateString) return '';
-    // Convert yyyy-MM-dd to yyyy-MM-ddT00:00:00.000Z
     const date = new Date(dateString);
     return date.toISOString();
 }
