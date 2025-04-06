@@ -14,6 +14,5 @@ public interface LichSuHoaDonRepository extends JpaRepository<LichSuHoaDon, Inte
     @Query("FROM LichSuHoaDon ls WHERE ls.trangThai like :status and ls.hoaDon.id = :invoice")
     Optional<LichSuHoaDon> findByStatusAndInvoice(String status, int invoice);
 
-    List<LichSuHoaDon> findByHoaDonOrderByThoiGianDesc(HoaDon hoaDon);
-
+    List<LichSuHoaDon> findByHoaDonOrderByThoiGianAsc(HoaDon hoaDon);
 }

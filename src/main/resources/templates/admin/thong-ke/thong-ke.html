@@ -4,6 +4,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nine Shoes</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <style>
     /* Bố cục chính */
     .admin-layout {
@@ -67,7 +69,13 @@
             width: calc(100% - 80px);
         }
     }
+
+    #chartDoanhThu {
+        max-width: 100%;
+        margin: 20px auto;
+    }
 </style>
+
 <body>
 <div class="admin-layout">
     <div th:replace="~{components/admin-sidebar :: admin-sidebar}" class="sidebar">
@@ -82,107 +90,456 @@
 
         <!-- Main content -->
         <div class="main-content">
+            <div class="card shadow-sm p-3">
+                    <form action="/thong-ke" method="get" class="row g-3 align-items-end" id="form-loc-thong-ke">
+                        <!-- Kiểu lọc -->
+                        <div class="col-md-2">
+                            <label class="form-label fw-bold">Kiểu lọc</label>
+                            <select name="kieuLoc" class="form-select">
+                                <option value="ngay" th:selected="${kieuLoc == 'ngay'}">Theo ngày</option>
+                                <option value="thang" th:selected="${kieuLoc == 'thang'}">Theo tháng</option>
+                                <option value="nam" th:selected="${kieuLoc == 'nam'}">Theo năm</option>
+                            </select>
+                        </div>
+
+                        <!-- Từ ngày - đến ngày -->
+                        <div class="col-md-2" id="locNgay">
+                            <label for="tuNgay" class="form-label fw-bold">Từ ngày</label>
+                            <input type="date" class="form-control" id="tuNgay" name="tuNgay"
+                                   th:value="${tuNgay != null ? #dates.format(tuNgay, 'yyyy-MM-dd') : ''}">
+                        </div>
+                        <div class="col-md-2" id="locNgayDen">
+                            <label for="denNgay" class="form-label fw-bold">Đến ngày</label>
+                            <input type="date" class="form-control" id="denNgay" name="denNgay"
+                                   th:value="${denNgay != null ? #dates.format(denNgay, 'yyyy-MM-dd') : ''}">
+                        </div>
+
+                        <!-- Tháng -->
+                        <div class="col-md-2" id="locThang">
+                            <label for="thang" class="form-label fw-bold">Tháng</label>
+                            <select class="form-select" id="thang" name="thang">
+                                <option value="">-- Chọn tháng --</option>
+                                <option th:each="i : ${#numbers.sequence(1, 12)}"
+                                        th:value="${i}"
+                                        th:text="${i}"
+                                        th:selected="${thang != null and thang == i}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Năm -->
+                        <div class="col-md-2" id="locNam">
+                            <label for="nam" class="form-label fw-bold">Năm</label>
+                            <select class="form-select" id="nam" name="nam">
+                                <option value="">-- Chọn năm --</option>
+                                <option th:each="n : ${#numbers.sequence(2020, 2030)}"
+                                        th:value="${n}"
+                                        th:text="${n}"
+                                        th:selected="${nam != null and nam == n}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="col-md-2 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary w-100">
+                                Lọc
+                            </button>
+                            <a href="/thong-ke" id="btn-reset-loc" class="btn btn-outline-secondary w-100">
+                                Bỏ lọc
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+
             <div class="row">
-                <div class="card mt-5">
+                <div class="card mt-3">
                     <div class="card-header">
                         <h3 class="card-title">Kết quả kinh doanh trong ngày</h3>
                     </div>
                     <div class="card-body border-bottom py-3">
                         <div class="row">
-                            <div class="col-4">
-                                <div class="card-title">Doanh thu trong ngày</div>
-                                <p th:text="${doanhThu} + ' VND'"></p>
+                            <!-- Doanh thu -->
+                            <div class="col-md-4">
+                                <div class="card text-white bg-success mb-3">
+                                    <div class="card-header d-flex justify-content-center">
+                                        <h2 class="m-0">Doanh thu</h2>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <h3 class="text-center">
+          <span th:text="${
+    #numbers.formatDecimal(
+        doanhThuKhoang != null ? doanhThuKhoang
+        : (doanhThuTheoThang != null ? doanhThuTheoThang
+        : (doanhThuTheoNam != null ? doanhThuTheoNam
+        : doanhThu)),
+        0, 'COMMA', 0, 'COMMA'
+    ).replace(',', '.') + ' đ'
+}">0 VNĐ</span>
+                                        </h3>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-4">
-                                <div class="card-title">Đơn hàng hoàn thành</div>
-                                <p th:text="${soDonHangMoi}"></p>
+
+                            <!-- Đơn hoàn thành -->
+                            <div class="col-md-4">
+                                <div class="card text-white bg-info mb-3">
+                                    <div class="card-header d-flex justify-content-center">
+                                        <h2 class="m-0">Đơn hoàn thành</h2>
+                                    </div>
+                                    <div class="card-body">
+                                        <h3 class="text-center">
+                    <span th:text="${soDonHoanThanhKhoang != null ? soDonHoanThanhKhoang
+                            : (soDonHoanThanhThang != null ? soDonHoanThanhThang
+                            : (soDonHoanThanhNam != null ? soDonHoanThanhNam
+                            : donHangHomNay))}">0</span>
+                                        </h3>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-4">
-                                <div class="card-title">Đã hủy</div>
-                                <p th:text="${soDonDaHuy}"></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card mt-5">
-                    <div class="card-header">
-                        <h3 class="card-title">Thống kê doanh thu</h3>
-                    </div>
-                    <div class="card-body border-bottom py-3">
-                        <div class="row">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div id="chart"></div>
+
+                            <!-- Đơn hủy -->
+                            <div class="col-md-4">
+                                <div class="card text-white bg-danger mb-3">
+                                    <div class="card-header d-flex justify-content-center">
+                                        <h2 class="m-0">Đơn đã hủy</h2>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <h3 class="text-center">
+                    <span th:text="${soDonHuyKhoang != null ? soDonHuyKhoang
+                            : (soDonHuyThang != null ? soDonHuyThang
+                            : (soDonHuyNam != null ? soDonHuyNam
+                            : donHuyHomNay))}">0</span>
+                                        </h3>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
+
                     </div>
                 </div>
-                <div class="d-flex gap-3">
-                    <div class="card mt-5  w-50">
-                        <div class="card-header ">
-                            <h3 class="card-title">Top sản phẩm bán chạy</h3>
-                        </div>
-                        <div class="card-body border-bottom py-3">
-                            <div class="row">
+            </div>
 
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card mt-5  w-50">
-                        <div class="card-header">
-                            <h3 class="card-title">Top sản phẩm sắp hết</h3>
-                        </div>
-                        <div class="card-body border-bottom py-3">
-                            <div class="row">
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h3 class="card-title">Thống kê doanh thu</h3>
+                </div>
+                <div class="card-body border-bottom py-3">
+                    <div class="row">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="card-body">
+                                    <div id="chartDoanhThu" th:if="${bieuDoMau == 'khac'}"></div>
+                                    <div id="chartDoanhThuGio" th:if="${bieuDoMau == 'gio'}"></div>
+                                </div>
 
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="d-flex gap-3">
+
+                <div class="card mt-3 w-75 shadow-lg rounded-4 border-0">
+                    <div class="card-header bg-primary text-white rounded-top-4 py-4">
+                        <h3 class="card-title fw-bold mb-1">🔥 Top 5 sản phẩm bán chạy</h3>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <table class="table table-hover table-bordered align-middle text-center shadow-sm rounded-3 overflow-hidden">
+                            <thead class="table-light fw-semibold">
+                            <tr>
+                                <th>STT</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Số lượng bán</th>
+                                <th>Doanh thu</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="sp, iterStat : ${topSanPhamBanChay}">
+                                <td th:text="${iterStat.index + 1}" class="fw-bold text-primary"></td>
+                                <td th:text="${sp.tenSanPham}" class="fw-medium text-dark"></td>
+                                <td th:text="${sp.tongSoLuongBan}" class="text-success fw-semibold"></td>
+                                <td th:text="${#numbers.formatDecimal(sp.tongDoanhThu, 0, 'COMMA', 0, 'COMMA').replace(',', '.') + ' đ'}"
+                                    class="text-danger fw-bold"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card mt-3 w-75 shadow-lg rounded-4 border-0">
+                    <div class="card-header bg-warning text-dark py-4 rounded-top-4">
+                        <h3 class="card-title fw-bold mb-0">⚠️ Top 10 sản phẩm sắp hết</h3>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <table class="table table-hover table-bordered align-middle text-center shadow-sm rounded-3 overflow-hidden">
+                            <thead class="table-light fw-semibold">
+                            <tr>
+                                <th>STT</th>
+                                <th>Mã sản phẩm</th>
+                                <th>Tên sản phẩm</th>
+                                <th class="text-danger">Số lượng còn lại</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="sp, iterStat : ${topSanPhamSapHet}">
+                                <td th:text="${iterStat.index + 1}" class="fw-bold text-primary"></td>
+                                <td th:text="${sp.maSanPham}" class="text-dark fw-medium"></td>
+                                <td th:text="${sp.tenSanPham}" class="text-dark"></td>
+                                <td th:text="${sp.tongSoLuongTon}" class="fw-bold text-danger"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+
+
+            </div>
         </div>
     </div>
 </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var options = {
-            series: [{
-                name: 'Doanh thu',
-                data: [45000, 52000, 48000, 60000, 57000, 62000, 70000] // Dữ liệu doanh thu theo tuần
-            }],
+<script th:inline="javascript">
+    let ngayLoc = [[${ngayLoc}]];
+    let doanhThuLoc = [[${doanhThuLoc}]];
+    let kieuLoc = /*[[${kieuLoc}]]*/ null;
+    let bieuDoMau = /*[[${bieuDoMau}]]*/ "gio";
+
+    let gioTrongNgay = /*[[${gioTrongNgay}]]*/ [];
+    let doanhThuTheoGio = /*[[${doanhThuTheoGio}]]*/ [];
+
+    if (bieuDoMau === 'khac') {
+        let titleText = 'Biểu đồ doanh thu theo ';
+        if (kieuLoc === 'ngay') titleText += 'ngày';
+        else if (kieuLoc === 'thang') titleText += 'tháng';
+        else if (kieuLoc === 'nam') titleText += 'năm';
+        else titleText += 'giờ'; // fallback
+
+        let options = {
             chart: {
                 type: 'bar',
-                height: 350
+                height: 350,
+                toolbar: {show: false}
+            },
+            title: {
+                text: titleText,
+                align: 'center',
+                style: {
+                    fontSize: '17px',
+                    fontWeight: 'bold',
+                    color: '#263238'
+                }
             },
             plotOptions: {
                 bar: {
-                    distributed: true, // Kích hoạt chế độ phân phối màu sắc
-                    horizontal: false,
-                    columnWidth: '45%',
+                    columnWidth: '50%',
+                    distributed: true,
+                    borderRadius: 4
                 }
             },
+            series: [{
+                name: 'Doanh thu',
+                data: doanhThuLoc
+            }],
             xaxis: {
-                categories: ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'],
+                categories: ngayLoc,
+                title: {text: 'Thời gian'},
                 labels: {
-                    style: {
-                        fontSize: '14px'
+                    rotate: -45
+                }
+            },
+            yaxis: {
+                title: {text: 'Doanh thu (VNĐ)'},
+                labels: {
+                    formatter: function (val) {
+                        return val.toLocaleString('vi-VN') + ' đ';
                     }
                 }
             },
-            colors: ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0', '#546E7A', '#26a69a'],
-            title: {
-                text: 'Doanh thu theo tuần',
-                align: 'center'
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val.toLocaleString('vi-VN') + ' đ';
+                    }
+                }
+            },
+            colors: ['#FF4560', '#008FFB', '#00E396', '#FEB019', '#775DD0',
+                '#3F51B5', '#546E7A', '#D4526E', '#8D5B4C', '#F86624',
+                '#2E294E', '#1B998B', '#E84855', '#FF8066', '#AA00FF',
+                '#00BCD4', '#FFB300', '#66BB6A', '#FF7043', '#D4E157',
+                '#6A1B9A', '#3949AB', '#039BE5', '#C2185B'],
+            dataLabels: {
+                enabled: false
             }
         };
 
-        var chart = new ApexCharts(document.querySelector("#chart"), options);
+        let chart = new ApexCharts(document.querySelector("#chartDoanhThu"), options);
         chart.render();
+    }
+
+    if (bieuDoMau === 'gio') {
+        let optionsGio = {
+            chart: {
+                type: 'bar',
+                height: 350,
+                toolbar: {show: false}
+            },
+            title: {
+                text: 'Biểu đồ doanh thu theo giờ trong ngày hôm nay',
+                align: 'center',
+                style: {
+                    fontSize: '17px',
+                    fontWeight: 'bold',
+                    color: '#263238'
+                }
+            },
+            plotOptions: {
+                bar: {
+                    borderRadius: 4,
+                    horizontal: false,
+                    columnWidth: '50%',
+                    distributed: true // Cho phép mỗi cột có màu riêng
+                }
+            },
+            series: [{
+                name: 'Doanh thu',
+                data: doanhThuTheoGio
+            }],
+            xaxis: {
+                categories: gioTrongNgay,
+                title: {text: 'Giờ trong ngày'},
+                labels: {
+                    style: {
+                        colors: gioTrongNgay.map(() => '#000'), // màu chữ trục X (nếu muốn)
+                        fontSize: '12px'
+                    }
+                }
+            },
+            yaxis: {
+                title: {text: 'Doanh thu (VNĐ)'},
+                labels: {
+                    formatter: function (val) {
+                        return val.toLocaleString('vi-VN') + ' đ';
+                    }
+                }
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val.toLocaleString('vi-VN') + ' đ';
+                    }
+                }
+            },
+            colors: [
+                '#FF4560', '#008FFB', '#00E396', '#FEB019', '#775DD0',
+                '#3F51B5', '#546E7A', '#D4526E', '#8D5B4C', '#F86624',
+                '#2E294E', '#1B998B', '#E84855', '#FF8066', '#AA00FF',
+                '#00BCD4', '#FFB300', '#66BB6A', '#FF7043', '#D4E157',
+                '#6A1B9A', '#3949AB', '#039BE5', '#C2185B'
+            ] // Tùy số lượng giờ bạn cần, có thể thêm hoặc bớt màu ở đây
+        };
+        let chartGio = new ApexCharts(document.querySelector("#chartDoanhThuGio"), optionsGio);
+        chartGio.render();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('btn-reset-loc').addEventListener('click', function () {
+            window.location.href = '/thong-ke'; // Chuyển về trang thống kê mặc định
+        });
+    });
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const select = document.querySelector("select[name='kieuLoc']");
+        const locNgay = document.getElementById("locNgay");
+        const locNgayDen = document.getElementById("locNgayDen");
+        const locThang = document.getElementById("locThang");
+        const locNam = document.getElementById("locNam");
+
+        function toggleFields() {
+            const value = select.value;
+            locNgay.style.display = value === "ngay" ? "block" : "none";
+            locNgayDen.style.display = value === "ngay" ? "block" : "none";
+            locThang.style.display = value === "thang" ? "block" : "none";
+            locNam.style.display = (value === "thang" || value === "nam") ? "block" : "none";
+        }
+
+        select.addEventListener("change", toggleFields);
+        toggleFields(); // Gọi ban đầu để hiển thị đúng
     });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
+
+<script>
+    document.getElementById("form-loc-thong-ke").addEventListener("submit", function (e) {
+        const kieuLoc = document.querySelector("select[name='kieuLoc']").value;
+        const tuNgay = document.getElementById("tuNgay").value;
+        const denNgay = document.getElementById("denNgay").value;
+        const thang = document.getElementById("thang").value;
+        const nam = document.getElementById("nam").value;
+
+        // Validate lọc theo ngày
+        if (kieuLoc === "ngay") {
+            if (!tuNgay || !denNgay) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Thiếu thông tin',
+                    text: 'Vui lòng chọn đầy đủ "Từ ngày" và "Đến ngày".'
+                });
+                return;
+            }
+            if (tuNgay > denNgay) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Dữ liệu không hợp lệ',
+                    text: '"Từ ngày" không được lớn hơn "Đến ngày".'
+                });
+                return;
+            }
+        }
+
+        // Validate lọc theo tháng
+        if (kieuLoc === "thang") {
+            if (!thang || !nam) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Thiếu thông tin',
+                    text: 'Vui lòng chọn đầy đủ tháng và năm.'
+                });
+                return;
+            }
+        }
+
+        // Validate lọc theo năm
+        if (kieuLoc === "nam") {
+            if (!nam) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Thiếu thông tin',
+                    text: 'Vui lòng chọn năm.'
+                });
+                return;
+            }
+        }
+    });
+</script>
+
 
 
 </body>

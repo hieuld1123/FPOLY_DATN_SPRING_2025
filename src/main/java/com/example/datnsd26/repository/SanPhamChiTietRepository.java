@@ -1,5 +1,6 @@
 package com.example.datnsd26.repository;
 
+import com.example.datnsd26.Dto.SanPhamSapHetDto;
 import com.example.datnsd26.controller.response.PublicSanPhamResponse;
 import com.example.datnsd26.models.SanPhamChiTiet;
 import com.example.datnsd26.models.*;
@@ -164,5 +165,28 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
 
     @Query("SELECT p FROM SanPhamChiTiet p ORDER BY p.giaBan DESC")
     List<PublicSanPhamResponse> findAllSortedByPriceDesc();
+
+    Optional<SanPhamChiTiet> findFirstBySanPham_MaSanPham(String maSanPham);
+    @Query("SELECT ha.tenAnh FROM HinhAnh ha WHERE ha.sanPhamChiTiet.id = :idSpct")
+    List<String> findHinhAnhUrlsById(@Param("idSpct") Integer idSpct);
+
+    @Query(value = """
+    SELECT TOP 5
+        sp.ma_san_pham AS maSanPham,
+        sp.ten_san_pham AS tenSanPham,
+        SUM(spct.so_luong) AS tongSoLuongTon,
+        (
+            SELECT TOP 1 ha.ten_anh 
+            FROM hinh_anh ha 
+            JOIN san_pham_chi_tiet spct2 ON ha.id_san_pham_chi_tiet = spct2.id
+            WHERE spct2.id_san_pham = sp.id
+        ) AS anhDaiDien
+    FROM san_pham_chi_tiet spct
+    JOIN san_pham sp ON spct.id_san_pham = sp.id
+    GROUP BY sp.ma_san_pham, sp.ten_san_pham, sp.id
+    ORDER BY tongSoLuongTon ASC
+    """, nativeQuery = true)
+    List<Object[]> getTopSanPhamSapHetNative();
+
 
 }

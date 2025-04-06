@@ -11,3 +11,56 @@
 </div>
 </body>
 </html>
+
+ Hiển thị thông tin hóa đơn
+  <div th:if="${hoaDon}">
+    <h3>Thông tin hóa đơn</h3>
+    <table border="1">
+      <tr>
+        <th>Mã hóa đơn</th>
+        <th>Người nhận</th>
+        <th>SĐT</th>
+        <th>Email</th>
+        <th>Địa chỉ</th>
+        <th>Tổng tiền</th>
+        <th>Phương thức thanh toán</th>
+        <th>Trạng thái</th>
+      </tr>
+      <tr>
+        <td th:text="${hoaDon.id}"></td>
+        <td th:text="${hoaDon.tenNguoiNhan}"></td>
+        <td th:text="${hoaDon.sdtNguoiNhan}"></td>
+        <td th:text="${hoaDon.email}"></td>
+        <td th:text="${hoaDon.diaChiNguoiNhan}"></td>
+        <td th:text="${hoaDon.tongTien}"></td>
+        <td th:text="${hoaDon.phuongThucThanhToan}"></td>
+        <td th:text="${hoaDon.trangThai}"></td>
+      </tr>
+    </table>
+
+    <h3>Chi tiết đơn hàng</h3>
+    <table border="1">
+      <tr>
+        <th>Sản phẩm</th>
+        <th>Số lượng</th>
+        <th>Giá</th>
+      </tr>
+      <tr th:each="chiTiet : ${chiTietList}">
+        <td th:text="${chiTiet.sanPhamChiTiet.sanPham.tenSanPham}"></td>
+        <td th:text="${chiTiet.soLuong}"></td>
+        <td th:text="${chiTiet.giaTienSauGiam}"></td>
+      </tr>
+    </table>
+
+    <h3>Lịch sử trạng thái đơn hàng</h3>
+    <table border="1">
+      <tr>
+        <th>Trạng thái</th>
+        <th>Thời gian</th>
+      </tr>
+      <tr th:each="lichSu : ${lichSuList}">
+        <td th:text="${lichSu.trangThai}"></td>
+        <td th:text="${#dates.format(lichSu.thoiGian, 'dd/MM/yyyy HH:mm:ss')}"></td>
+      </tr>
+    </table>
+  </div>

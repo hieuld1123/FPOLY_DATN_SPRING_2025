@@ -31,4 +31,6 @@ public class LichSuHoaDon {
     @JoinColumn(name = "id_hoa_don")
     private HoaDon hoaDon;
 
+
+
 }
