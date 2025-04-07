@@ -14,11 +14,9 @@ import java.util.Optional;
 public interface LichSuHoaDonRepository extends JpaRepository<LichSuHoaDon, Integer> {
     @Query("FROM LichSuHoaDon ls WHERE ls.trangThai like :status and ls.hoaDon.id = :invoice")
     Optional<LichSuHoaDon> findByStatusAndInvoice(String status, int invoice);
-
     @Modifying
     @Query("DELETE FROM LichSuHoaDon ls WHERE ls.hoaDon.maHoaDon = :code")
     void deleteByInvoiceCode(String code);
-
     List<LichSuHoaDon> findByHoaDonOrderByThoiGianDesc(HoaDon hoaDon);
 
 }

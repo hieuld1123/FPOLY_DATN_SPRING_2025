@@ -1,80 +1,241 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css" />
+    <meta charset="UTF-8"/>
+    <title>Tra cứu đơn hàng</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.30.0/tabler-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/Footer.css">
+    <link rel="stylesheet" href="/css/Navbar.css">
+    <style>
+        .timeline-wrapper {
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        .timeline {
+            display: flex;
+            position: relative;
+            z-index: 1;
+            gap: 1rem;
+        }
+
+        .timeline-step {
+            position: relative;
+            text-align: center;
+            flex: 1;
+        }
+
+        .timeline-step.completed::after {
+            background-color: #28a745;
+        }
+
+        .timeline-step::after {
+            content: '';
+            position: absolute;
+            top: 24px;
+            left: 50%;
+            right: -50%;
+            height: 4px;
+            background-color: #dee2e6;
+            z-index: -1;
+        }
+
+        .timeline-step:last-child::after {
+            display: none;
+        }
+
+        .timeline-icon {
+            width: 48px;
+            height: 48px;
+            background-color: #e9ecef;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .timeline-icon i {
+            font-size: 24px;
+            color: #6c757d;
+        }
+
+        .timeline-step.completed .timeline-icon {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .timeline-step.active .timeline-icon {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .timeline-label {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .timeline small {
+            font-size: 12px;
+            display: block;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .timeline {
+                flex-direction: column;
+            }
+
+            .timeline-step {
+                flex: none;
+                margin-bottom: 1.5rem;
+            }
+
+            .timeline-step::after {
+                display: none;
+            }
+        }
+
+    </style>
+
+
 </head>
 <body>
-<div th:replace="components/navbar :: navbar"></div>
-<div class="container-xl">
-  <h2>Tra cứu đơn hàng</h2>
+<div th:replace="~{components/navbar :: navbar}"></div>
 
-  <!-- Form tìm kiếm -->
-  <form th:action="@{/order-tracking}" method="post">
-    <label>Mã hóa đơn:</label>
-    <input type="text" name="maHoaDon">
+<div class="card mt-5">
+    <div class="card shadow-sm rounded-3 p-4">
+        <h2 class="text-center mb-4">🔍 Tra cứu đơn hàng</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <form th:action="@{/order-tracking}" method="post" class="search-form">
+                    <div class="mb-3">
+                        <label for="maHoaDon" class="form-label">Mã hóa đơn</label>
+                        <input type="text" class="form-control" id="maHoaDon" name="maHoaDon"
+                               placeholder="Nhập mã hóa đơn"/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="sdtNguoiNhan" class="form-label">Số điện thoại</label>
+                        <input type="text" class="form-control" id="sdtNguoiNhan" name="sdtNguoiNhan"
+                               placeholder="Nhập số điện thoại người nhận"/>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
-    <label>Số điện thoại:</label>
-    <input type="text" name="sdtNguoiNhan">
+    <div class="text-center mt-3">
+        <p th:if="${errorMessage}" th:text="${errorMessage}" class="text-danger fw-bold"></p>
+    </div>
 
-    <button type="submit">Tìm kiếm</button>
-  </form>
+    <div th:if="${hoaDon != null}">
+        <div class="card mt-4 shadow-sm mb-5">
+            <div class="car-header"><h2 class="mb-3 mt-5 text-center"> Thông tin đơn hàng </h2></div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Cột trái: Thông tin đơn hàng -->
+                    <div class="col-md-6 mt-5">
+                        <div class="mx-auto" style="max-width: 400px;">
+                            <p><strong>Mã hóa đơn:</strong> <span th:text="${hoaDon.maHoaDon}">HD1</span></p>
+                            <p><strong>Người nhận:</strong> <span th:text="${hoaDon.tenNguoiNhan}">Nguyễn Văn A</span>
+                            </p>
+                            <p><strong>Số điện thoại:</strong> <span th:text="${hoaDon.sdtNguoiNhan}">0987xxx</span></p>
+                            <p><strong>Địa chỉ nhận hàng:</strong> <span
+                                    th:text="${hoaDon.diaChiNguoiNhan}">123 ABC</span>
+                            </p>
+                            <p><strong>Phương thức thanh toán:</strong> <span th:text="${hoaDon.phuongThucThanhToan}">Tiền mặt</span>
+                            </p>
+                            <p><strong>Tổng tiền:</strong>
+                                <span th:text="${#numbers.formatDecimal(hoaDon.tongTien, 0, 'COMMA', 0, 'POINT')}">100.000</span>
+                                VNĐ
+                            </p>
+                            <p><strong>Trạng thái:</strong> <span th:text="${hoaDon.trangThai}">Đang giao</span></p>
+                        </div>
+                    </div>
 
-  <p th:if="${errorMessage}" th:text="${errorMessage}" style="color: red;"></p>
+                    <!-- Cột phải: Danh sách sản phẩm -->
+                    <div class="col-md-6 d-flex justify-content-center  mt-5">
+                        <div class="row g-3 w-100" style="max-width: 400px;" th:each="item : ${chiTietList}">
+                            <div class="col-12">
+                                <div class="text-center">
+                                    <!-- Ảnh sản phẩm -->
+                                    <img th:if="${#lists.isEmpty(item.sanPhamChiTiet.hinhAnh) == false}"
+                                         th:src="@{'/uploads/' + ${item.sanPhamChiTiet.hinhAnh[0].tenAnh}}"
+                                         alt="Ảnh sản phẩm"
+                                         class="mb-3 rounded mx-auto d-block"
+                                         style="max-height: 200px; width: 100%; object-fit: cover;"/>
 
-  <!-- Hiển thị thông tin hóa đơn -->
-  <div th:if="${hoaDon}">
-    <h3>Thông tin hóa đơn</h3>
-    <table border="1">
-      <tr>
-        <th>Mã hóa đơn</th>
-        <th>Người nhận</th>
-        <th>SĐT</th>
-        <th>Email</th>
-        <th>Địa chỉ</th>
-        <th>Tổng tiền</th>
-        <th>Phương thức thanh toán</th>
-        <th>Trạng thái</th>
-      </tr>
-      <tr>
-        <td th:text="${hoaDon.id}"></td>
-        <td th:text="${hoaDon.tenNguoiNhan}"></td>
-        <td th:text="${hoaDon.sdtNguoiNhan}"></td>
-        <td th:text="${hoaDon.email}"></td>
-        <td th:text="${hoaDon.diaChiNguoiNhan}"></td>
-        <td th:text="${hoaDon.tongTien}"></td>
-        <td th:text="${hoaDon.phuongThucThanhToan}"></td>
-        <td th:text="${hoaDon.trangThai}"></td>
-      </tr>
-    </table>
+                                    <!-- Tên sản phẩm -->
+                                    <h6 class="fw-bold" th:text="${item.sanPhamChiTiet.sanPham.tenSanPham}">Tên sản
+                                        phẩm</h6>
 
-    <h3>Chi tiết đơn hàng</h3>
-    <table border="1">
-      <tr>
-        <th>Sản phẩm</th>
-        <th>Số lượng</th>
-        <th>Giá</th>
-      </tr>
-      <tr th:each="chiTiet : ${chiTietList}">
-        <td th:text="${chiTiet.sanPhamChiTiet.sanPham.tenSanPham}"></td>
-        <td th:text="${chiTiet.soLuong}"></td>
-        <td th:text="${chiTiet.giaTienSauGiam}"></td>
-      </tr>
-    </table>
+                                    <!-- Thương hiệu | Màu sắc | Kích thước -->
+                                    <p class="mb-2 text-muted small">
+                                        <span th:text="${item.sanPhamChiTiet.thuongHieu.ten}">Nike</span> |
+                                        <span th:text="${item.sanPhamChiTiet.mauSac.ten}">Đen</span> |
+                                        <span th:text="${item.sanPhamChiTiet.kichCo.ten}">42</span>
+                                    </p>
 
-    <h3>Lịch sử trạng thái đơn hàng</h3>
-    <table border="1">
-      <tr>
-        <th>Trạng thái</th>
-        <th>Thời gian</th>
-      </tr>
-      <tr th:each="lichSu : ${lichSuList}">
-        <td th:text="${lichSu.trangThai}"></td>
-        <td th:text="${#dates.format(lichSu.thoiGian, 'dd/MM/yyyy HH:mm:ss')}"></td>
-      </tr>
-    </table>
-  </div>
+                                    <!-- Giá và số lượng -->
+                                    <p class="text-danger fw-semibold"
+                                       th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                                        500.000 VNĐ
+                                    </p>
+                                    <p><strong>Số lượng:</strong> <span th:text="${item.soLuong}">1</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- end col sản phẩm -->
+
+                </div>
+            </div>
+
+            <div class="timeline-wrapper position-relative px-3 py-4">
+                <div class="timeline-line"></div>
+                <ul class="timeline list-unstyled d-flex justify-content-between align-items-start m-0 position-relative"
+                    th:with="currentIndex=${allTrangThai.indexOf(currentStatus)}">
+
+                    <li class="timeline-step text-center position-relative flex-fill"
+                        th:each="statusName, iterStat : ${allTrangThai}"
+                        th:classappend="|${iterStat.index == currentIndex ? 'active' : (iterStat.index < currentIndex ? 'completed' : '')}|">
+
+                        <!-- Đường line nối giữa các bước (ẩn bước cuối) -->
+                        <div class="timeline-line" th:if="${iterStat.index > 0 and !iterStat.last}"></div>
+
+                        <!-- Icon trạng thái -->
+                        <div class="timeline-icon rounded-circle mx-auto mb-1 d-flex justify-content-center align-items-center">
+                            <i class="ti" style="color: white"
+                               th:classappend="
+                     ${statusName.toLowerCase() == 'chờ xác nhận'} ? ' ti-clock' :
+                     (${statusName.toLowerCase() == 'đã xác nhận'} ? ' ti-circle-check' :
+                     (${statusName.toLowerCase() == 'đang chuẩn bị'} ? ' ti-package' :
+                     (${statusName.toLowerCase() == 'đang giao'} ? ' ti-truck' :
+                     (${statusName.toLowerCase() == 'hoàn thành'} ? ' ti-checkup-list' :
+                     (${statusName.toLowerCase() == 'đã hủy'} ? ' ti-x' : ' ti-alert-triangle')))))
+                   "></i>
+                        </div>
+
+                        <!-- Tên trạng thái -->
+                        <p class="timeline-label fw-semibold mb-1" th:text="${statusName}">Trạng thái</p>
+
+                        <!-- Thời gian hoặc chữ "Chưa cập nhật" -->
+                        <small class="text-muted"
+                               th:text="${thoiGianFormattedMap[statusName.toLowerCase()]} ?: 'Chưa cập nhật'">
+                            Thời gian
+                        </small>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
 </div>
+<div th:replace="~{components/footer :: footer}"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

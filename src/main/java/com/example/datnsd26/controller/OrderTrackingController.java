@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
-import java.util.Optional;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/order-tracking")
@@ -56,11 +58,33 @@ public class OrderTrackingController {
         List<HoaDonChiTiet> chiTietList = hoaDonChiTietRepository.findByHoaDon(hoaDon);
         List<LichSuHoaDon> lichSuList = lichSuHoaDonRepository.findByHoaDonOrderByThoiGianDesc(hoaDon);
 
+
+        List<String> allTrangThai = List.of(
+                "Đặt hàng",
+                "Chờ xác nhận",
+                "Đã xác nhận",
+                "Hoàn thành"
+
+        );
+        model.addAttribute("allTrangThai", allTrangThai);
+        String currentStatus = hoaDon.getTrangThai();
+        model.addAttribute("currentStatus", currentStatus);
+
+        // Thời gian của các trạng thái đã qua
+        Map<String, String> thoiGianFormattedMap = new LinkedHashMap<>();
+        for (LichSuHoaDon lichSu : lichSuList) {
+            String key = lichSu.getTrangThai().trim().toLowerCase();
+            thoiGianFormattedMap.putIfAbsent(key, new SimpleDateFormat("dd/MM/yyyy HH:mm").format(lichSu.getThoiGian()));
+        }
+
+        model.addAttribute("thoiGianFormattedMap", thoiGianFormattedMap);
         model.addAttribute("hoaDon", hoaDon);
-        model.addAttribute("chiTietList", chiTietList);
+        model.addAttribute("allTrangThai", allTrangThai);
         model.addAttribute("lichSuList", lichSuList);
+        model.addAttribute("chiTietList", chiTietList);
 
         return "shop/order-tracking";
     }
+
 
 }

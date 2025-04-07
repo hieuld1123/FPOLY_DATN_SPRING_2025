@@ -1,5 +1,7 @@
 package com.example.datnsd26.services;
 
+import com.example.datnsd26.Dto.SanPhamSapHetDto;
+import com.example.datnsd26.Dto.SanPhamThongKeDTO;
 import com.example.datnsd26.models.SanPham;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,4 +18,9 @@ public interface SanPhamService {
 
     SanPham add(SanPham sanPham);
     SanPham findById(Integer Id);
+
+    List<SanPhamThongKeDTO> layTopSanPhamBanChay(int limit);
+    List<SanPhamSapHetDto> layTopSanPhamSapHet();
+
 }
+
