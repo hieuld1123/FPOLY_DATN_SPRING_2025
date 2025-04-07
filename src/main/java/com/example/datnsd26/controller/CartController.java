@@ -162,7 +162,8 @@ public class CartController {
             @Valid @ModelAttribute HoaDonBinhRequest hoaDonBinhRequest,
             BindingResult bindingResult,
             Model model,
-            Authentication auth) {
+            Authentication auth,
+            RedirectAttributes redirectAttributes) {
 
         GioHang cart = gioHangService.getGioHangHienTai(auth);
         if (cart == null || cart.getChiTietList().isEmpty()) {
@@ -247,7 +248,14 @@ public class CartController {
             e.printStackTrace();
         }
 
-        return "redirect:/order-success";
+        // Xóa giỏ hàng
+        gioHangRepository.delete(cart);
+
+        model.addAttribute("successMessage", "Đặt hàng thành công. Vui lòng kiểm tra email. Chúng tôi sẽ liên hệ với bạn qua số điện thoại để xác nhận đơn hàng.");
+        model.addAttribute("cart", new ArrayList<>());
+        model.addAttribute("tongTamTinh", 0);
+        model.addAttribute("hoaDonBinhRequest", new HoaDonBinhRequest());
+        return "shop/checkout";
     }
 
     @GetMapping("/order-success")

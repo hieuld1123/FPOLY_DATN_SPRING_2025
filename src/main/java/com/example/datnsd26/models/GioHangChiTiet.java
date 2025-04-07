@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class GioHangChiTiet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "id_gio_hang", referencedColumnName = "id")
