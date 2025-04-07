@@ -75,18 +75,33 @@ public class GioHangService {
         return gioHangRepository.save(gioHang);
     }
 
-    public void themSanPhamVaoGioHang(Integer sanPhamId, int soLuong, Authentication auth) {
+    public void themSanPhamVaoGioHang(Integer sanPhamChiTietId, int soLuongMoiThem, Authentication auth) {
         GioHang gioHang = getGioHangHienTai(auth);
-        SanPhamChiTiet sanPham = sanPhamChiTietRepository.findById(sanPhamId)
-                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
 
-        GioHangChiTiet chiTiet = gioHangChiTietRepository.findByGioHangAndSanPhamChiTiet(gioHang, sanPham)
-                .orElse(new GioHangChiTiet(null, gioHang, sanPham, 0, LocalDateTime.now(), null));
+        SanPhamChiTiet spct = sanPhamChiTietRepository.findById(sanPhamChiTietId).orElseThrow();
 
-        chiTiet.setSoLuong(chiTiet.getSoLuong() + soLuong);
-        chiTiet.setNgaySua(LocalDateTime.now());
-        gioHangChiTietRepository.save(chiTiet);
+        // Tổng số lượng đã có trong giỏ
+        GioHangChiTiet gioHangChiTiet = gioHangChiTietRepository.findByGioHangAndSanPhamChiTiet(gioHang, spct).orElse(null);
+        int daCoTrongGio = gioHangChiTiet != null ? gioHangChiTiet.getSoLuong() : 0;
+
+        int tongMuonThem = daCoTrongGio + soLuongMoiThem;
+
+        if (tongMuonThem > spct.getSoLuong()) {
+            throw new RuntimeException("Vượt quá số lượng tồn kho");
+        }
+
+        if (gioHangChiTiet == null) {
+            gioHangChiTiet = new GioHangChiTiet();
+            gioHangChiTiet.setGioHang(gioHang);
+            gioHangChiTiet.setSanPhamChiTiet(spct);
+            gioHangChiTiet.setSoLuong(soLuongMoiThem);
+        } else {
+            gioHangChiTiet.setSoLuong(tongMuonThem);
+        }
+
+        gioHangChiTietRepository.save(gioHangChiTiet);
     }
+
 
     public void capNhatSoLuongSanPham(Integer chiTietId, String action) {
         GioHangChiTiet chiTiet = gioHangChiTietRepository.findById(chiTietId)
@@ -115,4 +130,12 @@ public class GioHangService {
         GioHang gioHang = getGioHangHienTai(auth);
         gioHangChiTietRepository.deleteAll(gioHang.getChiTietList());
     }
+
+    public int getSoLuongSanPhamTrongGio(GioHang gioHang, SanPhamChiTiet spct) {
+        return gioHangChiTietRepository
+                .findByGioHangAndSanPhamChiTiet(gioHang, spct)
+                .map(GioHangChiTiet::getSoLuong)
+                .orElse(0);
+    }
+
 }

@@ -6,7 +6,7 @@
     <title>Chi tiết sản phẩm</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">-->
     <link rel="stylesheet" href="/css/Footer.css">
     <link rel="stylesheet" href="/css/Navbar.css">
 </head>
@@ -43,9 +43,19 @@
                 <!-- Form chọn màu sắc & kích cỡ (Chỉ dùng để reload trang) -->
                 <form method="GET" action="/shop/product/details">
                     <input type="hidden" name="idSanPham" th:value="${spct.sanPham.id}" />
-                    <h1 th:text="${spct.sanPham.tenSanPham}" class="mb-3 fs-1 text-uppercase"></h1>
-                    <p class="mb-3">Mã sản phẩm: <span th:text="${spct.maSanPhamChiTiet}" class="fw-bold"></span></p>
-
+                    <h1 th:text="${spct.sanPham.tenSanPham}" class="mb-3 text-uppercase"></h1>
+                    <div class="row">
+                        <div class="col-6">
+                            <p class="mb-3">Mã sản phẩm: <span th:text="${spct.maSanPhamChiTiet}" class="fw-bold"></span></p>
+                        </div>
+                        <div class="col-6">
+                            <p>
+                                Tình trạng:
+                                <span th:if="${spct.soLuong > 0}" class="text-success fw-bold">Còn hàng</span>
+                                <span th:if="${spct.soLuong == 0}" class="text-danger fw-bold">Hết hàng</span>
+                            </p>
+                        </div>
+                    </div>
                     <div class="mb-3">
                             <span th:text="${#numbers.formatDecimal(spct.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')} + ' VND'"
                                   class="text-orange fs-1 fw-bold"></span>
@@ -88,12 +98,17 @@
                 <hr />
 
                 <!-- Form thêm vào giỏ hàng -->
-                <form id="addToCartForm" th:action="@{/cart/add}" method="POST">
+                <form id="addToCartForm" th:action="@{/cart/add}" method="POST" novalidate>
                     <input type="hidden" name="productId" th:value="${spct.id}" />
                     <div class="mb-3">
                         <label class="form-label">Số lượng: </label>
-                        <input type="number" class="form-control" id="inputQuantity" name="quantity" min="1" required />
-                        <small id="quantityWarning" class="text-danger d-none">Vui lòng nhập số hợp lệ</small>
+                        <input type="number" class="form-control mb-3" id="inputQuantity" name="quantity"
+                               th:attr="max=${spct.soLuong}" required
+                               oninvalid="this.setCustomValidity('')"
+                               oninput="this.setCustomValidity('')" />
+                        <p>Hiện trong hệ thống còn: <span th:text="${spct.soLuong + ' sản phẩm!'}"></span></p>
+                        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+                        <div id="errorMessageContainer" class="alert alert-danger d-none"></div>
                     </div>
                     <button type="submit" class="btn btn-orange btn-lg">Thêm vào giỏ hàng</button>
                 </form>
@@ -114,64 +129,51 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/js/tabler.min.js"></script>
 <script>
-    // document.getElementById("addToCartForm").addEventListener("submit", function(event) {
-    //     event.preventDefault(); // Ngăn form submit mặc định
-    //
-    //     let form = this;
-    //     let formData = new FormData(form);
-    //     let quantityInput = document.getElementById("inputQuantity");
-    //     let warningMessage = document.getElementById("quantityWarning");
-    //     let maxQuantity = [[${spct.soLuong}]]; // Lấy số lượng từ Thymeleaf
-    //
-    //     let quantity = parseInt(quantityInput.value);
-    //
-    //     if (isNaN(quantity) || quantity < 1) {
-    //         warningMessage.innerText = "Số lượng phải lớn hơn 0.";
-    //         warningMessage.classList.remove("d-none");
-    //         return;
-    //     }
-    //
-    //     if (quantity > maxQuantity) {
-    //         warningMessage.innerText = "Hiện sản phẩm chỉ còn " + maxQuantity + " sản phẩm.";
-    //         warningMessage.classList.remove("d-none");
-    //         return;
-    //     }
-    //
-    //     warningMessage.classList.add("d-none"); // Ẩn cảnh báo nếu hợp lệ
-    //
-    //     fetch(form.action, {
-    //         method: "POST",
-    //         body: formData
-    //     })
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         if (data.success) {
-    //             Swal.fire({
-    //                 title: "Thành công!",
-    //                 text: "Sản phẩm đã được thêm vào giỏ hàng.",
-    //                 icon: "success",
-    //                 confirmButtonColor: "#ff6600"
-    //             });
-    //         } else {
-    //             Swal.fire({
-    //                 title: "Lỗi!",
-    //                 text: data.message,
-    //                 icon: "error",
-    //                 confirmButtonColor: "#d33"
-    //             });
-    //         }
-    //     })
-    //     .catch(error => {
-    //         console.error("Error:", error);
-    //         Swal.fire({
-    //             title: "Lỗi!",
-    //             text: "Đã xảy ra lỗi khi thêm vào giỏ hàng.",
-    //             icon: "error",
-    //             confirmButtonColor: "#d33"
-    //         });
-    //     });
-    // });
+    document.getElementById("addToCartForm").addEventListener("submit", function (event) {
+        const input = document.getElementById("inputQuantity");
+        const maxQuantity = parseInt(input.getAttribute("max"));
+        const inputValue = input.value.trim();
+        const errorDiv = document.getElementById("errorMessageContainer");
+        const sanPhamTrangThai = /*[[${spct.trangThai}]]*/ true; // Lấy trạng thái từ Thymeleaf
+
+        // Tắt thông báo lỗi mặc định
+        input.setCustomValidity("");
+
+        // Reset lỗi hiển thị
+        errorDiv.classList.add("d-none");
+        errorDiv.innerText = "";
+
+        // Kiểm tra sản phẩm ngừng kinh doanh
+        if (!sanPhamTrangThai) {
+            event.preventDefault(); // Ngăn chặn gửi form
+            Swal.fire({
+                title: 'Sản phẩm ngừng kinh doanh',
+                text: 'Sản phẩm này đã ngừng kinh doanh. Vui lòng kiểm tra lại.',
+                icon: 'warning',
+                confirmButtonText: 'OK',
+            }).then(() => {
+                // Sau khi người dùng nhấn OK, tải lại trang để cập nhật giao diện
+                window.location.reload();
+            });
+            return; // Dừng xử lý thêm
+        }
+
+        // Kiểm tra số hợp lệ
+        if (!inputValue || isNaN(inputValue) || parseInt(inputValue) < 1 || !Number.isInteger(Number(inputValue))) {
+            event.preventDefault();
+            errorDiv.classList.remove("d-none");
+            errorDiv.innerText = "Vui lòng nhập số lượng hợp lệ (số nguyên dương).";
+            return;
+        }
+
+        // Kiểm tra quá số lượng tồn
+        if (parseInt(inputValue) > maxQuantity) {
+            event.preventDefault();
+            errorDiv.classList.remove("d-none");
+            errorDiv.innerText = "Trong hệ thống hiện không đủ số lượng bạn mong muốn, liên hệ 1900 6680 để được hỗ trợ đặt hàng với số lượng lớn, giá ưu đãi.";
+            return;
+        }
+    });
 </script>
 </body>
-
 </html>

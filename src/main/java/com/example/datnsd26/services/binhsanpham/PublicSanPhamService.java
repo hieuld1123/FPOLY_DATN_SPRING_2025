@@ -23,25 +23,32 @@ public class PublicSanPhamService {
     public List<PublicSanPhamResponse> getAllProducts() {
         List<SanPham> sanPhamList = sanPhamRepository.findAll();
         return sanPhamList.stream().map(sanPham -> {
-            // Lấy danh sách tất cả biến thể của sản phẩm A
+            // Lấy danh sách tất cả biến thể của sản phẩm
             List<SanPhamChiTiet> danhSachBienThe = sanPhamChiTietRepository.findBySanPham(sanPham);
 
             if (danhSachBienThe.isEmpty()) {
                 return null; // Nếu không có biến thể, bỏ qua sản phẩm này
             }
 
-            // Chọn biến thể đầu tiên (hoặc random)
-            SanPhamChiTiet bienTheDauTien = danhSachBienThe.get(0);
+            // Lọc danh sách biến thể để lấy biến thể có trạng thái là true
+            SanPhamChiTiet bienTheDuocChon = danhSachBienThe.stream()
+                    .filter(SanPhamChiTiet::getTrangThai) // Giữ lại các biến thể có trạng thái true
+                    .findFirst() // Lấy biến thể đầu tiên thỏa mãn
+                    .orElse(null); // Trả về null nếu không có biến thể nào thỏa mãn
+
+            if (bienTheDuocChon == null) {
+                return null; // Nếu không có biến thể nào có trạng thái true, bỏ qua sản phẩm này
+            }
 
             return PublicSanPhamResponse.builder()
                     .id(sanPham.getId())
                     .tenSanPham(sanPham.getTenSanPham())
-                    .hinhAnh(bienTheDauTien.getHinhAnh().stream().findFirst()
+                    .hinhAnh(bienTheDuocChon.getHinhAnh().stream().findFirst()
                             .map(HinhAnh::getTenAnh)
                             .orElse("default.jpg")) // Lấy ảnh đầu tiên
-                    .giaBan(bienTheDauTien.getGiaBan()) // Lấy giá từ biến thể
-                    .giaBanSauGiam(bienTheDauTien.getGiaBanSauGiam())
-                    .idSanPhamChiTiet(bienTheDauTien.getId()) // ✅ Lưu ID biến thể sản phẩm
+                    .giaBan(bienTheDuocChon.getGiaBan()) // Lấy giá từ biến thể
+                    .giaBanSauGiam(bienTheDuocChon.getGiaBanSauGiam())
+                    .idSanPhamChiTiet(bienTheDuocChon.getId()) // ✅ Lưu ID biến thể sản phẩm
                     .build();
         }).filter(Objects::nonNull).toList();
     }

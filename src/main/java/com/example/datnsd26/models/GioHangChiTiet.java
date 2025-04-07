@@ -5,7 +5,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@ToString
+@ToString(exclude = {"gioHang"}) // Loại trừ trường gioHang để tránh đệ quy
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
