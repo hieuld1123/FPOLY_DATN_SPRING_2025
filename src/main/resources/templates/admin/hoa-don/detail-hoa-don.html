@@ -8,13 +8,11 @@
 <link rel="stylesheet" href="/css/HoaDonChiTiet.css">
 </head>
 <style>
-    /* Bố cục chính */
     .admin-layout {
         display: flex;
         height: 100vh;
     }
 
-    /* Sidebar bên trái */
     .sidebar {
         width: 250px;
         background-color: #1E293B;
@@ -26,16 +24,14 @@
         left: 0;
     }
 
-    /* Khu vực bên phải (navbar + nội dung) */
     .right-content {
         flex-grow: 1;
-        margin-left: 240px; /* Để tránh bị sidebar che */
+        margin-left: 240px;
         display: flex;
         flex-direction: column;
         width: calc(100% - 250px);
     }
 
-    /* Navbar cố định bên trên */
     .navbar-custom {
         height: 50px;
         padding: 12px 20px;
@@ -45,7 +41,6 @@
         z-index: 1000;
     }
 
-    /* Nội dung chính (có padding để tránh navbar che) */
     .main-content {
         margin-top: 30px;
         padding: 50px 15px;
@@ -54,7 +49,6 @@
     }
 
 
-    /* Responsive: Ẩn sidebar trên mobile */
     @media (max-width: 768px) {
         .sidebar {
             width: 80px;
@@ -72,21 +66,15 @@
     }
 </style>
 <div class="admin-layout">
-    <div th:replace="~{components/admin-sidebar :: admin-sidebar}" class="sidebar">
-        <!-- Nội dung sidebar -->
-    </div>
-    <!-- Khu vực bên phải -->
+    <div th:replace="~{components/admin-sidebar :: admin-sidebar}" class="sidebar"></div>
     <div class="right-content">
-        <!-- Navbar -->
         <nav class="navbar-custom"
              th:replace="~{components/admin-navbar :: admin-navbar}">
         </nav>
-
-        <!-- Main content -->
         <div class="main-content">
             <div class="row mt-2 align-items-center">
                 <div class="col-6">
-                    <a th:href="@{/hoa-don}" class="back-link">
+                    <a th:href="@{/admin/hoa-don}" class="back-link">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                              class="bi bi-arrow-left" viewBox="0 0 16 16">
                             <path fill-rule="evenodd"
@@ -237,7 +225,6 @@
 
 <script>
     $(document).ready(function () {
-        // Hàm gọi API để lấy dữ liệu hóa đơn
         function fetchOrderData(orderId) {
             $.ajax({
                 url: `http://localhost:8080/api/v1/hoa-don/${orderId}`,
@@ -245,8 +232,8 @@
                 dataType: 'json',
                 success: function (response) {
                     if (response.status === 200) {
-                        const data = response.data; // Lấy dữ liệu từ response.data
-                        renderOrderDetails(data); // Gọi hàm hiển thị dữ liệu
+                        const data = response.data;
+                        renderOrderDetails(data);
                     } else {
                         alert('Không thể tải dữ liệu hóa đơn: ' + response.message);
                     }
@@ -258,7 +245,6 @@
             });
         }
 
-        // Hàm hiển thị dữ liệu hóa đơn lên giao diện
         function renderOrderDetails(data) {
             const confirmInvoice = document.getElementById("confirm-invoice");
             confirmInvoice.disabled = !data.confirm;
@@ -275,32 +261,42 @@
             const btnCancelInvoice = document.getElementById("btn-cancel-invoice");
             btnCancelInvoice.disabled = !data.allowCancel;
 
+            const btnModifyInvoice = document.getElementById("btn-modify-invoice");
+            btnModifyInvoice.disabled = !data.allowCancel;
+
             const btnCompleted = document.getElementById("btn-completed");
             btnCompleted.disabled = !data.completed;
             if (!data.completed) {
                 btnCompleted.style.display = "none"
             }
 
-            // Hiển thị mã hóa đơn
             $('#order-id').text(data.order_id);
 
-            // Hiển thị thông tin khách hàng
-            $('#customer-header').html(`
-                <span class="text-primary fs-3 fw-bold">${data.customer.name}</span>
-                <span class="ms-2 me-2">-</span>
-                <span class="fs-3 fw-bold">${data.customer.phone}</span>
-            `);
-            $('#customer-information').html(`
-                <h4 class="text-uppercase">Địa chỉ giao hàng</h4>
-                <div class="mt-2">
-                    <span>${data.customer.name}</span>
-                    <span class="ms-2 me-2">-</span>
-                    <span>${data.customer.phone}</span>
-                </div>
-                <span>${data.customer.delivery_address}</span>
-            `);
+            // Xử lý thông tin khách hàng
+            const customer = data.customer || {};
+            const customerName = customer.name || "Khách lẻ";
+            const customerPhone = customer.phone || "Chưa có số điện thoại";
+            const customerAddress = customer.delivery_address && customer.delivery_address !== "null, null, null, null"
+                ? customer.delivery_address
+                : "Chưa có địa chỉ";
 
-            // Hiển thị timeline
+            $('#customer-header').html(`
+        <span class="text-primary fs-3 fw-bold">${customerName}</span>
+        <span class="ms-2 me-2">-</span>
+        <span class="fs-3 fw-bold">${customerPhone}</span>
+    `);
+            $('#customer-information').html(`
+        <h4 class="text-uppercase">Địa chỉ giao hàng</h4>
+        <div class="mt-2">
+            <span>${customerName}</span>
+            <span class="ms-2 me-2">-</span>
+            <span>${customerPhone}</span>
+        </div>
+        <div class="mt-1">
+            <span>${customerAddress}</span>
+        </div>
+    `);
+
             let timelineHtml = '';
             data.status_timeline.forEach(item => {
                 timelineHtml += `
@@ -313,7 +309,6 @@
             });
             $('#timeline').html(timelineHtml);
 
-            // Hiển thị thông tin thanh toán
             $('#payment-info').html(`
                 <div class="payment-item">
                     <span class="label">Khách phải trả:</span>
@@ -329,12 +324,10 @@
                 </div>
             `);
 
-            // Validate trạng thái thanh toán và ẩn nút "Thanh toán" nếu đã thanh toán
             if (data.payment.paid_amount >= data.payment.total_amount) {
                 $('#paymentButton').hide();
             }
 
-            // Hiển thị thông tin đơn hàng
             $('#order-info').html(`
                 <div class="row mb-2">
                     <div class="col-4 text-muted">Bán bởi</div>
@@ -346,10 +339,8 @@
                 </div>
             `);
 
-            // Hiển thị ghi chú
             $('#order-note').html(`<span>${data.note}</span>`);
 
-            // Hiển thị danh sách sản phẩm
             let productHtml = '';
             data.products.forEach((product, index) => {
                 productHtml += `
@@ -365,7 +356,6 @@
             });
             $('#product-list').html(productHtml);
 
-            // Hiển thị tổng kết
             $('#summary').html(`
                 <div class="row mb-2">
                     <div class="col-8">Tổng tiền (${data.products.length} sản phẩm)</div>
@@ -385,115 +375,113 @@
                 </div>
             `);
 
-            // Khi modal được mở, điền dữ liệu vào modal
             $('#paymentModal').on('show.bs.modal', function () {
                 $('#paymentAmount').val(data.payment.total_amount.toLocaleString());
                 $('#paymentDate').val(new Date().toLocaleString());
-                $('#paymentMethod').val('Chuyển khoản'); // Giá trị mặc định
-                $('#paymentReference').val(''); // Reset tham chiếu
+                $('#paymentMethod').val('Chuyển khoản');
+                $('#paymentReference').val('');
             });
 
             // Khi nhấn "Thanh toán đơn hàng" trong modal
             $('#confirmPayment').on('click', function () {
-                console.log('ID hóa đơn:', data.order_id);
-                $('#paymentModal').modal('hide'); // Đóng modal sau khi log
+                $('#paymentModal').modal('hide');
             });
 
-            // Xử lý nút "In đơn hàng"
+            // "In đơn hàng"
             $('#printButton').on('click', function () {
-                console.log('Nút in đơn hàng được nhấn'); // Debug
 
-                // Lưu nội dung hiện tại của body
                 const originalContent = document.body.innerHTML;
 
-                // Tạo nội dung HTML cho trang in
                 let printContent = `
-                    <style>
-                        body { font-family: Arial, sans-serif; margin: 20px; }
-                        h1 { text-align: center; }
-                        .section { margin-bottom: 20px; }
-                        .section h3 { border-bottom: 1px solid #000; padding-bottom: 5px; }
-                        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-                        table, th, td { border: 1px solid #000; padding: 8px; text-align: left; }
-                        th { background-color: #f2f2f2; }
-                        .text-right { text-align: right; }
-                        .summary { margin-top: 20px; }
-                        .summary div { display: flex; justify-content: space-between; }
-                        @media print {
-                            body { margin: 0; }
-                            img { display: none; } /* Ẩn hình ảnh khi in */
-                        }
-                    </style>
-                    <h1>HÓA ĐƠN BÁN HÀNG</h1>
-                    <div class="section">
-                        <h3>Mã hóa đơn: ${data.order_id}</h3>
-                        <p><strong>Ngày bán:</strong> ${new Date(data.order_date).toLocaleString()}</p>
-                        <p><strong>Người bán:</strong> ${data.seller}</p>
-                    </div>
-                    <div class="section">
-                        <h3>Thông tin khách hàng</h3>
-                        <p><strong>Tên:</strong> ${data.customer.name}</p>
-                        <p><strong>Số điện thoại:</strong> ${data.customer.phone}</p>
-                        <p><strong>Địa chỉ giao hàng:</strong> ${data.customer.delivery_address}</p>
-                    </div>
-                    <div class="section">
-                        <h3>Thông tin sản phẩm</h3>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>STT</th>
-                                    <th>Tên sản phẩm</th>
-                                    <th>Số lượng</th>
-                                    <th>Đơn giá</th>
-                                    <th>Thành tiền</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
+        <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h1 { text-align: center; }
+            .section { margin-bottom: 20px; }
+            .section h3 { border-bottom: 1px solid #000; padding-bottom: 5px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+            table, th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; }
+            .text-right { text-align: right; }
+            .summary { margin-top: 20px; }
+            .summary div { display: flex; justify-content: space-between; }
+            .thank-you { text-align: center; margin-top: 20px; }
+            @media print {
+                body { margin: 0; }
+                img { display: none; } /* Ẩn hình ảnh khi in */
+            }
+        </style>
+        <h1>HÓA ĐƠN BÁN HÀNG</h1>
+        <div class="section">
+            <h3>Shop: NineShoes</h3>
+            <p><strong>Hotline:</strong> 0123-456-789</p>
+        </div>
+        <div class="section">
+            <h3>Mã hóa đơn: ${data.order_id}</h3>
+            <p><strong>Ngày bán:</strong> ${new Date(data.order_date).toLocaleString()}</p>
+            <p><strong>Người bán:</strong> ${data.seller}</p>
+        </div>
+        <div class="section">
+            <h3>Thông tin khách hàng</h3>
+            <p><strong>Tên:</strong> ${data.customer.name}</p>
+            <p><strong>Số điện thoại:</strong> ${data.customer.phone}</p>
+            <p><strong>Địa chỉ giao hàng:</strong> ${data.customer.delivery_address}</p>
+        </div>
+        <div class="section">
+            <h3>Thông tin sản phẩm</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Số lượng</th>
+                        <th>Đơn giá</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
 
-                // Thêm danh sách sản phẩm
                 data.products.forEach((product, index) => {
                     printContent += `
-                        <tr>
-                            <td>${index + 1}</td>
-                            <td>${product.name} (${product.code})</td>
-                            <td>${product.quantity}</td>
-                            <td class="text-right">${product.unit_price.toLocaleString()} VND</td>
-                            <td class="text-right">${product.total_price.toLocaleString()} VND</td>
-                        </tr>
-                    `;
+            <tr>
+                <td>${index + 1}</td>
+                <td>${product.name} (${product.code})</td>
+                <td>${product.quantity}</td>
+                <td class="text-right">${product.unit_price.toLocaleString()} VND</td>
+                <td class="text-right">${product.total_price.toLocaleString()} VND</td>
+            </tr>
+        `;
                 });
 
-                // Thêm tổng kết
                 printContent += `
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="section summary">
-                        <h3>Tổng kết</h3>
-                        <div><span>Tổng tiền (${data.products.length} sản phẩm):</span><span>${data.summary.subtotal.toLocaleString()} VND</span></div>
-                        <div><span>Phí giao hàng:</span><span>${data.summary.shipping_fee.toLocaleString()} VND</span></div>
-                        <div><span>Mã giảm giá:</span><span>${data.summary.discount.toLocaleString()} VND</span></div>
-                        <div><strong>Khách phải trả:</strong><strong>${data.summary.total.toLocaleString()} VND</strong></div>
-                    </div>
-                `;
+                </tbody>
+            </table>
+        </div>
+        <div class="section summary">
+            <h3>Tổng kết</h3>
+            <div><span>Tổng tiền (${data.products.length} sản phẩm):</span><span>${data.summary.subtotal.toLocaleString()} VND</span></div>
+            <div><span>Phí giao hàng:</span><span>${data.summary.shipping_fee.toLocaleString()} VND</span></div>
+            <div><span>Mã giảm giá:</span><span>${data.summary.discount.toLocaleString()} VND</span></div>
+            <div><strong>Khách phải trả:</strong><strong>${data.summary.total.toLocaleString()} VND</strong></div>
+        </div>
+        <div class="section thank-you">
+            <p>Cảm ơn quý khách đã mua hàng tại NineShoes!</p>
+        </div>
+    `;
 
-                // Thay thế nội dung body bằng nội dung in
                 document.body.innerHTML = printContent;
 
-                // Gọi hàm in
                 window.print();
 
-                // Khôi phục nội dung ban đầu sau khi in
                 window.onafterprint = function () {
                     document.body.innerHTML = originalContent;
-                    location.reload(); // Tải lại trang để đảm bảo các sự kiện hoạt động lại
+                    location.reload();
                 };
             });
         }
 
         $('#confirm-invoice').on('click', function () {
-            const orderId = window.location.pathname.split('/').pop(); // Lấy orderId từ URL
+            const orderId = window.location.pathname.split('/').pop();
             if (confirm('Bạn có chắc chắn muốn xác nhận hóa đơn này?')) {
                 $.ajax({
                     url: `http://localhost:8080/api/v1/hoa-don/confirm/${orderId}`,
@@ -588,6 +576,30 @@
             }
         });
 
+        $('#btn-modify-invoice').on('click', function () {
+            const orderId = window.location.pathname.split('/').pop();
+            if (confirm('Xác nhận chỉnh sửa?')) {
+                $.ajax({
+                    url: `http://localhost:8080/api/v1/hoa-don/edit/${orderId}`,
+                    method: 'PATCH',
+                    contentType: 'application/json',
+                    data: JSON.stringify({}),
+                    success: function (response) {
+                        if (response.status === 200) {
+                            alert('Vui lòng quay lại trang bán hàng để chỉnh sửa!');
+                            window.location.href = '/admin/ban-hang';
+                        } else {
+                            alert('Sửa hóa đơn thất bại: ' + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Lỗi khi sửa hóa đơn:', error);
+                        alert('Đã xảy ra lỗi khi sửa hóa đơn.');
+                    }
+                });
+            }
+        });
+
         $('#btn-completed').on('click', function () {
             const orderId = window.location.pathname.split('/').pop();
             if (confirm('Xác nhận hoàn thành?')) {
@@ -612,7 +624,6 @@
             }
         });
 
-        // Gọi API với một orderId cụ thể (ví dụ: "HD7288" từ response mẫu)
         const urlPath = window.location.pathname;
         const orderId = urlPath.split('/').pop();
         fetchOrderData(orderId);
