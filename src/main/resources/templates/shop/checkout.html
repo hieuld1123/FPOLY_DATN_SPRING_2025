@@ -7,6 +7,7 @@
     <title>Thanh toán</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> </head>
     <link rel="stylesheet" href="/css/Footer.css">
     <link rel="stylesheet" href="/css/Navbar.css">
 </head>
@@ -18,6 +19,11 @@
 
         <h2>Thanh toán</h2>
         <div class="row">
+            <div class="col-12">
+                <div th:if="${successMessage}" class="alert alert-success" role="alert">
+                    <span th:text="${successMessage}"></span>
+                </div>
+            </div>
             <div class="col-6">
                 <div class="card cart-summary">
                     <div class="card-body">
@@ -161,14 +167,20 @@
                 </div>
             </div>
         </div>
-
         <!-- Form nhập thông tin đặt hàng -->
-
     </div>
     <div th:replace="~{components/footer :: footer}"></div>
-    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/js/tabler.min.js"></script>
 </div>
-
-        <script src="/js/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/js/tabler.min.js"></script>
+<script src="/js/checkout.js"></script>
+<script th:if="${successMessage != null}">
+    Swal.fire({
+        icon: 'success',
+        title: 'Thành công!',
+        text: [[${successMessage}]],
+        confirmButtonText: 'OK'
+    });
+</script>
 </body>
 </html>
