@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.30.0/tabler-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/Footer.css">
+    <link rel="stylesheet" href="/css/Navbar.css">
     <style>
         .timeline-wrapper {
             position: relative;
@@ -100,26 +103,27 @@
 
 </head>
 <body>
-<div th:replace="components/navbar :: navbar"></div>
+<div th:replace="~{components/navbar :: navbar}"></div>
 
-<div class="container mt-5">
-    <h2 class="text-center mb-4">🔍 Tra cứu đơn hàng</h2>
-
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <form th:action="@{/order-tracking}" method="post" class="search-form">
-                <div class="mb-3">
-                    <label for="maHoaDon" class="form-label">Mã hóa đơn</label>
-                    <input type="text" class="form-control" id="maHoaDon" name="maHoaDon"
-                           placeholder="Nhập mã hóa đơn"/>
-                </div>
-                <div class="mb-3">
-                    <label for="sdtNguoiNhan" class="form-label">Số điện thoại</label>
-                    <input type="text" class="form-control" id="sdtNguoiNhan" name="sdtNguoiNhan"
-                           placeholder="Nhập số điện thoại người nhận"/>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
-            </form>
+<div class="card mt-5">
+    <div class="card shadow-sm rounded-3 p-4">
+        <h2 class="text-center mb-4">🔍 Tra cứu đơn hàng</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <form th:action="@{/order-tracking}" method="post" class="search-form">
+                    <div class="mb-3">
+                        <label for="maHoaDon" class="form-label">Mã hóa đơn</label>
+                        <input type="text" class="form-control" id="maHoaDon" name="maHoaDon"
+                               placeholder="Nhập mã hóa đơn"/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="sdtNguoiNhan" class="form-label">Số điện thoại</label>
+                        <input type="text" class="form-control" id="sdtNguoiNhan" name="sdtNguoiNhan"
+                               placeholder="Nhập số điện thoại người nhận"/>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -128,7 +132,7 @@
     </div>
 
     <div th:if="${hoaDon != null}">
-        <div class="card mt-4 shadow-sm">
+        <div class="card mt-4 shadow-sm mb-5">
             <div class="car-header"><h2 class="mb-3 mt-5 text-center"> Thông tin đơn hàng </h2></div>
             <div class="card-body">
                 <div class="row">
@@ -229,6 +233,9 @@
         </div>
     </div>
 </div>
+<div th:replace="~{components/footer :: footer}"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

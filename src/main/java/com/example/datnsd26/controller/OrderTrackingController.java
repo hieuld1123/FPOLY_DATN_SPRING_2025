@@ -56,21 +56,14 @@ public class OrderTrackingController {
 
         HoaDon hoaDon = optionalHoaDon.get();
         List<HoaDonChiTiet> chiTietList = hoaDonChiTietRepository.findByHoaDon(hoaDon);
-        List<LichSuHoaDon> lichSuList = lichSuHoaDonRepository.findByHoaDonOrderByThoiGianAsc(hoaDon);
+        List<LichSuHoaDon> lichSuList = lichSuHoaDonRepository.findByHoaDonOrderByThoiGianDesc(hoaDon);
 
-        // Lấy danh sách trạng thái từ lịch sử (đúng thứ tự thời gian)
-//        List<String> allTrangThai = lichSuList.stream()
-//                .sorted(Comparator.comparing(LichSuHoaDon::getThoiGian))
-//                .map(ls -> ls.getTrangThai().trim())
-//                .distinct()
-//                .collect(Collectors.toList());
-//
-//        String currentStatus = hoaDon.getTrangThai().trim();
+
         List<String> allTrangThai = List.of(
                 "Đặt hàng",
                 "Chờ xác nhận",
                 "Đã xác nhận",
-                "Đã giao cho đơn vị vận chuyển"
+                "Hoàn thành"
 
         );
         model.addAttribute("allTrangThai", allTrangThai);
