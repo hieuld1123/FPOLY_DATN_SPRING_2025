@@ -7,11 +7,8 @@ import com.example.datnsd26.services.BinhMailService;
 import com.example.datnsd26.services.cart.GioHangService;
 import com.example.datnsd26.services.cart.HoaDonService;
 import jakarta.mail.MessagingException;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -56,11 +53,45 @@ public class CartController {
     }
 
     @PostMapping("/cart/add")
-    public String addToCart(@RequestParam("productId") Integer sanPhamId,
-                            @RequestParam("quantity") int soLuong,
-                            Authentication auth) {
-        gioHangService.themSanPhamVaoGioHang(sanPhamId, soLuong, auth);
-        return "redirect:/cart";
+    public String addToCart(@RequestParam("productId") Integer sanPhamChiTietId,
+                            @RequestParam("quantity") int soLuongThem,
+                            Authentication auth,
+                            RedirectAttributes redirect) {
+        try {
+            // Lấy thông tin sản phẩm chi tiết
+            SanPhamChiTiet spct = sanPhamChiTietRepository.findById(sanPhamChiTietId).orElse(null);
+            if (spct == null) {
+                redirect.addFlashAttribute("errorMessage", "Sản phẩm không tồn tại.");
+                return "redirect:/shop";
+            }
+            // Kiểm tra trạng thái sản phẩm trước khi thêm vào giỏ hàng
+            if (!spct.getTrangThai()) {
+                redirect.addFlashAttribute("errorMessage", "Sản phẩm này đã ngừng kinh doanh.");
+                return "redirect:/shop/product/details/" + spct.getId(); // Trả về trang chi tiết
+            }
+            // Lấy giỏ hàng hiện tại của người dùng
+            GioHang gioHang = gioHangService.getGioHangHienTai(auth);
+
+            // Tính số lượng đã có sẵn trong giỏ hàng
+            int daCoTrongGio = gioHangService.getSoLuongSanPhamTrongGio(gioHang, spct);// Giả sử đã có hàm này
+            int soLuongTon = spct.getSoLuong();
+
+            // Nếu tổng vượt quá số lượng tồn
+            if (soLuongThem + daCoTrongGio > soLuongTon) {
+                redirect.addFlashAttribute("errorMessage",
+                        "Bạn đã thêm tối đa số lượng còn lại của sản phẩm này vào giỏ. " +
+                                "Liên hệ 1900 6680 để được hỗ trợ đặt hàng với số lượng lớn hơn.");
+                return "redirect:/shop/product/details/" + spct.getId();
+            }
+
+            // Nếu hợp lệ thì thêm vào giỏ hàng
+            gioHangService.themSanPhamVaoGioHang(sanPhamChiTietId, soLuongThem, auth);
+            return "redirect:/cart";
+
+        } catch (RuntimeException ex) {
+            redirect.addFlashAttribute("errorMessage", ex.getMessage());
+            return "redirect:/shop/product/details/" + sanPhamChiTietId;
+        }
     }
 
     @PostMapping("/cart/update")
@@ -90,7 +121,7 @@ public class CartController {
         // Nếu giỏ hàng rỗng, chuyển về trang giỏ hàng và hiển thị thông báo
         if (gioHang == null || gioHang.getChiTietList().isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Giỏ hàng của bạn đang trống.");
-            return "redirect:/shop/cart";
+            return "redirect:/cart";
         }
 
         // Kiểm tra số lượng sản phẩm trong kho
@@ -106,7 +137,7 @@ public class CartController {
         // Nếu có lỗi, quay lại giỏ hàng và hiển thị thông báo
         if (!warnings.isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessages", warnings);
-            return "redirect:/shop/cart";
+            return "redirect:/cart";
         }
 
         // Tính tổng tiền
@@ -218,8 +249,6 @@ public class CartController {
 
         return "redirect:/order-success";
     }
-
-
 
     @GetMapping("/order-success")
     public String orderSuccess() {

@@ -24,22 +24,23 @@ public class ShopController {
     private final GioHangService gioHangService;
     private final PublicSanPhamService publicSanPhamService;
     private final KichCoRepository kichCoRepository;
-
     private final ThuongHieuRepository thuongHieuRepository;
     private final MauSacRepository mauSacRepository;
-
     private final DeGiayRepository deGiayRepository;
     private final ChatLieuRepository chatLieuRepository;
+
     @GetMapping("/homepage")
     public String homepage(Model model) {
         List<PublicSanPhamResponse> products = publicSanPhamService.getAllProducts();
         model.addAttribute("products", products);
         return "/shop/homepage";
     }
+
     @GetMapping("/ve-chung-toi")
     public String veChungToi() {
         return "/shop/ve-chung-toi";
     }
+
     @GetMapping("/lien-he")
     public String lienHe() {
         return "/shop/lien-he";
@@ -71,23 +72,26 @@ public class ShopController {
         SanPhamChiTiet spct = sanPhamChiTietRepository.findById(idSanPhamChiTiet)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm"));
 
-        // Lấy danh sách tất cả biến thể của cùng một sản phẩm
-        List<SanPhamChiTiet> danhSachBienThe = sanPhamChiTietRepository.findBySanPham(spct.getSanPham());
+        // Lấy danh sách tất cả biến thể của cùng một sản phẩm ĐANG KINH DOANH
+        List<SanPhamChiTiet> danhSachBienThe = sanPhamChiTietRepository.findBySanPhamAndTrangThaiTrue(spct.getSanPham());
 
-        // Lấy danh sách màu sắc của tất cả biến thể
+        // Lấy danh sách màu sắc của tất cả biến thể ĐANG KINH DOANH, đã sắp xếp
         Set<MauSac> danhSachMauSac = danhSachBienThe.stream()
                 .map(SanPhamChiTiet::getMauSac)
-                .collect(Collectors.toSet());
+                .distinct()
+                .sorted(Comparator.comparing(MauSac::getId))
+                .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(MauSac::getId))));
 
         // Lấy danh sách kích cỡ
-        List<KichCo> danhSachKichCo = kichCoRepository.findAll(); // Lấy tất cả kích cỡ từ DB
+        List<KichCo> danhSachKichCo = kichCoRepository.findAll();
 
-        // Xác định những kích cỡ nào bị disable
+        // Xác định kích cỡ có sẵn cho MÀU SẮC đã chọn
         Set<Integer> kichCoTonTai = danhSachBienThe.stream()
-                .filter(sp -> sp.getMauSac().getId().equals(spct.getMauSac().getId()))
-                .map(sp -> sp.getKichCo().getId())
+                .filter(bienThe -> bienThe.getMauSac().getId().equals(spct.getMauSac().getId()))
+                .map(bienThe -> bienThe.getKichCo().getId())
                 .collect(Collectors.toSet());
 
+        // Lấy danh sách hình ảnh
         List<HinhAnh> danhSachHinhAnh = spct.getHinhAnh();
 
         model.addAttribute("spct", spct);
@@ -106,10 +110,10 @@ public class ShopController {
             @RequestParam(required = false) Integer kichCo,
             Model model) {
 
-        // Lấy danh sách tất cả biến thể của sản phẩm
-        List<SanPhamChiTiet> danhSachBienThe = sanPhamChiTietRepository.findBySanPhamId(idSanPham);
+        // Lấy danh sách tất cả biến thể của sản phẩm ĐANG KINH DOANH
+        List<SanPhamChiTiet> danhSachBienThe = sanPhamChiTietRepository.findBySanPhamIdAndTrangThaiTrue(idSanPham);
 
-        // Lấy danh sách màu sắc
+        // Lấy danh sách màu sắc ĐANG KINH DOANH
         List<MauSac> danhSachMauSac = danhSachBienThe.stream()
                 .map(SanPhamChiTiet::getMauSac)
                 .distinct()
@@ -124,12 +128,20 @@ public class ShopController {
                 .filter(sp -> (mauSac == null || sp.getMauSac().getId().equals(mauSac)) &&
                         (kichCo == null || sp.getKichCo().getId().equals(kichCo)))
                 .findFirst()
-                .orElse(danhSachBienThe.get(0)); // Nếu không có, lấy biến thể đầu tiên
+                .orElse(danhSachBienThe.isEmpty() ? null : danhSachBienThe.get(0)); // Nếu không có, trả về null hoặc sản phẩm đầu tiên
+
+        // Nếu không tìm thấy sản phẩm phù hợp, có thể xử lý theo cách khác (ví dụ: hiển thị thông báo lỗi)
+        if (spct == null) {
+            // Trường hợp không tìm thấy sản phẩm phù hợp với màu sắc và kích cỡ đã chọn
+            // Bạn có thể muốn hiển thị một trang lỗi hoặc thông báo cho người dùng
+            model.addAttribute("errorMessage", "Không tìm thấy sản phẩm phù hợp với lựa chọn của bạn.");
+            return "/shop/product-details"; // Hoặc trang lỗi
+        }
 
         // Xác định kích cỡ có sẵn cho màu sắc đã chọn
         Set<Integer> kichCoTonTai = danhSachBienThe.stream()
-                .filter(sp -> sp.getMauSac().getId().equals(spct.getMauSac().getId()))
-                .map(sp -> sp.getKichCo().getId())
+                .filter(bienThe -> bienThe.getMauSac().getId().equals(spct.getMauSac().getId()))
+                .map(bienThe -> bienThe.getKichCo().getId())
                 .collect(Collectors.toSet());
 
         model.addAttribute("spct", spct);
@@ -139,41 +151,5 @@ public class ShopController {
 
         return "/shop/product-details";
     }
-
-//    @PostMapping("/add-to-cart")
-//    @ResponseBody
-//    public ResponseEntity<Map<String, Object>> addToCart(@RequestParam("productId") Integer productId,
-//                                                         @RequestParam("quantity") Integer quantity,
-//                                                         HttpSession session) {
-//        Map<String, Object> response = new HashMap<>();
-//        Optional<SanPhamChiTiet> optionalProduct = sanPhamChiTietRepository.findById(productId);
-//
-//        if (optionalProduct.isEmpty()) {
-//            response.put("success", false);
-//            response.put("message", "Sản phẩm không tồn tại.");
-//            return ResponseEntity.badRequest().body(response);
-//        }
-//
-//        SanPhamChiTiet product = optionalProduct.get();
-//
-//        if (quantity == null || quantity < 1) {
-//            response.put("success", false);
-//            response.put("message", "Số lượng không hợp lệ.");
-//            return ResponseEntity.badRequest().body(response);
-//        }
-//
-//        if (quantity > product.getSoLuong()) {
-//            response.put("success", false);
-//            response.put("message", "Chỉ còn " + product.getSoLuong() + " sản phẩm.");
-//            return ResponseEntity.badRequest().body(response);
-//        }
-//
-//        gioHangService.addToCart(session, productId, quantity);
-//
-//        response.put("success", true);
-//        response.put("message", "Thêm vào giỏ hàng thành công!");
-//        return ResponseEntity.ok(response);
-//    }
-
 
 }

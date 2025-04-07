@@ -188,5 +188,8 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
     """, nativeQuery = true)
     List<Object[]> getTopSanPhamSapHetNative();
 
+    // Tìm theo sản phẩm và trạng thái
+    List<SanPhamChiTiet> findBySanPhamAndTrangThaiTrue(SanPham sanPham);
 
+    List<SanPhamChiTiet> findBySanPhamIdAndTrangThaiTrue(Integer sanPhamId);
 }
