@@ -194,10 +194,7 @@ public class CartController {
                 .tinh(hoaDonBinhRequest.getTinh())
                 .quan(hoaDonBinhRequest.getQuan())
                 .xa(hoaDonBinhRequest.getXa())
-                .diaChiNguoiNhan(hoaDonBinhRequest.getTinh() + ", " +
-                        hoaDonBinhRequest.getQuan() + ", " +
-                        hoaDonBinhRequest.getXa() + ", " +
-                        hoaDonBinhRequest.getDiaChiNguoiNhan())
+                .diaChiNguoiNhan(hoaDonBinhRequest.getDiaChiNguoiNhan())
                 .hinhThucMuaHang("Online")
                 .ngayTao(new Date())
                 .ngayCapNhat(new Date())

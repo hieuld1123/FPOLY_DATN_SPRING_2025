@@ -52,7 +52,7 @@ public class HoaDonServiceImp implements HoaDonService {
         log.info("GET/hoa-don/{}", code);
         HoaDon hd = getHoaDonByCode(code);
         boolean confirm = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_CONFIRMED, hd.getId()).isEmpty();
-        boolean delivery = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_CONFIRMED, hd.getId()).isEmpty();
+        boolean delivery = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_DELIVERED, hd.getId()).isEmpty();
         boolean isCancel = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_CANCELED, hd.getId()).isEmpty();
         boolean isCompleted = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_COMPLETED, hd.getId()).isEmpty();
         return InvoiceInformation.builder()
@@ -60,7 +60,6 @@ public class HoaDonServiceImp implements HoaDonService {
                 .isDelivery(!hd.getHinhThucMuaHang().equalsIgnoreCase("offline") && (!confirm && delivery) && isCancel)
                 .allowCancel(delivery && isCancel && isCompleted)
                 .isCompleted(!delivery && hd.isThanhToan() && isCompleted && isCancel)
-                .order_id(hd.getMaHoaDon())
                 .seller(hd.getNhanVien() == null ? "N/A" : hd.getNhanVien().getTenNhanVien())
                 .order_date(hd.getNgayTao())
                 .note(hd.getGhiChu() == null ? "Không có ghi chú nào" : hd.getGhiChu())
