@@ -70,7 +70,7 @@ public class HoaDonServiceImp implements HoaDonService {
                         .completed(true)
                         .build()).toList())
                 .customer(InvoiceInformation.Customer.builder()
-                        .name(hd.getKhachHang() == null ? "Khách lẻ" : hd.getKhachHang().getTenKhachHang())
+                        .name(hd.getTenNguoiNhan() == null ? "Khách lẻ" : hd.getTenNguoiNhan())
                         .phone(hd.getSdtNguoiNhan())
                         .delivery_address(String.format("%s, %s, %s, %s", hd.getDiaChiNguoiNhan(), hd.getXa(), hd.getQuan(), hd.getTinh()))
                         .build())
