@@ -1,3 +1,6 @@
+use DEMO_SECURITY
+GO
+
 INSERT INTO san_pham (ten_san_pham, ma_san_pham, ngay_cap_nhat, ngay_tao, trang_thai)
 VALUES ('Vintas Denim', 'SP01', GETDATE(), GETDATE(), 1);
 
@@ -17,7 +20,7 @@ VALUES
 
 
 --
-INSERT INTO thuong_hieu(ten)
+    INSERT INTO thuong_hieu(ten)
 VALUES
     (N'Nike'),
     (N'Adidas'),
@@ -32,18 +35,18 @@ VALUES
 
 
 --
-INSERT INTO mau_sac (ten)
+INSERT INTO mau_sac (ten, ten_mau_sac)
 VALUES
-    (N'#2e53c2'),
-    (N'#f76808'),
-    (N'#f50505'),
-    (N'#030303'),
-    (N'#77e92b'),
-    (N'#288a6a'),
-    (N'#0eccfb'),
-    (N'#654206'),
-    (N'#d1236f'),
-    (N'#003b99')
+    (N'#2e53c2', N'xanh dương đậm'),
+    (N'#f76808', N'cam cháy'),
+    (N'#f50505', N'đỏ tươi'),
+    (N'#030303', N'đen'),
+    (N'#77e92b', N'xanh lá non'),
+    (N'#288a6a', N'xanh ngọc lục bảo'),
+    (N'#0eccfb', N'xanh cyan'),
+    (N'#654206', N'nâu đất'),
+    (N'#d1236f', N'hồng đậm'),
+    (N'#003b99', N'xanh dương')
 
 --
 INSERT INTO chat_lieu (ten)
@@ -108,3 +111,5 @@ SELECT 'https://www.converse.vn/media/catalog/product/cache/9f24855fac20eb8d4a46
        GETDATE(), GETDATE(), 1, id
 FROM san_pham_chi_tiet
 WHERE id_san_pham = 1 AND id_mau_sac = 3;
+
+select * from mau_sac

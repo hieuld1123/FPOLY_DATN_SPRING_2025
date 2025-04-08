@@ -58,6 +58,7 @@ public class MauSacController {
         String trimmedTenMauSac = (mauSac.getTen() != null) ? mauSac.getTen().trim().replaceAll("\\s+", " ") : null;
         LocalDateTime currentTime = LocalDateTime.now();
         mauSac.setTen(trimmedTenMauSac);
+        mauSac.setTenMauSac(mauSac.getTenMauSac());
         mauSac.setTrangThai(true);
         mauSac.setNgayTao(currentTime);
         mauSac.setNgayCapNhat(currentTime);
@@ -70,6 +71,7 @@ public class MauSacController {
         String trimmedTenMauSac = (mauSac.getTen() != null) ? mauSac.getTen().trim().replaceAll("\\s+", " ") : null;
         LocalDateTime currentTime = LocalDateTime.now();
         mauSac.setTen(trimmedTenMauSac);
+        mauSac.setTenMauSac(mauSac.getTenMauSac());
         mauSac.setTrangThai(true);
         mauSac.setNgayTao(currentTime);
         mauSac.setNgayCapNhat(currentTime);
