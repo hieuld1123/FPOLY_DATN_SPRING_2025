@@ -159,14 +159,17 @@
                             : 'Tài khoản')}">
             </span>
                         <span class="text-muted small"
-                              th:text="${currentNhanVien != null
-                    ? 'Vai trò: ' + currentNhanVien.taiKhoan.vaiTro.displayName
-                    : (currentKhachHang != null
-                        ? 'Vai trò: ' + currentKhachHang.taiKhoan.vaiTro.displayName
-                        : (currentTaiKhoan != null
-                            ? 'Vai trò: ' + currentTaiKhoan.vaiTro.displayName
-                            : 'Vai trò'))}">
-            </span>
+                              th:text="${
+          currentNhanVien != null
+              ? currentNhanVien.taiKhoan.vaiTro.displayName
+              : (currentKhachHang != null
+                  ? currentKhachHang.taiKhoan.vaiTro.displayName
+                  : (currentTaiKhoan != null
+                      ? currentTaiKhoan.vaiTro.displayName
+                      : ''))
+      }">
+</span>
+
                     </div>
                 </a>
 
