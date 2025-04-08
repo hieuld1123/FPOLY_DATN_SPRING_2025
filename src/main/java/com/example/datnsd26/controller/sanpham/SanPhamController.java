@@ -272,7 +272,7 @@ public class SanPhamController {
 
         } else {
             for (MauSac colorId : idMauSac) {
-               i++;
+                i++;
                 for (String sizeName : kichCoNames) {
                     KichCo kichCo = kichCoRepository.findByTen(sizeName);
                     if (kichCo != null) {

@@ -22,6 +22,9 @@ public class MauSac {
     @Column(name = "ten", columnDefinition = "NVARCHAR(255)")
     private String ten;
 
+    @Column(name = "ten_mau_sac", columnDefinition = "NVARCHAR(255)")
+    private String tenMauSac;
+
     @Column(name = "ngay_tao")
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
