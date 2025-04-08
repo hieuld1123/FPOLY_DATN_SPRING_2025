@@ -62,6 +62,7 @@ public class HoaDonServiceImp implements HoaDonService {
                 .isCompleted(!delivery && hd.isThanhToan() && isCompleted && isCancel)
                 .seller(hd.getNhanVien() == null ? "N/A" : hd.getNhanVien().getTenNhanVien())
                 .order_date(hd.getNgayTao())
+                .order_id(hd.getMaHoaDon())
                 .note(hd.getGhiChu() == null ? "Không có ghi chú nào" : hd.getGhiChu())
                 .status_timeline(hd.getLichSuHoaDon().stream().map(tl -> InvoiceInformation.StatusTimeline.builder()
                         .status(tl.getTrangThai())
