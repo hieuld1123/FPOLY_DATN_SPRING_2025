@@ -118,21 +118,21 @@
                         </div>
                     </div>
 
-                    <div class="card equal-height mt-3">
-                        <div class="card-header row">
-                            <div class="col-6 d-flex align-items-center justify-content-start">
-                                <h3 style="margin: 0;">Đơn hàng chờ thanh toán</h3>
-                            </div>
-                            <div class="col-6 d-flex align-items-center justify-content-end">
-                                <button class="btn btn-primary" id="paymentButton" data-bs-toggle="modal"
-                                        data-bs-target="#paymentModal">Thanh toán
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card-body border-bottom py-3">
-                            <div class="payment-info" id="payment-info"></div>
-                        </div>
-                    </div>
+<!--                    <div class="card equal-height mt-3">-->
+<!--                        <div class="card-header row">-->
+<!--                            <div class="col-6 d-flex align-items-center justify-content-start">-->
+<!--                                <h3 style="margin: 0;">Đơn hàng chờ thanh toán</h3>-->
+<!--                            </div>-->
+<!--                            <div class="col-6 d-flex align-items-center justify-content-end">-->
+<!--                                <button class="btn btn-primary" id="paymentButton" data-bs-toggle="modal"-->
+<!--                                        data-bs-target="#paymentModal">Thanh toán-->
+<!--                                </button>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="card-body border-bottom py-3">-->
+<!--                            <div class="payment-info" id="payment-info"></div>-->
+<!--                        </div>-->
+<!--                    </div>-->
                 </div>
                 <div class="col-3">
                     <div class="card equal-height mt-3">
@@ -370,7 +370,7 @@
                     <div class="col-4 text-end">${data.summary.discount.toLocaleString()}</div>
                 </div>
                 <div class="row mb-2">
-                    <div class="col-8 fw-semibold">Khách phải trả</div>
+                    <div class="col-8 fw-semibold">Thành tiền</div>
                     <div class="col-4 text-end fw-semibold">${data.summary.total.toLocaleString()}</div>
                 </div>
             `);
@@ -423,8 +423,12 @@
         <div class="section">
             <h3>Thông tin khách hàng</h3>
             <p><strong>Tên:</strong> ${data.customer.name}</p>
-            <p><strong>Số điện thoại:</strong> ${data.customer.phone}</p>
-            <p><strong>Địa chỉ giao hàng:</strong> ${data.customer.delivery_address}</p>
+            <p><strong>Số điện thoại:</strong> ${data.customer.phone || "Chưa có số điện thoại"}</p>
+            <p><strong>Địa chỉ giao hàng:</strong>
+                    ${data.customer.delivery_address && data.customer.delivery_address !== "null, null, null, null"
+                    ? data.customer.delivery_address
+                    : "Chưa có địa chỉ"}
+            </p>
         </div>
         <div class="section">
             <h3>Thông tin sản phẩm</h3>
@@ -462,7 +466,7 @@
             <div><span>Tổng tiền (${data.products.length} sản phẩm):</span><span>${data.summary.subtotal.toLocaleString()} VND</span></div>
             <div><span>Phí giao hàng:</span><span>${data.summary.shipping_fee.toLocaleString()} VND</span></div>
             <div><span>Mã giảm giá:</span><span>${data.summary.discount.toLocaleString()} VND</span></div>
-            <div><strong>Khách phải trả:</strong><strong>${data.summary.total.toLocaleString()} VND</strong></div>
+            <div><strong>Thành tiền:</strong><strong>${data.summary.total.toLocaleString()} VND</strong></div>
         </div>
         <div class="section thank-you">
             <p>Cảm ơn quý khách đã mua hàng tại NineShoes!</p>

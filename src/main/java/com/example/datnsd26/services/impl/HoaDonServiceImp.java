@@ -52,7 +52,7 @@ public class HoaDonServiceImp implements HoaDonService {
         log.info("GET/hoa-don/{}", code);
         HoaDon hd = getHoaDonByCode(code);
         boolean confirm = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_CONFIRMED, hd.getId()).isEmpty();
-        boolean delivery = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_CONFIRMED, hd.getId()).isEmpty();
+        boolean delivery = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_DELIVERED, hd.getId()).isEmpty();
         boolean isCancel = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_CANCELED, hd.getId()).isEmpty();
         boolean isCompleted = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_COMPLETED, hd.getId()).isEmpty();
         return InvoiceInformation.builder()
