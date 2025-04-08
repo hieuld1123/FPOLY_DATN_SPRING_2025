@@ -20,6 +20,7 @@ import java.util.*;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/shop/")
 public class CartController {
     private final GioHangService gioHangService;
     private final GioHangRepository gioHangRepository;
@@ -86,7 +87,7 @@ public class CartController {
 
             // Nếu hợp lệ thì thêm vào giỏ hàng
             gioHangService.themSanPhamVaoGioHang(sanPhamChiTietId, soLuongThem, auth);
-            return "redirect:/cart";
+            return "redirect:/shop/cart";
 
         } catch (RuntimeException ex) {
             redirect.addFlashAttribute("errorMessage", ex.getMessage());
@@ -98,19 +99,19 @@ public class CartController {
     public String updateCart(@RequestParam("chiTietId") Integer chiTietId,
                              @RequestParam("action") String action) {
         gioHangService.capNhatSoLuongSanPham(chiTietId, action);
-        return "redirect:/cart";
+        return "redirect:/shop/cart";
     }
 
     @PostMapping("/cart/remove")
     public String removeFromCart(@RequestParam("chiTietId") Integer chiTietId) {
         gioHangService.xoaSanPhamKhoiGioHang(chiTietId);
-        return "redirect:/cart";
+        return "redirect:/shop/cart";
     }
 
     @PostMapping("/cart/clear")
     public String clearCart(Authentication auth) {
         gioHangService.xoaToanBoGioHang(auth);
-        return "redirect:/cart";
+        return "redirect:/shop/cart";
     }
 
     @GetMapping("/checkout")
@@ -121,7 +122,7 @@ public class CartController {
         // Nếu giỏ hàng rỗng, chuyển về trang giỏ hàng và hiển thị thông báo
         if (gioHang == null || gioHang.getChiTietList().isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Giỏ hàng của bạn đang trống.");
-            return "redirect:/cart";
+            return "redirect:/shop/cart";
         }
 
         // Kiểm tra số lượng sản phẩm trong kho
@@ -137,7 +138,7 @@ public class CartController {
         // Nếu có lỗi, quay lại giỏ hàng và hiển thị thông báo
         if (!warnings.isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessages", warnings);
-            return "redirect:/cart";
+            return "redirect:/shop/cart";
         }
 
         // Tính tổng tiền
@@ -157,7 +158,7 @@ public class CartController {
         return "shop/checkout"; // Trả về trang checkout.html
     }
 
-    @PostMapping("/place-order")
+    @PostMapping("place-order")
     public String placeOrder(
             @Valid @ModelAttribute HoaDonBinhRequest hoaDonBinhRequest,
             BindingResult bindingResult,

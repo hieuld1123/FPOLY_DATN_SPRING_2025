@@ -95,7 +95,7 @@
                         <div class="text-secondary">
                             <div class="d-inline-block">
                                 <div class="my-2 my-md-0 flex-grow-1 flex-md-grow-0 order-first order-md-last">
-                                    <form action="./" method="get">
+                                    <form action="@{/quan-ly/khach-hang/hien-thi}" method="get">
                                         <div class="input-icon">
                                                     <span class="input-icon-addon">
                                                         <!-- Download SVG icon from http://tabler.io/icons/icon/search -->
@@ -125,7 +125,7 @@
                             </div>
                         </div>
                         <div class="ms-auto text-secondary">
-                            <a th:href="@{/khach-hang/them}"
+                            <a th:href="@{/quan-ly/khach-hang/them}"
                                class="btn btn-primary btn-5 d-none d-sm-inline-block">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                      viewBox="0 0 24 24"
@@ -172,7 +172,7 @@
                                     </thead>
                                     <tbody id="khachHangTable">
                                     <tr th:each="khachHang,indexStat : ${listKH}"
-                                        th:data-href="@{'/khach-hang/chi-tiet/' + ${khachHang.id}}"
+                                        th:data-href="@{'/quan-ly/khach-hang/chi-tiet/' + ${khachHang.id}}"
                                         class="cursor-pointer">
                                         <td>
                                     <span class="text-secondary"
@@ -206,7 +206,7 @@
                                     <li class="page-item"
                                         th:class="${listKH.first} ? 'page-item disabled' : 'page-item'">
                                         <a class="page-link"
-                                           th:href="@{/khach-hang/hien-thi(page=${listKH.number - 1})}"
+                                           th:href="@{/quan-ly/khach-hang/hien-thi(page=${listKH.number - 1})}"
                                            tabindex="-1" aria-disabled="true">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                  viewBox="0 0 24 24"
@@ -223,7 +223,7 @@
                                     <ul class="pagination m-0 mx-3">
                                         <li th:each="i : ${#numbers.sequence(0, listKH.totalPages - 1)}"
                                             th:classappend="${i == listKH.number} ? 'active'" class="page-item">
-                                            <a class="page-link" th:href="@{/khach-hang/hien-thi(page=${i})}"
+                                            <a class="page-link" th:href="@{/quan-ly/khach-hang/hien-thi(page=${i})}"
                                                th:text="${i + 1}"></a>
                                         </li>
                                     </ul>
@@ -231,7 +231,7 @@
                                     <li class="page-item"
                                         th:class="${listKH.last} ? 'page-item disabled' : 'page-item'">
                                         <a class="page-link"
-                                           th:href="@{/khach-hang/hien-thi(page=${listKH.number + 1})}">
+                                           th:href="@{/quan-ly/khach-hang/hien-thi(page=${listKH.number + 1})}">
                                             Sau
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                  viewBox="0 0 24 24"
@@ -262,7 +262,7 @@
             let status = statusSelect.value || "";
 
 
-            let url = `/khach-hang/tim-kiem?searchInput=${encodeURIComponent(keyword)}&statusOption=${status}`;
+            let url = `/quan-ly/khach-hang/tim-kiem?searchInput=${encodeURIComponent(keyword)}&statusOption=${status}`;
 
             fetch(url)
                 .then(response => {
