@@ -102,7 +102,7 @@
                 </div>
                 <div class="card-body">
                     <form th:method="post" id="addForm" th:object="${khachHang}"
-                          th:action="@{/khach-hang/sua/{id}(id=${khachHang.id})}"
+                          th:action="@{/quan-ly/khach-hang/sua/{id}(id=${khachHang.id})}"
                           enctype="multipart/form-data" onsubmit="return validate(event);">
                         <div class="row">
                             <!-- Cột bên trái: Ảnh-->
@@ -273,7 +273,7 @@
 
                         <div class="d-flex justify-content-end">
                             <button type="submit" class="btn btn-primary">Lưu</button>
-                            <a th:href="@{/khach-hang/hien-thi}"
+                            <a th:href="@{/quan-ly/khach-hang/hien-thi}"
                                class="btn btn-primary btn-secondary ms-2 me-2">Quay lại</a>
                         </div>
                     </form>

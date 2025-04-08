@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
-@RequestMapping("/order-tracking")
+@RequestMapping("/shop/order-tracking")
 public class OrderTrackingController {
     @Autowired
     private HoaDonRepository hoaDonRepository;

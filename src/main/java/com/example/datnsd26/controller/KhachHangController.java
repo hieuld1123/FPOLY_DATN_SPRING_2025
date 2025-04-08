@@ -30,7 +30,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
-@RequestMapping("/khach-hang")
+@RequestMapping("/quan-ly/khach-hang")
 public class KhachHangController {
     @Autowired
     private KhachHangService khachHangService;
@@ -106,7 +106,7 @@ public class KhachHangController {
         }
 
         khachHangService.save(khachHangDto);
-        return "redirect:/khach-hang/hien-thi";
+        return "redirect:/quan-ly/khach-hang/hien-thi";
     }
 
     @GetMapping("/chi-tiet/{id}")
@@ -200,7 +200,7 @@ public class KhachHangController {
             khachHangDto.setHinhAnh(oldImage);
         }
         khachHangService.update(khachHangDto, id);
-        return "redirect:/khach-hang/hien-thi";
+        return "redirect:/quan-ly/khach-hang/hien-thi";
     }
 
     @DeleteMapping("/xoa-dia-chi/{id}")

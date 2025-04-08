@@ -115,7 +115,7 @@
         <div class="container-fluid d-flex justify-content-between align-items-center">
 
             <div class="navbar-left">
-                <a th:href="@{/homepage}">
+                <a th:href="@{/shop/homepage}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                          class="icon icon-tabler icons-tabler-outline icon-tabler-home">
@@ -139,41 +139,49 @@
             </div>
 
             <!-- Tài khoản (bên phải) -->
-            <div class="dropdown">
-                <a href="#" class="nav-link dropdown-toggle account-dropdown" id="dropdownAccount"
-                   data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="https://i.pravatar.cc/40" alt="Avatar" class="avatar">
-                    <span>Admin</span>
+            <div class="dropdown" th:if="${#authorization.expression('isAuthenticated()')}">
+                <a href="#" class="nav-link dropdown-toggle account-dropdown d-flex align-items-center"
+                   id="dropdownAccount" data-bs-toggle="dropdown" aria-expanded="false">
+
+                    <!-- Avatar -->
+                    <img th:if="${currentNhanVien != null}" th:src="@{'/uploads/' + ${currentNhanVien.hinhAnh}}"
+                         class="avatar rounded-circle me-2 shadow-sm" width="40" height="40"/>
+                    <img th:if="${currentNhanVien == null}" src="/img/default-avatar.png"
+                         class="avatar rounded-circle me-2 shadow-sm" width="40" height="40"/>
+
+                    <!-- Thông tin tài khoản -->
+                    <div class="d-flex flex-column">
+            <span class="fw-bold"
+                  th:text="${currentNhanVien != null
+                        ? currentNhanVien.tenNhanVien
+                        : (currentKhachHang != null
+                            ? currentKhachHang.tenKhachHang
+                            : 'Tài khoản')}">
+            </span>
+                        <span class="text-muted small"
+                              th:text="${currentNhanVien != null
+                    ? 'Vai trò: ' + currentNhanVien.taiKhoan.vaiTro.displayName
+                    : (currentKhachHang != null
+                        ? 'Vai trò: ' + currentKhachHang.taiKhoan.vaiTro.displayName
+                        : (currentTaiKhoan != null
+                            ? 'Vai trò: ' + currentTaiKhoan.vaiTro.displayName
+                            : 'Vai trò'))}">
+            </span>
+                    </div>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
-                    <li><a class="dropdown-item" href="#">Cài đặt</a></li>
-                    <li><a class="dropdown-item" href="#">Đổi mật khẩu</a></li>
-                    <li><a class="dropdown-item" href="/logout" onclick="confirmLogout(event)">Đăng xuất</a></li>
+
+                <!-- Dropdown menu -->
+                <ul class="dropdown-menu dropdown-menu-end mt-2 shadow" aria-labelledby="dropdownAccount">
+                    <li><a class="dropdown-item" href="#">🔧 Cài đặt</a></li>
+                    <li><a class="dropdown-item" th:href="@{/doi-mat-khau}">🔐 Đổi mật khẩu</a></li>
+                    <li>
+                        <form th:action="@{/logout}" method="post" style="margin: 0;">
+                            <button type="submit" class="dropdown-item text-danger">🚪 Đăng xuất</button>
+                        </form>
+                    </li>
                 </ul>
             </div>
 
         </div>
     </nav>
-
-    <script>
-        function confirmLogout(event) {
-            event.preventDefault(); // Ngăn chặn chuyển hướng ngay lập tức
-
-            Swal.fire({
-                title: "Bạn có chắc muốn đăng xuất?",
-                text: "Bạn sẽ cần đăng nhập lại để tiếp tục.",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Đăng xuất",
-                cancelButtonText: "Hủy"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "/logout"; // Chuyển hướng sau khi xác nhận
-                }
-            });
-        }
-
-    </script>
 </div>

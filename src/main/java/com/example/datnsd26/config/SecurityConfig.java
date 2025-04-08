@@ -21,27 +21,58 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/shop/**", "/api/**", "/san-pham/**")) // Disable CSRF if using REST API
+                        .ignoringRequestMatchers("/shop/**", "/api/**", "/san-pham/**")) // Disable CSRF cho REST/API
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/shop/**", "/error/**", "/**", "/api/**").permitAll()  // Public access
-                        .requestMatchers("/admin/**").authenticated()
-                        .requestMatchers("/doi-mat-khau").permitAll() // Cho phép đổi mật khẩu mà không cần đăng nhập
-                        .anyRequest().authenticated() // All other pages require login
+                        // ✅ Public access (ai cũng xem được)
+                        .requestMatchers("/login", "/dang-ky", "/quen-mat-khau","/dat-lai-mat-khau","/doi-mat-khau","/trangchu/**", "/css/**","/uploads/**","/upload/**", "/js/**", "/carousel/**").permitAll()
+                        .requestMatchers("/shop/**", "/api/**").permitAll()
+
+                        // ✅ Admin-only pages
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                        // ✅ Admin và Nhân viên đều truy cập
+                        .requestMatchers("/quan-ly/**").hasAnyRole("ADMIN", "EMPLOYEE")
+
+                        // ✅ Khách hàng truy cập
+                        .requestMatchers("/khach-hang/**").hasRole("CUSTOMER")
+
+                        // ✅ Các trang còn lại yêu cầu đăng nhập
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)) // Luôn tạo session khi truy cập ứng dụng
+                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)) // Luôn tạo session
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/admin/get-all-user", true)
+                        .usernameParameter("email")
+                        .passwordParameter("password")
+                        .successHandler((request, response, authentication) -> {
+                            String role = authentication.getAuthorities().iterator().next().getAuthority();
+                            if (role.equals("ROLE_ADMIN")) {
+                                response.sendRedirect("/admin/thong-ke");
+                            } else if (role.equals("ROLE_EMPLOYEE")) {
+                                response.sendRedirect("/quan-ly/ban-hang");
+                            } else {
+                                response.sendRedirect("/shop/homepage");
+                            }
+                        })
+                        .failureUrl("/login?error=true")
                         .permitAll()
                 )
+
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
                         .permitAll()
                 )
+                // 🟡 Thêm đoạn này để xử lý khi không đủ quyền
+                .exceptionHandling(ex -> ex
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.sendRedirect("/403?unauthorized=true");
+                        })
+                )
                 .build();
     }
+
 
     @Bean
     public UserDetailsService userDetailsService(TaiKhoanRepository taiKhoanRepository) {

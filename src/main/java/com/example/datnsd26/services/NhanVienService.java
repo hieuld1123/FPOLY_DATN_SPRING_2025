@@ -93,7 +93,7 @@ public class NhanVienService {
         nv.setGioiTinh(nhanVien.getGioiTinh());
         nv.setNgayTao(new Timestamp(new Date().getTime()));
         nv.setNgayCapNhat(new Timestamp(new Date().getTime()));
-        nv.setIdTaiKhoan(taiKhoan);
+        nv.setTaiKhoan(taiKhoan);
         nv.setTrangThai(true);
         nv = nhanVienRepository.save(nv);
         // Gửi email chứa thông tin tài khoản
@@ -115,7 +115,7 @@ public class NhanVienService {
         existingNhanVien.setNgayCapNhat(new Timestamp(new Date().getTime()));
 
 
-        TaiKhoan existingTaiKhoan = existingNhanVien.getIdTaiKhoan();
+        TaiKhoan existingTaiKhoan = existingNhanVien.getTaiKhoan();
         existingTaiKhoan.setSdt(nhanVien.getSdt());
         existingTaiKhoan.setEmail(nhanVien.getEmail());
         existingTaiKhoan.setVaiTro(nhanVien.getVaiTro());

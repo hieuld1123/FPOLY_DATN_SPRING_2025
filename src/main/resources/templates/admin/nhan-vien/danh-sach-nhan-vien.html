@@ -131,7 +131,7 @@
                             </div>
                         </div>
                         <div class="ms-auto text-secondary">
-                            <a th:href="@{/nhan-vien/them}"
+                            <a th:href="@{/admin/nhan-vien/them}"
                                class="btn btn-primary btn-5 d-none d-sm-inline-block">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                      viewBox="0 0 24 24"
@@ -181,7 +181,7 @@
 
                                     <tbody id="nhanVienTable">
                                     <tr th:each="nv,indexStat : ${nhanVien}"
-                                        th:data-href="@{'/nhan-vien/chi-tiet/' + ${nv.id}}" class="cursor-pointer">
+                                        th:data-href="@{'/admin/nhan-vien/chi-tiet/' + ${nv.id}}" class="cursor-pointer">
                                         <td>
                                     <span class="text-secondary"
                                           th:text="${nhanVien.number * nhanVien.size + indexStat.index + 1}"></span>
@@ -189,10 +189,10 @@
 
                                         <td th:text="${nv.maNhanvien}"></td>
                                         <td th:text="${nv.tenNhanVien}"></td>
-                                        <td th:text="${nv.idTaiKhoan.email}"></td>
-                                        <td th:text="${nv.idTaiKhoan.sdt}"></td>
+                                        <td th:text="${nv.taiKhoan.email}"></td>
+                                        <td th:text="${nv.taiKhoan.sdt}"></td>
                                         <td th:text="${nv.gioiTinh ? 'Nam' : 'Nữ'}"></td>
-                                        <td th:text="${nv.idTaiKhoan.vaiTro.getDisplayName()}"></td>
+                                        <td th:text="${nv.taiKhoan.vaiTro.getDisplayName()}"></td>
                                         <td th:text="${nv.trangThai ? 'Đang làm việc' : 'Đã nghỉ'}"></td>
                                     </tr>
                                     </tbody>
@@ -215,7 +215,7 @@
                                     <li class="page-item"
                                         th:class="${nhanVien.first} ? 'page-item disabled' : 'page-item'">
                                         <a class="page-link"
-                                           th:href="@{/nhan-vien/hien-thi(page=${nhanVien.number - 1})}"
+                                           th:href="@{/admin/nhan-vien/hien-thi(page=${nhanVien.number - 1})}"
                                            tabindex="-1" aria-disabled="true">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                  viewBox="0 0 24 24"
@@ -232,7 +232,7 @@
                                     <ul class="pagination m-0 mx-3">
                                         <li th:each="i : ${#numbers.sequence(0, nhanVien.totalPages - 1)}"
                                             th:classappend="${i == nhanVien.number} ? 'active'" class="page-item">
-                                            <a class="page-link" th:href="@{/nhan-vien/hien-thi(page=${i})}"
+                                            <a class="page-link" th:href="@{/admin/nhan-vien/hien-thi(page=${i})}"
                                                th:text="${i + 1}"></a>
                                         </li>
                                     </ul>
@@ -240,7 +240,7 @@
                                     <li class="page-item"
                                         th:class="${nhanVien.last} ? 'page-item disabled' : 'page-item'">
                                         <a class="page-link"
-                                           th:href="@{/nhan-vien/hien-thi(page=${nhanVien.number + 1})}">
+                                           th:href="@{/admin/nhan-vien/hien-thi(page=${nhanVien.number + 1})}">
                                             Sau
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                  viewBox="0 0 24 24"
@@ -272,7 +272,7 @@
             let status = statusSelect.value || "";
             let role = roleSelect.value || "";
 
-            let url = `/nhan-vien/tim-kiem?searchInput=${encodeURIComponent(keyword)}&statusOption=${status}&roleOption=${role}`;
+            let url = `/admin/nhan-vien/tim-kiem?searchInput=${encodeURIComponent(keyword)}&statusOption=${status}&roleOption=${role}`;
 
             fetch(url)
                 .then(response => {

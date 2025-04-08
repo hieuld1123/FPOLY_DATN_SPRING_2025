@@ -101,7 +101,7 @@
                     <h3 class="card-title">Thêm nhân viên</h3>
                 </div>
                 <div class="card-body">
-                    <form th:method="post" id="addForm" th:object="${nhanVienDto}" th:action="@{/nhan-vien/them}"
+                    <form th:method="post" id="addForm" th:object="${nhanVienDto}" th:action="@{/admin/nhan-vien/them}"
                           enctype="multipart/form-data" onsubmit="return validate(event);">
                         <div class="row">
                             <!-- Cột bên trái: Ảnh nhân viên -->
@@ -207,7 +207,7 @@
                         <!--                        Hết địa chỉ-->
                         <div class="d-flex justify-content-end">
                             <button type="submit" class="btn btn-primary">Lưu</button>
-                            <a th:href="@{/nhan-vien/hien-thi}"
+                            <a th:href="@{/admin/nhan-vien/hien-thi}"
                                class="btn btn-primary btn-secondary ms-2 me-2">Quay lại</a>
                         </div>
                     </form>
@@ -341,6 +341,7 @@
     }
 
     function validate(event) {
+        event.preventDefault();
         let isValid = true;
 
         // Lấy giá trị từ input
@@ -464,7 +465,6 @@
         }
 
         if (!isValid) {
-            event.preventDefault();
             return false;
         } else {
             event.preventDefault();

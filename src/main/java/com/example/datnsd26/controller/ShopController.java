@@ -29,19 +29,19 @@ public class ShopController {
     private final DeGiayRepository deGiayRepository;
     private final ChatLieuRepository chatLieuRepository;
 
-    @GetMapping("/homepage")
+    @GetMapping("/shop/homepage")
     public String homepage(Model model) {
         List<PublicSanPhamResponse> products = publicSanPhamService.getAllProducts();
         model.addAttribute("products", products);
         return "/shop/homepage";
     }
 
-    @GetMapping("/ve-chung-toi")
+    @GetMapping("/shop/ve-chung-toi")
     public String veChungToi() {
         return "/shop/ve-chung-toi";
     }
 
-    @GetMapping("/lien-he")
+    @GetMapping("/shop/lien-he")
     public String lienHe() {
         return "/shop/lien-he";
     }

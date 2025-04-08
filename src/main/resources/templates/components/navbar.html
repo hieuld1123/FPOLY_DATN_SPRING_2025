@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+>
 
 <head>
     <meta charset="UTF-8">
@@ -7,6 +9,7 @@
     <title>Test</title>
     <!-- Tabler CSS -->
     <link href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css" rel="stylesheet">
+
 </head>
 <body>
 <div th:fragment="navbar">
@@ -30,7 +33,7 @@
                 <div class="nav-item d-none d-md-flex me-3">
                     <div class="btn-list">
                         <!-- Nút Tra cứu đơn hàng -->
-                        <a th:href="@{/order-tracking}" class="btn btn-5" rel="noreferrer">
+                        <a th:href="@{/shop/order-tracking}" class="btn btn-5" rel="noreferrer">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                  stroke-linejoin="round" class="icon icon-tabler">
@@ -45,7 +48,7 @@
                         </a>
 
                         <!-- Nút Giỏ hàng -->
-                        <a th:href="@{/cart}" class="btn btn-6" rel="noreferrer">
+                        <a th:href="@{/shop/cart}" class="btn btn-6" rel="noreferrer">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                  stroke-linejoin="round" class="icon icon-tabler">
@@ -59,16 +62,66 @@
                         </a>
 
                         <!-- Dropdown Người dùng -->
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link d-flex lh-1 p-0 px-2" data-bs-toggle="dropdown" aria-label="Open user menu">
-                                <img width="35" height="35" src="https://img.icons8.com/material-rounded/100/user-male-circle.png" alt="user-male-circle"/>
+                        <!-- Nếu chưa đăng nhập -->
+                        <div th:if="${#authorization.expression('isAnonymous()')}">
+                            <a th:href="@{/login}" class="nav-link d-flex align-items-center">
+                                <img class="rounded-circle me-2" width="35" height="35"
+                                     th:if="${currentNhanVien == null and currentKhachHang == null}"
+                                     src="https://img.icons8.com/material-rounded/100/user-male-circle.png"
+                                     alt="avatar"/>
                             </a>
-                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                                <a href="#" class="dropdown-item">Thông tin cá nhân</a>
-                                <div class="dropdown-divider"></div>
-                                <a href="./sign-in.html" class="dropdown-item">Đăng xuất</a>
-                            </div>
                         </div>
+                        <!-- Nếu đã đăng nhập -->
+                        <div th:if="${#authorization.expression('isAuthenticated()')}">
+                            <button class="nav-link dropdown-toggle d-flex align-items-center" id="dropdownAccount"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+
+                                <!-- Ảnh đại diện -->
+                                <th:block th:switch="${true}">
+                                    <img class="rounded-circle me-2" width="35" height="35"
+                                         th:case="${currentNhanVien != null}"
+                                         th:src="@{'/uploads/' + ${currentNhanVien.hinhAnh}}" alt="avatar"/>
+
+                                    <img class="rounded-circle me-2" width="35" height="35"
+                                         th:case="${currentKhachHang != null}"
+                                         th:src="@{'/uploads/' + ${currentKhachHang.hinhAnh}}" alt="avatar"/>
+
+                                    <img class="rounded-circle me-2" width="35" height="35"
+                                         th:case="*"
+                                         src="/img/default-avatar.png" alt="avatar"/>
+                                </th:block>
+
+                                <!-- Tên người dùng -->
+                                <span th:text="${currentNhanVien != null ? currentNhanVien.tenNhanVien :
+                        (currentKhachHang != null ? currentKhachHang.tenKhachHang : 'Tài khoản')}"></span>
+                            </button>
+
+                            <!-- Dropdown menu -->
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
+                                <li><a class="dropdown-item" href="">Thông tin cá nhân</a></li>
+                                <li><a class="dropdown-item" th:href="@{/khach-hang/lich-su-mua-hang}">Lịch sử mua hàng</a></li>
+                                <li><a class="dropdown-item" th:href="@{/doi-mat-khau}">Đổi mật khẩu</a></li>
+                                <li>
+                                    <form th:action="@{/logout}" method="post" style="margin: 0;">
+                                        <button type="submit" class="dropdown-item">Đăng xuất</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+
+
+
+                        <!--                        <div class="nav-item dropdown">-->
+<!--                            <a href="#" class="nav-link d-flex lh-1 p-0 px-2" data-bs-toggle="dropdown" aria-label="Open user menu">-->
+<!--                                <img width="35" height="35" src="https://img.icons8.com/material-rounded/100/user-male-circle.png" alt="user-male-circle"/>-->
+<!--                            </a>-->
+<!--                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">-->
+<!--                                <a href="#" class="dropdown-item">Thông tin cá nhân</a>-->
+<!--                                <div class="dropdown-divider"></div>-->
+<!--                                <a href="./sign-in.html" class="dropdown-item">Đăng xuất</a>-->
+<!--                            </div>-->
+<!--                        </div>-->
+
                     </div>
                 </div>
             </div>
@@ -86,7 +139,7 @@
                             <!-- BEGIN NAVBAR MENU -->
                             <ul class="navbar-nav mx-auto">
                                 <li class="nav-item">
-                                    <a class="nav-link" th:href="@{/homepage}">
+                                    <a class="nav-link" th:href="@{/shop/homepage}">
                                         <span class="nav-link-title" style="font-size: 16px"> Trang chủ </span>
                                     </a>
                                 </li>
@@ -97,12 +150,12 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" th:href="@{/ve-chung-toi}">
+                                    <a class="nav-link" th:href="@{/shop/ve-chung-toi}">
                                         <span class="nav-link-title" style="font-size: 16px">Về chúng tôi</span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link"  th:href="@{/lien-he}">
+                                    <a class="nav-link"  th:href="@{/shop/lien-he}">
                                         </span><span class="nav-link-title" style="font-size: 16px">Liên hệ</span>
                                     </a>
                                     <!--                                        <div class="dropdown-menu">-->
@@ -145,8 +198,11 @@
             </div>
         </div>
     </header>
-    <div class="p-3 bg-black text-white text-center">Giao hàng miễn phí toàn quốc với các đơn hàng trên 1.000.000 VNĐ</div>
+    <div class="p-3 bg-black text-white text-center">Giao hàng miễn phí toàn quốc với các đơn hàng trên 1.000.000 đ</div>
     <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/js/tabler.min.js"></script>
+    <!-- Bootstrap JS (đặt cuối trang) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </div>
 </body>
 

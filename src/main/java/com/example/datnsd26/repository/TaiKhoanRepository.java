@@ -9,5 +9,6 @@ import java.util.Optional;
 @Repository
 public interface TaiKhoanRepository extends JpaRepository<TaiKhoan, Integer> {
         Optional<TaiKhoan> findByEmail(String email);
+
         Optional<TaiKhoan> findByResetToken(String token);
 }
