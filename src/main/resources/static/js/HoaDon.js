@@ -79,7 +79,7 @@ function loadInvoices(data, page, total) {
                 `${creationDate.getSeconds().toString().padStart(2, '0')}`;
             const row = `
                 <tr>
-                    <td><a href="/admin/hoa-don/${invoice.id}">${invoice.id}</a></td>
+                    <td><a href="/quan-ly/hoa-don/${invoice.id}">${invoice.id}</a></td>
                     <td>${customerName}</td>
                     <td>${invoice.purchaseMethod}</td>
                     <td>${formattedDate}</td>
