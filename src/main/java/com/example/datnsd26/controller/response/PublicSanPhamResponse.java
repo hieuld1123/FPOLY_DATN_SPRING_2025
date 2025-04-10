@@ -20,5 +20,14 @@ public class PublicSanPhamResponse {
     private Float giaBanSauGiam;
 
     private Integer idSanPhamChiTiet;
+    private String tenAnh;
+
+    public PublicSanPhamResponse(Integer id, String tenSanPham, Float giaBan, String tenAnh) {
+        this.id = id;
+        this.tenSanPham = tenSanPham;
+        this.giaBan = giaBan;
+        this.tenAnh = tenAnh;
+    }
+
 
 }

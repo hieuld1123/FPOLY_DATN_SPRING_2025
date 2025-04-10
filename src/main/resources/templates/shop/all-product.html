@@ -22,21 +22,14 @@
         transition: 0.3s;
     }
 
-    <
-    style >
     .color-circle {
-        width: 30px;
-        height: 30px;
+        width: 24px;
+        height: 24px;
         border-radius: 50%;
+        border: 1px solid #ccc;
         display: inline-block;
-        cursor: pointer;
-        border: 2px solid transparent;
-        transition: 0.3s;
     }
 
-    .color-circle.selected {
-        border: 2px solid black;
-    }
 
     .product-card {
         transition: transform 0.3s ease;
@@ -82,7 +75,6 @@
     }
 </style>
 
-</style>
 <body>
 <!--Header-->
 <div th:replace="~{components/navbar :: navbar}"></div>
@@ -94,7 +86,7 @@
                   class="filter-form p-3 border rounded shadow-sm bg-white">
                 <h5 class="text-center mb-3 fw-bold"> Bộ lọc</h5>
                 <div class="text-end mb-2">
-                    <a href="#" class="text-decoration-none text-muted small" onclick="clearAllCheckboxes()">Xóa tất
+                    <a href="/shop/product/all-product" class="text-decoration-none text-muted small">Xóa tất
                         cả</a>
                 </div>
                 <hr>
@@ -147,18 +139,120 @@
 
                 <div class="mb-3">
                     <p class="fw-bold">Màu sắc</p>
-                    <div class="d-flex flex-wrap gap-2">
+                    <div class="d-flex flex-wrap gap-3">
                         <th:block th:each="color : ${mauSac}">
-                            <button type="button" class="color-circle" th:style="'background-color:' + ${color.ten}"
-                                    th:data-color="${color.id}" onclick="toggleColor(this)"></button>
+                            <label class="d-flex align-items-center gap-2" style="cursor: pointer;">
+                                <input type="checkbox" class="form-check-input" name="filterColor"
+                                       th:value="${color.id}" style="cursor: pointer;">
+                                <span class="color-circle"
+                                      th:style="'background-color:' + ${color.ten}">
+                </span>
+                            </label>
                         </th:block>
                     </div>
                 </div>
 
+
+
                 <div class="mb-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <p class="fw-bold mb-1">Kích cỡ</p>
-                        <a href="#" class="text-decoration-none text-muted small">Hướng dẫn</a>
+                        <a href="#" class="text-primary small d-flex align-items-center text-decoration-none fw-medium"
+                           data-bs-toggle="modal" data-bs-target="#modal-size">
+                            <i class="ti ti-ruler me-1 fs-5"></i>
+                            Hướng dẫn chọn size
+                        </a>
+                        <!-- Modal -->
+                        <div class="modal modal-blur fade" id="modal-size" tabindex="-1" role="dialog" aria-hidden="true">
+                            <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title"><i class="ti ti-ruler-measure me-2"></i>Tra cứu & chọn size giày</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <!-- Nhập chiều dài chân -->
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Chiều dài chân (cm):</label>
+                                                <input type="number" id="input-cm" class="form-control" placeholder="Ví dụ: 24.8" min="20" max="30" step="0.1">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Giới tính:</label>
+                                                <select id="gender" class="form-select">
+                                                    <option value="nam">Nam</option>
+                                                    <option value="nu">Nữ</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-12 mt-3 text-end">
+                                                <button type="button" class="btn btn-primary" onclick="traCuuSize()">
+                                                    <i class="ti ti-search me-1"></i>Tra cứu size
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Kết quả -->
+                                        <div id="result" class="mb-4" style="display: none;">
+                                            <h4><i class="ti ti-check me-2"></i>Kết quả tra cứu:</h4>
+                                            <p>Chiều dài chân: <strong><span id="cm-result"></span> cm</strong></p>
+                                            <p>Size giày phù hợp: <strong class="text-blue" id="size-result"></strong></p>
+                                        </div>
+
+                                        <!-- Bảng size -->
+                                        <h4 class="mt-4"><i class="ti ti-table me-2"></i>Bảng size giày Nam</h4>
+                                        <div class="table-responsive mb-4">
+                                            <table class="table table-bordered text-center">
+                                                <thead class="table-primary">
+                                                <tr><th>Chiều dài chân (cm)</th><th>Size Nam (VN)</th></tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr><td>23.7 – 24.1</td><td>38</td></tr>
+                                                <tr><td>24.2 – 24.6</td><td>39</td></tr>
+                                                <tr><td>24.7 – 25.1</td><td>40</td></tr>
+                                                <tr><td>25.2 – 25.6</td><td>41</td></tr>
+                                                <tr><td>25.7 – 26.1</td><td>42</td></tr>
+                                                <tr><td>26.2 – 26.6</td><td>43</td></tr>
+                                                <tr><td>26.7 – 27.1</td><td>44</td></tr>
+                                                <tr><td>27.2 – 27.6</td><td>45</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <h4><i class="ti ti-table me-2"></i>Bảng size giày Nữ</h4>
+                                        <div class="table-responsive mb-4">
+                                            <table class="table table-bordered text-center">
+                                                <thead class="table-pink">
+                                                <tr><th>Chiều dài chân (cm)</th><th>Size Nữ (VN)</th></tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr><td>22.1 – 22.5</td><td>35</td></tr>
+                                                <tr><td>22.6 – 23.0</td><td>36</td></tr>
+                                                <tr><td>23.1 – 23.5</td><td>37</td></tr>
+                                                <tr><td>23.6 – 24.0</td><td>38</td></tr>
+                                                <tr><td>24.1 – 24.5</td><td>39</td></tr>
+                                                <tr><td>24.6 – 25.0</td><td>40</td></tr>
+                                                <tr><td>25.1 – 25.5</td><td>41</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <!-- Hướng dẫn đo -->
+                                        <h4><i class="ti ti-notes me-2"></i>Hướng dẫn đo chiều dài chân</h4>
+                                        <ol>
+                                            <li>Chuẩn bị giấy trắng, bút và thước đo.</li>
+                                            <li>Đặt tờ giấy trên mặt sàn, đặt chân lên giấy.</li>
+                                            <li>Vẽ dấu gót chân và đầu ngón chân dài nhất.</li>
+                                            <li>Dùng thước đo khoảng cách hai điểm (đơn vị cm).</li>
+                                            <li>Nên đo cả hai chân và chọn chiều dài lớn hơn.</li>
+                                        </ol>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-link" data-bs-dismiss="modal">Đóng</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                     <div class="row">
                         <th:block th:each="size : ${kichCo}">
@@ -172,19 +266,31 @@
                         </th:block>
                     </div>
                 </div>
+                <div class="text-end mt-3">
+                    <button type="submit" class="btn btn-primary w-100">Lọc sản phẩm</button>
+                </div>
+
             </form>
         </div>
 
         <!-- PRODUCT LIST -->
         <div class="col-lg-9">
             <div class="d-flex justify-content-end mb-3">
+<!--                <select id="sort" class="form-select w-auto" onchange="sortData(this.value)">-->
+<!--                    <option value="asc" th:selected="${sortOrder == 'asc'}">Sắp xếp A-Z</option>-->
+<!--                    <option value="desc" th:selected="${sortOrder == 'desc'}">Sắp xếp Z-A</option>-->
+<!--                    <option value="price-asc" th:selected="${sortOrder == 'price-asc'}">Giá thấp đến cao</option>-->
+<!--                    <option value="price-desc" th:selected="${sortOrder == 'price-desc'}">Giá cao đến thấp</option>-->
                 <select id="sort" class="form-select w-auto" onchange="sortData(this.value)">
-                    <option value="asc">Sắp xếp A-Z</option>
-                    <option value="desc">Sắp xếp Z-A</option>
-                    <option value="price-asc">Giá thấp đến cao</option>
-                    <option value="price-desc">Giá cao đến thấp</option>
+                    <option value="name_asc" th:selected="${sortOrder == 'name_asc'}">Sắp xếp A-Z</option>
+                    <option value="name_desc" th:selected="${sortOrder == 'name_desc'}">Sắp xếp Z-A</option>
+                    <option value="price_asc" th:selected="${sortOrder == 'price_asc'}">Giá thấp đến cao</option>
+                    <option value="price_desc" th:selected="${sortOrder == 'price_desc'}">Giá cao đến thấp</option>
                 </select>
+
+                <!--                </select>-->
             </div>
+
             <div class="row" id="product-list">
                 <div class="col-md-4 mb-4" th:each="product : ${products}">
                     <div class="card product-card shadow-sm border-0 h-100 d-flex flex-column justify-content-between">
@@ -195,38 +301,23 @@
                                      style="object-fit: cover; height: 100%; width: 100%;">
                             </div>
                             <div class="card-body text-center">
-                                <h6 class="card-title" th:text="${product.tenSanPham}"></h6>
-                                <div class="d-flex justify-content-between align-items-center mt-2 px-2">
-                                    <!-- Giá -->
-                                    <div class="price-info">
-        <span class="discounted d-block"
-              th:text="${#numbers.formatDecimal(product.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
-<!--                                        <span class="original d-block"-->
-<!--                                              th:text="${#numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>-->
-                                    </div>
+                                <div class="product-info px-2">
+                                    <!-- Tên sản phẩm -->
+                                    <h5 class="fw-semibold mb-1 text-truncate" th:text="${product.tenSanPham}">Tên sản phẩm</h5>
 
-                                    <!-- Số lượng tồn -->
-                                    <div class="stock-info text-end">
-<!--        <span class="stock-status"-->
-<!--              th:text="'Còn lại: ' + ${product.soLuongTon} + ' sp'"-->
-<!--              th:classappend="${product.soLuongTon} &lt;= 5 ? ' text-danger' : ' text-success'"></span>-->
+                                    <!-- Giá -->
+                                    <div class="card-price mt-2">
+            <span class="discounted fs-6 d-block text-danger fw-bold"
+                  th:text="${#numbers.formatDecimal(product.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+                                        <span class="original d-block"
+                                              th:if="${product.giaBanSauGiam < product.giaBan}"
+                                              th:text="${#numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
                                     </div>
                                 </div>
-
                             </div>
+
+
                         </a>
-                        <div class="card-footer bg-white border-0 d-flex justify-content-around pb-3">
-                            <form th:action="@{/gio-hang/them}" method="post">
-                                <input type="hidden" name="idSanPhamChiTiet" th:value="${product.idSanPhamChiTiet}">
-                                <button type="submit" class="btn btn-outline-dark btn-sm">
-                                    <i class="fa fa-cart-plus me-1"></i> Thêm vào giỏ
-                                </button>
-                            </form>
-                            <a th:href="@{/checkout/now/{id}(id=${product.idSanPhamChiTiet})}"
-                               class="btn btn-danger btn-sm">
-                                Mua ngay
-                            </a>
-                        </div>
                     </div>
                 </div>
 
@@ -240,42 +331,14 @@
 <div th:replace="~{components/footer :: footer}"></div>
 <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/js/tabler.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+
 <script>
-    let selectedColors = [];
-
-    function toggleColor(element) {
-        let colorId = element.getAttribute("data-color");
-
-        if (selectedColors.includes(colorId)) {
-            selectedColors = selectedColors.filter(id => id !== colorId);
-            element.classList.remove("selected");
-        } else {
-            selectedColors.push(colorId);
-            element.classList.add("selected");
-        }
-
-        console.log("Màu đã chọn:", selectedColors);
-    }
-
-    function clearAllCheckboxes() {
-        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = false;
-        });
-    }
-
     function sortData(sortOrder) {
-        // Gửi yêu cầu GET với tham số sắp xếp
-        const url = `/shop/product/all-product?sortOrder=${sortOrder}`;
+        const params = new URLSearchParams(window.location.search);
+        params.set("sortOrder", sortOrder); // cập nhật sortOrder trong URL
 
-        // Gửi yêu cầu tới server và nhận danh sách sản phẩm đã sắp xếp
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                // Cập nhật danh sách sản phẩm trên giao diện
-                updateProductList(data);
-            })
-            .catch(error => console.error('Error fetching sorted products:', error));
+        // Cập nhật URL và reload trang (giữ lại các filter đang có)
+        window.location.href = `/shop/product/all-product?${params.toString()}`;
     }
 
     function updateProductList(products) {
@@ -294,7 +357,68 @@
             productContainer.appendChild(productElement);
         });
     }
+</script>
+<script>
+    let selectedColors = [];
 
+    function toggleColor(element) {
+        let colorId = element.getAttribute("data-color");
+
+        if (selectedColors.includes(colorId)) {
+            selectedColors = selectedColors.filter(id => id !== colorId);
+            element.classList.remove("selected");
+        } else {
+            selectedColors.push(colorId);
+            element.classList.add("selected");
+        }
+
+        // Cập nhật input ẩn để gửi về server khi submit form
+        document.getElementById("selectedColorsInput").value = selectedColors.join(",");
+        console.log("Màu đã chọn:", selectedColors);
+    }
+
+    // Nếu bạn cần submit lại trạng thái đã chọn khi reload (ví dụ dùng JS để pre-select màu từ query param)
+</script>
+
+<!-- Script tra size -->
+<script>
+    const sizeNam = [
+        { size: 38, min: 23.7, max: 24.1 },
+        { size: 39, min: 24.2, max: 24.6 },
+        { size: 40, min: 24.7, max: 25.1 },
+        { size: 41, min: 25.2, max: 25.6 },
+        { size: 42, min: 25.7, max: 26.1 },
+        { size: 43, min: 26.2, max: 26.6 },
+        { size: 44, min: 26.7, max: 27.1 },
+        { size: 45, min: 27.2, max: 27.6 },
+    ];
+
+    const sizeNu = [
+        { size: 35, min: 22.1, max: 22.5 },
+        { size: 36, min: 22.6, max: 23.0 },
+        { size: 37, min: 23.1, max: 23.5 },
+        { size: 38, min: 23.6, max: 24.0 },
+        { size: 39, min: 24.1, max: 24.5 },
+        { size: 40, min: 24.6, max: 25.0 },
+        { size: 41, min: 25.1, max: 25.5 },
+    ];
+
+    function traCuuSize() {
+        const cm = parseFloat(document.getElementById('input-cm').value);
+        const gender = document.getElementById('gender').value;
+        const table = gender === 'nam' ? sizeNam : sizeNu;
+
+        const result = table.find(item => cm >= item.min && cm <= item.max);
+
+        if (result) {
+            document.getElementById('cm-result').innerText = cm;
+            document.getElementById('size-result').innerText = result.size;
+            document.getElementById('result').style.display = 'block';
+        } else {
+            document.getElementById('result').style.display = 'none';
+            alert("Chiều dài chân không khớp size nào trong bảng. Vui lòng kiểm tra lại!");
+        }
+    }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         crossorigin="anonymous"></script>
