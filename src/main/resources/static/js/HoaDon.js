@@ -2,7 +2,7 @@ let currentPage = 1;
 let pageSize = 5;
 let totalPages = 0;
 let sortField = 'creationDate';
-let sortDirection = 'asc';
+let sortDirection = 'desc';
 let filterParams = {
     invoiceCode: '',
     startDate: '',

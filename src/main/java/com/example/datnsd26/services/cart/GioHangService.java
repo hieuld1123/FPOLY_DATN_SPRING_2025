@@ -13,10 +13,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+
 import java.util.Date;
-import java.util.Optional;
+import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 @Service
@@ -103,7 +105,7 @@ public class GioHangService {
     }
 
 
-    public void capNhatSoLuongSanPham(Integer chiTietId, String action) {
+    public GioHangChiTiet capNhatSoLuongSanPham(Integer chiTietId, String action) {
         GioHangChiTiet chiTiet = gioHangChiTietRepository.findById(chiTietId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm trong giỏ hàng"));
 
@@ -119,6 +121,7 @@ public class GioHangService {
         } else {
             gioHangChiTietRepository.delete(chiTiet);
         }
+        return chiTiet;
     }
 
 
@@ -137,5 +140,20 @@ public class GioHangService {
                 .map(GioHangChiTiet::getSoLuong)
                 .orElse(0);
     }
+
+    public String getTongTienGioHangFormatted(Authentication auth) {
+        GioHang gioHang = getGioHangHienTai(auth);
+
+//        List<GioHangChiTiet> danhSachItem = getDanhSachSanPhamTrongGio(); // hoặc tên hàm bạn đang dùng
+
+        float tongTien = 0f;
+        for (GioHangChiTiet item : gioHang.getChiTietList()) {
+            tongTien += item.getSoLuong() * item.getSanPhamChiTiet().getGiaBanSauGiam();
+        }
+
+        NumberFormat numberFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
+        return numberFormat.format(tongTien) + " VND";
+    }
+
 
 }
