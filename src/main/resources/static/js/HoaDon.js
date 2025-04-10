@@ -2,7 +2,7 @@ let currentPage = 1;
 let pageSize = 5;
 let totalPages = 0;
 let sortField = 'creationDate';
-let sortDirection = 'asc';
+let sortDirection = 'desc';
 let filterParams = {
     invoiceCode: '',
     startDate: '',
@@ -79,7 +79,7 @@ function loadInvoices(data, page, total) {
                 `${creationDate.getSeconds().toString().padStart(2, '0')}`;
             const row = `
                 <tr>
-                    <td><a href="/admin/hoa-don/${invoice.id}">${invoice.id}</a></td>
+                    <td><a href="/quan-ly/hoa-don/${invoice.id}">${invoice.id}</a></td>
                     <td>${customerName}</td>
                     <td>${invoice.purchaseMethod}</td>
                     <td>${formattedDate}</td>

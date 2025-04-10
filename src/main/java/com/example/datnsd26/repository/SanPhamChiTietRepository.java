@@ -22,7 +22,7 @@ import java.util.Optional;
 @Repository
 public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, Integer> {
 
-    @Query("FROM SanPhamChiTiet sp WHERE (sp.sanPham.tenSanPham like %:keyword% OR sp.maSanPhamChiTiet like %:keyword%) AND sp.soLuong >= 1")
+    @Query("FROM SanPhamChiTiet sp WHERE (sp.sanPham.tenSanPham like %:keyword% OR sp.maSanPhamChiTiet like %:keyword%) AND sp.soLuong >= 1 AND sp.trangThai = true")
     List<SanPhamChiTiet> findByNameOrCode(String keyword);
 
     // search theo biến thể sản phẩm
