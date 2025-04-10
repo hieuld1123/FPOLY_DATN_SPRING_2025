@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/admin/ban-hang")
+@RequestMapping("/quan-ly/ban-hang")
 @Slf4j(topic = "BAN-HANG-CONTROLLER")
 @RequiredArgsConstructor
 public class BanHangController {

@@ -3,7 +3,9 @@ package com.example.datnsd26.controller;
 import com.example.datnsd26.Dto.DiaChiDTO;
 import com.example.datnsd26.Dto.KhachHangDto;
 import com.example.datnsd26.Dto.NhanVienTKDto;
+import com.example.datnsd26.models.HoaDon;
 import com.example.datnsd26.models.TaiKhoan;
+import com.example.datnsd26.repository.HoaDonRepository;
 import com.example.datnsd26.services.TaiKhoanService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
@@ -14,7 +16,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -25,6 +29,9 @@ public class TaiKhoanController {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    @Autowired
+    HoaDonRepository hoaDonRepository;
 
     @GetMapping("/doi-mat-khau")
     public String hienThiFormDoiMatKhau(@RequestParam("email") String email, Model model) {
@@ -126,5 +133,24 @@ public class TaiKhoanController {
             return "tai-khoan/dat-lai-mat-khau";
         }
     }
+
+    @GetMapping("/403")
+    public String accessDenied(@RequestParam(value = "unauthorized", required = false) String unauthorized,
+                               Model model) {
+        if ("true".equals(unauthorized)) {
+            model.addAttribute("unauthorized", true);
+        }
+        return "tai-khoan/403";
+    }
+
+    @GetMapping("/khach-hang/lich-su-mua-hang")
+    public String lichSuMuaHang(Model model, Principal principal) {
+        String email = principal.getName();
+        List<HoaDon> hoaDons = hoaDonRepository.findByKhachHang_TaiKhoan_EmailOrderByNgayTaoDesc(email);
+        model.addAttribute("hoaDon", hoaDons);
+        return "tai-khoan/lich-su-mua-hang";
+    }
+
+
 }
 

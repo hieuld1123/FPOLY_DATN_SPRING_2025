@@ -112,6 +112,6 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
 
     Optional<HoaDon> findByMaHoaDonAndSdtNguoiNhan(String maHoaDon, String sdtNguoiNhan);
 
-
+    List<HoaDon> findByKhachHang_TaiKhoan_EmailOrderByNgayTaoDesc(String email);
 
 }

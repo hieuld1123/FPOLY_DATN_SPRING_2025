@@ -6,7 +6,9 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
+@Service
 public class CustomUserDetailsServices implements UserDetailsService {
     private final TaiKhoanRepository taiKhoanRepository;
 
@@ -17,11 +19,12 @@ public class CustomUserDetailsServices implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         TaiKhoan taiKhoan = taiKhoanRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
+                .orElseThrow(() -> new UsernameNotFoundException("Người dùng không tồn tại"));
         return User.withUsername(taiKhoan.getEmail())
                 .password(taiKhoan.getMatKhau())  // Ensure this is the hashed password
                 .roles(taiKhoan.getVaiTro().name())  // Ensure correct role format
                 .build();
+
+
     }
 }

@@ -7,6 +7,7 @@ import com.example.datnsd26.services.BinhMailService;
 import com.example.datnsd26.services.cart.GioHangService;
 import com.example.datnsd26.services.cart.HoaDonService;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -20,6 +21,7 @@ import java.util.*;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/shop/")
 public class CartController {
     private final GioHangService gioHangService;
     private final GioHangRepository gioHangRepository;
@@ -42,8 +44,7 @@ public class CartController {
     @GetMapping("/cart")
     public String viewCart(Model model, Authentication auth) {
         GioHang gioHang = gioHangService.getGioHangHienTai(auth);
-        System.out.println("Gio hang ID: " + gioHang.getId());
-        System.out.println("So luong san pham trong gio hang: " + gioHang.getChiTietList().size());
+
         float tongTamTinh = gioHang.getChiTietList().stream()
                 .mapToInt(item -> item.getSoLuong() * item.getSanPhamChiTiet().getGiaBanSauGiam().intValue())
                 .sum();
@@ -86,7 +87,7 @@ public class CartController {
 
             // Nếu hợp lệ thì thêm vào giỏ hàng
             gioHangService.themSanPhamVaoGioHang(sanPhamChiTietId, soLuongThem, auth);
-            return "redirect:/cart";
+            return "redirect:/shop/cart";
 
         } catch (RuntimeException ex) {
             redirect.addFlashAttribute("errorMessage", ex.getMessage());
@@ -94,98 +95,141 @@ public class CartController {
         }
     }
 
-    @PostMapping("/cart/update")
-    public String updateCart(@RequestParam("chiTietId") Integer chiTietId,
-                             @RequestParam("action") String action) {
-        gioHangService.capNhatSoLuongSanPham(chiTietId, action);
-        return "redirect:/cart";
-    }
-
     @PostMapping("/cart/remove")
     public String removeFromCart(@RequestParam("chiTietId") Integer chiTietId) {
         gioHangService.xoaSanPhamKhoiGioHang(chiTietId);
-        return "redirect:/cart";
+        return "redirect:/shop/cart";
     }
 
     @PostMapping("/cart/clear")
     public String clearCart(Authentication auth) {
         gioHangService.xoaToanBoGioHang(auth);
-        return "redirect:/cart";
+        return "redirect:/shop/cart";
     }
 
-    @GetMapping("/checkout")
-    public String checkoutPage(Model model, Authentication auth, RedirectAttributes redirectAttributes) {
-        // Lấy giỏ hàng hiện tại của user
-        GioHang gioHang = gioHangService.getGioHangHienTai(auth);
-
-        // Nếu giỏ hàng rỗng, chuyển về trang giỏ hàng và hiển thị thông báo
-        if (gioHang == null || gioHang.getChiTietList().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Giỏ hàng của bạn đang trống.");
-            return "redirect:/cart";
+    @PostMapping("/checkout")
+    public String goToCheckout(@RequestParam(value = "selectedIds", required = false) List<Integer> selectedIds,
+                               Model model,
+                               Authentication auth,
+                               RedirectAttributes redirectAttributes,
+                               HttpSession session) {
+        List<GioHangChiTiet> gioHangHienTai = gioHangService.getGioHangHienTai(auth).getChiTietList();
+        if (gioHangHienTai == null || gioHangHienTai.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Giỏ hàng của bạn hiện đang trống.");
+            return "redirect:/shop/cart";
         }
 
-        // Kiểm tra số lượng sản phẩm trong kho
-        List<String> warnings = new ArrayList<>();
-        for (GioHangChiTiet item : gioHang.getChiTietList()) {
-            SanPhamChiTiet product = sanPhamChiTietRepository.findById(item.getSanPhamChiTiet().getId()).orElse(null);
-
-            if (product != null && item.getSoLuong() > product.getSoLuong()) {
-                warnings.add("Sản phẩm " + product.getSanPham().getTenSanPham() + " chỉ còn " + product.getSoLuong() + " sản phẩm.");
-            }
+        if (selectedIds == null || selectedIds.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Vui lòng chọn ít nhất 1 sản phẩm để thanh toán.");
+            return "redirect:/shop/cart"; // quay lại trang giỏ hàng
         }
 
-        // Nếu có lỗi, quay lại giỏ hàng và hiển thị thông báo
-        if (!warnings.isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessages", warnings);
-            return "redirect:/cart";
-        }
-
-        // Tính tổng tiền
-        float tongTamTinh = gioHang.getChiTietList().stream()
-                .mapToInt(item -> item.getSoLuong() * item.getSanPhamChiTiet().getGiaBanSauGiam().intValue())
-                .sum();
-
-        // Đưa dữ liệu vào model
-        model.addAttribute("cart", gioHang.getChiTietList());
-        model.addAttribute("tongTamTinh", tongTamTinh);
-
-        // Nếu chưa có đối tượng request thì tạo mới
         if (!model.containsAttribute("hoaDonBinhRequest")) {
             model.addAttribute("hoaDonBinhRequest", new HoaDonBinhRequest());
         }
 
-        return "shop/checkout"; // Trả về trang checkout.html
+        List<GioHangChiTiet> danhSachThanhToan = gioHangChiTietRepository.findAllById(selectedIds);
+        List<String> danhSachLoi = new ArrayList<>();
+        List<GioHangChiTiet> danhSachHopLe = new ArrayList<>();
+
+        for (GioHangChiTiet gioHangChiTiet : danhSachThanhToan) {
+            SanPhamChiTiet spct = gioHangChiTiet.getSanPhamChiTiet();
+
+            String tenSanPhamFull = spct.getSanPham().getTenSanPham()
+                    + " - màu " + spct.getMauSac().getTenMauSac()
+                    + " - size " + spct.getKichCo().getTen();
+
+            if (!spct.getTrangThai()) {
+                danhSachLoi.add("Sản phẩm \"" + tenSanPhamFull + "\" hiện đã ngưng kinh doanh.");
+                continue;
+            }
+
+            if (gioHangChiTiet.getSoLuong() > spct.getSoLuong()) {
+                danhSachLoi.add("Sản phẩm \"" + tenSanPhamFull + "\" chỉ còn " + spct.getSoLuong() + " sản phẩm trong hệ thống.");
+                continue;
+            }
+
+            // Nếu hợp lệ thì thêm vào danh sách hiển thị
+            danhSachHopLe.add(gioHangChiTiet);
+        }
+
+        if (!danhSachLoi.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Một số sản phẩm không hợp lệ:");
+            redirectAttributes.addFlashAttribute("errors", danhSachLoi);
+            return "redirect:/shop/cart";
+        }
+
+        float tongTamTinh = danhSachHopLe.stream()
+                .mapToInt(item -> item.getSoLuong() * item.getSanPhamChiTiet().getGiaBanSauGiam().intValue())
+                .sum();
+
+        // Sau khi xử lý danhSachHopLe thành công trong controller /checkout:
+        session.setAttribute("selectedIds", selectedIds);
+        model.addAttribute("tongTamTinh", tongTamTinh);
+        model.addAttribute("cart", danhSachHopLe);
+        return "shop/checkout";
     }
 
-    @PostMapping("/place-order")
+
+    @PostMapping("place-order")
     public String placeOrder(
             @Valid @ModelAttribute HoaDonBinhRequest hoaDonBinhRequest,
             BindingResult bindingResult,
             Model model,
             Authentication auth,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes,
+            HttpSession session) {
 
         GioHang cart = gioHangService.getGioHangHienTai(auth);
         if (cart == null || cart.getChiTietList().isEmpty()) {
             model.addAttribute("errorMessage", "Giỏ hàng của bạn đang trống.");
-            model.addAttribute("cart", cart.getChiTietList());
+            model.addAttribute("cart", cart != null ? cart.getChiTietList() : new ArrayList<>());
             model.addAttribute("hoaDonBinhRequest", hoaDonBinhRequest);
             return "shop/checkout";
         }
 
-        float tongTamTinh = (float) cart.getChiTietList().stream()
+        // Lấy danh sách ID sản phẩm được chọn từ session
+        List<Integer> selectedIds = (List<Integer>) session.getAttribute("selectedIds");
+        if (selectedIds == null || selectedIds.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Vui lòng chọn sản phẩm để thanh toán.");
+            return "redirect:/shop/cart";
+        }
+
+        List<GioHangChiTiet> danhSachThanhToan = gioHangChiTietRepository.findAllById(selectedIds);
+        List<String> danhSachLoi = new ArrayList<>();
+
+        for (GioHangChiTiet gioHangChiTiet : danhSachThanhToan) {
+            SanPhamChiTiet spct = gioHangChiTiet.getSanPhamChiTiet();
+            String tenSanPhamFull = spct.getSanPham().getTenSanPham()
+                    + " - màu " + spct.getMauSac().getTenMauSac()
+                    + " - size " + spct.getKichCo().getTen();
+
+            if (!spct.getTrangThai()) {
+                danhSachLoi.add("Sản phẩm \"" + tenSanPhamFull + "\" hiện đã ngưng kinh doanh.");
+            } else if (gioHangChiTiet.getSoLuong() > spct.getSoLuong()) {
+                danhSachLoi.add("Sản phẩm \"" + tenSanPhamFull + "\" chỉ còn " + spct.getSoLuong() + " sản phẩm trong hệ thống.");
+            }
+        }
+
+        if (!danhSachLoi.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Một số sản phẩm không hợp lệ:");
+            redirectAttributes.addFlashAttribute("errors", danhSachLoi);
+            return "redirect:/shop/cart";
+        }
+
+        float tongTamTinh = (float) danhSachThanhToan.stream()
                 .mapToDouble(item -> item.getSoLuong() * item.getSanPhamChiTiet().getGiaBanSauGiam())
                 .sum();
 
-        // Kiểm tra lỗi từ @Valid
+        // Validate thông tin giao hàng
         if (bindingResult.hasErrors()) {
-            model.addAttribute("cart", cart.getChiTietList());
+            model.addAttribute("cart", cart.getChiTietList());  // hiển thị tất cả sản phẩm, không lọc
             model.addAttribute("tongTamTinh", tongTamTinh);
             model.addAttribute("hoaDonBinhRequest", hoaDonBinhRequest);
             return "shop/checkout";
         }
 
-        // Tạo đối tượng HoaDon
+        // Tạo hóa đơn
         HoaDon hoaDon = HoaDon.builder()
                 .tenNguoiNhan(hoaDonBinhRequest.getTenNguoiNhan())
                 .sdtNguoiNhan(hoaDonBinhRequest.getSdtNguoiNhan())
@@ -198,7 +242,7 @@ public class CartController {
                 .ngayTao(new Date())
                 .ngayCapNhat(new Date())
                 .trangThai("Chờ xác nhận")
-                .phiVanChuyen(tongTamTinh >= 1000000 ? 0.0f : 30000.0f)
+                .phiVanChuyen(tongTamTinh > 1000000 ? 0.0f : 30000.0f)
                 .tongTien(tongTamTinh)
                 .phuongThucThanhToan("Thanh toán khi nhận hàng")
                 .thanhToan(true)
@@ -211,15 +255,10 @@ public class CartController {
         lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Đặt hàng").hoaDon(hoaDon).build());
         lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Chờ xác nhận").hoaDon(hoaDon).build());
 
-        // Lưu chi tiết hóa đơn và trừ số lượng sản phẩm
+        // Lưu chi tiết hóa đơn và cập nhật tồn kho
         List<HoaDonChiTiet> chiTietList = new ArrayList<>();
-        for (GioHangChiTiet item : cart.getChiTietList()) {
+        for (GioHangChiTiet item : danhSachThanhToan) {
             SanPhamChiTiet sanPham = sanPhamChiTietRepository.findById(item.getSanPhamChiTiet().getId()).orElseThrow();
-
-            if (sanPham.getSoLuong() < item.getSoLuong()) {
-                model.addAttribute("errorMessage", "Sản phẩm " + sanPham.getSanPham().getTenSanPham() + " không đủ hàng.");
-                return "shop/checkout";
-            }
 
             sanPham.setSoLuong(sanPham.getSoLuong() - item.getSoLuong());
             sanPhamChiTietRepository.save(sanPham);
@@ -234,11 +273,10 @@ public class CartController {
             chiTietList.add(chiTiet);
         }
 
-        // Gán danh sách sản phẩm vào hóa đơn và cập nhật lại trong DB
         hoaDon.setDanhSachSanPham(chiTietList);
         hoaDonService.saveHoaDon(hoaDon);
 
-        // Gửi email xác nhận đơn hàng
+        // Gửi email
         try {
             mailService.sendOrderConfirmation(hoaDon);
         } catch (MessagingException e) {
@@ -248,17 +286,14 @@ public class CartController {
         // Xóa giỏ hàng
         gioHangRepository.delete(cart);
 
+        // Xóa session selectedIds sau khi đặt hàng xong
+        session.removeAttribute("selectedIds");
+
         model.addAttribute("successMessage", "Đặt hàng thành công. Vui lòng kiểm tra email. Chúng tôi sẽ liên hệ với bạn qua số điện thoại để xác nhận đơn hàng.");
         model.addAttribute("cart", new ArrayList<>());
         model.addAttribute("tongTamTinh", 0);
         model.addAttribute("hoaDonBinhRequest", new HoaDonBinhRequest());
         return "shop/checkout";
     }
-
-    @GetMapping("/order-success")
-    public String orderSuccess() {
-        return "shop/order-success";
-    }
-
 
 }

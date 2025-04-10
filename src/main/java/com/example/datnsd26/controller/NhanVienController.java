@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
-@RequestMapping("/nhan-vien")
+@RequestMapping("/admin/nhan-vien")
 @Controller
 public class NhanVienController {
     @Autowired
@@ -93,7 +93,7 @@ public class NhanVienController {
         }
 
         nhanVienService.save(nhanVienTKDto);
-        return "redirect:/nhan-vien/hien-thi";
+        return "redirect:/admin/nhan-vien/hien-thi";
     }
 
 
@@ -107,7 +107,7 @@ public class NhanVienController {
         nhanVienTKDto.setHinhAnh(nhanVien.getHinhAnh());
         nhanVienTKDto.setMaNhanvien(nhanVien.getMaNhanvien());
         nhanVienTKDto.setTenNhanVien(nhanVien.getTenNhanVien());
-        nhanVienTKDto.setEmail(nhanVien.getIdTaiKhoan().getEmail());
+        nhanVienTKDto.setEmail(nhanVien.getTaiKhoan().getEmail());
         nhanVienTKDto.setId(nhanVien.getId());
         nhanVienTKDto.setDiaChiCuThe(nhanVien.getDiaChiCuThe());
         nhanVienTKDto.setGioiTinh(nhanVien.getGioiTinh());
@@ -118,8 +118,8 @@ public class NhanVienController {
         nhanVienTKDto.setNgaySinh(nhanVien.getNgaySinh());
         nhanVienTKDto.setNgayCapNhat(nhanVien.getNgayCapNhat());
         nhanVienTKDto.setNgayTao(nhanVien.getNgayTao());
-        nhanVienTKDto.setSdt(nhanVien.getIdTaiKhoan().getSdt());
-        nhanVienTKDto.setVaiTro(nhanVien.getIdTaiKhoan().getVaiTro());
+        nhanVienTKDto.setSdt(nhanVien.getTaiKhoan().getSdt());
+        nhanVienTKDto.setVaiTro(nhanVien.getTaiKhoan().getVaiTro());
         nhanVienTKDto.setTrangThai(nhanVien.getTrangThai());
         model.addAttribute("nhanVien", nhanVienTKDto);
         model.addAttribute("listNV", nhanVienService.getAll());
@@ -135,7 +135,7 @@ public class NhanVienController {
         nhanVienTKDto.setHinhAnh(nhanVien.getHinhAnh());
         nhanVienTKDto.setMaNhanvien(nhanVien.getMaNhanvien());
         nhanVienTKDto.setTenNhanVien(nhanVien.getTenNhanVien());
-        nhanVienTKDto.setEmail(nhanVien.getIdTaiKhoan().getEmail());
+        nhanVienTKDto.setEmail(nhanVien.getTaiKhoan().getEmail());
         nhanVienTKDto.setId(nhanVien.getId());
         nhanVienTKDto.setDiaChiCuThe(nhanVien.getDiaChiCuThe());
         nhanVienTKDto.setGioiTinh(nhanVien.getGioiTinh());
@@ -146,8 +146,8 @@ public class NhanVienController {
         nhanVienTKDto.setNgaySinh(nhanVien.getNgaySinh());
         nhanVienTKDto.setNgayCapNhat(nhanVien.getNgayCapNhat());
         nhanVienTKDto.setNgayTao(nhanVien.getNgayTao());
-        nhanVienTKDto.setSdt(nhanVien.getIdTaiKhoan().getSdt());
-        nhanVienTKDto.setVaiTro(nhanVien.getIdTaiKhoan().getVaiTro());
+        nhanVienTKDto.setSdt(nhanVien.getTaiKhoan().getSdt());
+        nhanVienTKDto.setVaiTro(nhanVien.getTaiKhoan().getVaiTro());
         nhanVienTKDto.setTrangThai(nhanVien.getTrangThai());
         model.addAttribute("nhanVienDto", nhanVienTKDto);
         model.addAttribute("listNV", nhanVienService.getAll());
@@ -167,7 +167,7 @@ public class NhanVienController {
             nhanVienTKDto.setHinhAnh(oldImage);
         }
         nhanVienService.update(nhanVienTKDto, id);
-        return "redirect:/nhan-vien/hien-thi";
+        return "redirect:/admin/nhan-vien/hien-thi";
     }
 
 }

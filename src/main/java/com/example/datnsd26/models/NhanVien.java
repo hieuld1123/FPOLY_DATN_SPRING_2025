@@ -26,7 +26,7 @@ public class NhanVien {
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "id_tai_khoan")
-    private TaiKhoan idTaiKhoan;
+    private TaiKhoan taiKhoan;
 
     @Column(name = "ma_nhan_vien")
     private String maNhanvien;

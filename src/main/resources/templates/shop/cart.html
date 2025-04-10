@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <title>Giỏ hàng</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">-->
     <link rel="stylesheet" href="/css/Footer.css">
     <link rel="stylesheet" href="/css/Navbar.css">
 </head>
@@ -14,140 +14,134 @@
 <div th:replace="components/navbar :: navbar"></div>
 <div class="container py-5">
     <h1 class="mt-5 mb-3">Giỏ hàng</h1>
+    <form id="checkout-form" th:action="@{/shop/checkout}" method="POST">
+        <!-- Errrrr -->
+        <div th:if="${errorMessage}" class="alert alert-danger py-3">
+            <strong th:text="${errorMessage}"></strong>
+            <ul th:if="${errors}">
+                <li th:each="err : ${errors}" th:text="${err}"></li>
+            </ul>
+        </div>
 
-    <div class="row">
-        <div class="col-lg-8">
-            <div th:if="${errorMessage}" class="alert alert-warning">
-                <p th:text="${errorMessage}"></p>
-            </div>
-            <div th:if="${errorMessages}" class="alert alert-danger">
-                <ul>
-                    <li th:each="msg : ${errorMessages}" th:text="${msg}"></li>
-                </ul>
-            </div>
+        <div class="px-3">
+            <label class="form-check form-check-inline" for="select-all">
+                <input id="select-all" class="form-check-input" type="checkbox" />
+                <span class="form-check-label">Chọn tất cả</span>
+            </label>
+        </div>
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row cart-item mb-3" th:each="item : ${gioHang}" th:id="'cart-item-' + ${item.id}">
+                            <div class="col-1">
+                                <input type="checkbox"
+                                       name="selectedIds"
+                                       th:value="${item.id}"
+                                       class="form-check-input item-checkbox"/>
+                            </div>
+                            <div class="col-3">
+                                <img th:src="${#lists.isEmpty(item.sanPhamChiTiet.hinhAnh) ? '' : item.sanPhamChiTiet.hinhAnh[0].tenAnh}"
+                                     alt="Product Image" class="img-fluid rounded"/>
+                            </div>
+                            <div class="col-5">
+                                <h5 class="card-title" th:text="${item.sanPhamChiTiet.sanPham.tenSanPham}"></h5>
+                                <p class="text-muted">
+                                    Giá:
+                                    <span class="text-decoration-line-through"
+                                          th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+                                    <span th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+                                </p>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="">Size: <span th:text="${item.sanPhamChiTiet.kichCo.ten}"></span></p>
+                                        <p class="">Màu: <span th:text="${item.sanPhamChiTiet.mauSac.tenMauSac}"></span>
+                                        </p>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="d-flex flex-row">
+                                            <button
+                                                    type="button"
+                                                    class="btn btn-sm btn-outline-secondary btn-decrease"
+                                                    th:data-id="${item.id}"
+                                                    th:classappend="${item.soLuong == 1} ? ' disabled' : ''"
+                                                    th:id="'decrease-btn-' + ${item.id}">
+                                                -
+                                            </button>
 
-            <div class="card mb-4">
-                <div class="card-body">
-                    <div class="row cart-item mb-3" th:each="item : ${gioHang}">
-                        <div class="col-3">
-                             <img th:src="${#lists.isEmpty(item.sanPhamChiTiet.hinhAnh) ? '' : item.sanPhamChiTiet.hinhAnh[0].tenAnh}" alt="Product Image" class="img-fluid rounded" />
-                        </div>
-                        <div class="col-6">
-                            <h5 class="card-title" th:text="${item.sanPhamChiTiet.sanPham.tenSanPham}"></h5>
-                            <p class="text-muted">
-                                Giá:
-                                <span class="text-decoration-line-through" th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
-                                <span th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
-                            </p>
-                            <div class="row">
-                                <div class="col-6">
-                                    <label class="form-label">Size: <span th:text="${item.sanPhamChiTiet.kichCo.ten}"></span></label>
-                                </div>
-                                <div class="col-6 d-flex flex-row">
-                                    <form method="post" th:action="@{/cart/update}">
-                                        <input type="hidden" name="chiTietId" th:value="${item.id}" />
-                                        <input type="hidden" name="action" value="decrease" />
-                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                                        <button class="btn btn-sm btn-outline-secondary quantity-decrease" th:disabled="${item.soLuong == 1}">-</button>
-                                    </form>
+                                            <span class="px-2" th:id="'quantity-' + ${item.id}"
+                                                  th:text="${item.soLuong}"></span>
 
-                                    <span class="mx-2 fw-bold" th:text="${item.soLuong}"></span>
-
-                                    <form method="post" th:action="@{/cart/update}">
-                                        <input type="hidden" name="chiTietId" th:value="${item.id}" />
-                                        <input type="hidden" name="action" value="increase" />
-                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                                        <button class="btn btn-sm btn-outline-secondary quantity-increase">+</button>
-                                    </form>
+                                            <button
+                                                    type="button"
+                                                    class="btn btn-sm btn-outline-secondary btn-increase"
+                                                    th:data-id="${item.id}">
+                                                +
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-3 text-end">
-                            <p class="fw-bold">
-                                <span th:id="'total-price-' + ${item.sanPhamChiTiet.id}"
-                                      th:text="${#numbers.formatDecimal(item.soLuong * item.sanPhamChiTiet.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
-                            </p>
-                            <div th:text="${item.soLuong == 0 ? 'Hết hàng' : 'Còn hàng'}" class="mb-3"></div>
-                            <form class="remove-form" method="post" th:action="@{/cart/remove}">
-                                <input type="hidden" name="chiTietId" th:value="${item.id}" />
-                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                                <button type="button" class="btn btn-sm btn-danger px-2 py-1 delete-btn">
+                            <div class="col-md-3 text-end">
+                                <p class="fw-bold">
+                                    <span th:id="'total-price-' + ${item.id}"
+                                          th:text="${#numbers.formatDecimal(item.soLuong * item.sanPhamChiTiet.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+                                </p>
+                                <div th:text="${item.soLuong == 0 ? 'Hết hàng' : 'Còn hàng'}" class="mb-3"></div>
+                                <button type="button"
+                                        class="btn btn-danger btn-sm delete-btn px-2 py-1"
+                                        th:data-id="${item.id}">
                                     <i class="ti ti-trash"></i> Xóa
                                 </button>
-                            </form>
+                            </div>
                         </div>
+                        <hr/>
                     </div>
-                    <hr />
+                </div>
+                <div class="text-start mb-4">
+                    <a th:href="@{/shop/product/all-product}" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-left me-2"></i>Tiếp tục mua sắm
+                    </a>
                 </div>
             </div>
-            <div class="text-start mb-4">
-                <a th:href="@{/shop/product/all-product}" class="btn btn-outline-primary">
-                    <i class="bi bi-arrow-left me-2"></i>Tiếp tục mua sắm
-                </a>
-            </div>
-        </div>
-        <div class="col-lg-4">
-            <div class="card cart-summary">
-                <div class="card-body">
-                    <h5 class="card-title mb-4">Tóm tắt đơn hàng</h5>
-                    <div class="d-flex justify-content-between mb-3">
-                        <span>Tạm tính</span>
-                        <span>
-                            <span class="cart-total-price" th:text="${#numbers.formatDecimal(tongTamTinh, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
-                        </span>
+            <div class="col-lg-4">
+                <div class="card cart-summary">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Tóm tắt đơn hàng</h5>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Tạm tính</span>
+                            <span>
+                                <span class="cart-total-price"
+                                      th:text="${#numbers.formatDecimal(tongTamTinh, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Giảm giá</span>
+                            <span>0 VND</span>
+                        </div>
+                        <hr/>
+                        <div class="d-flex justify-content-between mb-4">
+                            <strong>Tổng cộng</strong>
+                            <strong>
+                                <span class="cart-total-price-end"
+                                      th:text="${#numbers.formatDecimal(tongTamTinh, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+                            </strong>
+                        </div>
+                        <button type="submit" class="btn btn-success mt-3 w-100">Thanh toán</button>
                     </div>
-                    <div class="d-flex justify-content-between mb-3">
-                        <span>Giảm giá</span>
-                        <span>0 VND</span>
-                    </div>
-                    <hr />
-                    <div class="d-flex justify-content-between mb-4">
-                        <strong>Tổng cộng</strong>
-                        <strong>
-                            <span class="cart-total-price" th:text="${#numbers.formatDecimal(tongTamTinh, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
-                        </strong>
-                    </div>
-                    <a class="btn btn-primary w-100" th:href="@{/checkout}">Tiến hành thanh toán</a>
                 </div>
             </div>
-            <div class="card mt-4">
-                <form class="card-body">
-                    <h5 class="card-title mb-3">Nhập mã giảm giá</h5>
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Nhập mã giảm giá" />
-                        <button class="btn btn-outline-secondary" type="submit">Áp dụng</button>
-                    </div>
-                </form>
-            </div>
         </div>
-    </div>
+    </form>
 </div>
 <div th:replace="~{components/footer :: footer}"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll(".delete-btn").forEach(button => {
-            button.addEventListener("click", function () {
-                const form = this.closest(".remove-form");
-
-                Swal.fire({
-                    title: "Bạn có chắc chắn?",
-                    text: "Sản phẩm sẽ bị xóa khỏi giỏ hàng!",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#d33",
-                    cancelButtonColor: "#3085d6",
-                    confirmButtonText: "Xóa",
-                    cancelButtonText: "Hủy"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();
-                    }
-                });
-            });
-        });
-    });
-</script>
 <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
+<script>
+    // CSRF token
+    const csrfToken = /*[[${_csrf.token}]]*/ '';
+    const csrfHeader = /*[[${_csrf.headerName}]]*/ 'X-CSRF-TOKEN';
+</script>
+<script src="/js/cart.js"></script>
 </body>
 </html>

@@ -2,21 +2,170 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Đăng nhập</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function validateForm() {
+            let email = document.getElementById("email").value.trim();
+            let password = document.getElementById("password").value.trim();
+            let isValid = true;
+
+            if (email === "") {
+                document.getElementById("errorEmail").innerText = "Email không được để trống!";
+                isValid = false;
+            } else {
+                document.getElementById("errorEmail").innerText = "";
+            }
+
+            if (password === "") {
+                document.getElementById("errorPassword").innerText = "Mật khẩu không được để trống!";
+                isValid = false;
+            } else {
+                document.getElementById("errorPassword").innerText = "";
+            }
+
+            return isValid;
+        }
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .login-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 0px #aaa;
+            width: 350px;
+            text-align: center;
+        }
+        h2 { text-align: center; }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        label { font-weight: bold; }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .error { color: red; font-size: 12px; }
+        .btn {
+            width: 100%;
+            background-color: #28a745;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn:hover { background-color: #218838; }
+        .links {
+            margin-top: 15px;
+        }
+        .links a {
+            text-decoration: none;
+            color: #007bff;
+            margin: 0 10px;
+        }
+        .links a:hover {
+            text-decoration: underline;
+        }
+        .form-group {
+            position: relative;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 10px;  /* Cách mép phải */
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-<form th:action="@{/login}" method="post">
-    <div class="form-outline mb-4">
-        <input type="text" name="username" id="username" class="form-control" required />
-        <label class="form-label" for="username">Email address</label>
-    </div>
 
-    <div class="form-outline mb-4">
-        <input type="password" name="password" id="password" class="form-control" required />
-        <label class="form-label" for="password">Password</label>
-    </div>
+<div class="login-container">
+    <p th:if="${successMessage}" th:text="${successMessage}" style="display: none;" class="d-none" id="successMessage"></p>
 
-    <button class="btn btn-dark btn-lg btn-block" type="submit">Login</button>
-</form>
+    <h2>Đăng nhập</h2>
+
+    <form th:action="@{/login}" method="post" onsubmit="return validateForm()">
+        <div class="form-group">
+            <label>Email:</label>
+            <input type="email" id="email" name="email">
+            <p id="errorEmail" class="error"></p>
+        </div>
+
+        <div class="form-group">
+            <label>Mật khẩu:</label>
+            <div style="position: relative;">
+                <input type="password" id="password" name="password" class="form-control">
+                <i class="fa-solid fa-eye toggle-password" onclick="togglePassword('password', this)"></i>
+            </div>
+            <p id="errorPassword" class="error"></p>
+        </div>
+
+        <p style="color: red;" th:if="${error}" th:text="${error}"></p>
+
+        <button type="submit" class="btn">Đăng nhập</button>
+    </form>
+
+    <div class="links">
+        <a th:href="@{/user/dang-ky}">Đăng ký</a> |
+        <a th:href="@{/quen-mat-khau}">Quên mật khẩu?</a>
+    </div>
+</div>
+<script>
+    function togglePassword(fieldId, icon) {
+        var passwordField = document.getElementById(fieldId);
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        } else {
+            passwordField.type = "password";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        }
+    }
+</script>
+
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        let successMessage = document.getElementById("successMessage")?.innerText;
+        if (successMessage && successMessage.trim() !== "") {
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công!',
+                text: successMessage,
+                confirmButtonText: 'OK'
+            });
+        }
+
+        /* Hiển thị lỗi đăng nhập nếu có */
+        /* 💡 sửa lại đoạn này */
+        let errorMessage = /*[[${errorMessage}]]*/ null;
+        if (errorMessage !== null && errorMessage.trim() !== "") {
+            Swal.fire({
+                icon: 'error',
+                title: 'Đăng nhập thất bại!',
+                text: errorMessage,
+                confirmButtonText: 'Thử lại'
+            });
+        }
+    });
+</script>
+
+
 </body>
 </html>

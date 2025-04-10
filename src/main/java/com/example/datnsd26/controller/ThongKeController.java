@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/thong-ke")
+@RequestMapping("/admin/thong-ke")
 public class ThongKeController {
     @Autowired
     private SanPhamService sanPhamService;

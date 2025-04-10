@@ -3,6 +3,7 @@ package com.example.datnsd26.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 
 @ToString(exclude = {"gioHang"}) // Loại trừ trường gioHang để tránh đệ quy
@@ -42,6 +43,15 @@ public class GioHangChiTiet {
     @PreUpdate
     protected void onUpdate() {
         ngaySua = LocalDateTime.now();
+    }
+
+    public float getTongTien() {
+        return soLuong * sanPhamChiTiet.getGiaBanSauGiam();
+    }
+
+    public String getTongTienFormatted() {
+        DecimalFormat formatter = new DecimalFormat("#,###");
+        return formatter.format(getTongTien()) + " VND";
     }
 
 }
