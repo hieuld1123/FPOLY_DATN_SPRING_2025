@@ -59,7 +59,7 @@ public class BanHangServiceImpl implements BanHangService {
                 SanPhamResponse.builder()
                         .id(sp.getId())
                         .maSanPham(sp.getSanPhamChiTiet().getMaSanPhamChiTiet())
-                        .tenSanPham(String.format("%s [%s - %s]", sp.getSanPhamChiTiet().getSanPham().getTenSanPham(), sp.getSanPhamChiTiet().getMauSac().getTen(), sp.getSanPhamChiTiet().getKichCo().getTen()))
+                        .tenSanPham(String.format("%s [%s - %s]", sp.getSanPhamChiTiet().getSanPham().getTenSanPham(), sp.getSanPhamChiTiet().getMauSac().getTenMauSac(), sp.getSanPhamChiTiet().getKichCo().getTen()))
                         .gia(sp.getSanPhamChiTiet().getGiaBanSauGiam())
                         .soLuong(sp.getSoLuong())
                         .soLuongTonKho(sp.getSanPhamChiTiet().getSoLuong())
@@ -104,7 +104,7 @@ public class BanHangServiceImpl implements BanHangService {
         return this.sanPhamChiTietRepository.findByNameOrCode(keyword).stream().map(sp -> SanPhamResponse.builder()
                 .id(sp.getId())
                 .maSanPham(sp.getMaSanPhamChiTiet())
-                .tenSanPham(String.format("%s [%s - %s]", sp.getSanPham().getTenSanPham(), sp.getMauSac().getTen(), sp.getKichCo().getTen()))
+                .tenSanPham(String.format("%s [%s - %s]", sp.getSanPham().getTenSanPham(), sp.getMauSac().getTenMauSac(), sp.getKichCo().getTen()))
                 .gia(sp.getGiaBanSauGiam()) // Note: update
                 .soLuong(sp.getSoLuong())
                 .hinhAnh("https://th.bing.com/th/id/OIP.8tQmmY_ccVpcxBxu0Z0mzwHaE8?rs=1&pid=ImgDetMain") // TODO

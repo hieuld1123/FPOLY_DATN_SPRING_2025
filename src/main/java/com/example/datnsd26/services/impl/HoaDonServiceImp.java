@@ -1,10 +1,13 @@
 package com.example.datnsd26.services.impl;
 
 import com.example.datnsd26.controller.request.InvoiceParamRequest;
+import com.example.datnsd26.controller.response.HoaDonChiTietResponse;
 import com.example.datnsd26.controller.response.InvoiceInformation;
 import com.example.datnsd26.controller.response.InvoicePageResponse;
+import com.example.datnsd26.controller.response.SanPhamResponse;
 import com.example.datnsd26.exception.EntityNotFound;
 import com.example.datnsd26.models.HoaDon;
+import com.example.datnsd26.models.KhachHang;
 import com.example.datnsd26.models.LichSuHoaDon;
 import com.example.datnsd26.models.SanPhamChiTiet;
 import com.example.datnsd26.repository.HoaDonRepository;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +43,7 @@ public class HoaDonServiceImp implements HoaDonService {
     private static final String STATUS_DELIVERED = "Đã giao cho đơn vị vận chuyển";
     private static final String STATUS_CANCELED = "Đã hủy";
     private static final String STATUS_COMPLETED = "Hoàn thành";
+    private static final String STATUS_EDIT = "Chỉnh sửa đơn hàng";
 
 
     @Override
@@ -87,7 +92,7 @@ public class HoaDonServiceImp implements HoaDonService {
                         .id(s.getSanPhamChiTiet().getId())
                         .image("https://th.bing.com/th/id/OIP.8tQmmY_ccVpcxBxu0Z0mzwHaE8?rs=1&pid=ImgDetMain")
                         .code(s.getSanPhamChiTiet().getMaSanPhamChiTiet())
-                        .name(String.format("%s [%s - %s]", s.getSanPhamChiTiet().getSanPham().getTenSanPham(), s.getSanPhamChiTiet().getMauSac().getTen(), s.getSanPhamChiTiet().getKichCo().getTen()))
+                        .name(String.format("%s [%s - %s]", s.getSanPhamChiTiet().getSanPham().getTenSanPham(), s.getSanPhamChiTiet().getMauSac().getTenMauSac(), s.getSanPhamChiTiet().getKichCo().getTen()))
                         .quantity(s.getSoLuong())
                         .unit_price(s.getSanPhamChiTiet().getGiaBanSauGiam())
                         .total_price(s.getSoLuong() * s.getGiaTienSauGiam())
@@ -156,12 +161,60 @@ public class HoaDonServiceImp implements HoaDonService {
     }
 
     @Override
+    public HoaDonChiTietResponse editInvoice(String code) {
+        var hoaDon = this.hoaDonRepository.findHoaDonByMaHoaDon(code).orElse(new HoaDon());
+        List<SanPhamResponse> listSanPham = hoaDon.getDanhSachSanPham().stream().map(sp ->
+                SanPhamResponse.builder()
+                        .id(sp.getId())
+                        .maSanPham(sp.getSanPhamChiTiet().getMaSanPhamChiTiet())
+                        .tenSanPham(String.format("%s [%s - %s]", sp.getSanPhamChiTiet().getSanPham().getTenSanPham(), sp.getSanPhamChiTiet().getMauSac().getTenMauSac(), sp.getSanPhamChiTiet().getKichCo().getTen()))
+                        .gia(sp.getSanPhamChiTiet().getGiaBanSauGiam())
+                        .soLuong(sp.getSoLuong())
+                        .soLuongTonKho(sp.getSanPhamChiTiet().getSoLuong())
+                        .hinhAnh("https://th.bing.com/th/id/OIP.8tQmmY_ccVpcxBxu0Z0mzwHaE8?rs=1&pid=ImgDetMain") // TODO
+                        .build()
+        ).toList();
+        KhachHang kh = hoaDon.getKhachHang();
+        return HoaDonChiTietResponse.builder()
+                .id(hoaDon.getId())
+                .tongTien(hoaDon.getTongTien())
+                .shippingFee(hoaDon.getPhiVanChuyen())
+                .ghiChu(hoaDon.getGhiChu() == null ? null : hoaDon.getGhiChu().trim())
+                .khachHang(kh == null ? null : HoaDonChiTietResponse.Customer.builder()
+                        .id(kh.getId())
+                        .maKhachHang(kh.getMaKhachHang())
+                        .tenKhachHang(kh.getTenKhachHang())
+                        .soDienThoai(kh.getTaiKhoan().getSdt())
+                        .diaChi(String.format("%s, %s, %s, %s", hoaDon.getDiaChiNguoiNhan(), hoaDon.getXa(), hoaDon.getQuan(), hoaDon.getTinh()))
+                        .build())
+                .listSanPham(listSanPham)
+                .seller(hoaDon.getNhanVien() == null ? "N/A" : hoaDon.getNhanVien().getTenNhanVien())
+                .ngayTao(hoaDon.getNgayTao())
+                .ngayCapNhat(hoaDon.getNgayCapNhat())
+                .build();
+    }
+
+    @Override
     public void completed(String code) {
         HoaDon hd = getHoaDonByCode(code);
         hd.setTrangThai(STATUS_COMPLETED);
         hd.setNgayCapNhat(new Date());
         lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai(STATUS_COMPLETED).hoaDon(hd).build());
         this.hoaDonRepository.save(hd);
+    }
+
+    @Override
+    public void createHistoryModify(String invoiceCode) {
+        HoaDon hoaDon = this.getHoaDonByCode(invoiceCode);
+        Optional<LichSuHoaDon> history = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_EDIT, hoaDon.getId());
+        if(history.isPresent()) {
+            LichSuHoaDon lichSuHoaDon = history.get();
+            lichSuHoaDon.setThoiGian(new Date());
+            lichSuHoaDon.setTrangThai(STATUS_EDIT);
+            this.lichSuHoaDonRepository.save(lichSuHoaDon);
+            return;
+        }
+        lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai(STATUS_EDIT).hoaDon(hoaDon).build());
     }
 
     private HoaDon getHoaDonByCode(String code) {
