@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -25,6 +26,7 @@ import java.util.Optional;
 @Slf4j
 public class VoucherService {
     private final VoucherRepository voucherRepository;
+    private final VoucherSchedulerService voucherSchedulerService;
 
     public List<Voucher> getAllVouchers() {
         List<Voucher> vouchers = voucherRepository.findAll();
@@ -46,11 +48,28 @@ public class VoucherService {
         if (!errors.isEmpty()) {
             throw new VoucherValidationException(errors);
         }
+
         voucher.setNgayTao(LocalDateTime.now());
         voucher.setNgayCapNhat(LocalDateTime.now());
         voucher.setTrangThai(determineVoucherStatus(voucher));
-        return voucherRepository.save(voucher);
+        Voucher saved = voucherRepository.save(voucher);
+
+        // 🧠 Lên lịch tự động thay đổi trạng thái
+        voucherSchedulerService.scheduleKhuyenMai(saved);
+
+        return saved;
     }
+    @Transactional
+    public void updateVoucherTrangThaiById(Long id, int trangThai) {
+        Voucher voucher = voucherRepository.findById(id).orElse(null);
+        if (voucher != null) {
+            voucher.setTrangThai(trangThai);
+            voucher.setNgayCapNhat(LocalDateTime.now());
+            voucherRepository.save(voucher);
+            System.out.println("✅ Đã cập nhật trạng thái voucher ID " + id + " thành " + trangThai);
+        }
+    }
+
 
     public Voucher updateVoucher(Long id, Voucher newVoucher) {
         Map<String, String> errors = new HashMap<>();
@@ -71,7 +90,11 @@ public class VoucherService {
                     voucher.setNgayBatDau(newVoucher.getNgayBatDau());
                     voucher.setNgayKetThuc(newVoucher.getNgayKetThuc());
                     voucher.setTrangThai(determineVoucherStatus(newVoucher));
-                    return voucherRepository.save(voucher);
+                    Voucher updated = voucherRepository.save(voucher);
+
+                    // 🔁 Cập nhật lại thời điểm thay đổi trạng thái
+                    voucherSchedulerService.rescheduleKhuyenMai(updated);
+                    return updated;
                 })
                 .orElseThrow(() -> new EntityNotFoundException("Voucher không tồn tại"));
     }
@@ -84,33 +107,6 @@ public class VoucherService {
         log.info("🗑 Voucher với ID {} đã bị xóa", id);
     }
 
-    @PostConstruct
-    public void testUpdateStatusOnStartup() {
-        log.info("Chạy kiểm tra updateVoucherStatus() khi khởi động...");
-        updateVoucherStatus();
-    }
-
-    @Transactional
-    @Scheduled(fixedRate = 30000) // Chạy mỗi 30 giây
-    public void updateVoucherStatus() {
-        LocalDateTime now = LocalDateTime.now();
-        log.info("🔄 Kiểm tra & cập nhật trạng thái voucher vào {}", now);
-
-        // Cập nhật voucher CHƯA_BAT ĐẦU → DANG_HOAT_DONG
-        List<Voucher> toActive = voucherRepository.findVouchersToActivate(now);
-        for (Voucher voucher : toActive) {
-            voucherRepository.updateVoucherStatusById(voucher.getId(),1, now);
-            log.info("✅ Voucher {} đã chuyển sang DANG_HOAT_DONG", voucher.getMaVoucher());
-        }
-
-        // Cập nhật voucher DANG_HOAT_DONG → HET_HAN
-        List<Voucher> toExpire = voucherRepository.findVouchersToExpire(now);
-        for (Voucher voucher : toExpire) {
-            voucherRepository.updateVoucherStatusById(voucher.getId(), 2, now);
-            log.info("❌ Voucher {} đã chuyển sang HET_HAN", voucher.getMaVoucher());
-        }
-
-    }
 
     private Integer determineVoucherStatus(Voucher voucher) {
         LocalDateTime now = LocalDateTime.now();
@@ -167,18 +163,18 @@ public class VoucherService {
         }
 
         // Kiểm tra giá trị giảm tối đa
-        if (voucher.getGiaTriGiamToiDa() == null) {
-            errors.put("giaTriGiamToiDa", "Giá trị giảm tối đa không được để trống");
-        } else if (voucher.getGiaTriGiamToiDa() <= 0) {  // Sửa lại từ getGiaTriGiam thành getGiaTriGiamToiDa
-            errors.put("giaTriGiamToiDa", "Giá trị giảm tối đa phải lớn hơn 0");
-        }else {
-            try {
-                Double giatrigiamtoida = voucher.getGiaTriGiamToiDa(); // Ép kiểu để đảm bảo là số nguyên
-                if (giatrigiamtoida <= 0) {
-                    errors.put("giaTriGiamToiDa", "Giá trị giảm tối đa phải lớn hơn 0");
+        if ("Phần Trăm".equalsIgnoreCase(voucher.getHinhThucGiam())) {
+            if (voucher.getGiaTriGiamToiDa() == null) {
+                errors.put("giaTriGiamToiDa", "Giá trị giảm tối đa không được để trống");
+            } else {
+                try {
+                    Double giatrigiamtoida = voucher.getGiaTriGiamToiDa();
+                    if (giatrigiamtoida <= 0) {
+                        errors.put("giaTriGiamToiDa", "Giá trị giảm tối đa phải lớn hơn 0");
+                    }
+                } catch (NumberFormatException e) {
+                    errors.put("giaTriGiamToiDa", "Giá trị giảm tối đa phải là một số hợp lệ");
                 }
-            } catch (NumberFormatException e) {
-                errors.put("giaTriGiam", "Giá trị giảm tối phải là một số hợp lệ");
             }
         }
 

@@ -34,10 +34,10 @@ public class Voucher {
     @Column(nullable = false ,name = "gia_tri_giam")
     private Double giaTriGiam;
 
-    @Column(nullable = false ,name = "gia_tri_giam_toi_thieu")
+    @Column(nullable = true ,name = "gia_tri_giam_toi_thieu")
     private Double giaTriGiamToiThieu;
 
-    @Column(nullable = false,name = "gia_tri_giam_toi_da")
+    @Column(nullable = true,name = "gia_tri_giam_toi_da")
     private Double giaTriGiamToiDa;
 
 

@@ -60,7 +60,6 @@ public class SanPhamChiTietImp implements SanPhamChiTietService {
 //    }
 
 
-
     @Override
     public SanPhamChiTiet findById(Integer id) {
        return sanPhamChiTietRepository.findById(id).orElse(null);
@@ -75,6 +74,5 @@ public class SanPhamChiTietImp implements SanPhamChiTietService {
     public Boolean checkSPQR(String ma) {
         return sanPhamChiTietRepository.existsByMaSanPhamChiTiet(ma);
     }
-
 
 }

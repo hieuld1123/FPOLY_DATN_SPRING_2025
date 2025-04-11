@@ -7,18 +7,20 @@ import com.example.datnsd26.models.SanPhamChiTiet;
 import com.example.datnsd26.repository.KhuyenMaiRepository;
 import com.example.datnsd26.repository.SanPhamChiTietRepository;
 import com.example.datnsd26.repository.KhuyenMaiChiTietRepository;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @AllArgsConstructor
@@ -26,71 +28,8 @@ public class KhuyenMaiService {
     private final KhuyenMaiRepository khuyenMaiRepository;
     private final SanPhamChiTietRepository sanPhamChiTietRepository;
     private final KhuyenMaiChiTietRepository khuyenMaiChiTietRepository;
-
-    @Transactional
-    @Scheduled(fixedRate = 30000)
-    public void capNhatTrangThaiKhuyenMai() {
-        System.out.println("Đang chạy capNhatTrangThaiKhuyenMai... " + LocalDateTime.now());
-
-        LocalDateTime now = LocalDateTime.now();
-        List<KhuyenMai> khuyenMais = khuyenMaiRepository.findAll();
-
-        for (KhuyenMai km : khuyenMais) {
-            int oldStatus = km.getTrangThai();
-            int newStatus;
-
-            if (now.isBefore(km.getThoiGianBatDau())) {
-                newStatus = 0; // Chưa bắt đầu
-            } else if (now.isAfter(km.getThoiGianKetThuc())) {
-                newStatus = 2; // Đã kết thúc
-            } else {
-                newStatus = 1; // Đang hoạt động
-            }
-
-            if (oldStatus != newStatus) {
-                km.setTrangThai(newStatus);
-                // Update status for all promotion details
-                List<KhuyenMaiChitiet> chiTietList = khuyenMaiChiTietRepository.findByKhuyenMai_Id(km.getId());
-                for (KhuyenMaiChitiet chiTiet : chiTietList) {
-                    chiTiet.setTrangThai(newStatus);
-                    System.out.println("Cập nhật KMCT ID " + chiTiet.getId() + " sang trạng thái " + newStatus);
-                }
-                khuyenMaiChiTietRepository.saveAll(chiTietList);
-                System.out.println("Khuyến mãi ID " + km.getId() + " thay đổi từ " + oldStatus + " -> " + newStatus);
-            }
-        }
-
-        khuyenMaiRepository.saveAll(khuyenMais);
-        capNhatGiaSanPham();
-    }
-
-
-    @Transactional
-    public void capNhatGiaSanPham() {
-        LocalDateTime now = LocalDateTime.now();
-        List<SanPhamChiTiet> danhSachSanPham = sanPhamChiTietRepository.findAll();
-
-        for (SanPhamChiTiet sp : danhSachSanPham) {
-            // Lấy khuyến mãi đang active của sản phẩm
-            KhuyenMaiChitiet kmct = khuyenMaiChiTietRepository
-                    .findActivePromotionBySanPham(Long.valueOf(sp.getId()), now);
-
-            Float giaSauGiam = sp.getGiaBan();
-
-            // Áp dụng khuyến mãi nếu có và đang active
-            if (kmct != null && kmct.getKhuyenMai().getTrangThai() == 1) {
-                if ("Phần Trăm".equals(kmct.getKhuyenMai().getHinhThucGiam())) {
-                    giaSauGiam = sp.getGiaBan() - (sp.getGiaBan() * kmct.getSoTienGiam() / 100);
-                } else {
-                    giaSauGiam = sp.getGiaBan() - kmct.getSoTienGiam();
-                }
-                giaSauGiam = Math.max(giaSauGiam, sp.getGiaBan() * 0.05f); // Không giảm quá 95%
-            }
-
-            sp.setGiaBanSauGiam(giaSauGiam);
-            sanPhamChiTietRepository.save(sp);
-        }
-    }
+    private final CapNhatGiaKMServie capNhatGiaKMServie;
+    private final KhuyenMaiSchedulerService khuyenMaiSchedulerService;
 
 
     private boolean isKhuyenMaiHienTai(KhuyenMai khuyenMai, LocalDateTime now) {
@@ -138,8 +77,8 @@ public class KhuyenMaiService {
             khuyenMai.setNgayTao(now);
             khuyenMai.setNgayCapNhat(now);
             khuyenMai.setTrangThai(determineKhuyenMaiStatus(khuyenMai));
-
             KhuyenMai savedKhuyenMai = khuyenMaiRepository.saveAndFlush(khuyenMai);
+
             List<KhuyenMaiChitiet> danhSachKmct = new ArrayList<>();
 
             for (Map.Entry<Integer, Float> entry : sanPhamGiamGia.entrySet()) {
@@ -149,14 +88,12 @@ public class KhuyenMaiService {
                 SanPhamChiTiet sp = sanPhamChiTietRepository.findById(Math.toIntExact(sanPhamId))
                         .orElseThrow(() -> new ResourceNotFoundException("SanPhamChiTiet", "id", sanPhamId));
 
-                // Kiểm tra các khuyến mãi hiện có
                 List<KhuyenMaiChitiet> existingPromotions = khuyenMaiChiTietRepository
                         .findAllActivePromotionsBySanPham(Long.valueOf(sp.getId()), now);
 
                 Float mucGiamMoi = tinhMucGiamThucTe(sp, khuyenMai.getHinhThucGiam(), soTienGiam);
                 boolean shouldAddPromotion = true;
 
-                // So sánh với các khuyến mãi hiện có
                 for (KhuyenMaiChitiet existingKmct : existingPromotions) {
                     Float mucGiamHienTai = tinhMucGiamThucTe(sp,
                             existingKmct.getKhuyenMai().getHinhThucGiam(),
@@ -166,7 +103,6 @@ public class KhuyenMaiService {
                         shouldAddPromotion = false;
                         break;
                     } else {
-                        // Xóa khuyến mãi cũ nếu khuyến mãi mới tốt hơn
                         khuyenMaiChiTietRepository.delete(existingKmct);
                     }
                 }
@@ -185,12 +121,16 @@ public class KhuyenMaiService {
                 khuyenMaiChiTietRepository.saveAll(danhSachKmct);
             }
 
-            capNhatGiaSanPham();
+
+
+            capNhatGiaKMServie.capNhatGiaSanPham();
+            khuyenMaiSchedulerService.scheduleKhuyenMai(savedKhuyenMai);
             return savedKhuyenMai;
         } catch (Exception e) {
             throw e;
         }
     }
+
 
     private Float tinhMucGiamThucTe(SanPhamChiTiet sp, String hinhThucGiam, Float soTienGiam) {
         if ("Phần Trăm".equals(hinhThucGiam)) {
@@ -249,6 +189,7 @@ public class KhuyenMaiService {
     }
 
 
+    @Transactional
     public KhuyenMai update(Long id, KhuyenMai khuyenMaiMoi, Map<Integer, Float> sanPhamGiamGia) {
         KhuyenMai khuyenMaiHienTai = khuyenMaiRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("KhuyenMai", "id", id));
@@ -258,7 +199,7 @@ public class KhuyenMaiService {
             khuyenMaiHienTai.setTenChienDich(khuyenMaiMoi.getTenChienDich());
         }
 
-        // Kiểm tra và cập nhật thời gian
+        // Cập nhật thời gian
         if (khuyenMaiMoi.getThoiGianBatDau() != null && khuyenMaiMoi.getThoiGianKetThuc() != null) {
             if (khuyenMaiMoi.getThoiGianBatDau().isAfter(khuyenMaiMoi.getThoiGianKetThuc())) {
                 throw new IllegalArgumentException("Thời gian bắt đầu phải trước thời gian kết thúc");
@@ -278,9 +219,13 @@ public class KhuyenMaiService {
         khuyenMaiHienTai.setNgayCapNhat(LocalDateTime.now());
         khuyenMaiHienTai.setTrangThai(determineKhuyenMaiStatus(khuyenMaiHienTai));
 
-        // Xử lý cập nhật chi tiết khuyến mãi
+        // Lưu khuyến mãi cập nhật
+        KhuyenMai savedKhuyenMai = khuyenMaiRepository.save(khuyenMaiHienTai);
+
+        // Cập nhật chi tiết khuyến mãi nếu có danh sách sản phẩm
         if (sanPhamGiamGia != null && !sanPhamGiamGia.isEmpty()) {
-            validateSanPhamGiamGia(sanPhamGiamGia, khuyenMaiHienTai.getHinhThucGiam());
+            validateSanPhamGiamGia(sanPhamGiamGia, savedKhuyenMai.getHinhThucGiam());
+
             List<KhuyenMaiChitiet> danhSachKmctMoi = new ArrayList<>();
             LocalDateTime now = LocalDateTime.now();
 
@@ -291,16 +236,13 @@ public class KhuyenMaiService {
                 SanPhamChiTiet sp = sanPhamChiTietRepository.findById(sanPhamId)
                         .orElseThrow(() -> new ResourceNotFoundException("SanPhamChiTiet", "id", sanPhamId));
 
-                // Tính mức giảm giá mới
-                Float mucGiamMoi = tinhMucGiamThucTe(sp, khuyenMaiHienTai.getHinhThucGiam(), soTienGiam);
+                Float mucGiamMoi = tinhMucGiamThucTe(sp, savedKhuyenMai.getHinhThucGiam(), soTienGiam);
 
-                // Kiểm tra các khuyến mãi hiện có của sản phẩm
                 List<KhuyenMaiChitiet> kmctHienTai = khuyenMaiChiTietRepository
-                        .findAllActivePromotionsBySanPham(Long.valueOf(sp.getId()), now);
+                        .findAllActivePromotionsBySanPham(sp.getId().longValue(), now);
 
                 boolean coKhuyenMaiTotHon = false;
 
-                // So sánh với các khuyến mãi hiện có
                 for (KhuyenMaiChitiet kmct : kmctHienTai) {
                     if (!kmct.getKhuyenMai().getId().equals(id)) {
                         Float mucGiamHienTai = tinhMucGiamThucTe(sp,
@@ -314,30 +256,29 @@ public class KhuyenMaiService {
                     }
                 }
 
-                // Chỉ thêm khuyến mãi mới nếu không có khuyến mãi nào tốt hơn
                 if (!coKhuyenMaiTotHon) {
                     KhuyenMaiChitiet kmctMoi = new KhuyenMaiChitiet(
-                            khuyenMaiHienTai,
+                            savedKhuyenMai,
                             sp,
                             soTienGiam,
-                            khuyenMaiHienTai.getTrangThai()
+                            savedKhuyenMai.getTrangThai()
                     );
                     danhSachKmctMoi.add(kmctMoi);
                 }
             }
 
-            // Xóa chi tiết khuyến mãi cũ và lưu chi tiết mới
+            // Xóa chi tiết cũ và lưu chi tiết mới
             khuyenMaiChiTietRepository.deleteByKhuyenMai_Id(id);
             if (!danhSachKmctMoi.isEmpty()) {
                 khuyenMaiChiTietRepository.saveAll(danhSachKmctMoi);
             }
         }
 
-        KhuyenMai updatedKhuyenMai = khuyenMaiRepository.save(khuyenMaiHienTai);
-        capNhatGiaSanPham();
-
-        return updatedKhuyenMai;
+        capNhatGiaKMServie.capNhatGiaSanPham();
+        khuyenMaiSchedulerService.rescheduleKhuyenMai(savedKhuyenMai);
+        return savedKhuyenMai;
     }
+
 
     private int determineKhuyenMaiStatus(KhuyenMai khuyenMai) {
         LocalDateTime now = LocalDateTime.now();
@@ -358,7 +299,7 @@ public class KhuyenMaiService {
 
         khuyenMaiChiTietRepository.deleteByKhuyenMai_Id(id);
         khuyenMaiRepository.deleteById(id);
-        capNhatGiaSanPham();
+        capNhatGiaKMServie.capNhatGiaSanPham();
     }
 
 
@@ -424,7 +365,7 @@ public class KhuyenMaiService {
         khuyenMai.setTrangThai(1);
         khuyenMai.setNgayCapNhat(LocalDateTime.now());
         khuyenMaiRepository.save(khuyenMai);
-        capNhatGiaSanPham();
+        capNhatGiaKMServie.capNhatGiaSanPham();
     }
 
     public void stopKhuyenMai(Long id) {
@@ -435,7 +376,7 @@ public class KhuyenMaiService {
         khuyenMai.setTrangThai(2);
         khuyenMai.setNgayCapNhat(LocalDateTime.now());
         khuyenMaiRepository.save(khuyenMai);
-        capNhatGiaSanPham();
+        capNhatGiaKMServie.capNhatGiaSanPham();
     }
 
     private void validateSanPhamGiamGia(Map<Integer, Float> sanPhamGiamGia, String hinhThucGiam) {

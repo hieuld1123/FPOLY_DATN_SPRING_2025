@@ -3,18 +3,16 @@ package com.example.datnsd26.controller;
 import com.example.datnsd26.models.KhuyenMai;
 import com.example.datnsd26.models.SanPhamChiTiet;
 import com.example.datnsd26.repository.KhuyenMaiChiTietRepository;
-import com.example.datnsd26.repository.KhuyenMaiRepository;
 import com.example.datnsd26.repository.SanPhamChiTietRepository;
+import com.example.datnsd26.services.KhuyenMaiSchedulerService;
 import com.example.datnsd26.services.KhuyenMaiService;
 import com.example.datnsd26.services.SanPhamChiTietService;
-import com.example.datnsd26.services.SanPhamChitiet1;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,12 +21,11 @@ import jakarta.validation.Valid;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Controller xử lý các chức năng liên quan đến Khuyến Mãi
@@ -42,12 +39,12 @@ public class KhuyenMaiController {
     @Autowired
     private SanPhamChiTietRepository sanPhamChiTietRepository;
     @Autowired
-    private KhuyenMaiRepository khuyenMaiRepository;
-    @Autowired
     private KhuyenMaiChiTietRepository khuyenMaiChiTietRepository;
     @Autowired
     private SanPhamChiTietService sanPhamChiTietService;
 
+    @Autowired
+    private KhuyenMaiSchedulerService khuyenMaiSchedulerService;
     /**
      * Hiển thị danh sách khuyến mãi
      */
@@ -67,16 +64,26 @@ public class KhuyenMaiController {
         }
     }
 
+
     /**
      * Hiển thị form tạo mới khuyến mãi
      */
     @GetMapping("/create")
     public String viewCreate(Model model,
                              @RequestParam(defaultValue = "0") int page,
-                             @RequestParam(defaultValue = "5") int size) {
-        Page<SanPhamChiTiet> sanPhamPage = sanPhamChiTietRepository.findAvailableProducts(PageRequest.of(page, size));
+                             @RequestParam(defaultValue = "5") int size,
+                             @RequestParam(required = false) Boolean selectAll) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
+        Page<SanPhamChiTiet> sanPhamPage = sanPhamChiTietRepository.findAll(pageable);
+
+        // Thêm tổng số sản phẩm vào model
+        long totalProducts = sanPhamChiTietRepository.count();
+
         model.addAttribute("khuyenMai", new KhuyenMai());
         model.addAttribute("sanPhamPage", sanPhamPage);
+        model.addAttribute("totalProducts", totalProducts);
+        model.addAttribute("selectAll", selectAll);
+
         return "khuyenmai/user/khuyenmai-create";
     }
 
@@ -89,6 +96,7 @@ public class KhuyenMaiController {
                          BindingResult bindingResult,
                          @RequestParam Map<String, String> allParams,
                          RedirectAttributes redirectAttributes,
+
                          Model model) {
         try {
             // Kiểm tra dữ liệu nhập vào
@@ -166,7 +174,7 @@ public class KhuyenMaiController {
             KhuyenMai khuyenMai = khuyenMaiService.findById(id);
 
             // Tạo đối tượng Pageable để phân trang
-            Pageable pageable = PageRequest.of(page, size);
+            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
             Page<SanPhamChiTiet> sanPhamPage = khuyenMaiService.finAllPage(pageable);
             List<SanPhamChiTiet> sanPhams = sanPhamPage.getContent();
 
@@ -192,6 +200,7 @@ public class KhuyenMaiController {
     public String update(@PathVariable Long id,
                          @ModelAttribute KhuyenMai khuyenMaiMoi,
                          @RequestParam Map<String, String> allParams,
+//                         @RequestParam("sanPhamIds") List<Long> sanPhamIds,
                          RedirectAttributes redirectAttributes,
                          Model model) {
         try {
@@ -284,42 +293,19 @@ public class KhuyenMaiController {
 
     @GetMapping("/search-products")
     public String searchProducts(
-            @RequestParam(name = "keyword", required = false) String keyword,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            Model model) {
-        if (keyword == null) {
-            keyword = "";
-        }
-        // Giả sử mỗi trang có 10 sản phẩm
-        Pageable pageable = PageRequest.of(page, 10);
-        LocalDateTime now = LocalDateTime.now();
-        Page<SanPhamChiTiet> productPage = sanPhamChiTietRepository.findAvailableProductsWithSearch(keyword, now, pageable);
-        model.addAttribute("productPage", productPage);
-        model.addAttribute("keyword", keyword);
-        return "khuyenmai/user/product-search";
-    }
-    @GetMapping("/tim-kiem-san-pham")
-    public ResponseEntity<?> timKiemSanPham(
-            @RequestParam String keyword,
+            @RequestParam(required = false) String searchTerm,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size) {
-        try {
-            if (keyword.trim().isEmpty()) {
-                return ResponseEntity.badRequest().body("Từ khóa tìm kiếm không được để trống.");
-            }
-
-            Page<SanPhamChiTiet> result = sanPhamChiTietRepository.findByTenSanPham(keyword, PageRequest.of(page, size));
-
-            if (result.isEmpty()) {
-                return ResponseEntity.ok("Không tìm thấy sản phẩm nào phù hợp.");
-            }
-
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            System.err.println("Lỗi khi tìm kiếm sản phẩm: " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi hệ thống, vui lòng thử lại.");
+            @RequestParam(defaultValue = "5") int size,
+            Model model) {
+        if (searchTerm == null) {
+            searchTerm = "";
         }
+        Pageable pageable = PageRequest.of(page, size);
+        LocalDateTime now = LocalDateTime.now();
+        Page<SanPhamChiTiet> productPage = sanPhamChiTietRepository.findAvailableProductsWithSearch(searchTerm, now, pageable);
+        model.addAttribute("productPage", productPage);
+        model.addAttribute("keyword", searchTerm);
+        return "/admin/khuyenmai/user/product-search";
     }
 
     @GetMapping("/search")
@@ -350,6 +336,20 @@ public class KhuyenMaiController {
             model.addAttribute("error", "Có lỗi xảy ra khi tìm kiếm khuyến mãi");
             return "error";
         }
+    }
+
+    @GetMapping("/statuses")
+    @ResponseBody
+    public List<Map<String, Serializable>> getVoucherStatuses(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<KhuyenMai> pageData = khuyenMaiService.findAll(pageable);
+        return pageData.stream().map(v -> Map.of(
+                "id", (Serializable) v.getId(),
+                "trangThai", v.getTrangThai()
+        )).toList();
     }
 
 
