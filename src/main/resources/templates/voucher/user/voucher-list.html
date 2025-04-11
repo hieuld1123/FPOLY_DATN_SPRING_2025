@@ -75,31 +75,48 @@
     }
 </style>
 <script>
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
     function updateVoucherStatuses() {
+        const page = getQueryParam('page') || 0;
+        const size = getQueryParam('size') || 5;
+
         $.ajax({
-            url: "/admin/vouchers/statuses",
+            url: `/admin/vouchers/statuses?page=${page}&size=${size}`,
             type: "GET",
             dataType: "json",
             success: function (data) {
                 data.forEach(function (voucher) {
                     let row = $("#voucher-" + voucher.id);
+                    if (row.length === 0) {
+                        console.warn("Không tìm thấy dòng cho ID:", voucher.id);
+                        return;
+                    }
+
                     let statusCell = row.find(".status span");
+                    if (statusCell.length === 0) {
+                        console.warn("Không tìm thấy ô trạng thái cho ID:", voucher.id);
+                        return;
+                    }
+
                     statusCell.removeClass("bg-success bg-warning bg-danger");
 
                     if (voucher.trangThai === 1) {
-                        statusCell.addClass("bg-success").text("Hoạt động");
+                        statusCell.addClass("bg-success").text("Đang diễn ra");
                     } else if (voucher.trangThai === 0) {
-                        statusCell.addClass("bg-warning").text("Chưa bắt đầu");
+                        statusCell.addClass("bg-warning").text("Chưa diễn ra");
                     } else if (voucher.trangThai === 2) {
-                        statusCell.addClass("bg-danger").text("Hết hạn");
+                        statusCell.addClass("bg-danger").text("Đã kết thúc");
                     }
                 });
             },
-            error: function (xhr, status, error) {
-                console.error("Lỗi khi lấy trạng thái voucher:", xhr.responseText);
+            error: function (xhr) {
+                console.error("Lỗi khi lấy trạng thái khuyến mãi:", xhr.responseText);
             }
         });
-
     }
 
     // Gọi API cập nhật trạng thái mỗi 10 giây

@@ -130,7 +130,7 @@
         <div class="main-content">
             <div class="card">
                 <div class="card-header bg-primary text-white">
-                    <h2 class="card-title mb-0">Cập nhật khuyến mãi </h2>
+                    <h2 class="card-title mb-0">Sửa Khuyến Mãi </h2>
                 </div>
                 <div class="card-body">
                     <form th:action="@{/admin/khuyen-mai/edit/{id}(id=${khuyenMai.id})}" method="post"
@@ -147,12 +147,10 @@
                                     <select class="form-select" name="hinhThucGiam" id="hinhThucGiam">
                                         <option value="Phần Trăm"
                                                 th:selected="${khuyenMai.hinhThucGiam == 'Phần Trăm'}">
-                                            Phần
-                                            Trăm
+                                            Phần Trăm
                                         </option>
                                         <option value="Theo Giá Tiền"
-                                                th:selected="${khuyenMai.hinhThucGiam == 'Theo Giá Tiền'}">
-                                            Theo Giá Tiền
+                                                th:selected="${khuyenMai.hinhThucGiam == 'Theo Giá Tiền'}">Theo Giá Tiền
                                         </option>
                                     </select>
                                 </div>
@@ -176,16 +174,15 @@
                                            th:value="${khuyenMai.giaTriGiam}" min="0" required>
                                 </div>
                                 <div class="text-end mt-3">
-                                    <a href="/admin/khuyen-mai" class="btn btn-secondary">Hủy</a>
-                                    <button type="submit" class="btn btn-primary">Lưu</button>
+                                    <a href="/admin/khuyen-mai" id="btn-back" class="btn btn-secondary">Hủy</a>
+                                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
                                 </div>
                             </div>
 
                             <div class="col-md-7">
-                                <!-- Bảng sản phẩm -->
                                 <div class="card mb-3">
-                                    <input type="text" id="searchBox" class="form-control mb-3"
-                                           placeholder="Tìm kiếm sản phẩm...">
+                                    <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm..."
+                                           class="form-control mb-2">
                                     <div class="table-responsive">
                                         <table class="table table-bordered" id="productTableBody">
                                             <thead>
@@ -193,21 +190,45 @@
                                                 <th style="width: 50px;">
                                                     <input type="checkbox" id="selectAll" class="form-check-input">
                                                 </th>
+                                                <th>Ảnh sản phẩm</th>
                                                 <th>Sản phẩm</th>
+                                                <th>Size</th>
+                                                <th style="width: 80px">Màu</th>
                                                 <th>Giá gốc</th>
-                                                <th style="width: 150px;">Mức giảm</th>
+                                                <th>Mức giảm</th>
+                                                <th>Giá sau giảm</th>
                                             </tr>
                                             </thead>
                                             <tbody>
                                             <tr th:each="sp : ${sanPhams}">
                                                 <td>
-                                                    <input type="checkbox" class="form-check-input chonSanPham"
+                                                    <input input type="checkbox" class="chonSanPham"
+                                                           th:data-product-id="${sp.id}"
                                                            th:name="'sanPham_' + ${sp.id}"
                                                            th:value="on"
                                                            th:data-id="${sp.id}"
-                                                           th:checked="${sanPhamGiamGiaMap.containsKey(sp.id)}">
+                                                           th:checked="${sanPhamGiamGiaMap.containsKey(sp.id)}"
+                                                    >
+                                                </td>
+                                                <td>
+                                                    <div class="carousel-inner">
+                                                        <th:block th:each="anhs, index : ${sp.hinhAnh}">
+                                                            <div th:classappend="${index.index == 0} ? 'carousel-item active' : 'carousel-item'">
+                                                                <!-- Hình ảnh carousel -->
+                                                                <img th:if="${anhs.tenAnh != null}"
+                                                                     th:src="@{'/upload' + ${anhs.tenAnh.substring(anhs.tenAnh.lastIndexOf('upload') + 6)}}"
+                                                                     class="d-block w-100 carousel-img rounded-3"
+                                                                     alt="Ảnh">
+                                                            </div>
+                                                        </th:block>
+                                                    </div>
                                                 </td>
                                                 <td th:text="${sp.sanPham.tenSanPham}"></td>
+                                                <td th:text="${sp.kichCo != null ? sp.kichCo.ten : ''}"></td>
+                                                <td>
+                                                    <input type="color" th:value="${sp.mauSac.ten}" class="form-control"
+                                                           disabled>
+                                                </td>
                                                 <td class="giaGoc"
                                                     th:text="${#numbers.formatDecimal(sp.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"
                                                     th:data-gia="${sp.giaBan}"></td>
@@ -218,34 +239,43 @@
                                                            th:data-original-value="${sanPhamGiamGiaMap.get(sp.id)}"
                                                            min="0" step="0.1">
                                                 </td>
+                                                <td class="giaSauGiam"></td>
                                             </tr>
                                             </tbody>
                                         </table>
-                                        <nav aria-label="Page navigation">
-                                            <ul class="pagination">
+                                        <!-- ... existing code ... -->
+                                        <nav aria-label="Page navigation" th:if="${totalPages > 0}">
+                                            <ul class="pagination" id="pagination">
                                                 <li class="page-item"
-                                                    th:classappend="${currentPage == 0} ? 'disabled'">
+                                                    th:classappend="${currentPage == null || currentPage == 0} ? 'disabled'">
                                                     <a class="page-link"
+                                                       th:if="${currentPage != null && currentPage > 0}"
                                                        th:href="@{/admin/khuyen-mai/edit/{id}(id=${khuyenMai.id}, page=${currentPage - 1}, size=${size})}">←
                                                         Trước</a>
+                                                    <span class="page-link"
+                                                          th:unless="${currentPage != null && currentPage > 0}">← Trước</span>
                                                 </li>
 
                                                 <li class="page-item"
                                                     th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-                                                    th:classappend="${currentPage == i} ? 'active'">
+                                                    th:classappend="${currentPage != null && currentPage == i} ? 'active'">
                                                     <a class="page-link"
                                                        th:href="@{/admin/khuyen-mai/edit/{id}(id=${khuyenMai.id}, page=${i}, size=${size})}"
                                                        th:text="${i + 1}"></a>
                                                 </li>
 
                                                 <li class="page-item"
-                                                    th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
+                                                    th:classappend="${currentPage == null || currentPage >= totalPages - 1} ? 'disabled'">
                                                     <a class="page-link"
+                                                       th:if="${currentPage != null && currentPage < totalPages - 1}"
                                                        th:href="@{/admin/khuyen-mai/edit/{id}(id=${khuyenMai.id}, page=${currentPage + 1}, size=${size})}">Sau
                                                         →</a>
+                                                    <span class="page-link"
+                                                          th:unless="${currentPage != null && currentPage < totalPages - 1}">Sau →</span>
                                                 </li>
                                             </ul>
                                         </nav>
+                                        <!-- ... existing code ... -->
                                     </div>
                                 </div>
                             </div>
@@ -268,184 +298,9 @@
     </div>
 </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        document.getElementById("searchBox").addEventListener("input", function () {
-            let keyword = this.value;
-            fetch(`/admin/khuyen-mai/tim-kiem-san-pham?keyword=${keyword}&page=0&size=5`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("Dữ liệu API trả về:", data); // Kiểm tra dữ liệu trong console
-
-                    if (!data || !data.content || !Array.isArray(data.content)) {
-                        throw new Error("Dữ liệu trả về không hợp lệ");
-                    }
-
-                    let tableBody = document.getElementById("productTableBody");
-                    tableBody.innerHTML = "";
-
-                    data.content.forEach(sp => {
-                        if (!sp || !sp.sanPham || typeof sp.sanPham.tenSanPham !== "string") {
-                            console.error("Sản phẩm không hợp lệ:", sp);
-                            return; // Bỏ qua phần tử lỗi
-                        }
-
-
-                        let row = `<tr>
-                <td><input type='checkbox' class='form-check-input chonSanPham' name='sanPham_${sp.id}' value='on' data-id='${sp.id}'></td>
-                <td>${sp.sanPham.tenSanPham}</td>
-                <td class='giaGoc' data-gia='${sp.giaBan}'>${sp.giaBan.toLocaleString()} VNĐ</td>
-                <td><input type='number' class='form-control mucGiam' name='mucGiam_${sp.id}' min='0' step='0.1'></td>
-            </tr>`;
-                        tableBody.innerHTML += row;
-                    });
-                })
-                .catch(error => console.error("Lỗi:", error));
-
-        });
-        document.addEventListener("DOMContentLoaded", function () {
-            const form = document.getElementById("khuyenMaiForm");
-            const hinhThucGiam = document.getElementById("hinhThucGiam");
-            const tenChienDich = document.getElementById("tenChienDich");
-            const giaTriGiam = document.getElementById("giaTriGiam");
-            const mucGiamInputs = document.querySelectorAll(".mucGiam");
-            const giaGocElements = document.querySelectorAll(".giaGoc");
-            const checkboxes = document.querySelectorAll(".chonSanPham");
-            const selectAll = document.getElementById("selectAll");
-
-            // Xử lý chọn tất cả
-            selectAll.addEventListener("change", function () {
-                checkboxes.forEach((checkbox, index) => {
-                    checkbox.checked = this.checked;
-                    mucGiamInputs[index].disabled = !this.checked;
-                });
-            });
-
-            function showToastError(message) {
-                let toastEl = document.getElementById('errorToast');
-                let toastBody = toastEl.querySelector('.toast-body');
-                toastBody.textContent = message;
-
-                let toast = new bootstrap.Toast(toastEl, {delay: 3000}); // Hiển thị 3 giây
-                toast.show();
-            }
-
-            // Xử lý từng checkbox
-            checkboxes.forEach((checkbox, index) => {
-                checkbox.addEventListener("change", function () {
-                    mucGiamInputs[index].disabled = !this.checked;
-                    updateSelectAllState();
-                });
-            });
-
-            // Cập nhật trạng thái "Chọn tất cả"
-            function updateSelectAllState() {
-                const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
-                selectAll.checked = checkedCount === checkboxes.length;
-                selectAll.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
-            }
-
-            // Kiểm tra form trước khi submit
-            form.addEventListener("submit", function (event) {
-                event.preventDefault();
-
-                if (validateForm()) {
-                    Swal.fire({
-                        title: 'Bạn có muốn Sửa không?',
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonText: 'Có',
-                        cancelButtonText: 'Không'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Sửa thành công!',
-                                text: 'Đợt khuyến mãi đã được Sửa vào hệ thống.',
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                this.submit();
-                            });
-                        }
-                    });
-
-                }
-            });
-
-            // Hàm kiểm tra form
-            function validateForm() {
-                const startDate = new Date(document.getElementById("thoiGianBatDau").value);
-                const endDate = new Date(document.getElementById("thoiGianKetThuc").value);
-
-                const tenChienDich = document.querySelector("input[name='tenChienDich']").value.trim();
-                if (tenChienDich === "") {
-                    showToastError("Vui lòng nhập Tên Chiến Dịch.");
-                    return false;
-                }
-
-                const giaTriGiam = document.getElementById("giaTriGiam").value;
-                if (!giaTriGiam || giaTriGiam <= 0) {
-                    showToastError("Giá trị giảm chung phải lớn hơn 0.");
-                    return false;
-                }
-
-                if (endDate <= startDate) {
-                    showToastError("Thời gian kết thúc phải sau thời gian bắt đầu");
-                    return false;
-                }
-
-                let hasSelectedProduct = false;
-                let isValid = true;
-
-                checkboxes.forEach((checkbox, index) => {
-                    if (checkbox.checked) {
-                        hasSelectedProduct = true;
-                        const mucGiam = parseFloat(mucGiamInputs[index].value);
-                        const giaGoc = parseFloat(giaGocElements[index].dataset.gia);
-
-                        if (!mucGiam || mucGiam <= 0) {
-                            showToastError("Mức giảm phải lớn hơn 0");
-                            isValid = false;
-                            return;
-                        }
-
-                        if (hinhThucGiam.value === "Phần Trăm" && mucGiam > 100) {
-                            showToastError("Mức giảm không được vượt quá 100%");
-                            isValid = false;
-                            return;
-                        }
-
-                        if (hinhThucGiam.value === "Theo Giá Tiền" && mucGiam >= giaGoc) {
-                            showToastError("Mức giảm không được vượt quá giá gốc");
-                            isValid = false;
-                            return;
-                        }
-                    }
-                });
-
-                if (!hasSelectedProduct) {
-                    showToastError("Vui lòng chọn ít nhất một sản phẩm");
-                    return false;
-                }
-
-                return isValid;
-            }
-
-            // Khởi tạo trạng thái ban đầu
-            updateSelectAllState();
-            checkboxes.forEach((checkbox, index) => {
-                mucGiamInputs[index].disabled = !checkbox.checked;
-            });
-
-
-        });
-    </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/js/khuyenmai/khuyenmai-edit.js">
+</script>
 </body>
 </html>

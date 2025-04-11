@@ -2,7 +2,7 @@ api:
   version: v1
 spring:
   datasource:
-    url: ${MSSQL_URL:jdbc:sqlserver://localhost;encrypt=true;trustServerCertificate=true;databaseName=DEMO_SECURITY;sendTimeAsDatetime=true;useUnicode=true;characterEncoding=UTF-8}
+    url: ${MSSQL_URL:jdbc:sqlserver://localhost;encrypt=true;trustServerCertificate=true;databaseName=DEMO_SECURITYy;sendTimeAsDatetime=true;useUnicode=true;characterEncoding=UTF-8}
     username: ${MSSQL_USERNAME:sa}
     password: ${MSSQL_PASSWORD:123456}
   jpa:
