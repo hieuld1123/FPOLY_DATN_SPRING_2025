@@ -59,12 +59,12 @@ public class HoaDonApiController {
                 .build();
     }
 
-    @PatchMapping("/edit/{code}")
+    @GetMapping("/edit/{code}")
     public ApiResponse edit(@PathVariable String code) {
-        hoaDonService.edit(code);
         return ApiResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message("Xác nhận chỉnh sửa hóa đơn")
+                .data(this.hoaDonService.editInvoice(code))
                 .build();
     }
 

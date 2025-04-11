@@ -1,0 +1,342 @@
+.equal-height {
+    height: 100%;
+}
+
+.row-equal-height {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.row-equal-height > div {
+    display: flex;
+}
+
+.row-equal-height .card {
+    flex: 1;
+}
+
+.financial-info .row {
+    margin-bottom: 0.5rem;
+}
+
+.financial-info .row:last-child {
+    margin-bottom: 0;
+}
+
+.financial-info .col-8 {
+    font-weight: 500;
+}
+
+.financial-info .col-4 {
+    text-align: right;
+}
+
+.financial-info .text-muted {
+    color: #6c757d !important;
+}
+
+.financial-info .text-primary {
+    color: #0054a6 !important;
+    font-weight: bold;
+}
+
+.financial-info-row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.financial-info-row > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.product-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.product-table th,
+.product-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.product-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.product-table td {
+    vertical-align: middle;
+}
+
+.product-table img {
+    max-width: 50px;
+    max-height: 50px;
+    object-fit: cover;
+    margin-right: 0.5rem;
+}
+
+.product-table .text-right {
+    text-align: right;
+}
+
+.product-table .remove-btn {
+    width: 15px;
+    color: #dc3545;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.product-table .remove-btn:hover {
+    text-decoration: underline;
+}
+/*///*/
+.suggestions {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    width: 80%;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.suggestion-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.suggestion-item:hover {
+    background-color: #f0f0f0;
+}
+
+.suggestion-item img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    object-fit: cover;
+}
+
+.suggestion-item .product-info {
+    flex: 1;
+}
+
+.suggestion-item .product-info small {
+    display: block;
+    color: #888;
+    font-size: 12px;
+}
+
+.suggestion-item .quantity {
+    font-size: 14px;
+    color: #555;
+    margin-left: 10px;
+    min-width: 30px;
+    text-align: right;
+}
+
+.suggestion-item .price {
+    font-size: 14px;
+    color: #333;
+    margin-left: 10px;
+    min-width: 80px;
+    text-align: right;
+}
+
+.address-list {
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+.address-item {
+    padding: 8px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.address-item:hover {
+    background-color: #f0f0f0;
+}
+
+.address-item.selected {
+    background-color: #e6f0fa;
+    font-weight: bold;
+}
+
+#existing-addresses {
+    display: none; /* Ẩn mặc định, chỉ hiển thị khi có địa chỉ */
+}
+
+#new-address-form {
+    margin-top: 1rem;
+}
+/*Customer*/
+.customer-suggestions {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    width: 80%;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.customer-suggestion-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.customer-suggestion-item:hover {
+    background-color: #f0f0f0;
+}
+
+.customer-suggestion-item .customer-info {
+    flex: 1;
+}
+
+.customer-suggestion-item .customer-info small {
+    display: block;
+    color: #888;
+    font-size: 12px;
+}
+
+.customer-info {
+    padding: 5px;
+}
+
+.customer-info .customer-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #0054a6;
+}
+
+.customer-info .customer-address {
+    margin-top: 0.5rem;
+    color: #333;
+}
+
+.customer-info .add-address-btn {
+    margin-top: 0.5rem;
+    color: #0054a6;
+    cursor: pointer;
+    text-decoration: underline;
+    display: block;
+}
+
+.customer-info .change-phone-btn {
+    margin-top: 0.5rem;
+    color: #0054a6;
+    cursor: pointer;
+    text-decoration: underline;
+    display: block;
+}
+
+.customer-info .add-address-btn:hover {
+    color: #003087;
+}
+
+#existing-addresses {
+    display: block !important;
+    visibility: visible !important;
+}
+
+.shipping-fee-input {
+    border: 2px solid #007bff;
+    max-width: 300px;
+    transition: border-color 0.3s ease;
+}
+
+.shipping-fee-input:hover, .shipping-fee-input:focus {
+    border-color: #0056b3;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+.input-group-text {
+    background-color: #f8f9fa;
+    border: 2px solid #007bff;
+    border-right: none;
+}
+
+.admin-layout {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar bên trái */
+.sidebar {
+    width: 250px;
+    background-color: #1e293b;
+    color: white;
+    padding: 20px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+/* Khu vực bên phải (navbar + nội dung) */
+.right-content {
+    flex-grow: 1;
+    margin-left: 240px; /* Để tránh bị sidebar che */
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 250px);
+}
+
+/* Navbar cố định bên trên */
+.navbar-custom {
+    height: 50px;
+    padding: 12px 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    width: calc(100% - 250px);
+    z-index: 1000;
+}
+
+/* Nội dung chính (có padding để tránh navbar che) */
+.main-content {
+    margin-top: 30px;
+    padding: 50px 15px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+/* Responsive: Ẩn sidebar trên mobile */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 80px;
+        padding: 10px;
+    }
+
+    .right-content {
+        margin-left: 80px;
+        width: calc(100% - 80px);
+    }
+
+    .navbar-custom {
+        width: calc(100% - 80px);
+    }
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 80px;
+}
