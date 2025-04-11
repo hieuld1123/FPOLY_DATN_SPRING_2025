@@ -134,10 +134,10 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
             Pageable pageable
     );
 
-    @Query("FROM SanPhamChiTiet sp WHERE sp.soLuong > 0")
-    Page<SanPhamChiTiet> findAvailableProducts(Pageable pageable);
+    @Query("SELECT spct.id FROM SanPhamChiTiet spct WHERE spct.trangThai = true AND spct.soLuong > 0")
+    List<Long> findAllAvailableIds();
 
-    @Query("SELECT sp FROM SanPhamChiTiet sp WHERE sp.sanPham IS NOT NULL AND LOWER(sp.sanPham.tenSanPham) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    @Query("SELECT sp FROM SanPhamChiTiet sp WHERE sp.sanPham IS NOT NULL AND LOWER(sp.sanPham.tenSanPham) LIKE LOWER(CONCAT('%', :keyword, '%')) ORDER BY sp.sanPham.ngayTao DESC")
     Page<SanPhamChiTiet> findByTenSanPham(@Param("keyword") String keyword, Pageable pageable);
 
 

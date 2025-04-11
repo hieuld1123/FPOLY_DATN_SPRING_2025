@@ -1,19 +1,20 @@
 package com.example.datnsd26.controller;
 
 import com.example.datnsd26.models.Voucher;
+import com.example.datnsd26.services.VoucherSchedulerService;
 import com.example.datnsd26.services.VoucherService;
 import com.example.datnsd26.services.VoucherValidationException;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -29,6 +30,9 @@ import java.util.Map;
 public class VoucherController {
 
     private final VoucherService voucherService;
+
+    @Autowired
+    private VoucherSchedulerService voucherSchedulerService;
 
 
     @GetMapping
@@ -93,9 +97,13 @@ public class VoucherController {
 
     @GetMapping("/statuses")
     @ResponseBody
-    public List<Map<String, Serializable>> getVoucherStatuses() {
-        List<Voucher> vouchers = voucherService.getAllVouchers();
-        return vouchers.stream().map(v -> Map.of(
+    public List<Map<String, Serializable>> getVoucherStatuses(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Voucher> pageData = voucherService.getAllVouchers(pageable);
+        return pageData.stream().map(v -> Map.of(
                 "id", (Serializable) v.getId(),
                 "trangThai", v.getTrangThai()
         )).toList();

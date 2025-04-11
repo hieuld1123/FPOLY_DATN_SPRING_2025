@@ -1,322 +1,218 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<div th:replace="components/head :: head"></div>
-<meta charset="UTF-8">
-<title>Quản Lý Khuyến Mãi</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-<style>
-    /* Bố cục chính */
-    .admin-layout {
-        display: flex;
-        height: 100vh;
-    }
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản Lý Khuyến Mãi</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    /* Sidebar bên trái */
-    .sidebar {
-        width: 250px;
-        background-color: #1E293B;
-        color: white;
-        padding: 20px;
-        height: 100vh;
-        position: fixed;
-        top: 0;
-        left: 0;
-    }
+    <style>
 
-    /* Khu vực bên phải (navbar + nội dung) */
-    .right-content {
-        flex-grow: 1;
-        margin-left: 240px; /* Để tránh bị sidebar che */
-        display: flex;
-        flex-direction: column;
-        width: calc(100% - 250px);
-    }
-
-    /* Navbar cố định bên trên */
-    .navbar-custom {
-        height: 50px;
-        padding: 12px 20px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        position: fixed;
-        width: calc(100% - 250px);
-        z-index: 1000;
-    }
-
-    /* Nội dung chính (có padding để tránh navbar che) */
-    .main-content {
-        margin-top: 30px;
-        padding: 50px 15px;
-        overflow-y: auto;
-        flex-grow: 1;
-    }
-
-
-    /* Responsive: Ẩn sidebar trên mobile */
-    @media (max-width: 768px) {
-        .sidebar {
-            width: 80px;
-            padding: 10px;
-        }
-
-        .right-content {
-            margin-left: 80px;
-            width: calc(100% - 80px);
-        }
-
-        .navbar-custom {
-            width: calc(100% - 80px);
-        }
-    }
-</style>
+    </style>
+</head>
 <body>
-<div class="admin-layout">
-    <div th:replace="~{components/admin-sidebar :: admin-sidebar}" class="sidebar">
-        <!-- Nội dung sidebar -->
+<div th:replace="~{components/admin-sidebar :: sidebar}"></div>
+<div class="page-wrapper">
+<div class="container mt-4">
+    <!-- Thông báo -->
+    <div th:if="${param.success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:if="${param.success == 'created'}">Thêm mới khuyến mãi thành công!</span>
+        <span th:if="${param.success == 'updated'}">Cập nhật khuyến mãi thành công!</span>
+        <span th:if="${param.success == 'deleted'}">Xóa khuyến mãi thành công!</span>
+        <span th:if="${param.success == 'restored'}">Khôi phục khuyến mãi thành công!</span>
+        <span th:if="${param.success == 'stopped'}">Đã ngừng khuyến mãi thành công!</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
-    <!-- Khu vực bên phải -->
-    <div class="right-content">
-        <!-- Navbar -->
-        <nav class="navbar-custom"
-             th:replace="~{components/admin-navbar :: admin-navbar}">
-        </nav>
+    <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${param.error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
 
-        <!-- Main content -->
-        <div class="main-content">
-            <!-- Thông báo -->
-            <div th:if="${param.success}" class="alert alert-success alert-dismissible fade show" role="alert">
-                <span th:if="${param.success == 'created'}">Thêm mới khuyến mãi thành công!</span>
-                <span th:if="${param.success == 'updated'}">Cập nhật khuyến mãi thành công!</span>
-                <span th:if="${param.success == 'deleted'}">Xóa khuyến mãi thành công!</span>
-                <span th:if="${param.success == 'restored'}">Khôi phục khuyến mãi thành công!</span>
-                <span th:if="${param.success == 'stopped'}">Đã ngừng khuyến mãi thành công!</span>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                <span th:text="${param.error}"></span>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Danh Sách Khuyến Mãi</h2>
+        <div>
+            <a href="/admin/khuyen-mai/create" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Thêm Mới
+            </a>
+        </div>
+    </div>
 
-            <!-- Main Content -->
-            <div class="card">
+    <!-- Main Content -->
+    <div class="card">
+        <div class="card-body">
+            <!-- Page Size Selector -->
+            <div class="mb-3">
+                <select class="form-select w-auto" id="pageSize" onchange="changePageSize(this.value)">
+                    <option value="5" th:selected="${danhSachKhuyenMai.size == 5}">5 / trang</option>
+                    <option value="10" th:selected="${danhSachKhuyenMai.size == 10}">10 / trang</option>
+                    <option value="20" th:selected="${danhSachKhuyenMai.size == 20}">20 / trang</option>
+                </select>
+            </div>
+            <div class="card mb-4">
                 <div class="card-header">
-                    <h3 class="card-title">Bộ lọc</h3>
-                </div>
-                <div class="card-body border-bottom py-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <form th:action="@{/admin/khuyen-mai/search}" method="get" class="row g-3">
-                            <div class="col-md-3 input-icon">
-                                                 <span class="input-icon-addon">
-                                                        <!-- Download SVG icon from http://tabler.io/icons/icon/search -->
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                             stroke-width="2" stroke-linecap="round"
-                                                             stroke-linejoin="round"
-                                                             class="icon icon-1">
-                                                            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                                                            <path d="M21 21l-6 -6"></path>
-                                                        </svg>
-                                                    </span>
-                                <input type="text" class="form-control" name="tenChienDich"
-                                       th:value="${tenChienDich}" placeholder="Tên chiến dịch...">
-                            </div>
-                            <div class="col-md-2">
-                                <select class="form-select" name="trangThai">
-                                    <option value="" th:selected="${trangThai == null}">Tất cả</option>
-                                    <option value="1" th:selected="${trangThai == 1}">Đang diễn ra</option>
-                                    <option value="0" th:selected="${trangThai == 0}">Sắp diễn ra</option>
-                                    <option value="2" th:selected="${trangThai == 2}">Đã kết thúc</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <input type="datetime-local" class="form-control" name="startDate"
-                                       th:value="${startDate}" placeholder="Từ ngày">
-                            </div>
-                            <div class="col-md-3">
-                                <input type="datetime-local" class="form-control" name="endDate"
-                                       th:value="${endDate}" placeholder="Đến ngày">
-                            </div>
-                        </form>
-                        <div>
-                            <a href="/admin/khuyen-mai/create" class="btn btn-primary">
-                                <i class="fas fa-plus"></i><span class="ms-2">Thêm Mới</span>
-                            </a>
+                    <form th:action="@{/admin/khuyen-mai/search}" method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" name="tenChienDich"
+                                   th:value="${tenChienDich}" placeholder="Tên chiến dịch...">
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-12">
-                    <div class="card mt-5">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h3 class="card-title">Danh sách khuyến mãi</h3>
-                            <!-- Page Size Selector -->
-                            <select class="form-select w-auto" id="pageSize"
-                                    onchange="changePageSize(this.value)">
-                                <option value="5" th:selected="${danhSachKhuyenMai.size == 5}">5 / trang
-                                </option>
-                                <option value="10" th:selected="${danhSachKhuyenMai.size == 10}">10 /
-                                    trang
-                                </option>
-                                <option value="20" th:selected="${danhSachKhuyenMai.size == 20}">20 /
-                                    trang
-                                </option>
+                        <div class="col-md-2">
+                            <select class="form-select" name="trangThai">
+                                <option value="" th:selected="${trangThai == null}">Tất cả trạng thái</option>
+                                <option value="1" th:selected="${trangThai == 1}">Đang diễn ra</option>
+                                <option value="0" th:selected="${trangThai == 0}">Sắp diễn ra</option>
+                                <option value="2" th:selected="${trangThai == 2}">Đã kết thúc</option>
                             </select>
                         </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover">
-                                    <thead class="table-light">
-                                    <tr>
-                                        <th>STT</th>
-                                        <th>Tên Chiến Dịch</th>
-                                        <th>Hình Thức Giảm</th>
-                                        <th>Giá Trị Giảm</th>
-                                        <th>Số SP</th>
-                                        <th>Thời Gian Bắt Đầu</th>
-                                        <th>Thời Gian Kết Thúc</th>
-                                        <th>Trạng Thái</th>
-                                        <th>Thao Tác</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr th:each="km, stat : ${danhSachKhuyenMai.content}">
-                                        <td th:text="${danhSachKhuyenMai.number * danhSachKhuyenMai.size + stat.count}"></td>
-                                        <td th:text="${km.tenChienDich}"></td>
-                                        <td th:text="${km.hinhThucGiam}"></td>
-                                        <td>
-                            <span th:if="${km.hinhThucGiam == 'Phần Trăm'}"
-                                  th:text="${#numbers.formatDecimal(km.giaTriGiam, 1, 'COMMA', 2, 'POINT') + '%'}"></span>
-                                            <span th:if="${km.hinhThucGiam == 'Theo Giá Tiền'}"
-                                                  th:text="${#numbers.formatDecimal(km.giaTriGiam, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}"></span>
-                                        </td>
-                                        <td>
-                                        <span class="badge bg-info"
-                                              th:text="${#lists.size(km.khuyenMaiChitiets)}"></span>
-                                        </td>
-                                        <td th:text="${#temporals.format(km.thoiGianBatDau, 'dd-MM-yyyy HH:mm')}"></td>
-                                        <td th:text="${#temporals.format(km.thoiGianKetThuc, 'dd-MM-yyyy HH:mm')}"></td>
-                                        <td>
-                                    <span th:if="${km.trangThai == 0}"
-                                          class="badge bg-warning text-dark">Chưa diễn ra</span>
-                                            <span th:if="${km.trangThai == 1}"
-                                                  class="badge bg-success text-right">Đang diễn ra</span>
-                                            <span th:if="${km.trangThai == 2}"
-                                                  class="badge bg-danger text-right">Đã kết thúc</span>
-                                        </td>
-                                        <td>
-                                            <div class="btn-group" role="group">
-                                                <a th:href="@{/admin/khuyen-mai/edit/{id}(id=${km.id})}"
-                                                   class="btn btn-sm btn-info me-2" title="Sửa">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <a th:if="${km.trangThai == 2}"
-                                                   th:href="@{/admin/khuyen-mai/restore/{id}(id=${km.id})}"
-                                                   class="btn btn-sm btn-success me-2"
-                                                   onclick="return confirm('Bạn có chắc muốn khôi phục khuyến mãi này?')"
-                                                   title="Khôi phục">
-                                                    <i class="fas fa-redo"></i>
-                                                </a>
-                                                <a th:if="${km.trangThai == 1}"
-                                                   th:href="@{/admin/khuyen-mai/stop/{id}(id=${km.id})}"
-                                                   class="btn btn-sm btn-warning me-2"
-                                                   onclick="return confirm('Bạn có chắc muốn ngừng khuyến mãi này?')"
-                                                   title="Ngừng hoạt động">
-                                                    <i class="fas fa-stop-circle"></i>
-                                                </a>
-                                                <button type="button" class="btn btn-sm btn-danger"
-                                                        th:attr="onclick=|confirmDelete(${km.id})|"
-                                                        title="Xóa">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-
-                                <!-- Pagination -->
-                                <div class="d-flex justify-content-between align-items-center mt-4">
-                                    <!-- Pagination Navigation -->
-                                    <nav th:if="${danhSachKhuyenMai.totalPages > 0}">
-                                        <ul class="pagination mb-0">
-                                            <!-- First page -->
-                                            <li class="page-item"
-                                                th:classappend="${danhSachKhuyenMai.first ? 'disabled' : ''}">
-                                                <a class="page-link"
-                                                   th:href="@{/admin/khuyen-mai(page=0,size=${danhSachKhuyenMai.size})}">&laquo;</a>
-                                            </li>
-                                            <!-- Previous page -->
-                                            <li class="page-item"
-                                                th:classappend="${danhSachKhuyenMai.first ? 'disabled' : ''}">
-                                                <a class="page-link"
-                                                   th:href="@{/admin/khuyen-mai(page=${danhSachKhuyenMai.number - 1},size=${danhSachKhuyenMai.size})}">&lsaquo;</a>
-                                            </li>
-                                            <!-- Page numbers -->
-                                            <li class="page-item"
-                                                th:each="pageNumber : ${#numbers.sequence(0, danhSachKhuyenMai.totalPages - 1)}"
-                                                th:classappend="${pageNumber == danhSachKhuyenMai.number ? 'active' : ''}"
-                                                th:if="${pageNumber >= danhSachKhuyenMai.number - 2 and pageNumber <= danhSachKhuyenMai.number + 2}">
-                                                <a class="page-link"
-                                                   th:href="@{/admin/khuyen-mai(page=${pageNumber},size=${danhSachKhuyenMai.size})}"
-                                                   th:text="${pageNumber + 1}"></a>
-                                            </li>
-                                            <!-- Next page -->
-                                            <li class="page-item"
-                                                th:classappend="${danhSachKhuyenMai.last ? 'disabled' : ''}">
-                                                <a class="page-link"
-                                                   th:href="@{/admin/khuyen-mai(page=${danhSachKhuyenMai.number + 1},size=${danhSachKhuyenMai.size})}">&rsaquo;</a>
-                                            </li>
-                                            <!-- Last page -->
-                                            <li class="page-item"
-                                                th:classappend="${danhSachKhuyenMai.last ? 'disabled' : ''}">
-                                                <a class="page-link"
-                                                   th:href="@{/admin/khuyen-mai(page=${danhSachKhuyenMai.totalPages - 1},size=${danhSachKhuyenMai.size})}">&raquo;</a>
-                                            </li>
-                                        </ul>
-                                    </nav>
-
-                                    <!-- Page Info -->
-                                    <div class="text-muted">
-                                        Hiển thị
-                                        <span th:text="${danhSachKhuyenMai.numberOfElements}"></span> /
-                                        <span th:text="${danhSachKhuyenMai.totalElements}"></span>
-                                        khuyến mãi
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="col-md-2">
+                            <input type="datetime-local" class="form-control" name="startDate"
+                                   th:value="${startDate}" placeholder="Từ ngày">
                         </div>
-                    </div>
+                        <div class="col-md-2">
+                            <input type="datetime-local" class="form-control" name="endDate"
+                                   th:value="${endDate}" placeholder="Đến ngày">
+                        </div>
+                    </form>
+
                 </div>
             </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-light">
+                    <tr>
+                        <th>STT</th>
+                        <th>Tên Chiến Dịch</th>
+                        <th>Hình Thức Giảm</th>
+                        <th>Giá Trị Giảm</th>
+                        <th>Số SP</th>
+                        <th>Thời Gian Bắt Đầu</th>
+                        <th>Thời Gian Kết Thúc</th>
+                        <th>Trạng Thái</th>
+                        <th>Thao Tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr  th:each="km, stat : ${danhSachKhuyenMai.content}" th:id="'khuyenmai-' + ${km.id}">
+                        <td th:text="${danhSachKhuyenMai.number * danhSachKhuyenMai.size + stat.count}"></td>
+                        <td th:text="${km.tenChienDich}"></td>
+                        <td th:text="${km.hinhThucGiam}"></td>
+                        <td>
+                            <span th:if="${km.hinhThucGiam == 'Phần Trăm'}"
+                                  th:text="${#numbers.formatDecimal(km.giaTriGiam, 1, 'COMMA', 2, 'POINT') + '%'}"></span>
+                            <span th:if="${km.hinhThucGiam == 'Theo Giá Tiền'}"
+                                  th:text="${#numbers.formatDecimal(km.giaTriGiam, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}"></span>
+                        </td>
+                        <td>
+                            <span class="badge bg-info" th:text="${#lists.size(km.khuyenMaiChitiets)}"></span>
+                        </td>
+                        <td th:text="${#temporals.format(km.thoiGianBatDau, 'dd-MM-yyyy HH:mm')}"></td>
+                        <td th:text="${#temporals.format(km.thoiGianKetThuc, 'dd-MM-yyyy HH:mm')}"></td>
+                        <td class="status">
+                            <span th:if="${km.trangThai == 0}" class="badge bg-warning">Chưa diễn ra</span>
+                            <span th:if="${km.trangThai == 1}" class="badge bg-success">Đang diễn ra</span>
+                            <span th:if="${km.trangThai == 2}" class="badge bg-danger">Đã kết thúc</span>
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a th:href="@{/admin/khuyen-mai/edit/{id}(id=${km.id})}"
+                                   class="btn btn-sm btn-info me-2" title="Sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a th:if="${km.trangThai == 2}"
+                                   th:href="@{/admin/khuyen-mai/restore/{id}(id=${km.id})}"
+                                   class="btn btn-sm btn-success me-2"
+                                   onclick="return confirm('Bạn có chắc muốn khôi phục khuyến mãi này?')"
+                                   title="Khôi phục">
+                                    <i class="fas fa-redo"></i>
+                                </a>
+                                <a th:if="${km.trangThai == 1}"
+                                   th:href="@{/admin/khuyen-mai/stop/{id}(id=${km.id})}"
+                                   class="btn btn-sm btn-warning me-2"
+                                   onclick="return confirm('Bạn có chắc muốn ngừng khuyến mãi này?')"
+                                   title="Ngừng hoạt động">
+                                    <i class="fas fa-stop-circle"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-danger"
+                                        th:attr="onclick=|confirmDelete(${km.id})|"
+                                        title="Xóa">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
 
+                <!-- Pagination -->
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <!-- Pagination Navigation -->
+                    <nav th:if="${danhSachKhuyenMai.totalPages > 0}">
+                        <ul class="pagination mb-0">
+                            <!-- First page -->
+                            <li class="page-item" th:classappend="${danhSachKhuyenMai.first ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/admin/khuyen-mai(page=0,size=${danhSachKhuyenMai.size})}">&laquo;</a>
+                            </li>
+                            <!-- Previous page -->
+                            <li class="page-item" th:classappend="${danhSachKhuyenMai.first ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/admin/khuyen-mai(page=${danhSachKhuyenMai.number - 1},size=${danhSachKhuyenMai.size})}">&lsaquo;</a>
+                            </li>
+                            <!-- Page numbers -->
+                            <li class="page-item"
+                                th:each="pageNumber : ${#numbers.sequence(0, danhSachKhuyenMai.totalPages - 1)}"
+                                th:classappend="${pageNumber == danhSachKhuyenMai.number ? 'active' : ''}"
+                                th:if="${pageNumber >= danhSachKhuyenMai.number - 2 and pageNumber <= danhSachKhuyenMai.number + 2}">
+                                <a class="page-link" th:href="@{/admin/khuyen-mai(page=${pageNumber},size=${danhSachKhuyenMai.size})}"
+                                   th:text="${pageNumber + 1}"></a>
+                            </li>
+                            <!-- Next page -->
+                            <li class="page-item" th:classappend="${danhSachKhuyenMai.last ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/admin/khuyen-mai(page=${danhSachKhuyenMai.number + 1},size=${danhSachKhuyenMai.size})}">&rsaquo;</a>
+                            </li>
+                            <!-- Last page -->
+                            <li class="page-item" th:classappend="${danhSachKhuyenMai.last ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/admin/khuyen-mai(page=${danhSachKhuyenMai.totalPages - 1},size=${danhSachKhuyenMai.size})}">&raquo;</a>
+                            </li>
+                        </ul>
+                    </nav>
 
-            <!-- Modal Xác nhận xóa -->
-            <div class="modal fade" id="deleteModal" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Xác nhận xóa</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>Bạn có chắc chắn muốn xóa khuyến mãi này?</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                            <form id="deleteForm" th:action="@{/admin/khuyen-mai/delete}" method="post">
-                                <input type="hidden" id="khuyenMaiId" name="id">
-                                <button type="submit" class="btn btn-danger">Xóa</button>
-                            </form>
-                        </div>
+                    <!-- Page Info -->
+                    <div class="text-muted">
+                        Hiển thị
+                        <span th:text="${danhSachKhuyenMai.numberOfElements}"></span> /
+                        <span th:text="${danhSachKhuyenMai.totalElements}"></span>
+                        khuyến mãi
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+</div>
 
+
+<!-- Modal Xác nhận xóa -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa khuyến mãi này?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form id="deleteForm" th:action="@{/admin/khuyen-mai/delete}" method="post">
+                    <input type="hidden" id="khuyenMaiId" name="id">
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -359,8 +255,8 @@
     document.querySelector("input[name='startDate']").addEventListener("change", searchKhuyenMai);
     document.querySelector("input[name='endDate']").addEventListener("change", searchKhuyenMai);
 
-    setTimeout(function () {
-        document.querySelectorAll('.alert').forEach(function (alert) {
+    setTimeout(function() {
+        document.querySelectorAll('.alert').forEach(function(alert) {
             bootstrap.Alert.getOrCreateInstance(alert).close();
         });
     }, 5000);
@@ -377,5 +273,64 @@
         window.location.href = `/admin/khuyen-mai?page=0&size=${size}`;
     }
 </script>
+
+<script>
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    function updateVoucherStatuses() {
+        const page = getQueryParam('page') || 0;
+        const size = getQueryParam('size') || 5;
+
+        $.ajax({
+            url: `/admin/khuyen-mai/statuses?page=${page}&size=${size}`,
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                data.forEach(function (voucher) {
+                    let row = $("#khuyenmai-" + voucher.id);
+                    if (row.length === 0) {
+                        console.warn("Không tìm thấy dòng cho ID:", voucher.id);
+                        return;
+                    }
+
+                    let statusCell = row.find(".status span");
+                    if (statusCell.length === 0) {
+                        console.warn("Không tìm thấy ô trạng thái cho ID:", voucher.id);
+                        return;
+                    }
+
+                    statusCell.removeClass("bg-success bg-warning bg-danger");
+
+                    if (voucher.trangThai === 1) {
+                        statusCell.addClass("bg-success").text("Đang diễn ra");
+                    } else if (voucher.trangThai === 0) {
+                        statusCell.addClass("bg-warning").text("Chưa diễn ra");
+                    } else if (voucher.trangThai === 2) {
+                        statusCell.addClass("bg-danger").text("Đã kết thúc");
+                    }
+
+                    statusCell.css({
+                        "display": "flex",
+                        "align-items": "center",
+                        "justify-content": "center",
+                        "width": "100%",
+                        "padding": "5px 10px",
+                        "border-radius": "10px"
+                    });
+                });
+            },
+            error: function (xhr) {
+                console.error("Lỗi khi lấy trạng thái khuyến mãi:", xhr.responseText);
+            }
+        });
+    }
+
+    // Gọi API cập nhật trạng thái mỗi 10 giây
+    setInterval(updateVoucherStatuses, 10000);
+</script>
+
 </body>
 </html>
