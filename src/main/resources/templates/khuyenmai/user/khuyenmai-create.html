@@ -1,111 +1,184 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tạo Khuyến Mãi</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <style>
-        .error-message {
-            color: red;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="components/head :: head"></div>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tạo Khuyến Mãi</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<style>
+    /* Bố cục chính */
+    .admin-layout {
+        display: flex;
+        height: 100vh;
+    }
+
+    /* Sidebar bên trái */
+    .sidebar {
+        width: 250px;
+        background-color: #1E293B;
+        color: white;
+        padding: 20px;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+
+    /* Khu vực bên phải (navbar + nội dung) */
+    .right-content {
+        flex-grow: 1;
+        margin-left: 240px; /* Để tránh bị sidebar che */
+        display: flex;
+        flex-direction: column;
+        width: calc(100% - 250px);
+    }
+
+    /* Navbar cố định bên trên */
+    .navbar-custom {
+        height: 50px;
+        padding: 12px 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        width: calc(100% - 250px);
+        z-index: 1000;
+    }
+
+    /* Nội dung chính (có padding để tránh navbar che) */
+    .main-content {
+        margin-top: 30px;
+        padding: 50px 15px;
+        overflow-y: auto;
+        flex-grow: 1;
+    }
+
+
+    /* Responsive: Ẩn sidebar trên mobile */
+    @media (max-width: 768px) {
+        .sidebar {
+            width: 80px;
+            padding: 10px;
         }
 
-        .table td {
-            vertical-align: middle;
+        .right-content {
+            margin-left: 80px;
+            width: calc(100% - 80px);
         }
 
-        #toastContainer {
-            top: 20px;
-            right: 20px;
+        .navbar-custom {
+            width: calc(100% - 80px);
         }
+    }
 
-        .toast {
-            min-width: 300px;
-            border-radius: 10px;
-            opacity: 0.95;
-        }
+    /*Main*/
+    .error-message {
+        color: red;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
 
-        .toast-body {
-            font-size: 1rem;
-            padding: 10px 15px;
-        }
+    .table td {
+        vertical-align: middle;
+    }
 
-        .toast.show {
-            animation: fadeInUp 0.5s ease-in-out;
-        }
+    #toastContainer {
+        top: 20px;
+        right: 20px;
+    }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+    .toast {
+        min-width: 300px;
+        border-radius: 10px;
+        opacity: 0.95;
+    }
+
+    .toast-body {
+        font-size: 1rem;
+        padding: 10px 15px;
+    }
+
+    .toast.show {
+        animation: fadeInUp 0.5s ease-in-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
         }
-    </style>
-</head>
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
 <body>
-<div th:replace="~{components/admin-sidebar :: sidebar}"></div>
-<div class="page-wrapper">
-    <div class="container-xl mt-4">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h2 class="card-title mb-0">Tạo Khuyến Mãi Mới</h2>
-            </div>
-            <div class="card-body">
-                <form th:action="@{/admin/khuyen-mai/create}" method="post" novalidate id="khuyenMaiForm"
-                      onsubmit="return validate(event);">
-                    <div>
-                        <div class="col-md-5">
+<div class="admin-layout">
+    <div th:replace="~{components/admin-sidebar :: admin-sidebar}" class="sidebar">
+        <!-- Nội dung sidebar -->
+    </div>
+    <!-- Khu vực bên phải -->
+    <div class="right-content">
+        <!-- Navbar -->
+        <nav class="navbar-custom"
+             th:replace="~{components/admin-navbar :: admin-navbar}">
+        </nav>
 
-                            <div class="mb-3">
-                                <label class="form-label">Tên chiến dịch <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="tenChienDich" required minlength="5"
-                                       maxlength="200" id="tenChienDichInput">
-                                <div class="invalid-feedback">Vui lòng nhập tên chiến dịch (5-200 ký tự)</div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Hình thức giảm <span class="text-danger">*</span></label>
-                                <select class="form-select" id="hinhThucGiam" name="hinhThucGiam" required>
-                                    <option value="">Chọn hình thức giảm</option>
-                                    <option value="Phần Trăm">Phần Trăm</option>
-                                    <option value="Theo Giá Tiền">Theo Giá Tiền</option>
-                                </select>
-                                <div class="invalid-feedback">Vui lòng chọn hình thức giảm</div>
-                            </div>
+        <!-- Main content -->
+        <div class="main-content">
+            <div class="card mt-3">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title mb-0">Tạo Khuyến Mãi Mới</h2>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/admin/khuyen-mai/create}" method="post" novalidate id="khuyenMaiForm"
+                          onsubmit="return validate(event);">
+                        <div>
+                            <div class="col-md-5">
 
-
-                            <!-- Thời gian và giá trị giảm -->
-
-                            <div class="mb-3">
-                                <label class="form-label">Thời gian bắt đầu <span class="text-danger">*</span></label>
-                                <input type="datetime-local" class="form-control" name="thoiGianBatDau"
-                                       id="thoiGianBatDau" required>
-                                <div class="invalid-feedback">Vui lòng chọn thời gian bắt đầu</div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Thời gian kết thúc <span class="text-danger">*</span></label>
-                                <input type="datetime-local" class="form-control" name="thoiGianKetThuc"
-                                       id="thoiGianKetThuc" required>
-                                <div class="invalid-feedback">Vui lòng chọn thời gian kết thúc</div>
-                            </div>
-
-
-                            <div class="mb-3">
-                                <label class="form-label">Giá trị giảm chung <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input type="number" class="form-control" id="giaTriGiam" name="giaTriGiam" min="0"
-                                           required>
-                                    <span class="input-group-text" id="giaTriGiamUnit">VNĐ</span>
+                                <div class="mb-3">
+                                    <label class="form-label">Tên chiến dịch <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="tenChienDich" required minlength="5"
+                                           maxlength="200" id="tenChienDichInput">
+                                    <div class="invalid-feedback">Vui lòng nhập tên chiến dịch (5-200 ký tự)</div>
                                 </div>
-                                <div class="invalid-feedback">Vui lòng nhập giá trị giảm hợp lệ</div>
-                            </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Hình thức giảm <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="hinhThucGiam" name="hinhThucGiam" required>
+                                        <option value="">Chọn hình thức giảm</option>
+                                        <option value="Phần Trăm">Phần Trăm</option>
+                                        <option value="Theo Giá Tiền">Theo Giá Tiền</option>
+                                    </select>
+                                    <div class="invalid-feedback">Vui lòng chọn hình thức giảm</div>
+                                </div>
+
+
+                                <!-- Thời gian và giá trị giảm -->
+
+                                <div class="mb-3">
+                                    <label class="form-label">Thời gian bắt đầu <span class="text-danger">*</span></label>
+                                    <input type="datetime-local" class="form-control" name="thoiGianBatDau"
+                                           id="thoiGianBatDau" required>
+                                    <div class="invalid-feedback">Vui lòng chọn thời gian bắt đầu</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Thời gian kết thúc <span class="text-danger">*</span></label>
+                                    <input type="datetime-local" class="form-control" name="thoiGianKetThuc"
+                                           id="thoiGianKetThuc" required>
+                                    <div class="invalid-feedback">Vui lòng chọn thời gian kết thúc</div>
+                                </div>
+
+
+                                <div class="mb-3">
+                                    <label class="form-label">Giá trị giảm chung <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="giaTriGiam" name="giaTriGiam" min="0"
+                                               required>
+                                        <span class="input-group-text" id="giaTriGiamUnit">VNĐ</span>
+                                    </div>
+                                    <div class="invalid-feedback">Vui lòng nhập giá trị giảm hợp lệ</div>
+                                </div>
 
 
                                 <div class="text-end mt-5">
@@ -117,500 +190,115 @@
                                     </button>
                                 </div>
 
-                        </div>
-                        <div >
-                            <!-- Bảng sản phẩm -->
-                            <div class="card mb-3">
-                                        <input type="text" id="searchSanPham" class="form-control"
-                                               placeholder="Nhập tên sản phẩm...">
-                                        <div id="suggestions" class="list-group position-absolute w-100"></div>
-                                        <div id="pagination" class="mt-2"></div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered table-hover">
-                                            <thead class="table-light">
-                                            <tr>
-                                                <th style="width: 50px">
-                                                    <input type="checkbox" id="selectAll" class="form-check-input">
-                                                </th>
-                                                <th>Ảnh sản phẩm</th>
-                                                <th>Sản phẩm</th>
-                                                <th>Size</th>
-                                                <th style="width: 120px">Màu</th>
-                                                <th>Giá gốc</th>
-                                                <th>Mức giảm</th>
-                                                <th>Giá sau giảm</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <tr th:each="spct, iterStat : ${sanPhamPage.content}">
-                                                <td class="text-center">
-                                                    <input type="checkbox" class="form-check-input chonSanPham"
-                                                           th:name="'sanPham_' + ${spct.id}"
-                                                           th:data-product-id="${spct.id}">
-                                                </td>
-                                                <td>
-                                                    <div class="carousel-inner">
-                                                        <th:block th:each="anhs, index : ${spct.hinhAnh}">
-                                                            <div th:classappend="${index.index == 0} ? 'carousel-item active' : 'carousel-item'">
-                                                                <!-- Hình ảnh carousel -->
-                                                                <img th:if="${anhs.tenAnh != null}"
-                                                                     th:src="@{'/upload' + ${anhs.tenAnh.substring(anhs.tenAnh.lastIndexOf('upload') + 6)}}"
-                                                                     class="d-block w-100 carousel-img rounded-3" alt="Ảnh">
-                                                            </div>
-                                                        </th:block>
-                                                    </div>
-                                                </td>
-                                                <td th:text="${spct.sanPham.tenSanPham}"></td>
-                                                <td th:text="${spct.kichCo != null ? spct.kichCo.ten : ''}"></td>
-                                                <td>
-                                                    <input type="color" th:value="${spct.mauSac.ten}" class="form-control" disabled>
-                                                </td>
-                                                <td th:text="${#numbers.formatDecimal(spct.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"
-                                                    class="giaGoc" th:data-gia="${spct.giaBan}"></td>
-                                                <td>
-                                                    <div class="input-group">
-                                                        <input type="number" class="form-control mucGiam"
-                                                               th:name="'mucGiam_' + ${spct.id}" min="0" disabled>
-                                                        <span class="input-group-text mucGiamUnit">VNĐ</span>
-                                                    </div>
-                                                </td>
-                                                <td class="giaSauGiam text-end"></td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
+                            </div>
+                            <div >
+                                <!-- Bảng sản phẩm -->
+                                <div class="card mb-3">
+                                    <input type="text" id="searchSanPham" class="form-control"
+                                           placeholder="Nhập tên sản phẩm...">
+                                    <div id="suggestions" class="list-group position-absolute w-100"></div>
+                                    <div id="pagination" class="mt-2"></div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-hover">
+                                                <thead class="table-light">
+                                                <tr>
+                                                    <th style="width: 50px">
+                                                        <input type="checkbox" id="selectAll" class="form-check-input">
+                                                    </th>
+                                                    <th>Ảnh sản phẩm</th>
+                                                    <th>Sản phẩm</th>
+                                                    <th>Size</th>
+                                                    <th style="width: 120px">Màu</th>
+                                                    <th>Giá gốc</th>
+                                                    <th>Mức giảm</th>
+                                                    <th>Giá sau giảm</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr th:each="spct, iterStat : ${sanPhamPage.content}">
+                                                    <td class="text-center">
+                                                        <input type="checkbox" class="form-check-input chonSanPham"
+                                                               th:name="'sanPham_' + ${spct.id}"
+                                                               th:data-product-id="${spct.id}">
+                                                    </td>
+                                                    <td>
+                                                        <div class="carousel-inner">
+                                                            <th:block th:each="anhs, index : ${spct.hinhAnh}">
+                                                                <div th:classappend="${index.index == 0} ? 'carousel-item active' : 'carousel-item'">
+                                                                    <!-- Hình ảnh carousel -->
+                                                                    <img th:if="${anhs.tenAnh != null}"
+                                                                         th:src="@{'/upload' + ${anhs.tenAnh.substring(anhs.tenAnh.lastIndexOf('upload') + 6)}}"
+                                                                         class="d-block w-100 carousel-img rounded-3" alt="Ảnh">
+                                                                </div>
+                                                            </th:block>
+                                                        </div>
+                                                    </td>
+                                                    <td th:text="${spct.sanPham.tenSanPham}"></td>
+                                                    <td th:text="${spct.kichCo != null ? spct.kichCo.ten : ''}"></td>
+                                                    <td>
+                                                        <input type="color" th:value="${spct.mauSac.ten}" class="form-control" disabled>
+                                                    </td>
+                                                    <td th:text="${#numbers.formatDecimal(spct.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"
+                                                        class="giaGoc" th:data-gia="${spct.giaBan}"></td>
+                                                    <td>
+                                                        <div class="input-group">
+                                                            <input type="number" class="form-control mucGiam"
+                                                                   th:name="'mucGiam_' + ${spct.id}" min="0" disabled>
+                                                            <span class="input-group-text mucGiamUnit">VNĐ</span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="giaSauGiam text-end"></td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <nav aria-label="Page navigation">
+                                            <ul class="pagination">
+                                                <li class="page-item" th:classappend="${sanPhamPage.first} ? 'disabled'">
+                                                    <a class="page-link"
+                                                       th:href="@{/admin/khuyen-mai/create(page=${sanPhamPage.number - 1}, size=${sanPhamPage.size})}">
+                                                        <- </a>
+                                                </li>
+                                                <li class="page-item"
+                                                    th:each="i : ${#numbers.sequence(0, sanPhamPage.totalPages - 1)}"
+                                                    th:classappend="${sanPhamPage.number == i} ? 'active'">
+                                                    <a class="page-link"
+                                                       th:href="@{/admin/khuyen-mai/create(page=${i}, size=${sanPhamPage.size})}"
+                                                       th:text="${i + 1}"></a>
+                                                </li>
+                                                <li class="page-item" th:classappend="${sanPhamPage.last} ? 'disabled'">
+                                                    <a class="page-link"
+                                                       th:href="@{/admin/khuyen-mai/create(page=${sanPhamPage.number + 1}, size=${sanPhamPage.size})}">
+                                                        -> </a>
+                                                </li>
+                                            </ul>
+                                        </nav>
                                     </div>
-                                    <nav aria-label="Page navigation">
-                                        <ul class="pagination">
-                                            <li class="page-item" th:classappend="${sanPhamPage.first} ? 'disabled'">
-                                                <a class="page-link"
-                                                   th:href="@{/admin/khuyen-mai/create(page=${sanPhamPage.number - 1}, size=${sanPhamPage.size})}">
-                                                    <- </a>
-                                            </li>
-                                            <li class="page-item"
-                                                th:each="i : ${#numbers.sequence(0, sanPhamPage.totalPages - 1)}"
-                                                th:classappend="${sanPhamPage.number == i} ? 'active'">
-                                                <a class="page-link"
-                                                   th:href="@{/admin/khuyen-mai/create(page=${i}, size=${sanPhamPage.size})}"
-                                                   th:text="${i + 1}"></a>
-                                            </li>
-                                            <li class="page-item" th:classappend="${sanPhamPage.last} ? 'disabled'">
-                                                <a class="page-link"
-                                                   th:href="@{/admin/khuyen-mai/create(page=${sanPhamPage.number + 1}, size=${sanPhamPage.size})}">
-                                                    -> </a>
-                                            </li>
-                                        </ul>
-                                    </nav>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
-<!-- Toast Container -->
-<div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 1050">
-    <div id="errorToast" class="toast align-items-center text-white bg-danger border-0 shadow-lg" role="alert"
-         aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-            <div class="toast-body fw-bold"></div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
-                    aria-label="Close"></button>
+    <!-- Toast Container -->
+    <div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 1050">
+        <div id="errorToast" class="toast align-items-center text-white bg-danger border-0 shadow-lg" role="alert"
+             aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body fw-bold"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+            </div>
         </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', async function () {
-        const form = document.getElementById('khuyenMaiForm');
-        const hinhThucGiam = document.getElementById('hinhThucGiam');
-        const tenChienDich = document.getElementById("tenChienDichInput");
-        const giaTriGiam = document.getElementById('giaTriGiam');
-        const thoiGianBatDau = document.getElementById('thoiGianBatDau');
-        const thoiGianKetThuc = document.getElementById('thoiGianKetThuc');
-        const selectAll = document.getElementById('selectAll');
-        const checkboxes = document.querySelectorAll('.chonSanPham');
-        const mucGiamInputs = document.querySelectorAll('.mucGiam');
-        const giaGocCells = document.querySelectorAll('.giaGoc');
-        const giaSauGiamCells = document.querySelectorAll('.giaSauGiam');
-        const giaTriGiamUnit = document.getElementById('giaTriGiamUnit');
-        const mucGiamUnits = document.querySelectorAll('.mucGiamUnit');
-        let currentPage = 0;
-
-        function fetchSanPham(keyword, page = 0) {
-            fetch(`/admin/khuyen-mai/product-search?keyword=${keyword}&page=${page}`)
-                .then(response => response.json())
-                .then(data => {
-                    let suggestions = document.getElementById("suggestions");
-                    let pagination = document.getElementById("pagination");
-                    suggestions.innerHTML = "";
-                    pagination.innerHTML = "";
-
-                    if (!data || !data.content || data.content.length === 0) {
-                        suggestions.innerHTML = "<div class='list-group-item'>Không tìm thấy sản phẩm</div>";
-                        return;
-                    }
-
-                    data.content.forEach(sp => {
-                        let item = document.createElement("button");
-                        item.classList.add("list-group-item", "list-group-item-action");
-                        item.textContent = sp.tenSanPham;
-                        item.onclick = function () {
-                            document.getElementById("searchSanPham").value = sp.tenSanPham;
-                            suggestions.innerHTML = "";
-                        };
-                        suggestions.appendChild(item);
-                    });
-
-                    if (data.totalPages > 1) {
-                        for (let i = 0; i < data.totalPages; i++) {
-                            let btn = document.createElement("button");
-                            btn.classList.add("btn", "btn-sm", "btn-primary", "mx-1");
-                            btn.textContent = i + 1;
-                            btn.onclick = function () {
-                                currentPage = i;
-                                fetchSanPham(keyword, i);
-                            };
-                            pagination.appendChild(btn);
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error("Lỗi khi gọi API: ", error);
-                    document.getElementById("suggestions").innerHTML = "<div class='list-group-item text-danger'>Lỗi hệ thống</div>";
-                });
-        }
-
-        document.getElementById("searchSanPham").addEventListener("input", function () {
-            let keyword = this.value.trim();
-            if (keyword.length > 2) {
-                currentPage = 0;
-                fetchSanPham(keyword);
-            } else {
-                document.getElementById("suggestions").innerHTML = "";
-                document.getElementById("pagination").innerHTML = "";
-            }
-        });
-// Ẩn danh sách khi click ra ngoài
-        document.addEventListener("click", function (event) {
-            let suggestions = document.getElementById("suggestions");
-            let searchBox = document.getElementById("searchSanPham");
-            if (!searchBox.contains(event.target) && !suggestions.contains(event.target)) {
-                suggestions.innerHTML = "";
-                document.getElementById("pagination").innerHTML = "";
-            }
-        });
-
-        function showToastError(message) {
-            let toastEl = document.getElementById('errorToast');
-            let toastBody = toastEl.querySelector('.toast-body');
-            toastBody.textContent = message;
-
-            let toast = new bootstrap.Toast(toastEl, {delay: 3000}); // Hiển thị 3 giây
-            toast.show();
-        }
-
-        let sanPhamDangKhuyenMai = [];
-
-        async function fetchSanPhamKhuyenMai() {
-            try {
-                const response = await fetch('/admin/khuyen-mai/san-pham-khuyen-mai');
-                if (response.ok) {
-                    sanPhamDangKhuyenMai = await response.json();
-                    console.log('Danh sách sản phẩm đang khuyến mãi:', sanPhamDangKhuyenMai);
-                }
-            } catch (error) {
-                console.error('Lỗi khi tải danh sách sản phẩm khuyến mãi:', error);
-            }
-        }
-
-        // Sự kiện "change" cho từng checkbox sản phẩm
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', function () {
-                const productId = this.getAttribute('data-product-id'); // lấy dưới dạng chuỗi
-                if (this.checked && sanPhamDangKhuyenMai.map(id => id.toString()).includes(productId)) {
-                    showToastError('Sản phẩm này đã có khuyến mãi đang diễn ra!');
-                    this.checked = false;
-                }
-            });
-        });
-
-        function formatCurrency(value) {
-            return new Intl.NumberFormat('vi-VN', {
-                style: 'currency',
-                currency: 'VND'
-            }).format(value);
-        }
-
-        function updateGiaTriGiamUnit() {
-            const isPercent = hinhThucGiam.value === 'Phần Trăm';
-            const unit = isPercent ? '%' : 'VNĐ';
-            giaTriGiamUnit.textContent = unit;
-            mucGiamUnits.forEach(el => el.textContent = unit);
-
-            if (isPercent) {
-                giaTriGiam.max = '100';
-                giaTriGiam.step = '0.1';
-                mucGiamInputs.forEach(input => {
-                    if (!input.disabled) {
-                        input.max = '100';
-                        input.step = '0.1';
-                        if (parseFloat(input.value) > 100) {
-                            input.value = '100';
-                        }
-                    }
-                });
-            } else {
-                giaTriGiam.removeAttribute('max');
-                giaTriGiam.step = '1000';
-                mucGiamInputs.forEach(input => {
-                    if (!input.disabled) {
-                        input.removeAttribute('max');
-                        input.step = '1000';
-                    }
-                });
-            }
-            updateGiaSauGiam();
-        }
-
-        // Sự kiện "change" cho selectAll với kiểm tra sản phẩm chưa có KM
-        selectAll.addEventListener('change', function () {
-            let hasSelected = false;
-            // Chuyển danh sách sản phẩm có KM thành chuỗi
-            const dsSanPhamKM = sanPhamDangKhuyenMai.map(id => id.toString());
-
-            checkboxes.forEach((checkbox, index) => {
-                const productId = checkbox.getAttribute('data-product-id'); // lấy chuỗi
-                if (!dsSanPhamKM.includes(productId)) {
-                    checkbox.checked = this.checked;
-                    const mucGiamInput = mucGiamInputs[index];
-                    if (this.checked) {
-                        mucGiamInput.disabled = false;
-                        mucGiamInput.value = giaTriGiam.value;
-                    } else {
-                        mucGiamInput.disabled = true;
-                        mucGiamInput.value = '';
-                    }
-                    hasSelected = true;
-                } else {
-                    checkbox.checked = false;
-                }
-            });
-
-            if (!hasSelected && this.checked) {
-                showToastError("Tất cả sản phẩm đều đã có khuyến mãi, không thể chọn!");
-                this.checked = false;
-            }
-
-            updateGiaSauGiam();
-        });
-
-        function tinhGiaSauGiam(giaGoc, mucGiam) {
-            const isPercent = hinhThucGiam.value === 'Phần Trăm';
-            if (isPercent) {
-                return giaGoc * (1 - mucGiam / 100);
-            }
-            return Math.max(0, giaGoc - mucGiam);
-        }
-
-        function updateGiaSauGiam() {
-            checkboxes.forEach((checkbox, index) => {
-                const mucGiamInput = mucGiamInputs[index];
-                const giaGoc = parseFloat(giaGocCells[index].dataset.gia);
-                const giaSauGiamCell = giaSauGiamCells[index];
-
-                if (checkbox.checked) {
-                    mucGiamInput.disabled = false;
-                    const mucGiam = parseFloat(mucGiamInput.value) || 0;
-                    const giaSauGiam = tinhGiaSauGiam(giaGoc, mucGiam);
-                    giaSauGiamCell.textContent = formatCurrency(giaSauGiam);
-                } else {
-                    mucGiamInput.disabled = true;
-                    mucGiamInput.value = '';
-                    giaSauGiamCell.textContent = '';
-                }
-            });
-        }
-
-        hinhThucGiam.addEventListener('change', updateGiaTriGiamUnit);
-
-        giaTriGiam.addEventListener('input', () => {
-            const value = parseFloat(giaTriGiam.value) || 0;
-            mucGiamInputs.forEach(input => {
-                if (!input.disabled) {
-                    input.value = value;
-                }
-            });
-            updateGiaSauGiam();
-        });
-
-        // Sự kiện cho từng checkbox sản phẩm (đã có ở trên)
-
-        checkboxes.forEach((checkbox, index) => {
-            checkbox.addEventListener('change', () => {
-                const mucGiamInput = mucGiamInputs[index];
-                if (checkbox.checked) {
-                    mucGiamInput.disabled = false;
-                    mucGiamInput.value = giaTriGiam.value;
-                } else {
-                    mucGiamInput.disabled = true;
-                    mucGiamInput.value = '';
-                }
-                updateGiaSauGiam();
-
-                const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-                const someChecked = Array.from(checkboxes).some(cb => cb.checked);
-                selectAll.checked = allChecked;
-                selectAll.indeterminate = someChecked && !allChecked;
-            });
-        });
-
-        mucGiamInputs.forEach(input => {
-            input.addEventListener('input', updateGiaSauGiam);
-        });
-
-        thoiGianBatDau.addEventListener('change', function () {
-            thoiGianKetThuc.min = this.value;
-            if (thoiGianKetThuc.value && thoiGianKetThuc.value < this.value) {
-                thoiGianKetThuc.value = this.value;
-            }
-        });
-
-        // Form Validation
-        form.addEventListener('submit', function (event) {
-            event.preventDefault();
-
-            let isValid = true;
-            let errorMessage = '';
-
-            // Kiểm tra tên chiến dịch
-            if (!tenChienDich.value.trim()) {
-                errorMessage = 'Vui lòng nhập tên chiến dịch khuyến mãi';
-                isValid = false;
-            }
-
-            // Kiểm tra hình thức giảm giá
-            if (!hinhThucGiam.value) {
-                errorMessage = 'Vui lòng chọn hình thức giảm giá';
-                isValid = false;
-            }
-
-            // Kiểm tra giá trị giảm chung
-            if (!giaTriGiam.value.trim()) {
-                errorMessage = 'Vui lòng nhập giá trị giảm chung';
-                isValid = false;
-            } else if (parseFloat(giaTriGiam.value) < 0) {
-                errorMessage = 'Giá trị giảm không được âm';
-                isValid = false;
-            }
-
-            // Kiểm tra ngày bắt đầu & ngày kết thúc không bỏ trống
-            if (!thoiGianBatDau.value || !thoiGianKetThuc.value) {
-                errorMessage = 'Vui lòng chọn ngày bắt đầu và ngày kết thúc';
-                isValid = false;
-            } else {
-                let batDau = new Date(thoiGianBatDau.value);
-                let ketThuc = new Date(thoiGianKetThuc.value);
-                let ngayHienTai = new Date();
-
-                // Đặt giây & mili-giây về 0 để không tính giây
-                batDau.setSeconds(0, 0);
-                ketThuc.setSeconds(0, 0);
-                ngayHienTai.setSeconds(0, 0);
-
-                // Kiểm tra ngày bắt đầu không được là quá khứ (không tính giây)
-                if (batDau < ngayHienTai) {
-                    errorMessage = 'Ngày bắt đầu không được là quá khứ';
-                    isValid = false;
-                }
-
-                // Ngày kết thúc phải sau ngày bắt đầu
-                if (ketThuc <= batDau) {
-                    errorMessage = 'Thời gian kết thúc phải sau thời gian bắt đầu';
-                    isValid = false;
-                }
-            }
-
-            // Kiểm tra sản phẩm được chọn
-            const hasSelectedProducts = Array.from(checkboxes).some(cb => cb.checked);
-            if (!hasSelectedProducts) {
-                errorMessage = 'Vui lòng chọn ít nhất một sản phẩm';
-                isValid = false;
-            }
-
-            // Kiểm tra mức giảm
-            const isPercent = hinhThucGiam.value === 'Phần Trăm';
-            if (isPercent && parseFloat(giaTriGiam.value) > 100) {
-                errorMessage = 'Giá trị giảm theo phần trăm không được vượt quá 100%';
-                isValid = false;
-            }
-
-            checkboxes.forEach((checkbox, index) => {
-                if (checkbox.checked) {
-                    const mucGiamInput = mucGiamInputs[index];
-                    const giaGoc = parseFloat(giaGocCells[index].dataset.gia);
-                    const mucGiam = parseFloat(mucGiamInput.value);
-
-                    if (!mucGiam || mucGiam <= 0) {
-                        errorMessage = 'Vui lòng nhập mức giảm hợp lệ cho tất cả sản phẩm được chọn';
-                        isValid = false;
-                    }
-
-                    if (!isPercent && mucGiam >= giaGoc) {
-                        errorMessage = 'Mức giảm không được lớn hơn hoặc bằng giá gốc của sản phẩm';
-                        isValid = false;
-                    }
-                }
-            });
-
-            if (!isValid) {
-                showToastError(errorMessage);
-                return;
-            }
-
-            Swal.fire({
-                title: 'Bạn có muốn thêm không?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Có',
-                cancelButtonText: 'Không'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Thêm thành công!',
-                        text: 'Đợt khuyến mãi đã được thêm vào hệ thống.',
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(() => {
-                        form.classList.add('was-validated');
-                        form.submit();
-                    });
-                }
-            });
-        });
-
-        function validate(event) {
-            // Nếu cần thêm xử lý validate riêng
-        }
-
-        // Set min datetime for inputs
-        const now = new Date();
-        const nowString = now.toISOString().slice(0, 16);
-        thoiGianBatDau.min = nowString;
-        thoiGianKetThuc.min = nowString;
-
-        // Initialize
-        updateGiaTriGiamUnit();
-
-        // Gọi API khi tải trang
-        await fetchSanPhamKhuyenMai();
-    });
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/js/khuyenmai/khuyenmai-create.js">
 </script>
 </body>
 </html>

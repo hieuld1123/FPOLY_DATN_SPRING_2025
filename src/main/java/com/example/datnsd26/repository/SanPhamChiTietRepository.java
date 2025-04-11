@@ -192,4 +192,7 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
     List<SanPhamChiTiet> findBySanPhamAndTrangThaiTrue(SanPham sanPham);
 
     List<SanPhamChiTiet> findBySanPhamIdAndTrangThaiTrue(Integer sanPhamId);
+
+
+
 }

@@ -1,152 +1,259 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Danh sách Voucher</title>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<div th:replace="components/head :: head"></div>
+<title>Danh sách Voucher</title>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
-    <script>
-        function getQueryParam(param) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param);
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
+<!-- Tabler JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
+
+<style>
+    /* Bố cục chính */
+    .admin-layout {
+        display: flex;
+        height: 100vh;
+    }
+
+    /* Sidebar bên trái */
+    .sidebar {
+        width: 250px;
+        background-color: #1E293B;
+        color: white;
+        padding: 20px;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+
+    /* Khu vực bên phải (navbar + nội dung) */
+    .right-content {
+        flex-grow: 1;
+        margin-left: 240px; /* Để tránh bị sidebar che */
+        display: flex;
+        flex-direction: column;
+        width: calc(100% - 250px);
+    }
+
+    /* Navbar cố định bên trên */
+    .navbar-custom {
+        height: 50px;
+        padding: 12px 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        width: calc(100% - 250px);
+        z-index: 1000;
+    }
+
+    /* Nội dung chính (có padding để tránh navbar che) */
+    .main-content {
+        margin-top: 30px;
+        padding: 50px 15px;
+        overflow-y: auto;
+        flex-grow: 1;
+    }
+
+
+    /* Responsive: Ẩn sidebar trên mobile */
+    @media (max-width: 768px) {
+        .sidebar {
+            width: 80px;
+            padding: 10px;
         }
 
-        function updateVoucherStatuses() {
-            const page = getQueryParam('page') || 0;
-            const size = getQueryParam('size') || 5;
-
-            $.ajax({
-                url: `/admin/vouchers/statuses?page=${page}&size=${size}`,
-                type: "GET",
-                dataType: "json",
-                success: function (data) {
-                    data.forEach(function (voucher) {
-                        let row = $("#voucher-" + voucher.id);
-                        if (row.length === 0) {
-                            console.warn("Không tìm thấy dòng cho ID:", voucher.id);
-                            return;
-                        }
-
-                        let statusCell = row.find(".status span");
-                        if (statusCell.length === 0) {
-                            console.warn("Không tìm thấy ô trạng thái cho ID:", voucher.id);
-                            return;
-                        }
-
-                        statusCell.removeClass("bg-success bg-warning bg-danger");
-
-                        if (voucher.trangThai === 1) {
-                            statusCell.addClass("bg-success").text("Đang diễn ra");
-                        } else if (voucher.trangThai === 0) {
-                            statusCell.addClass("bg-warning").text("Chưa diễn ra");
-                        } else if (voucher.trangThai === 2) {
-                            statusCell.addClass("bg-danger").text("Đã kết thúc");
-                        }
-                    });
-                },
-                error: function (xhr) {
-                    console.error("Lỗi khi lấy trạng thái khuyến mãi:", xhr.responseText);
-                }
-            });
+        .right-content {
+            margin-left: 80px;
+            width: calc(100% - 80px);
         }
 
-        // Gọi API cập nhật trạng thái mỗi 10 giây
-        setInterval(updateVoucherStatuses, 10000);
-    </script>
+        .navbar-custom {
+            width: calc(100% - 80px);
+        }
+    }
+</style>
+<script>
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    function updateVoucherStatuses() {
+        const page = getQueryParam('page') || 0;
+        const size = getQueryParam('size') || 5;
+
+        $.ajax({
+            url: `/admin/vouchers/statuses?page=${page}&size=${size}`,
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                data.forEach(function (voucher) {
+                    let row = $("#voucher-" + voucher.id);
+                    if (row.length === 0) {
+                        console.warn("Không tìm thấy dòng cho ID:", voucher.id);
+                        return;
+                    }
+
+                    let statusCell = row.find(".status span");
+                    if (statusCell.length === 0) {
+                        console.warn("Không tìm thấy ô trạng thái cho ID:", voucher.id);
+                        return;
+                    }
+
+                    statusCell.removeClass("bg-success bg-warning bg-danger");
+
+                    if (voucher.trangThai === 1) {
+                        statusCell.addClass("bg-success").text("Đang diễn ra");
+                    } else if (voucher.trangThai === 0) {
+                        statusCell.addClass("bg-warning").text("Chưa diễn ra");
+                    } else if (voucher.trangThai === 2) {
+                        statusCell.addClass("bg-danger").text("Đã kết thúc");
+                    }
+                });
+            },
+            error: function (xhr) {
+                console.error("Lỗi khi lấy trạng thái khuyến mãi:", xhr.responseText);
+            }
+        });
+    }
+
+    // Gọi API cập nhật trạng thái mỗi 10 giây
+    setInterval(updateVoucherStatuses, 10000);
+</script>
 
 
-</head>
 <body>
-<div th:replace="~{components/admin-sidebar :: sidebar}"></div>
-<div class="page-wrapper">
-    <div class="container mt-4">
-        <h2>Danh sách Voucher</h2>
+<div class="admin-layout">
+    <div th:replace="~{components/admin-sidebar :: admin-sidebar}" class="sidebar">
+        <!-- Nội dung sidebar -->
+    </div>
+    <!-- Khu vực bên phải -->
+    <div class="right-content">
+        <!-- Navbar -->
+        <nav class="navbar-custom"
+             th:replace="~{components/admin-navbar :: admin-navbar}">
+        </nav>
 
-        <form action="/admin/vouchers/search" method="get">
-            <input type="text" name="maVoucher" placeholder="Nhập mã voucher">
+        <!-- Main content -->
+        <div class="main-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Bộ lọc</h3>
+                </div>
+                <div class="card-body border-bottom py-3">
+                    <div class="d-flex">
+                        <div class="text-secondary">
+                            <div class="d-inline-block">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <form action="/admin/vouchers/search" method="get" class="d-flex w-100">
+                                        <div class="d-flex w-100 gap-3">
+                                            <input type="text" class="form-control" name="maVoucher"
+                                                   placeholder="Nhập mã voucher">
 
-            <select name="trangThai">
-                <option value="">-- Chọn trạng thái --</option>
-                <option value="0">Chưa diễn ra</option>
-                <option value="1">Đang diễn ra</option>
-                <option value="2">Đã kết thúc</option>
-            </select>
-            <input type="datetime-local" name="ngayBatDau">
-            <input type="datetime-local" name="ngayKetThuc">
-            <button type="submit">Tìm kiếm</button>
-        </form>
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <a class="btn btn-primary mb-3" th:href="@{/admin/vouchers/create}">Thêm mới</a>
-        </div>
-        <div class="container mt-4">
-            <h2>Danh sách Voucher</h2>
-            <div class="table-responsive">
-                <table class="table table-striped text-nowrap">
-                    <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>Mã Voucher</th>
-                        <th>Tên</th>
-                        <th>Đơn tối thiểu</th>
-                        <th>Giảm Giá</th>
-                        <th>Giá Giảm tối đa</th>
-                        <th>Hình Thức Giảm</th>
-                        <th>Số Lượng</th>
-                        <th>Ngày Bắt Đầu</th>
-                        <th>Ngày Kết Thúc</th>
-                        <th>Trạng Thái</th>
-                        <th>Hành Động</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="voucher, iterStat : ${vouchers.content}" th:id="'voucher-' + ${voucher.id}">
-                        <td th:text="${iterStat.index + 1 + (vouchers.number * vouchers.size)}"></td>
-                        <td th:text="${voucher.maVoucher}"></td>
-                        <td th:text="${voucher.tenVoucher}"></td>
-                        <td th:text="${#numbers.formatDecimal(voucher.giaTriGiamToiThieu, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}"></td>
-                        <td>
+
+                                            <select name="trangThai" class="form-select mx-2">
+                                                <option value="">Chọn trạng thái</option>
+                                                <option value="0">Chưa Bắt Đầu</option>
+                                                <option value="1">Đang Hoạt Động</option>
+                                                <option value="2">Hết Hạn</option>
+                                            </select>
+
+                                            <input type="datetime-local" class="form-control" name="ngayBatDau">
+                                            <input type="datetime-local" class="form-control" name="ngayKetThuc">
+                                            <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+                                        </div>
+                                    </form>
+                                    <div class="ms-3">
+                                        <a th:href="@{/admin/vouchers/create}" class="btn btn-primary">
+                                            <i class="fas fa-plus"></i><span class="ms-2">Thêm Mới</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="card mt-5">
+                <div class="card-header">
+                    <h3 class="card-title">Danh sách phiếu giảm giá</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped text-nowrap">
+                            <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Mã Voucher</th>
+                                <th>Tên</th>
+                                <th>Đơn tối thiểu</th>
+                                <th>Giảm Giá</th>
+                                <th>Giá Giảm tối đa</th>
+                                <th>Hình Thức Giảm</th>
+                                <th>Số Lượng</th>
+                                <th>Ngày Bắt Đầu</th>
+                                <th>Ngày Kết Thúc</th>
+                                <th>Trạng Thái</th>
+                                <th>Hành Động</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="voucher, iterStat : ${vouchers.content}"
+                                th:id="'voucher-' + ${voucher.id}">
+                                <td th:text="${iterStat.index + 1 + (vouchers.number * vouchers.size)}"></td>
+                                <td th:text="${voucher.maVoucher}"></td>
+                                <td th:text="${voucher.tenVoucher}"></td>
+                                <td th:text="${#numbers.formatDecimal(voucher.giaTriGiamToiThieu, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}"></td>
+                                <td>
                             <span th:if="${voucher.hinhThucGiam == 'Phần Trăm'}"
                                   th:text="${#numbers.formatDecimal(voucher.giaTriGiam, 1, 'COMMA', 2, 'POINT') + '%'}"></span>
-                            <span th:if="${voucher.hinhThucGiam == 'Theo Giá Tiền'}"
-                                  th:text="${#numbers.formatDecimal(voucher.giaTriGiam, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}"></span>
-                        </td>
-                        <td th:if="${voucher.hinhThucGiam == 'Phần Trăm'}"
-                            th:text="${#numbers.formatDecimal(voucher.giaTriGiamToiDa, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">
-                        </td>
-                        <td th:if="${voucher.hinhThucGiam == 'Theo Giá Tiền'}"></td> <!-- Không hiển thị gì nếu Theo Giá Tiền -->
-                        <td th:text="${voucher.hinhThucGiam}"></td>
-                        <td th:text="${voucher.soLuong}"></td>
-                        <td th:text="${#temporals.format(voucher.ngayBatDau, 'dd/MM/yyyy HH:mm')}"></td>
-                        <td th:text="${#temporals.format(voucher.ngayKetThuc, 'dd/MM/yyyy HH:mm')}"></td>
-                        <td class="status">
-                            <span th:if="${voucher.trangThai == 1}" class="badge bg-success">Đang diễn ra</span>
-                            <span th:if="${voucher.trangThai == 0}" class="badge bg-warning">Chưa diễn ra</span>
-                            <span th:if="${voucher.trangThai == 2}" class="badge bg-danger">Đã kết thúc</span>
-                        </td>
-                        <td>
-                            <a class="btn btn-warning btn-sm"
-                               th:href="@{/admin/vouchers/edit/{id}(id=${voucher.id})}"><i class="fas fa-edit"></i> Sửa</a>
-                            <a class="btn btn-danger btn-sm" th:href="@{/admin/vouchers/delete/{id}(id=${voucher.id})}"
-                               onclick="return confirm('Bạn có chắc muốn xóa?')"><i class="fas fa-trash"></i> Xóa</a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="d-flex justify-content-between">
-                <a class="btn btn-primary" th:if="${vouchers.hasPrevious()}"
-                   th:href="@{/admin/vouchers(page=${vouchers.number - 1})}">Trước</a>
-                <span>Trang <span th:text="${vouchers.number + 1}"></span> / <span
-                        th:text="${vouchers.totalPages}"></span></span>
-                <a class="btn btn-primary" th:if="${vouchers.hasNext()}"
-                   th:href="@{/admin/vouchers(page=${vouchers.number + 1})}">Tiếp</a>
+                                    <span th:if="${voucher.hinhThucGiam == 'Theo Giá Tiền'}"
+                                          th:text="${#numbers.formatDecimal(voucher.giaTriGiam, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}"></span>
+                                </td>
+                                <td th:text="${#numbers.formatDecimal(voucher.giaTriGiamToiDa, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}"></td>
+                                <td th:text="${voucher.hinhThucGiam}"></td>
+                                <td th:text="${voucher.soLuong}"></td>
+                                <td th:text="${#temporals.format(voucher.ngayBatDau, 'dd/MM/yyyy HH:mm')}"></td>
+                                <td th:text="${#temporals.format(voucher.ngayKetThuc, 'dd/MM/yyyy HH:mm')}"></td>
+                                <td class="status">
+                                                            <span th:if="${voucher.trangThai == 1}"
+                                                                  class="badge bg-success">Hoạt động</span>
+                                    <span th:if="${voucher.trangThai == 0}"
+                                          class="badge bg-warning">Chưa bắt đầu</span>
+                                    <span th:if="${voucher.trangThai == 2}"
+                                          class="badge bg-danger">Hết hạn</span>
+                                </td>
+                                <td>
+                                    <a class="btn btn-warning btn-sm"
+                                       th:href="@{/admin/vouchers/edit/{id}(id=${voucher.id})}"><i
+                                            class="fas fa-edit"></i> Sửa</a>
+                                    <a class="btn btn-danger btn-sm"
+                                       th:href="@{/admin/vouchers/delete/{id}(id=${voucher.id})}"
+                                       onclick="return confirm('Bạn có chắc muốn xóa?')"><i
+                                            class="fas fa-trash"></i>
+                                        Xóa</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a class="btn btn-primary" th:if="${vouchers.hasPrevious()}"
+                           th:href="@{/admin/vouchers(page=${vouchers.number - 1})}">Trước</a>
+                        <span>Trang <span th:text="${vouchers.number + 1}"></span> / <span
+                                th:text="${vouchers.totalPages}"></span></span>
+                        <a class="btn btn-primary" th:if="${vouchers.hasNext()}"
+                           th:href="@{/admin/vouchers(page=${vouchers.number + 1})}">Tiếp</a>
+                    </div>
+                </div>
+
             </div>
         </div>
-
     </div>
 </div>
-
 </body>
 </html>
