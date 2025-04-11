@@ -401,14 +401,20 @@
     }
 
     function checkTrungSdt() {
-        var sdt = document.getElementById('inputSdt').value.trim();
+        var sdtInput = document.getElementById('inputSdt');
+        if (!sdtInput) return true; // Nếu không có input thì bỏ qua kiểm tra
+
+        var sdt = sdtInput.value.trim().toLowerCase();
+
         for (var i = 0; i < listTK.length; i++) {
-            if (sdt.toLowerCase() === listTK[i].sdt.toLowerCase()) {
+            var sdtTK = listTK[i].sdt;
+            if (sdtTK && sdt === sdtTK.toLowerCase()) {
                 return false; // Trùng
             }
         }
         return true; // Không trùng
     }
+
 
 
     function validate(event) {

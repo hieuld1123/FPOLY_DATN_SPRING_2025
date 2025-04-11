@@ -134,25 +134,15 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
             Pageable pageable
     );
 
-    @Query("SELECT spct.id FROM SanPhamChiTiet spct WHERE spct.trangThai = true AND spct.soLuong > 0")
-    List<Long> findAllAvailableIds();
+    @Query("FROM SanPhamChiTiet sp WHERE sp.soLuong > 0")
+    Page<SanPhamChiTiet> findAvailableProducts(Pageable pageable);
 
-    @Query("SELECT sp FROM SanPhamChiTiet sp WHERE sp.sanPham IS NOT NULL AND LOWER(sp.sanPham.tenSanPham) LIKE LOWER(CONCAT('%', :keyword, '%')) ORDER BY sp.sanPham.ngayTao DESC")
+    @Query("SELECT sp FROM SanPhamChiTiet sp WHERE sp.sanPham IS NOT NULL AND LOWER(sp.sanPham.tenSanPham) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<SanPhamChiTiet> findByTenSanPham(@Param("keyword") String keyword, Pageable pageable);
 
 
     Page<SanPhamChiTiet> findAll(Pageable pageable);
-    @Query("SELECT p FROM SanPhamChiTiet p WHERE "
-            + "( :filterBrand IS NULL OR p.thuongHieu.id IN :filterBrand ) "
-            + "AND ( :filterSole IS NULL OR p.deGiay.id IN :filterSole ) "
-            + "AND ( :filterMaterial IS NULL OR p.chatLieu.id IN :filterMaterial ) "
-            + "AND ( :filterColor IS NULL OR p.mauSac.id IN :filterColor ) "
-            + "AND ( :filterSize IS NULL OR p.kichCo.id IN :filterSize )")
-    List<PublicSanPhamResponse> filterProducts(@Param("filterBrand") List<Long> filterBrand,
-                                               @Param("filterSole") List<Long> filterSole,
-                                               @Param("filterMaterial") List<Long> filterMaterial,
-                                               @Param("filterColor") List<Long> filterColor,
-                                               @Param("filterSize") List<Long> filterSize);
+
 
     @Query("SELECT p FROM SanPhamChiTiet p ORDER BY p.sanPham.tenSanPham ASC")
     List<PublicSanPhamResponse> findAllSortedByNameAsc();
@@ -192,6 +182,22 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
     List<SanPhamChiTiet> findBySanPhamAndTrangThaiTrue(SanPham sanPham);
 
     List<SanPhamChiTiet> findBySanPhamIdAndTrangThaiTrue(Integer sanPhamId);
+
+    @Query("SELECT spct FROM SanPhamChiTiet spct WHERE " +
+            "(:thuongHieuIds IS NULL OR spct.thuongHieu.id IN :thuongHieuIds) " +
+            "AND (:chatLieuIds IS NULL OR spct.chatLieu.id IN :chatLieuIds) " +
+            "AND (:deGiayIds IS NULL OR spct.deGiay.id IN :deGiayIds) " +
+            "AND (:kichCoIds IS NULL OR spct.kichCo.id IN :kichCoIds) " +
+            "AND (:mauSacIds IS NULL OR spct.mauSac.id IN :mauSacIds) " +
+            "AND (:trangThai IS NULL OR spct.sanPham.trangThai = :trangThai)")
+    List<SanPhamChiTiet> filterSanPham(
+            @Param("thuongHieuIds") List<Long> thuongHieuIds,
+            @Param("chatLieuIds") List<Long> chatLieuIds,
+            @Param("deGiayIds") List<Long> deGiayIds,
+            @Param("kichCoIds") List<Long> kichCoIds,
+            @Param("mauSacIds") List<Long> mauSacIds,
+            @Param("trangThai") Boolean trangThai
+    );
 
 
 
