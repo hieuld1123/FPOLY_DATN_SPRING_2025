@@ -75,4 +75,9 @@ public class SanPhamChiTietImp implements SanPhamChiTietService {
         return sanPhamChiTietRepository.existsByMaSanPhamChiTiet(ma);
     }
 
+    @Override
+    public List<SanPhamChiTiet> findByIdSanPhamAndIdMauSac(Integer idSanPham, Integer idMauSac) {
+        return sanPhamChiTietRepository.findByIdSanPhamAndIdMauSac(idSanPham, idMauSac);
+    }
+
 }
