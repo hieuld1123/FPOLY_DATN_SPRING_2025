@@ -37,64 +37,88 @@
                         </div>
                         <form id="checkoutForm" th:action="@{/shop/place-order}" method="post" th:object="${hoaDonBinhRequest}">
                             <div th:if="${khachHang != null}">
-                                <div>hahhaaaa</div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Họ và tên:</label>
-                                <input th:field="*{tenNguoiNhan}" type="text" class="form-control">
-                                <small th:errors="*{tenNguoiNhan}" class="text-danger"></small>
-                            </div>
+                                <div>
+                                    <label>Họ tên: </label>
+                                    <span th:text="${khachHang.tenKhachHang}"></span>
+                                </div>
+                                <div>
+                                    <label>Email: </label>
+                                    <span th:text="${khachHang.taiKhoan.email}"></span>
+                                </div>
+                                <div>
+                                    <label>SĐT: </label>
+                                    <span th:text="${khachHang.taiKhoan.sdt}"></span>
+                                </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Số điện thoại:</label>
-                                <input th:field="*{sdtNguoiNhan}" type="text" class="form-control">
-                                <small th:errors="*{sdtNguoiNhan}" class="text-danger"></small>
+                                <h3>Chọn địa chỉ nhận hàng</h3>
+                                <div th:each="dc : ${khachHang.diaChi}">
+                                    <label>
+                                        <input type="radio" name="diaChiId" th:value="${dc.id}" required>
+                                        <span th:text="${dc.diaChiCuThe + ', ' + dc.xa + ', ' + dc.huyen + ', ' + dc.tinh}"></span>
+                                    </label>
+                                </div>
+                                <div class="mb-3">
+                                    <button type="submit" class="btn btn-primary">Đặt hàng</button>
+                                </div>
                             </div>
+                            <div th:if="${khachHang == null}">
+                                <div class="mb-3">
+                                    <label class="form-label">Họ và tên:</label>
+                                    <input th:field="*{tenNguoiNhan}" type="text" class="form-control">
+                                    <small th:errors="*{tenNguoiNhan}" class="text-danger"></small>
+                                </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Email:</label>
-                                <input th:field="*{email}" type="text" class="form-control">
-                                <small th:errors="*{email}" class="text-danger"></small>
-                            </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Số điện thoại:</label>
+                                    <input th:field="*{sdtNguoiNhan}" type="text" class="form-control">
+                                    <small th:errors="*{sdtNguoiNhan}" class="text-danger"></small>
+                                </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Tỉnh/Thành phố:</label>
-                                <select th:field="*{tinh}" id="province" class="form-select">
-                                    <option value="">Chọn tỉnh/thành</option>
-                                </select>
-                                <small th:errors="*{tinh}" class="text-danger"></small>
-                            </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Email:</label>
+                                    <input th:field="*{email}" type="text" class="form-control">
+                                    <small th:errors="*{email}" class="text-danger"></small>
+                                </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Quận/Huyện:</label>
-                                <select th:field="*{quan}" id="district" class="form-select" disabled>
-                                    <option value="">Chọn quận/huyện</option>
-                                </select>
-                                <small th:errors="*{quan}" class="text-danger"></small>
-                            </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Tỉnh/Thành phố:</label>
+                                    <select th:field="*{tinh}" id="province" class="form-select">
+                                        <option value="">Chọn tỉnh/thành</option>
+                                    </select>
+                                    <small th:errors="*{tinh}" class="text-danger"></small>
+                                </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Xã/Phường:</label>
-                                <select th:field="*{xa}" id="ward" class="form-select" disabled>
-                                    <option value="">Chọn xã/phường</option>
-                                </select>
-                                <small th:errors="*{xa}" class="text-danger"></small>
-                            </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Quận/Huyện:</label>
+                                    <select th:field="*{quan}" id="district" class="form-select" disabled>
+                                        <option value="">Chọn quận/huyện</option>
+                                    </select>
+                                    <small th:errors="*{quan}" class="text-danger"></small>
+                                </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Địa chỉ cụ thể:</label>
-                                <input th:field="*{diaChiNguoiNhan}" type="text" class="form-select">
-                                <small th:errors="*{diaChiNguoiNhan}" class="text-danger"></small>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Ghi chu</label>
-                                <textarea th:field="*{ghiChu}" class="form-control" rows="3"></textarea>
-                            </div>
-                            <div class="mb-3 form-selectgroup">
-                                Thanh toán khi nhận hàng
-                            </div>
-                            <div class="mb-3">
-                                <button type="submit" class="btn btn-primary" id="btnSubmit">Đặt hàng</button>
+                                <div class="mb-3">
+                                    <label class="form-label">Xã/Phường:</label>
+                                    <select th:field="*{xa}" id="ward" class="form-select" disabled>
+                                        <option value="">Chọn xã/phường</option>
+                                    </select>
+                                    <small th:errors="*{xa}" class="text-danger"></small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Địa chỉ cụ thể:</label>
+                                    <input th:field="*{diaChiNguoiNhan}" type="text" class="form-select">
+                                    <small th:errors="*{diaChiNguoiNhan}" class="text-danger"></small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Ghi chu</label>
+                                    <textarea th:field="*{ghiChu}" class="form-control" rows="3"></textarea>
+                                </div>
+                                <div class="mb-3 form-selectgroup">
+                                    Thanh toán khi nhận hàng
+                                </div>
+                                <div class="mb-3">
+                                    <button type="submit" class="btn btn-primary" id="btnSubmit">Đặt hàng</button>
+                                </div>
                             </div>
                         </form>
                     </div>

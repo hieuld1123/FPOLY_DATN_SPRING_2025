@@ -34,6 +34,7 @@ public class CartController {
     private final LichSuHoaDonRepository lichSuHoaDonRepository;
     private final KichCoRepository kichCoRepository;
     private final KhachHangRepository khachHangRepository;
+    private final TaiKhoanRepository taiKhoanRepository;
 
 
     @GetMapping("/shop")
@@ -167,14 +168,19 @@ public class CartController {
         // 4. Xử lý Khách Hàng
         KhachHang khachHang = null;
         if (auth != null && auth.isAuthenticated()) {
-            TaiKhoan taiKhoan = (TaiKhoan) auth.getPrincipal();
-            khachHang = khachHangRepository.findByTaiKhoan(taiKhoan);
+            String email = auth.getName(); // Lấy email của người dùng đang đăng nhập
+            TaiKhoan taiKhoan = taiKhoanRepository.findByEmail(email).orElse(null);
+
+            if (taiKhoan != null) {
+                khachHang = khachHangRepository.findByTaiKhoan(taiKhoan);
+            }
         }
 
         // Sau khi xử lý danhSachHopLe thành công trong controller /checkout:
         session.setAttribute("selectedIds", selectedIds);
         model.addAttribute("tongTamTinh", tongTamTinh);
         model.addAttribute("cart", danhSachHopLe);
+        model.addAttribute("khachHang", khachHang); // null nếu là khách vãng lai
         return "shop/checkout";
     }
 
