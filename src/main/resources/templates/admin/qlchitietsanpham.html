@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
-<div th:replace="components/head :: head"></div>
+<div th:replace="~{components/head :: head}" ></div>
 <meta charset="UTF-8"/>
 <title>NineShoes</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
@@ -24,8 +24,7 @@
 
 <!-- Select2 (Dropdown multiple) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
-<link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap4-theme/1.1.1/select2-bootstrap4.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css">
 
 <!-- Bootstrap Color Picker -->
 <link rel="stylesheet"
@@ -40,7 +39,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap4-duallistbox/4.0.2/bootstrap-duallistbox.min.css">
 
 <!-- BS-Stepper (Multi-step forms) -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bs-stepper/1.7.0/css/bs-stepper.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bs-stepper@1.7.0/dist/css/bs-stepper.min.css" rel="stylesheet">
 
 <!-- Dropzone.js (File Upload) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css">
@@ -82,7 +81,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
 
 <!-- BS-Stepper -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bs-stepper/1.7.0/js/bs-stepper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bs-stepper@1.7.0/dist/js/bs-stepper.min.js"></script>
 
 <!-- Dropzone.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
@@ -99,6 +98,14 @@
 <!-- Tabler (Nếu cần) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css">
 <style>
+
+    .mini-carousel {
+        width: 120px;
+        height: 120px;
+        overflow: hidden;
+        position: relative;
+    }
+
     /* Bố cục chính */
     .admin-layout {
         display: flex;
@@ -423,25 +430,26 @@
                             </td>
                             <th th:text="${spct.maSanPhamChiTiet}"></th>
                             <td>
-                                <div th:id="'carouselExample' + ${spct.id}" class="carousel">
+                                <div th:id="'carouselExample' + ${spct.id}" class="carousel slide mini-carousel ms-5">
                                     <div class="carousel-inner">
                                         <th:block th:each="anhs, index : ${spct.hinhAnh}">
-                                            <div th:classappend="${index.index == 0} ? 'carousel-item active' : 'carousel-item'">
+                                            <div th:class="'carousel-item' + (${index.index == 0} ? ' active' : '')">
                                                 <!-- Hình ảnh carousel -->
                                                 <img th:if="${anhs.tenAnh != null}"
                                                      th:src="@{'/upload' + ${anhs.tenAnh.substring(anhs.tenAnh.lastIndexOf('upload') + 6)}}"
-                                                     class="d-block w-100 carousel-img rounded-3" alt="Ảnh">
+                                                     class="d-block w-100 carousel-img rounded-3"
+                                                     alt="Ảnh" style="width: 120px; height: 120px">
                                             </div>
                                         </th:block>
                                     </div>
                                     <button class="carousel-control-prev" type="button"
-                                            th:data-bs-target="'#carouselExample' + ${spct.id}"
+                                            th:attr="data-bs-target='#carouselExample' + ${spct.id}"
                                             data-bs-slide="prev">
                                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                         <span class="visually-hidden">Previous</span>
                                     </button>
                                     <button class="carousel-control-next" type="button"
-                                            th:data-bs-target="'#carouselExample' + ${spct.id}"
+                                            th:attr="data-bs-target='#carouselExample' + ${spct.id}"
                                             data-bs-slide="next">
                                         <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                         <span class="visually-hidden">Next</span>

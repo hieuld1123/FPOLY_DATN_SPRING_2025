@@ -22,6 +22,9 @@ import java.util.Optional;
 @Repository
 public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, Integer> {
 
+    @Query("SELECT spct FROM SanPhamChiTiet  spct WHERE spct.sanPham.id = :idSanPham AND spct.mauSac.id = :idMauSac")
+    List<SanPhamChiTiet> findByIdSanPhamAndIdMauSac(Integer idSanPham, Integer idMauSac);
+
     @Query("FROM SanPhamChiTiet sp WHERE (sp.sanPham.tenSanPham like %:keyword% OR sp.maSanPhamChiTiet like %:keyword%) AND sp.soLuong >= 1 AND sp.trangThai = true")
     List<SanPhamChiTiet> findByNameOrCode(String keyword);
 
