@@ -44,6 +44,9 @@
                 <!-- Form chọn màu sắc & kích cỡ (Chỉ dùng để reload trang) -->
                 <form method="GET" action="/shop/product/details">
                     <input type="hidden" name="idSanPham" th:value="${spct.sanPham.id}"/>
+                    <!-- Thương hiệu | Giày nam -->
+                    <p class="text-muted fw-semibold mb-1" th:text="${spct.thuongHieu.ten + ' | ' + (spct.gioiTinh ? 'Giày nam' : 'Giày nữ')}"></p>
+
                     <h1 th:text="${spct.sanPham.tenSanPham}" class="mb-3 text-uppercase"></h1>
                     <div class="row">
                         <div class="col-6">
@@ -202,24 +205,25 @@
                     <div class="mb-3">
                         <label class="form-label">Số lượng: </label>
                         <input type="number" class="form-control mb-3" id="inputQuantity" name="quantity"
-                               value="1"
+                               th:value="${spct.soLuong == 0 ? 0 : 1}"
                                th:attr="max=${spct.soLuong}" required
                                oninvalid="this.setCustomValidity('')"
                                oninput="this.setCustomValidity('')"/>
-                        <p>Hiện trong hệ thống còn: <span th:text="${spct.soLuong + ' sản phẩm!'}"></span></p>
+                        <p>Hiện trong hệ thống còn: <span style="color: red" th:text="${spct.soLuong}"></span> sản phẩm !</p>
                         <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
                         <div id="errorMessageContainer" class="alert alert-danger d-none"></div>
                     </div>
-                    <button type="submit" class="btn btn-orange btn-lg">Thêm vào giỏ hàng</button>
+                    <button type="submit" class="btn btn-orange btn-lg"
+                            th:disabled="${spct.soLuong == 0}">Thêm vào giỏ hàng</button>
+
                 </form>
 
                 <hr/>
                 <div class="mb-3">
-                    <label class="form-label">Mô tả:</label>
-                    <p>Thương hiệu: <span th:text="${spct.thuongHieu.ten}"></span></p>
+                    <label class="form-label h3">Mô tả sản phẩm</label>
                     <p>Chất liệu: <span th:text="${spct.chatLieu.ten}"></span></p>
                     <p>Loại đế giày: <span th:text="${spct.deGiay.ten}"></span></p>
-                    <p th:text="${spct.moTa}"></p>
+                    <p>Chi tiết: <span th:text="${spct.moTa}"></span></p>
                 </div>
             </div>
         </div>

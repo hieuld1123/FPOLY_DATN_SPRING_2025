@@ -54,6 +54,7 @@ public class ShopController {
             @RequestParam(required = false) List<Long> filterSize,
             @RequestParam(required = false) String filterColor, // màu là chuỗi CSV "1,2,3"
             @RequestParam(required = false) String sortOrder,
+            @RequestParam(required = false) String keyword,
             Model model) {
 
         List<Long> colorIds = new ArrayList<>();
@@ -63,9 +64,18 @@ public class ShopController {
                     .collect(Collectors.toList());
         }
 
-        List<PublicSanPhamResponse> products = publicSanPhamService.filterProducts(
-                filterBrand, filterMaterial, filterSole, filterSize, colorIds, sortOrder
-        );
+
+        // ✅ Nếu có từ khóa tìm kiếm, ưu tiên lọc theo tên/mã
+        List<PublicSanPhamResponse> products;
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            String formattedKeyword = "%" + keyword.trim().toLowerCase() + "%";
+            products = publicSanPhamService.searchProducts(formattedKeyword);
+        } else {
+            products = publicSanPhamService.filterProducts(
+                    filterBrand, filterMaterial, filterSole, filterSize, colorIds, sortOrder
+            );
+        }
+
 
         List<ThuongHieu> listThuongHieu = thuongHieuRepository.getAll();
         List<MauSac> listMauSac = mauSacRepository.getAll();
@@ -73,6 +83,7 @@ public class ShopController {
         List<DeGiay> listDeGiay = deGiayRepository.getAll();
         List<ChatLieu> listChatLieu = chatLieuRepository.getAll();
 
+        model.addAttribute("keyword", keyword);
         model.addAttribute("products", products);
         model.addAttribute("sortOrder", sortOrder);
         model.addAttribute("mauSac", listMauSac);

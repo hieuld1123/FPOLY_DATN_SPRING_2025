@@ -1,29 +1,36 @@
-.product-container {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 15px;
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-
-/* ----- Hình ảnh sản phẩm ----- */
-.image-wrapper {
+.product-container .image-wrapper {
     width: 100%;
-    display: flex;
-    justify-content: center;
+    /* Tăng height để ảnh fill rộng hơn theo chiều dọc */
+    height: 250px;
+    overflow: hidden;
+    border-radius: .5rem;
 }
-
-.product-image {
+.product-container .image-wrapper img.product-image {
     width: 100%;
-    max-width: 150px;
-    border-radius: 10px;
-    transition: transform 0.3s ease-in-out;
+    height: 100%;
+    object-fit: cover;
+}
+.product-container .image-wrapper img:hover {
+    transform: scale(1.05);     /* zoom nhẹ khi hover */
 }
 
-.product-image:hover {
-    transform: scale(1.05); /* Phóng to nhẹ khi hover */
-}
+/*!* ----- Hình ảnh sản phẩm ----- *!*/
+/*.image-wrapper {*/
+/*    width: 100%;*/
+/*    display: flex;*/
+/*    justify-content: center;*/
+/*}*/
+
+/*.product-image {*/
+/*    width: 100%;*/
+/*    max-width: 150px;*/
+/*    border-radius: 10px;*/
+/*    transition: transform 0.3s ease-in-out;*/
+/*}*/
+
+/*.product-image:hover {*/
+/*    transform: scale(1.05); !* Phóng to nhẹ khi hover *!*/
+/*}*/
 
 /* ----- Tiêu đề sản phẩm ----- */
 .product-title {
@@ -52,33 +59,11 @@
     margin-top: 5px;
 }
 
-/* Nút giỏ hàng & mua ngay */
-.add-to-cart, .buy-now {
-    color: black;
-    padding: 8px 14px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: bold;
-    text-align: center;
-    text-decoration: none;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+
+.product-name-hover:hover {
+    color: #ff7f00 !important; /* màu cam */
 }
 
-/* Nút "Mua ngay" dài hơn */
-.buy-now {
-    color: black;
-    padding: 8px 18px;
-    border-radius: 25px;
-    font-weight: bold;
-}
-
-/* Hover cho nút */
-.add-to-cart:hover, .buy-now:hover {
-    text-decoration: none;
-    color: red;
-    opacity: 0.9;
-    transform: translateY(-2px);
-}
 
 /* Dấu phân cách | */
 .separator {
@@ -117,10 +102,11 @@
 }
 
 .button-container .btn {
+    height: 60px;
     background: rgba(255, 255, 255, 80%);
     color: black;
     padding: 8px 15px;
-    font-size: 14px;
+    font-size: 20px;
     font-weight: bold;
     border: none;
     border-radius: 20px;
