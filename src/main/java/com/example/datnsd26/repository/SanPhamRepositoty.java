@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 
@@ -57,5 +58,8 @@ public interface SanPhamRepositoty extends JpaRepository<SanPham, Integer> {
     //lấy id và tên sản phẩm
     @Query("SELECT sp.id, sp.tenSanPham FROM SanPham sp WHERE sp.id = :id")
     List<Object[]> findByIdUpdatTenSP(@Param("id") Integer id);
+
+    @Query("SELECT sp FROM SanPham sp WHERE LOWER(sp.tenSanPham) LIKE %:keyword% OR LOWER(sp.maSanPham) LIKE %:keyword%")
+    List<SanPham> searchByTenOrMa(@Param("keyword") String keyword);
 
 }

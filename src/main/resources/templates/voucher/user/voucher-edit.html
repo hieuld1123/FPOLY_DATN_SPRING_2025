@@ -4,11 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chỉnh Sửa Voucher</title>
+<div th:replace="components/head :: head"></div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
+
 <style>
     /* Bố cục chính */
     .admin-layout {
@@ -93,21 +94,29 @@
                         <h5 class="mb-0">Chỉnh Sửa Voucher</h5>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/admin/vouchers/edit/{id}(id=${voucher.id})}" method="post">
+                        <form th:action="@{/admin/vouchers/edit/{id}(id=${voucher.id})}" method="post" id="voucherForm">
                             <input type="hidden" name="id" th:value="${voucher.id}">
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Mã Voucher</label>
                                     <input type="text" class="form-control" name="maVoucher" th:value="${voucher.maVoucher}" readonly>
+                                    <span class="text-danger" th:if="${errors != null and errors.containsKey('maVoucher')}" th:text="${errors.get('maVoucher')}"></span>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Tên Voucher</label>
-                                    <input type="text" class="form-control" name="tenVoucher" th:value="${voucher.tenVoucher}" required>
+                                    <input type="text" class="form-control" name="tenVoucher" th:value="${voucher.tenVoucher}" >
+                                    <span class="text-danger" th:if="${errors != null and errors.containsKey('tenVoucher')}" th:text="${errors.get('tenVoucher')}"></span>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
+
+                                <div class="col-md-6">
+                                    <label class="form-label">Số lượng</label>
+                                    <input type="number" class="form-control" name="soLuong" th:value="${voucher.soLuong}" min="1">
+                                    <span class="text-danger" th:if="${errors != null and errors.containsKey('soLuong')}" th:text="${errors.get('soLuong')}"></span>
+                                </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Hình thức giảm</label>
                                     <select class="form-select" name="hinhThucGiam" id="hinhThucGiam">
@@ -115,41 +124,45 @@
                                         <option value="Theo Giá Tiền" th:selected="${voucher.hinhThucGiam == 'Theo Giá Tiền'}">Theo Giá Tiền</option>
                                     </select>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Số lượng</label>
-                                    <input type="number" class="form-control" name="soLuong" th:value="${voucher.soLuong}" required min="1">
-                                </div>
+
                             </div>
 
                             <div class="row mb-3">
                                 <div class="col-md-4">
-                                    <label class="form-label">Giá trị giảm</label>
-                                    <input type="number" class="form-control" name="giaTriGiam" th:value="${voucher.giaTriGiam}" required min="0">
+                                    <label class="form-label">Đơn tối thiểu</label>
+                                    <input type="number" class="form-control" name="giaTriGiamToiThieu" th:value="${voucher.giaTriGiamToiThieu}"  min="0">
+                                    <span class="text-danger" th:if="${errors != null and errors.containsKey('giaTriGiamToiThieu')}" th:text="${errors.get('giaTriGiamToiThieu')}"></span>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label">Đơn tối thiểu</label>
-                                    <input type="number" class="form-control" name="giaTriGiamToiThieu" th:value="${voucher.giaTriGiamToiThieu}" required min="0">
+                                    <label class="form-label">Giá trị giảm</label>
+                                    <input type="number" class="form-control" name="giaTriGiam" th:value="${voucher.giaTriGiam}"  min="0">
+                                    <span class="text-danger" th:if="${errors != null and errors.containsKey('giaTriGiam')}" th:text="${errors.get('giaTriGiam')}"></span>
                                 </div>
+
                                 <div class="col-md-4" id="giaTriGiamToiDaDiv">
                                     <label class="form-label">Giá trị giảm tối đa</label>
                                     <input type="number" class="form-control" name="giaTriGiamToiDa" id="giaTriGiamToiDa" th:value="${voucher.giaTriGiamToiDa}" min="0">
+                                    <span class="text-danger" th:if="${errors != null and errors.containsKey('giaTriGiamToiDa')}" th:text="${errors.get('giaTriGiamToiDa')}"></span>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Ngày bắt đầu</label>
-                                    <input type="datetime-local" class="form-control" name="ngayBatDau" th:value="${#temporals.format(voucher.ngayBatDau, 'yyyy-MM-dd''T''HH:mm')}" required>
+                                    <input type="datetime-local" class="form-control" name="ngayBatDau" th:value="${#temporals.format(voucher.ngayBatDau, 'yyyy-MM-dd''T''HH:mm')}" >
+                                    <span class="text-danger" th:if="${errors != null and errors.containsKey('ngayBatDau')}" th:text="${errors.get('ngayBatDau')}"></span>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Ngày kết thúc</label>
-                                    <input type="datetime-local" class="form-control" name="ngayKetThuc" th:value="${#temporals.format(voucher.ngayKetThuc, 'yyyy-MM-dd''T''HH:mm')}" required>
+                                    <input type="datetime-local" class="form-control" name="ngayKetThuc" th:value="${#temporals.format(voucher.ngayKetThuc, 'yyyy-MM-dd''T''HH:mm')}" >
+                                    <span class="text-danger" th:if="${errors != null and errors.containsKey('ngayKetThuc')}" th:text="${errors.get('ngayKetThuc')}"></span>
                                 </div>
                             </div>
 
                             <div class="text-end mt-3">
                                 <a th:href="@{/admin/vouchers}" class="btn btn-secondary">Hủy</a>
-                                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                                <button type="button" id="submitVoucherBtn" class="btn btn-primary">Lưu thay đổi</button>
+
                             </div>
                         </form>
                     </div>
@@ -157,14 +170,29 @@
             </div>
         </div>
     </div>
-</div>
 
+    <div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 1050">
+        <div id="errorToast" class="toast align-items-center text-white bg-danger border-0 shadow-lg" role="alert"
+             aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body fw-bold"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Nhớ đặt đúng SweetAlert2 -->
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('voucherForm');
+        const submitButton = document.getElementById('submitVoucherBtn');
         const hinhThucGiam = document.getElementById('hinhThucGiam');
         const giaTriGiamToiDaDiv = document.getElementById('giaTriGiamToiDaDiv');
-        const form = document.querySelector('form');
 
+        // Hiện/ẩn trường giảm tối đa
         function toggleGiaTriGiamToiDa() {
             if (hinhThucGiam.value === 'Theo Giá Tiền') {
                 giaTriGiamToiDaDiv.style.display = 'none';
@@ -174,20 +202,31 @@
             }
         }
 
-        // Chạy lần đầu khi tải trang
         toggleGiaTriGiamToiDa();
-
-        // Thêm sự kiện khi thay đổi hình thức giảm
         hinhThucGiam.addEventListener('change', toggleGiaTriGiamToiDa);
 
-        // Xử lý submit form
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            if (confirm('Bạn có chắc chắn muốn lưu thay đổi?')) {
-                this.submit();
-            }
+        // Xử lý nhấn nút lưu
+        submitButton.addEventListener('click', function () {
+            Swal.fire({
+                title: 'Bạn có muốn sửa không?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Có',
+                cancelButtonText: 'Không'
+            }).then((result) => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sửa thành công!',
+                    text: 'Voucher đã được Sửa vào hệ thống.',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    form.submit();
+                });
+            });
         });
     });
 </script>
+
 </body>
 </html>

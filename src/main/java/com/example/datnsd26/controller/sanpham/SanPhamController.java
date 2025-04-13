@@ -6,6 +6,7 @@ import com.example.datnsd26.repository.*;
 import com.example.datnsd26.services.QRCodeGenerator;
 import com.example.datnsd26.services.impl.*;
 import com.google.zxing.WriterException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +17,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Controller
@@ -63,10 +66,13 @@ public class SanPhamController {
     @Autowired
     HinhAnhImp anhImp;
     @Autowired
-    HinhAnhRepository hinhAnhRepository;
+    HinhAnhRepository anhRepository;
 
     @Autowired
-    private QRCodeGenerator qrCodeGenerator;
+    HttpServletRequest request;
+
+    @Autowired
+    NhanVienRepository nhanvienRPo;
 
 
     private String taoChuoiNgauNhien(int doDaiChuoi, String kiTu) {
@@ -96,17 +102,9 @@ public class SanPhamController {
 
     @PostMapping("/addTenSPModal")
     public String addTenSPModel(Model model, @ModelAttribute("sanpham") SanPham sanPham, HttpSession session) {
-
         String chuoiNgauNhien = taoChuoiNgauNhien(7, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
         LocalDateTime currentTime = LocalDateTime.now();
-//        String maSanPham = "SP" + chuoiNgauNhien;
-        String maSanPham = "";
-        if (sanPhamRepositoty.findAll().size() < 9) {
-            int index = sanPhamRepositoty.findAll().size() + 1;
-            maSanPham = "SP0" + index;
-        } else {
-            maSanPham = "SP" + sanPhamRepositoty.findAll().size();
-        }
+        String maSanPham = "SP" + chuoiNgauNhien;
         // Trim tên sản phẩm và thay thế nhiều khoảng trắng liên tiếp bằng một khoảng trắng
         String trimmedTenSanPham = (sanPham.getTenSanPham() != null)
                 ? sanPham.getTenSanPham().trim().replaceAll("\\s+", " ")
@@ -138,7 +136,7 @@ public class SanPhamController {
         List<KichCo> listKichCo = kichCoRepository.getAll();
         List<DeGiay> listDeGiay = deGiayRepository.getAll();
         List<ChatLieu> listChatLieu = chatLieuRepository.getAll();
-        List<HinhAnh> listHinhAnh = anhImp.findAll();
+        List<HinhAnh> listAnh = anhImp.findAll();
         model.addAttribute("sp", listSanPham);
         model.addAttribute("spct", listSPCT);
         model.addAttribute("th", listThuongHieu);
@@ -146,11 +144,13 @@ public class SanPhamController {
         model.addAttribute("kc", listKichCo);
         model.addAttribute("dg", listDeGiay);
         model.addAttribute("cl", listChatLieu);
-        model.addAttribute("a", listHinhAnh);
+        model.addAttribute("a", listAnh);
         return "admin/addsanpham";
     }
 
     List<SanPhamChiTiet> sanPhamChiTietList = new ArrayList<>();
+
+    List<SanPhamChiTiet> uniqueList = new ArrayList<>();
 
 
     @GetMapping("/listsanpham")
@@ -187,7 +187,7 @@ public class SanPhamController {
         return "admin/qlsanpham";
     }
 
-    @PostMapping("san-pham/addProduct")
+    @PostMapping("/addProduct")
     public String addProduct(@RequestParam(defaultValue = "0") int p, Model model,
                              @RequestParam Integer tensp,
                              @RequestParam String mota,
@@ -197,9 +197,8 @@ public class SanPhamController {
                              @RequestParam(name = "kichCoId") List<String> kichCoNames,
                              @RequestParam DeGiay idDeGiay,
                              @RequestParam List<MauSac> idMauSac, HttpSession session
-    ) throws IOException, WriterException {
+    ) {
         LocalDateTime currentTime = LocalDateTime.now();
-
         String trimmedMota = (mota != null) ? mota.trim().replaceAll("\\s+", " ") : null;
         model.addAttribute("selectedTensp", tensp);
         model.addAttribute("motas", mota);
@@ -227,17 +226,13 @@ public class SanPhamController {
         if (nextId2 == null) {
             return "redirect:/error";
         }
-        int i = 0;
         if (sanPhamChiTietList.size() <= 0) {
-
             for (MauSac colorId : idMauSac) {
-                i++;
                 for (String sizeName : kichCoNames) {
                     KichCo kichCo = kichCoRepository.findByTen(sizeName);
                     if (kichCo != null) {
                         String chuoiNgauNhien = taoChuoiNgauNhien(7, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
-//                        String maSanPhamCT = "SPCT" + chuoiNgauNhien;
-                        String maSanPhamCT = sanPham.getMaSanPham() + "-" + "CT" + i + "-" + kichCo.getTen();
+                        String maSanPhamCT = "SPCT" + chuoiNgauNhien;
                         nextId2++;
                         SanPhamChiTiet spct = new SanPhamChiTiet();
                         spct.setId(nextId2);
@@ -256,15 +251,12 @@ public class SanPhamController {
                         spct.setMauSac(colorId);
                         spct.setNgayTao(currentTime);
                         spct.setNgayCapNhat(currentTime);
-                        // Generate and save QR Code
-                        String qrCodeUrl = qrCodeGenerator.generateQRCodeImage(maSanPhamCT, maSanPhamCT);
-                        spct.setQrCode(qrCodeUrl);
                         sanPhamChiTietList.add(spct);
 
                         for (SanPhamChiTiet spcts : sanPhamChiTietList) {
                             System.out.println("idspct:" + spcts.getId());
                             System.out.println("mausac:" + spcts.getKichCo().getTen());
-                            System.out.println("kichco:" + spcts.getKichCo().getTen());
+                            System.out.println("kichco:" + spcts.getMauSac().getTen());
                         }
                     }
                 }
@@ -272,7 +264,6 @@ public class SanPhamController {
 
         } else {
             for (MauSac colorId : idMauSac) {
-                i++;
                 for (String sizeName : kichCoNames) {
                     KichCo kichCo = kichCoRepository.findByTen(sizeName);
                     if (kichCo != null) {
@@ -288,8 +279,7 @@ public class SanPhamController {
                         }
                         if (!found) {
                             String chuoiNgauNhien = taoChuoiNgauNhien(7, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
-//                            String maSanPhamCT = "SPCT" + chuoiNgauNhien;
-                            String maSanPhamCT = sanPham.getMaSanPham() + "-" + "CT" + i + "-" + kichCo.getTen();
+                            String maSanPhamCT = "SPCT" + chuoiNgauNhien;
                             int lastIndex = sanPhamChiTietList.size() - 1;
                             SanPhamChiTiet lastItem = sanPhamChiTietList.get(lastIndex);
                             int count = lastItem.getId();
@@ -298,6 +288,7 @@ public class SanPhamController {
                             spct.setId(count);
                             spct.setSanPham(sanPham);
                             spct.setMaSanPhamChiTiet(maSanPhamCT);
+                            spct.setSanPham(sanPham);
                             spct.setSoLuong(1);
                             spct.setGiaBan(100000F);
                             spct.setGiaBanSauGiam(spct.getGiaBan());
@@ -311,16 +302,25 @@ public class SanPhamController {
                             spct.setMauSac(colorId);
                             spct.setNgayTao(currentTime);
                             spct.setNgayCapNhat(currentTime);
-                            // Generate and save QR Code
-                            String qrCodeUrl = qrCodeGenerator.generateQRCodeImage(maSanPhamCT, maSanPhamCT);
-                            spct.setQrCode(qrCodeUrl);
                             sanPhamChiTietList.add(spct);
                         }
                     }
                 }
             }
-
         }
+
+        // Lọc duy nhất theo SanPham + MauSac
+        uniqueList = sanPhamChiTietList.stream()
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toMap(
+                                spct -> spct.getSanPham().getId() + "-" + spct.getMauSac().getId(),
+                                spct -> spct,
+                                (a, b) -> a // Nếu trùng thì giữ cái đầu
+                        ),
+                        map -> new ArrayList<>(map.values())
+                ));
+
+        model.addAttribute("sanPhamChiTietList", uniqueList);
         model.addAttribute("sanphamchitiet", sanPhamChiTietList);
         return "forward:/viewaddSPPOST";
     }
@@ -413,6 +413,19 @@ public class SanPhamController {
                 break;
             }
         }
+
+        // Lọc duy nhất theo SanPham + MauSac
+        uniqueList = sanPhamChiTietList.stream()
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toMap(
+                                spct -> spct.getSanPham().getId() + "-" + spct.getMauSac().getId(),
+                                spct -> spct,
+                                (a, b) -> a // Nếu trùng thì giữ cái đầu
+                        ),
+                        map -> new ArrayList<>(map.values())
+                ));
+
+        model.addAttribute("sanPhamChiTietList", uniqueList);
         model.addAttribute("sanphamchitiet", sanPhamChiTietList);
         return "forward:/viewaddSPPOST";
     }
@@ -423,10 +436,9 @@ public class SanPhamController {
             @RequestParam(name = "anh1") List<MultipartFile> anhFiles1,
             @RequestParam(name = "anh2") List<MultipartFile> anhFiles2,
             @RequestParam(name = "anh3") List<MultipartFile> anhFiles3,
-            @RequestParam(name = "spctId") List<Integer> spctIds,
             RedirectAttributes redirectAttributes,
             Model model
-    ) {
+    ) throws IOException {
         SanPham sanPham = sanPhamChiTietList.get(0).getSanPham();
         List<SanPhamChiTiet> listsanPhamChiTietDB = sanPhamChiTietRepository.findBySanPham(sanPham);
 
@@ -442,9 +454,9 @@ public class SanPhamController {
                 if (spctTim != null) {
                     spctTim.setSoLuong(spctTim.getSoLuong() + spctList.getSoLuong());
                     if (spctList.getHinhAnh() != null) {
-                        for (HinhAnh hinhAnh : spctList.getHinhAnh()) {
-                            hinhAnh.setSanPhamChiTiet(spctTim);
-                            hinhAnhRepository.save(hinhAnh);
+                        for (HinhAnh anh : spctList.getHinhAnh()) {
+                            anh.setSanPhamChiTiet(spctTim);
+                            anhRepository.save(anh);
                         }
                     }
                     sanPhamChiTietRepository.save(spctTim);
@@ -454,44 +466,95 @@ public class SanPhamController {
             }
         }
         sanPhamChiTietList.clear();
-        for (int i = 0; i < spctIds.size(); i++) {
-            Integer spctId = spctIds.get(i);
-            SanPhamChiTiet spct = sanPhamChiTietRepository.findById(spctId).orElse(null);
-            if (spct != null) {
-                MultipartFile anhFile1 = anhFiles1.get(i);
-                if (!anhFile1.isEmpty()) {
-                    addAnh(spct, anhFile1);
+//        for (int i = 0; i < spctIds.size(); i++) {
+//            Integer spctId = spctIds.get(i);
+//            SanPhamChiTiet spct = sanPhamChiTietRepository.findById(spctId).orElse(null);
+//            if (spct != null) {
+//                MultipartFile anhFile1 = anhFiles1.get(i);
+//                if (!anhFile1.isEmpty()) {
+//                    addAnh(spct, anhFile1);
+//                }
+//                MultipartFile anhFile2 = anhFiles2.get(i);
+//                if (!anhFile2.isEmpty()) {
+//                    addAnh(spct, anhFile2);
+//                }
+//                MultipartFile anhFile3 = anhFiles3.get(i);
+//                if (!anhFile3.isEmpty()) {
+//                    addAnh(spct, anhFile3);
+//                }
+//            }
+//        }
+        for (int i = 0; i < uniqueList.size(); i++) {
+            SanPhamChiTiet spct = uniqueList.get(i);
+            List<SanPhamChiTiet> spctSameImage = sanPhamChiTietImp.findByIdSanPhamAndIdMauSac(spct.getSanPham().getId(), spct.getMauSac().getId());
+
+
+            byte[] file1Bytes = anhFiles1.get(i).getBytes();
+            byte[] file2Bytes = anhFiles2.get(i).getBytes();
+            byte[] file3Bytes = anhFiles3.get(i).getBytes();
+            String name1 = anhFiles1.get(i).getOriginalFilename();
+            String name2 = anhFiles2.get(i).getOriginalFilename();
+            String name3 = anhFiles3.get(i).getOriginalFilename();
+
+
+            for (SanPhamChiTiet spctInList : spctSameImage) {
+                if (file1Bytes.length > 0) {
+                    addAnhFromBytes(spctInList, file1Bytes, name1);
                 }
-                MultipartFile anhFile2 = anhFiles2.get(i);
-                if (!anhFile2.isEmpty()) {
-                    addAnh(spct, anhFile2);
+                if (file2Bytes.length > 0) {
+                    addAnhFromBytes(spctInList, file2Bytes, name2);
                 }
-                MultipartFile anhFile3 = anhFiles3.get(i);
-                if (!anhFile3.isEmpty()) {
-                    addAnh(spct, anhFile3);
+                if (file3Bytes.length > 0) {
+                    addAnhFromBytes(spctInList, file3Bytes, name3);
                 }
             }
         }
+
+        uniqueList.clear();
         redirectAttributes.addFlashAttribute("success", true);
         return "redirect:/listsanpham";
+    }
+
+    private void addAnhFromBytes(SanPhamChiTiet spct, byte[] fileData, String originalFilename) {
+        try {
+            String uniqueName = originalFilename;
+            String uploadDir = "D:\\DATN\\src\\main\\resources\\static\\upload";
+            File directory = new File(uploadDir);
+            if (!directory.exists()) directory.mkdirs();
+
+            File file = new File(uploadDir, uniqueName);
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                fos.write(fileData);
+            }
+
+            HinhAnh anh = new HinhAnh();
+            LocalDateTime now = LocalDateTime.now();
+            anh.setTenAnh("/upload/" + uniqueName);
+            anh.setNgayTao(now);
+            anh.setNgayCapNhat(now);
+            anh.setTrangThai(true);
+            anh.setSanPhamChiTiet(spct);
+            anhRepository.save(anh);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Autowired
     HttpSession session;
 
     private void addAnh(SanPhamChiTiet spct, MultipartFile anhFile) {
-
         if (!anhFile.isEmpty()) {
             String anhUrl = saveImage(anhFile);
             if (anhUrl != null) {
-                HinhAnh hinhAnh = new HinhAnh();
+                HinhAnh anh = new HinhAnh();
                 LocalDateTime currentTime = LocalDateTime.now();
-                hinhAnh.setTenAnh(anhUrl);
-                hinhAnh.setNgayTao(currentTime);
-                hinhAnh.setSanPhamChiTiet(spct);
-                hinhAnh.setTrangThai(true);
-                hinhAnh.setNgayCapNhat(currentTime);
-                hinhAnhRepository.save(hinhAnh);
+                anh.setTenAnh(anhUrl);
+                anh.setNgayTao(currentTime);
+                anh.setSanPhamChiTiet(spct);
+                anh.setTrangThai(true);
+                anh.setNgayCapNhat(currentTime);
+                anhRepository.save(anh);
             }
         }
     }
@@ -552,7 +615,18 @@ public class SanPhamController {
         model.addAttribute("selectedChatLieu", selectedChatLieu);
         model.addAttribute("selectedDeGiay", selectedDeGiay);
 
+        // Lọc duy nhất theo SanPham + MauSac
+        uniqueList = sanPhamChiTietList.stream()
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toMap(
+                                spct -> spct.getSanPham().getId() + "-" + spct.getMauSac().getId(),
+                                spct -> spct,
+                                (a, b) -> a // Nếu trùng thì giữ cái đầu
+                        ),
+                        map -> new ArrayList<>(map.values())
+                ));
 
+        model.addAttribute("sanPhamChiTietList", uniqueList);
         model.addAttribute("sanphamchitiet", sanPhamChiTietList);
         return "forward:/viewaddSPPOST";
     }
@@ -562,11 +636,11 @@ public class SanPhamController {
     @ResponseBody
     public ResponseEntity<?> timaddImage(@RequestParam("image") List<String> listData
     ) {
-        HinhAnh hinhAnh = new HinhAnh();
+        HinhAnh anh = new HinhAnh();
         String url = "D:\\DATN\\src\\main\\resources\\static\\upload\\" + listData.get(1);
-        hinhAnh.setTenAnh(url);
+        anh.setTenAnh(url);
         List<HinhAnh> list = sanPhamChiTietList.get(Integer.valueOf(listData.get(0)) - 1).getHinhAnh() == null ? new ArrayList<>() : sanPhamChiTietList.get(Integer.valueOf(listData.get(0)) - 1).getHinhAnh();
-        list.add(hinhAnh);
+        list.add(anh);
         System.out.println("KKKKKKKKKKKKKK" + list.size());
         sanPhamChiTietList.get(Integer.valueOf(listData.get(0)) - 1).setHinhAnh(list);
         return ResponseEntity.ok(true);

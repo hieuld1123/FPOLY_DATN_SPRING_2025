@@ -19,7 +19,12 @@ document.addEventListener("DOMContentLoaded", async function () {
     const savedProducts = JSON.parse(localStorage.getItem(storageKey) || '[]');
     const inputId = document.createElement('input');
     inputId.name = 'productId';
+    selectedProducts = savedProducts;
 
+    function updateSelectedProductsFromStorage() {
+        const savedState = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        selectedProducts = savedState;
+    }
 
     // Xóa input ẩn cũ nếu có
     document.querySelectorAll('.hidden-selected-product').forEach(el => el.remove());
@@ -34,35 +39,35 @@ document.addEventListener("DOMContentLoaded", async function () {
         form.appendChild(hiddenCheckbox);
     });
 
+    function updateSelectedProduct(id, isChecked) {
+        const savedState = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        const mucGiamInput = document.querySelector(`.mucGiam[data-product-id="${id}"]`);
 
-    // Thêm hàm xử lý phân trang mới
-    function handlePaginationClick(e) {
-        e.preventDefault();
-        const href = this.getAttribute('href');
+        id = id.toString();
 
-        // Lưu trạng thái trang hiện tại trước khi chuyển trang
-        const currentState = JSON.parse(localStorage.getItem(storageKey) || '[]');
-
-        checkboxes.forEach((checkbox, index) => {
-            const productId = checkbox.getAttribute('data-product-id');
-            if (checkbox.checked) {
-                const existingIndex = currentState.findIndex(item => item.id === productId);
-                const productData = {
-                    id: productId,
-                    mucGiam: mucGiamInputs[index].value
-                };
-
-                if (existingIndex >= 0) {
-                    currentState[existingIndex] = productData;
-                } else {
-                    currentState.push(productData);
-                }
+        if (isChecked && mucGiamInput) {
+            const productData = {
+                id: id,
+                mucGiam: mucGiamInput.value || giaTriGiam.value
+            };
+            const existingIndex = savedState.findIndex(item => item.id === id);
+            if (existingIndex >= 0) {
+                savedState[existingIndex] = productData;
+            } else {
+                savedState.push(productData);
             }
-        });
+        } else {
+            const existingIndex = savedState.findIndex(item => item.id === id);
+            if (existingIndex >= 0) {
+                savedState.splice(existingIndex, 1);
+            }
+        }
 
-        localStorage.setItem(storageKey, JSON.stringify(currentState));
-        window.location.href = href;
+        localStorage.setItem(storageKey, JSON.stringify(savedState));
+        selectedProducts = savedState; // Cập nhật selectedProducts
     }
+
+
 
     // Thêm hàm lưu trạng thái trang hiện tại
     function saveCurrentPageState() {
@@ -104,35 +109,20 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
     });
 
-
-    // Thêm hàm để khôi phục trạng thái ban đầu của khuyến mãi
-    function restoreInitialState() {
-        checkboxes.forEach((checkbox, index) => {
-            const productId = checkbox.getAttribute('data-product-id');
-            const mucGiamInput = mucGiamInputs[index];
-
-            // Kiểm tra xem sản phẩm có trong map không
-            if (mucGiamInput.dataset.originalValue) {
-                checkbox.checked = true;
-                mucGiamInput.disabled = false;
-                mucGiamInput.value = mucGiamInput.dataset.originalValue;
-                toggleProductSelection(productId, true);
-            }
+    document.querySelectorAll(".product-checkbox").forEach(checkbox => {
+        checkbox.addEventListener("change", function () {
+            updateSelectedProduct(this.value, this.checked);
         });
-        updateSelectAllState();
-        updateGiaSauGiam();
-    }
+    });
 
-    // Cập nhật hàm restorePageState
     function restorePageState() {
         const savedState = JSON.parse(localStorage.getItem(storageKey) || '[]');
 
-        checkboxes.forEach((checkbox, index) => {
-            const productId = checkbox.getAttribute('data-product-id');
-            const mucGiamInput = mucGiamInputs[index];
-            const savedProduct = savedState.find(p => p.id === productId);
+        savedState.forEach(savedProduct => {
+            const checkbox = document.querySelector(`.chonSanPham[data-product-id="${savedProduct.id}"]`);
+            const mucGiamInput = document.querySelector(`.mucGiam[data-product-id="${savedProduct.id}"]`);
 
-            if (savedProduct) {
+            if (checkbox && mucGiamInput) {
                 checkbox.checked = true;
                 mucGiamInput.disabled = false;
                 mucGiamInput.value = savedProduct.mucGiam;
@@ -147,26 +137,26 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Cập nhật hàm toggleProductSelection
     function toggleProductSelection(productId, isSelected) {
         const savedState = JSON.parse(localStorage.getItem(storageKey) || '[]');
-        const index = Array.from(checkboxes).findIndex(cb => cb.getAttribute('data-product-id') === productId);
+        const mucGiamInput = document.querySelector(`.mucGiam[data-product-id="${productId}"]`);
 
+        if (!mucGiamInput) return;
+
+        const existingIndex = savedState.findIndex(item => item.id === productId);
         if (isSelected) {
-            const existingIndex = savedState.findIndex(item => item.id === productId);
+            const mucGiam = mucGiamInput.value;
             if (existingIndex >= 0) {
-                savedState[existingIndex].mucGiam = mucGiamInputs[index].value;
+                savedState[existingIndex].mucGiam = mucGiam;
             } else {
-                savedState.push({
-                    id: productId,
-                    mucGiam: mucGiamInputs[index].value
-                });
+                savedState.push({ id: productId, mucGiam });
             }
         } else {
-            const existingIndex = savedState.findIndex(item => item.id === productId);
             if (existingIndex >= 0) {
                 savedState.splice(existingIndex, 1);
             }
         }
 
         localStorage.setItem(storageKey, JSON.stringify(savedState));
+        updateSelectedProductsFromStorage(); // Thêm dòng này
     }
 
 
@@ -255,9 +245,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         // Thêm sự kiện cho input mức giảm
         mucGiamInputs[index].addEventListener('change', function () {
-            if (checkbox.checked) {
-                const productId = checkbox.getAttribute('data-product-id');
-                toggleProductSelection(productId, true);
+            if (this.checked && !mucGiamInputs[index].value) {
+                mucGiamInputs[index].value = giaTriGiam.value;
             }
         });
     });
@@ -329,39 +318,49 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
 
 
-    // Xoá localStorage nếu bạn click "quay lại danh sách"
+    function updateSelectedProductsArray() {
+        selectedProducts = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    }
 
     // Kiểm tra form trước khi submit
     form.addEventListener("submit", function (event) {
         event.preventDefault();
 
-        // Xoá input ẩn cũ
+        // Cập nhật selectedProducts từ localStorage
+        updateSelectedProductsArray();
+
+
+        // Lấy dữ liệu từ storageKey thay vì selectedProductsForKhuyenMai
+        const selected = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        console.log("Các sản phẩm được chọn:", selected);
+
+        // Xóa input cũ (nếu có)
         document.querySelectorAll('.hidden-selected-product').forEach(el => el.remove());
 
-        // Lấy sản phẩm đã lưu trong localStorage
-        const savedProducts = JSON.parse(localStorage.getItem(storageKey) || '[]');
-
-        savedProducts.forEach(product => {
-            const inputCheckbox = document.createElement('input');
-            inputCheckbox.type = 'hidden';
-            inputCheckbox.name = 'sanPham_' + product.id;
-            inputCheckbox.value = 'on';
-            inputCheckbox.classList.add('hidden-selected-product');
+        selected.forEach(sp => {
+            const inputId = document.createElement('input');
+            inputId.type = 'hidden';
+            inputId.name = 'selectedProductIds';
+            inputId.value = sp.id;
+            inputId.classList.add('hidden-selected-product');
 
             const inputMucGiam = document.createElement('input');
             inputMucGiam.type = 'hidden';
-            inputMucGiam.name = 'mucGiam_' + product.id;
-            inputMucGiam.value = product.mucGiam;
+            inputMucGiam.name = 'mucGiam_' + sp.id;
+            inputMucGiam.value = sp.mucGiam;
             inputMucGiam.classList.add('hidden-selected-product');
 
-            form.appendChild(inputCheckbox);
+            form.appendChild(inputId);
             form.appendChild(inputMucGiam);
         });
+
+        let danhSachSanPham = selected.map(sp => `- ID: ${sp.id}, Mức giảm: ${sp.mucGiam}`).join('<br>');
 
 
         if (validateForm()) {
             Swal.fire({
                 title: 'Bạn có muốn Sửa không?',
+                html: `<strong>Các sản phẩm đã chọn:</strong><br>${danhSachSanPham}`,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: 'Có',
@@ -375,14 +374,14 @@ document.addEventListener("DOMContentLoaded", async function () {
                         showConfirmButton: false,
                         timer: 1500
                     }).then(() => {
-
-                        form.submit(); // <--- dùng biến form, không dùng this
-                        localStorage.removeItem(storageKey); // Xóa localStorage sau khi submit
+                        form.submit();
+                        localStorage.removeItem(storageKey);
                     });
                 }
             });
         }
     });
+
 
     function formatCurrency(amount) {
         return new Intl.NumberFormat('vi-VN', {
@@ -493,7 +492,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Gọi API khi tải trang
     // Thay đổi phần khởi tạo cuối file
     await fetchSanPhamKhuyenMai();
+    updateSelectedProductsFromStorage(); // Thêm dòng này
     restorePageState();
     updateSelectAllState();
     updateGiaSauGiam();
+
 });

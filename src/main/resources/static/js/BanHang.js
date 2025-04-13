@@ -46,8 +46,6 @@ const enableElement = () => {
 };
 
 const handlePayment = async () => {
-  console.log(formData);
-  // return;
   if (formData.totalItem < 1) {
     alert("Chưa có sản phẩm để thanh toán!");
     return;
@@ -752,11 +750,7 @@ $(document).ready(() => {
 
   $(document).on("click", ".customer-suggestion-item", async function () {
     const customerId = String($(this).data("id"));
-    console.log(
-      `Mã khách hàng: ${customerId} - Mã hóa đơn: ${formData.invoiceId}`
-    );
     try {
-      console.log("Add");
       const response = await fetch(
         `http://localhost:8080/api/v1/ban-hang/add-customer/${formData.invoiceId}/${customerId}`,
         {
@@ -866,12 +860,6 @@ $(document).ready(() => {
       if (!confirmSave) return;
     }
 
-    console.log(
-      "Thông tin giao hàng (JSON):",
-      JSON.stringify(deliveryInfo, null, 2)
-    );
-    console.log("Invoice Id: ", formData.invoiceId);
-
     try {
       const response = await fetch(
         `http://localhost:8080/api/v1/ban-hang/create-customer/${formData.invoiceId}`,
@@ -940,7 +928,6 @@ $(document).ready(() => {
       const result = await response.json();
       if (result.status === 200 && result.data?.length) {
         const addresses = result.data;
-        console.log(addresses);
         $("#existing-addresses").html(
           '<option value="">Chọn địa chỉ</option>' +
             addresses

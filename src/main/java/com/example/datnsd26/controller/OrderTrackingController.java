@@ -63,6 +63,7 @@ public class OrderTrackingController {
                 "Đặt hàng",
                 "Chờ xác nhận",
                 "Đã xác nhận",
+                "Đã giao cho đơn vị vận chuyển",
                 "Hoàn thành"
 
         );

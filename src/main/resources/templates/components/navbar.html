@@ -18,17 +18,17 @@
             <!-- BEGIN NAVBAR TOGGLER -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu"
                     aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <!-- END NAVBAR TOGGLER -->
-                <!-- BEGIN NAVBAR LOGO -->
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!-- END NAVBAR TOGGLER -->
+            <!-- BEGIN NAVBAR LOGO -->
             <div class="navbar-brand navbar-brand-autodark">
                 <div class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
                     <a href="#" class="logo-text">Nine Shoes</a>
                 </div>
             </div>
-                <!-- END NAVBAR LOGO -->
-<!--            Tra cứu + Giỏ hàng-->
+            <!-- END NAVBAR LOGO -->
+            <!--            Tra cứu + Giỏ hàng-->
             <div class="navbar-nav flex-row order-md-last">
                 <div class="nav-item d-none d-md-flex me-3">
                     <div class="btn-list">
@@ -74,7 +74,7 @@
                         <!-- Nếu đã đăng nhập -->
                         <div th:if="${#authorization.expression('isAuthenticated()')}">
                             <button class="nav-link dropdown-toggle d-flex align-items-center" id="dropdownAccount"
-                               data-bs-toggle="dropdown" aria-expanded="false">
+                                    data-bs-toggle="dropdown" aria-expanded="false">
 
                                 <!-- Ảnh đại diện -->
                                 <th:block th:switch="${true}">
@@ -99,7 +99,8 @@
                             <!-- Dropdown menu -->
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
                                 <li><a class="dropdown-item" href="">Thông tin cá nhân</a></li>
-                                <li><a class="dropdown-item" th:href="@{/khach-hang/lich-su-mua-hang}">Lịch sử mua hàng</a></li>
+                                <li><a class="dropdown-item" th:href="@{/khach-hang/lich-su-mua-hang}">Lịch sử mua
+                                    hàng</a></li>
                                 <li><a class="dropdown-item" th:href="@{/doi-mat-khau}">Đổi mật khẩu</a></li>
                                 <li>
                                     <form th:action="@{/logout}" method="post" style="margin: 0;">
@@ -110,17 +111,16 @@
                         </div>
 
 
-
                         <!--                        <div class="nav-item dropdown">-->
-<!--                            <a href="#" class="nav-link d-flex lh-1 p-0 px-2" data-bs-toggle="dropdown" aria-label="Open user menu">-->
-<!--                                <img width="35" height="35" src="https://img.icons8.com/material-rounded/100/user-male-circle.png" alt="user-male-circle"/>-->
-<!--                            </a>-->
-<!--                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">-->
-<!--                                <a href="#" class="dropdown-item">Thông tin cá nhân</a>-->
-<!--                                <div class="dropdown-divider"></div>-->
-<!--                                <a href="./sign-in.html" class="dropdown-item">Đăng xuất</a>-->
-<!--                            </div>-->
-<!--                        </div>-->
+                        <!--                            <a href="#" class="nav-link d-flex lh-1 p-0 px-2" data-bs-toggle="dropdown" aria-label="Open user menu">-->
+                        <!--                                <img width="35" height="35" src="https://img.icons8.com/material-rounded/100/user-male-circle.png" alt="user-male-circle"/>-->
+                        <!--                            </a>-->
+                        <!--                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">-->
+                        <!--                                <a href="#" class="dropdown-item">Thông tin cá nhân</a>-->
+                        <!--                                <div class="dropdown-divider"></div>-->
+                        <!--                                <a href="./sign-in.html" class="dropdown-item">Đăng xuất</a>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
 
                     </div>
                 </div>
@@ -155,39 +155,38 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link"  th:href="@{/shop/lien-he}">
+                                    <a class="nav-link" th:href="@{/shop/lien-he}">
                                         </span><span class="nav-link-title" style="font-size: 16px">Liên hệ</span>
                                     </a>
-                                    <!--                                        <div class="dropdown-menu">-->
-                                    <!--                                            <div class="dropdown-menu-columns">-->
-                                    <!--                                                <div class="dropdown-menu-column">-->
-                                    <!--                                                    <a class="dropdown-item" href="./accordion.html">-->
-                                    <!--                                                        Accordion-->
-                                    <!--                                                        <span-->
-                                    <!--                                                            class="badge badge-sm bg-green-lt text-uppercase ms-auto">New</span>-->
-                                    <!--                                                    </a>-->
-                                    <!--                                                    <a class="dropdown-item" href="./alerts.html"> Alerts </a>-->
-                                    <!--                                                </div>-->
-                                    <!--                                            </div>-->
-                                    <!--                                        </div>-->
                                 </li>
                                 <li class="nav-item ms-auto">
-                                    <form action="./" method="get" class="d-flex align-items-center"
-                                          style="width: 250px;">
+                                    <form id="searchForm" action="/shop/product/all-product" method="get"
+                                          class="d-flex align-items-center" style="width: 350px;">
                                         <div class="input-icon w-100">
-                <span class="input-icon-addon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                         class="icon icon-1">
-                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                        <path d="M21 21l-6 -6"></path>
-                    </svg>
-                </span>
-                                            <input type="text" class="form-control" placeholder="Tìm kiếm…"
-                                                   aria-label="Search">
+        <span class="input-icon-addon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="20" height="20" viewBox="0 0 24 24"
+                 stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="10" cy="10" r="7"/>
+                <line x1="21" y1="21" x2="15" y2="15"/>
+            </svg>
+        </span>
+                                            <input type="text" class="form-control"
+                                                   placeholder="Tìm kiếm theo tên, mã sản phẩm"
+                                                   aria-label="Search" name="keyword" id="searchInput"
+                                                   th:value="${param.keyword}">
                                         </div>
                                     </form>
+                                    <script>
+                                        const input = document.getElementById("searchInput");
+
+                                        input.addEventListener("keydown", function (event) {
+                                            if (event.key === "Enter") {
+                                                event.preventDefault(); // Ngăn form submit mặc định (nếu cần)
+                                                document.getElementById("searchForm").submit();
+                                            }
+                                        });
+                                    </script>
+
                                 </li>
                             </ul>
                             <!-- END NAVBAR MENU -->
@@ -198,13 +197,15 @@
             </div>
         </div>
     </header>
-    <div class="p-3 bg-black text-white text-center">Giao hàng miễn phí toàn quốc với các đơn hàng trên 1.000.000 đ</div>
+    <div class="p-3 bg-black text-white text-center">Giao hàng miễn phí toàn quốc với các đơn hàng trên 1.000.000 đ
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/js/tabler.min.js"></script>
     <!-- Bootstrap JS (đặt cuối trang) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </div>
 </body>
+
 
 </html>
 

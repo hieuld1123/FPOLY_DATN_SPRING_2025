@@ -20,5 +20,8 @@ public class PublicSanPhamResponse {
     private Float giaBanSauGiam;
 
     private Integer idSanPhamChiTiet;
+    private String tenAnh;
+
+    private String thuongHieu;
 
 }

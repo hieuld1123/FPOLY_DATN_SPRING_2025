@@ -47,9 +47,35 @@ public class ShopController {
     }
 
     @GetMapping("/shop/product/all-product")
-    public String allProduct(Model model) {
+    public String allProduct(
+            @RequestParam(required = false) List<Long> filterBrand,
+            @RequestParam(required = false) List<Long> filterMaterial,
+            @RequestParam(required = false) List<Long> filterSole,
+            @RequestParam(required = false) List<Long> filterSize,
+            @RequestParam(required = false) String filterColor, // màu là chuỗi CSV "1,2,3"
+            @RequestParam(required = false) String sortOrder,
+            @RequestParam(required = false) String keyword,
+            Model model) {
+
+        List<Long> colorIds = new ArrayList<>();
+        if (filterColor != null && !filterColor.isEmpty()) {
+            colorIds = Arrays.stream(filterColor.split(","))
+                    .map(Long::parseLong)
+                    .collect(Collectors.toList());
+        }
+
+
+        // ✅ Nếu có từ khóa tìm kiếm, ưu tiên lọc theo tên/mã
         List<PublicSanPhamResponse> products;
-            products = publicSanPhamService.getAllProducts();
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            String formattedKeyword = "%" + keyword.trim().toLowerCase() + "%";
+            products = publicSanPhamService.searchProducts(formattedKeyword);
+        } else {
+            products = publicSanPhamService.filterProducts(
+                    filterBrand, filterMaterial, filterSole, filterSize, colorIds, sortOrder
+            );
+        }
+
 
         List<ThuongHieu> listThuongHieu = thuongHieuRepository.getAll();
         List<MauSac> listMauSac = mauSacRepository.getAll();
@@ -57,14 +83,18 @@ public class ShopController {
         List<DeGiay> listDeGiay = deGiayRepository.getAll();
         List<ChatLieu> listChatLieu = chatLieuRepository.getAll();
 
+        model.addAttribute("keyword", keyword);
         model.addAttribute("products", products);
+        model.addAttribute("sortOrder", sortOrder);
         model.addAttribute("mauSac", listMauSac);
         model.addAttribute("thuongHieu", listThuongHieu);
         model.addAttribute("kichCo", listKichCo);
         model.addAttribute("deGiay", listDeGiay);
         model.addAttribute("chatLieu", listChatLieu);
+
         return "/shop/all-product";
     }
+
 
     @GetMapping("/shop/product/details/{idSanPhamChiTiet}")
     public String productDetails(@PathVariable Integer idSanPhamChiTiet, Model model) {

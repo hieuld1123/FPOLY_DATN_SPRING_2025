@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <div th:replace="components/head :: head"></div>
+  <meta charset="UTF-8" />
+  <title>Bán hàng</title>
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"
+  />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="stylesheet" href="/css/invoice-modify.css" />
+  <body>
+    <div class="admin-layout">
+      <div th:replace="~{components/admin-sidebar :: admin-sidebar}" class="sidebar"></div>
+      <div class="right-content">
+        <nav class="navbar-custom" th:replace="~{components/admin-navbar :: admin-navbar}"></nav>
+        <div class="main-content">
+          <a class="back-link" id="btn-back">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor"
+                 class="bi bi-arrow-left" viewBox="0 0 16 16">
+              <path fill-rule="evenodd"
+                    d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 1 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+            </svg>
+            Quay lại
+          </a>
+          <div class="row row-equal-height">
+            <div class="col-8">
+              <div class="card equal-height">
+                <div class="card-header">
+                  <h3 class="card-title">Thông tin khách hàng</h3>
+                </div>
+                <div class="card-body border-bottom py-3">
+                  <div class="customer-info text-center">
+                    <img
+                      style="width: 50px"
+                      class="mt-3"
+                      src="/icon/id_card_icon.png"
+                      alt="Id Card Icon"
+                    />
+                    <div class="mt-3">Chưa có thông tin khách hàng</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-4">
+              <div class="card equal-height">
+                <div
+                        class="card-header d-flex justify-content-between align-items-center"
+                >
+                  <h3 class="card-title mb-0">Thông tin hóa đơn</h3>
+                </div>
+                <div class="card-body border-bottom py-3">
+                  <div id="div-invoice">
+                    <div id="invoices" class="form-selectgroup"></div>
+                    <div>
+                      <p><strong>Người bán:</strong> <span id="seller-info">Chưa có thông tin</span></p>
+                      <p><strong>Ngày tạo:</strong> <span id="created-date">Chưa có thông tin</span></p>
+                      <p><strong>Ngày sửa:</strong> <span id="updated-date">Chưa có thông tin</span></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          <div class="row mt-3">
+            <div class="col-12">
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">Thông tin sản phẩm</h3>
+                </div>
+                <div class="card-body border-bottom py-3">
+                  <div class="input-icon mb-3">
+                    <span class="input-icon-addon">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="icon"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke="currentColor"
+                        fill="none"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <circle cx="10" cy="10" r="7" />
+                        <line x1="21" y1="21" x2="15" y2="15" />
+                      </svg>
+                    </span>
+                    <input
+                      type="text"
+                      id="search-product"
+                      name="search-product"
+                      class="form-control"
+                      placeholder="Tìm theo tên sản phẩm…"
+                    />
+                  </div>
+
+                  <div id="suggestions" class="suggestions"></div>
+                  <div class="table-responsive mt-3">
+                    <table class="product-table">
+                      <thead>
+                        <tr>
+                          <th>STT</th>
+                          <th>Ảnh</th>
+                          <th>Tên sản phẩm</th>
+                          <th>Số lượng</th>
+                          <th>Đơn giá</th>
+                          <th>Thành tiền</th>
+                          <th>Thao tác</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td colspan="7" class="text-center text-secondary">
+                            <img
+                              class="mt-3"
+                              src="/icon/empty_box_icon.png"
+                              alt="Empty Box Icon"
+                            />
+                            <div class="mt-3">
+                              Chưa có sản phẩm nào được thêm
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="card-header">
+                  <h3 class="card-title">Thông tin thanh toán</h3>
+                </div>
+                <div class="card-body financial-info">
+                  <div class="row financial-info-row">
+                    <div class="col-9">
+                      <div class="mb-3">
+                        <label class="form-label">Ghi chú đơn hàng</label>
+                        <textarea
+                          class="form-control"
+                          rows="3"
+                          id="input-note"
+                          placeholder="VD: Hàng tăng cổ riêng"
+                        ></textarea>
+                      </div>
+                    </div>
+
+                    <div class="col-3">
+                      <div class="row">
+                        <div class="col-8">
+                          Tổng tiền (<span id="count-product">X</span> sản phẩm)
+                        </div>
+                        <div class="col-4" id="tongTien">X</div>
+                      </div>
+                      <div class="row">
+                        <div class="col-8 text-muted">Phí giao hàng</div>
+                        <div class="col-4 text-muted" id="shipping-fee-info">
+                          0
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-8 text-muted">Mã giảm giá</div>
+                        <div class="col-4 text-muted">0</div>
+                      </div>
+                      <div class="row">
+                        <div class="col-8">Khách phải trả</div>
+                        <div class="col-4" id="tong">X</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thêm modal để nhập địa chỉ -->
+        <div
+          class="modal modal-blur fade"
+          id="addAddressModal"
+          tabindex="-1"
+          role="dialog"
+          aria-hidden="true"
+        >
+          <div
+            class="modal-dialog modal-lg modal-dialog-centered"
+            role="document"
+          >
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Thay đổi địa chỉ</h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <!-- Radio buttons để chọn tùy chọn -->
+                <div class="mb-3">
+                  <div class="form-check form-check-inline">
+                    <input
+                      class="form-check-input address-option"
+                      type="radio"
+                      name="addressOption"
+                      id="existingAddress"
+                      value="existing"
+                      checked
+                    />
+                    <label class="form-check-label" for="existingAddress"
+                      >Chọn địa chỉ có sẵn</label
+                    >
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input
+                      class="form-check-input address-option"
+                      type="radio"
+                      name="addressOption"
+                      id="newAddress"
+                      value="new"
+                    />
+                    <label class="form-check-label" for="newAddress"
+                      >Nhập địa chỉ mới</label
+                    >
+                  </div>
+                </div>
+
+                <!-- Phần chọn địa chỉ có sẵn -->
+                <div id="existing-address-section" class="address-section">
+                  <div class="mb-3">
+                    <label class="form-label">Danh sách địa chỉ</label>
+                    <select id="existing-addresses" class="form-select">
+                      <option value="">Chọn địa chỉ</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Phần nhập địa chỉ mới -->
+                <div
+                  id="new-address-section"
+                  class="address-section"
+                  style="display: none"
+                >
+                  <div class="mb-3">
+                    <label class="form-label">Tỉnh/Thành phố</label>
+                    <select id="modal-province" class="form-select">
+                      <option value="">Chọn tỉnh/thành</option>
+                    </select>
+                    <small class="text-danger"></small>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Quận/Huyện</label>
+                    <select id="modal-district" class="form-select" disabled>
+                      <option value="">Chọn quận/huyện</option>
+                    </select>
+                    <small class="text-danger"></small>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Xã/Phường</label>
+                    <select id="modal-ward" class="form-select" disabled>
+                      <option value="">Chọn xã/phường</option>
+                    </select>
+                    <small class="text-danger"></small>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Địa chỉ cụ thể</label>
+                    <input
+                      type="text"
+                      id="modal-address-detail"
+                      class="form-control"
+                      placeholder="Nhập địa chỉ cụ thể"
+                    />
+                    <small class="text-danger"></small>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  id="saveAddressBtn"
+                >
+                  Lưu địa chỉ
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Thông tin khach hàng -->
+        <div
+          class="modal modal-blur fade"
+          id="deliveryInfoModal"
+          tabindex="-1"
+          role="dialog"
+          aria-hidden="true"
+        >
+          <div
+            class="modal-dialog modal-lg modal-dialog-centered"
+            role="document"
+          >
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Thông tin khách hàng</h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <!-- Thông tin người nhận -->
+                <div class="mb-4">
+                  <h3 class="mb-3">Thông tin người nhận</h3>
+                  <div class="row mb-3">
+                    <label for="recipient_name" class="col-sm-4 col-form-label"
+                      >Tên người nhận:</label
+                    >
+                    <div class="col-sm-8">
+                      <input
+                        id="recipient_name"
+                        type="text"
+                        class="form-control"
+                        placeholder="Nhập tên người nhận"
+                      />
+                      <small class="text-danger"></small>
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <label for="phone_number" class="col-sm-4 col-form-label"
+                      >Số điện thoại:</label
+                    >
+                    <div class="col-sm-8">
+                      <input
+                        id="phone_number"
+                        type="tel"
+                        class="form-control"
+                        placeholder="0123456789"
+                        pattern="[0-9]{10,11}"
+                      />
+                      <small class="text-danger"></small>
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <label for="email" class="col-sm-4 col-form-label"
+                      >Email:</label
+                    >
+                    <div class="col-sm-8">
+                      <input
+                        id="email"
+                        type="email"
+                        class="form-control"
+                        placeholder="abc@gmail.com"
+                      />
+                      <small class="text-danger"></small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Địa chỉ -->
+                <div class="mb-4">
+                  <h3 class="mb-3">Địa chỉ</h3>
+                  <div class="row mb-3">
+                    <label for="province" class="col-sm-4 col-form-label"
+                      >Tỉnh/Thành phố:</label
+                    >
+                    <div class="col-sm-8">
+                      <select id="province" class="form-select">
+                        <option value="">Chọn tỉnh/thành</option>
+                      </select>
+                      <small class="text-danger"></small>
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <label for="district" class="col-sm-4 col-form-label"
+                      >Quận/Huyện:</label
+                    >
+                    <div class="col-sm-8">
+                      <select id="district" class="form-select" disabled>
+                        <option value="">Chọn quận/huyện</option>
+                      </select>
+                      <small class="text-danger"></small>
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <label for="ward" class="col-sm-4 col-form-label"
+                      >Xã/Phường:</label
+                    >
+                    <div class="col-sm-8">
+                      <select id="ward" class="form-select" disabled>
+                        <option value="">Chọn xã/phường</option>
+                      </select>
+                      <small class="text-danger"></small>
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <label for="address-detail" class="col-sm-4 col-form-label"
+                      >Địa chỉ cụ thể:</label
+                    >
+                    <div class="col-sm-8">
+                      <input
+                        id="address-detail"
+                        type="text"
+                        class="form-control"
+                        placeholder="Nhập địa chỉ cụ thể"
+                      />
+                      <small class="text-danger"></small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  id="saveDeliveryInfoBtn"
+                >
+                  Lưu thông tin
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal để thay đổi số điện thoại -->
+      <div
+        class="modal modal-blur fade"
+        id="changePhoneModal"
+        tabindex="-1"
+        role="dialog"
+        aria-hidden="true"
+      >
+        <div
+          class="modal-dialog modal-lg modal-dialog-centered"
+          role="document"
+        >
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Thay đổi số điện thoại</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label class="form-label">Số điện thoại mới</label>
+                <input
+                  type="text"
+                  id="new-phone-number"
+                  class="form-control"
+                  placeholder="Nhập số điện thoại mới"
+                />
+                <small class="text-danger"></small>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Hủy
+              </button>
+              <button type="button" class="btn btn-primary" id="savePhoneBtn">
+                Lưu số điện thoại
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
+    <script src="/js/sua-hoa-don.js"></script>
+  </body>
+</html>

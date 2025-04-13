@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
-<div th:replace="components/head :: head"></div>
+<div th:replace="~{components/head :: head}"></div>
 <meta charset="UTF-8"/>
 <title>NineShoes</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
@@ -231,7 +231,7 @@
             <div class="card">
                 <div class="card-body">
                     <h1 class="text-center">Thêm sản phẩm</h1>
-                    <form action="san-pham/addProduct" method="post" name="addProduct" onsubmit="return validateForm()">
+                    <form action="/addProduct" method="post" name="addProduct" onsubmit="return validateForm()">
                         <!-- Tên sản phẩm -->
                         <div class="mb-3">
                             <!-- Hàng của label, select và button cùng 1 hàng -->
@@ -369,7 +369,8 @@
                                     <select id="colorSelect" class="select2 form-control flex-grow-1"
                                             multiple="multiple" data-placeholder="Màu sắc" name="idMauSac"
                                             onchange="clearErrorMessageMauSac()">
-                                        <option th:each="ms : ${ms}" th:value="${ms.id}" th:data-color="${ms.ten}" th:text="${'   -   ' + ms.tenMauSac}"></option>
+                                        <option th:each="ms : ${ms}" th:value="${ms.id}" th:data-color="${ms.ten}"
+                                                th:text="${'   -   ' + ms.tenMauSac}"></option>
                                     </select>
                                     <button type="button" data-bs-toggle="modal" data-bs-target="#themmausac"
                                             class="btn btn-primary d-flex align-items-center justify-content-center h-100"
@@ -762,7 +763,7 @@
                                     <th>Số lượng</th>
                                     <th>Giá bán</th>
                                     <th>Thao tác</th>
-                                    <th>Upload Ảnh</th>
+                                    <!--                                    <th>Upload Ảnh</th>-->
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -817,29 +818,58 @@
                                             </svg>
                                         </a>
                                     </td>
+                                    <!--                                    <td>-->
+                                    <!--                                        <input type="hidden" name="spctId" th:value="${spctt.id}">-->
+                                    <!--                                        <div class="d-flex flex-column">-->
+                                    <!--                                            <label for="file-input-1-${stt.index}">-->
+                                    <!--                                                <input type="file" class="form-control m-2"-->
+                                    <!--                                                       id="file-input-1-${stt.index}" name="anh1"-->
+                                    <!--                                                       onchange="showFileInfo(event)">-->
+                                    <!--                                            </label>-->
+                                    <!--                                            <label for="file-input-2-${stt.index}">-->
+                                    <!--                                                <input type="file" class="form-control m-2"-->
+                                    <!--                                                       id="file-input-2-${stt.index}" name="anh2"-->
+                                    <!--                                                       onchange="showFileInfo(event)">-->
+                                    <!--                                            </label>-->
+                                    <!--                                            <label for="file-input-3-${stt.index}">-->
+                                    <!--                                                <input type="file" class="form-control m-2"-->
+                                    <!--                                                       id="file-input-3-${stt.index}" name="anh3"-->
+                                    <!--                                                       onchange="showFileInfo(event)">-->
+                                    <!--                                            </label>-->
+                                    <!--                                        </div>-->
+                                    <!--                                    </td>-->
+                                </tr>
+                                </tbody>
+                            </table>
+
+                            <br>
+                            <br>
+
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th>Màu sắc</th>
+                                    <th>Chọn ảnh</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="spct : ${sanPhamChiTietList}" class="product-image-row">
+                                    <td th:text="${spct.sanPham.tenSanPham}"></td>
+                                    <td th:text="${spct.mauSac.tenMauSac}"></td>
                                     <td>
-                                        <input type="hidden" name="spctId" th:value="${spctt.id}">
-                                        <div class="d-flex flex-column">
-                                            <label for="file-input-1-${stt.index}">
-                                                <input type="file" class="form-control m-2"
-                                                       id="file-input-1-${stt.index}" name="anh1"
-                                                       onchange="showFileInfo(event)">
-                                            </label>
-                                            <label for="file-input-2-${stt.index}">
-                                                <input type="file" class="form-control m-2"
-                                                       id="file-input-2-${stt.index}" name="anh2"
-                                                       onchange="showFileInfo(event)">
-                                            </label>
-                                            <label for="file-input-3-${stt.index}">
-                                                <input type="file" class="form-control m-2"
-                                                       id="file-input-3-${stt.index}" name="anh3"
-                                                       onchange="showFileInfo(event)">
-                                            </label>
-                                        </div>
+                                        <input type="file" name="anh1" accept="image/*"
+                                               class="form-control anhInput m-2" onchange="showFileInfo(event)"/>
+                                        <input type="file" name="anh2" accept="image/*"
+                                               class="form-control anhInput m-2" onchange="showFileInfo(event)"/>
+                                        <input type="file" name="anh3" accept="image/*"
+                                               class="form-control anhInput m-2" onchange="showFileInfo(event)"/>
                                     </td>
                                 </tr>
                                 </tbody>
                             </table>
+                        </section>
+                    </form>
                 </div>
                 </section>
                 </form>
@@ -1979,7 +2009,7 @@
 <!--validate hoàn tất-->
 <script>
     function validateForm2() {
-        const rows = document.querySelectorAll('.product-row');
+        const rows = document.querySelectorAll('.product-image-row');
         let valid = true;
 
         rows.forEach(row => {
