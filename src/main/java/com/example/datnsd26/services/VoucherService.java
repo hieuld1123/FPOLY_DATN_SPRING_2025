@@ -185,10 +185,10 @@ public class VoucherService {
             try {
                 Double giatrigiamtoithieu = voucher.getGiaTriGiamToiThieu(); // Ép kiểu để đảm bảo là số nguyên
                 if (giatrigiamtoithieu < 0) {
-                    errors.put("giaTriGiamToiThieu", "giá trị giảm tối thiểu phải lớn hơn hoăc bằng 0");
+                    errors.put("giaTriGiamToiThieu", "Đơn tối thiểu phải lớn hơn hoăc bằng 0");
                 }
             } catch (NumberFormatException e) {
-                errors.put("giaTriGiamToiThieu", "giá trị giảm tối thiểu phải là một số hợp lệ");
+                errors.put("giaTriGiamToiThieu", "Đơn tối thiểu phải là một số hợp lệ");
             }
         }
 
@@ -201,6 +201,9 @@ public class VoucherService {
                 errors.put("ngayBatDau", "Ngày bắt đầu phải từ thời điểm hiện tại trở đi");
             }
         }
+//        if (ngayKetThuc.isBefore(now)) {
+//            errors.put("ngayKetThuc", "Ngày kết thúc phải sau ngày hiện tại");
+//        }
 
         if (ngayKetThuc == null) {
             errors.put("ngayKetThuc", "Vui lòng chon Ngày kết thúc ");
@@ -209,37 +212,54 @@ public class VoucherService {
         }
 
 
+
         // Kiểm tra giá trị giảm trong khoảng cho phép
-        if (voucher.getGiaTriGiam() != null) {
-            Double giaTriGiam = voucher.getGiaTriGiam();
-            Double giaTriGiamToiThieu = voucher.getGiaTriGiamToiThieu();
-            Double giaTriGiamToiDa = voucher.getGiaTriGiamToiDa();
-            String hinhThucGiam = voucher.getHinhThucGiam(); // Lấy hình thức giảm giá
+        Double giaTriGiam = voucher.getGiaTriGiam();
+        Double donToiThieu = voucher.getGiaTriGiamToiThieu();
+        Double giaTriGiamToiDa = voucher.getGiaTriGiamToiDa();
+        String hinhThucGiam = voucher.getHinhThucGiam();
 
-            if ("Phần Trăm".equalsIgnoreCase(hinhThucGiam)) {
-                // Kiểm tra nếu giảm giá theo phần trăm
-                if (giaTriGiam < 0 || giaTriGiam > 100) {
-                    errors.put("giaTriGiam", "Giá trị giảm theo phần trăm phải từ 0% đến 100%");
-                }
-                if (giaTriGiamToiDa != null && giaTriGiamToiThieu != null) {
-                    // Giới hạn giá trị giảm tối đa khi giảm theo %
-                    Double soTienGiamToiDa = (giaTriGiamToiThieu * giaTriGiam) / 100;
-                    if (soTienGiamToiDa > giaTriGiamToiDa) {
-                        errors.put("giaTriGiam", "Giá trị giảm không được vượt quá " + giaTriGiamToiDa);
-                    }
-                }
-            } else if ("Theo Giá Tiền".equalsIgnoreCase(hinhThucGiam)) {
-
-                // Giảm giá theo số tiền
-                if (giaTriGiamToiDa != null && giaTriGiam > giaTriGiamToiDa) {
-                    errors.put("giaTriGiam", "Giá trị giảm không được lớn hơn " + giaTriGiamToiDa);
-                }
-            }
-            if (giaTriGiamToiThieu != null && giaTriGiamToiThieu < 0) {
-                errors.put("giaTriGiamToiThieu", "Đơn hàng tối thiểu phải lớn hơn hoặc bằng 0");
-            } else if ("Theo Giá Tiền".equalsIgnoreCase(hinhThucGiam)) {
+        if ("Theo Giá Tiền".equals(hinhThucGiam)) {
+            // Validate x (Giá trị giảm)
+            if(giaTriGiam != null){
                 if (giaTriGiam <= 0) {
                     errors.put("giaTriGiam", "Giá trị giảm phải lớn hơn 0");
+                }
+                if (donToiThieu != null && giaTriGiam > donToiThieu) {
+                    errors.put("giaTriGiam", "Giá trị giảm không được lớn hơn đơn tối thiểu");
+                }
+            }
+            // Validate y (Đơn tối thiểu)
+            if (donToiThieu == null || donToiThieu <= 0) {
+                errors.put("giaTriGiamToiThieu", "Đơn tối thiểu phải lớn hơn 0");
+            }
+
+            // // Validate z (Giá trị giảm tối đa)
+            // if (giaTriGiamToiDa != null) {
+            //     if (giaTriGiamToiDa <= 0) {
+            //         errors.put("giaTriGiamToiDa", "Giá trị giảm tối đa phải lớn hơn 0");
+            //     }
+
+            // }
+        }
+        else if ("Phần Trăm".equals(hinhThucGiam)) {
+            // Validate x (Giá trị giảm phần trăm)
+            if (giaTriGiam == null || giaTriGiam <= 0 || giaTriGiam > 100) {
+                errors.put("giaTriGiam", "Giá trị giảm phải từ 0 đến 100%");
+            }
+
+            // Validate y (Đơn tối thiểu)
+            if (donToiThieu == null || donToiThieu <= 0) {
+                errors.put("giaTriGiamToiThieu", "Đơn tối thiểu phải lớn hơn 0");
+            }
+
+            // Validate z (Giá trị giảm tối đa)
+            if (giaTriGiamToiDa != null) {
+                if (giaTriGiamToiDa <= 0) {
+                    errors.put("giaTriGiamToiDa", "Giá trị giảm tối đa phải lớn hơn 0");
+                }
+                if (donToiThieu != null && giaTriGiamToiDa > donToiThieu) {
+                    errors.put("giaTriGiamToiDa", "Giá trị giảm tối đa không được lớn hơn đơn tối thiểu");
                 }
             }
         }

@@ -113,7 +113,7 @@
     }
 </style>
 
-<body>
+<body th:attr="data-khuyen-mai-id=${null}">
 <div class="admin-layout">
     <div th:replace="~{components/admin-sidebar :: admin-sidebar}" class="sidebar">
         <!-- Nội dung sidebar -->
@@ -244,7 +244,9 @@
                                                     <td>
                                                         <div class="input-group">
                                                             <input type="number" class="form-control mucGiam"
-                                                                   th:name="'mucGiam_' + ${spct.id}" min="0" disabled>
+                                                                   th:name="'mucGiam_' + ${spct.id}"
+                                                                   th:data-product-id="${spct.id}"
+                                                                   min="0" disabled>
                                                             <span class="input-group-text mucGiamUnit">VNĐ</span>
                                                         </div>
                                                     </td>

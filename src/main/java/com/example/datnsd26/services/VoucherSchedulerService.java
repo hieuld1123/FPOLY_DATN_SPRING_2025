@@ -38,17 +38,23 @@ public class VoucherSchedulerService {
 
         Timer timer = new Timer();
 
-        if (now.isBefore(km.getNgayBatDau())) {
+        // Kiểm tra số lượng và thời gian
+        if (km.getSoLuong() <= 0) {
+            km.setTrangThai(2); // Đã kết thúc do hết số lượng
+            voucherRepository.save(km);
+            return;
+        } else if (now.isBefore(km.getNgayBatDau())) {
             km.setTrangThai(0); // Chưa diễn ra
             voucherRepository.save(km);
         } else if (now.isBefore(km.getNgayKetThuc())) {
             km.setTrangThai(1); // Đang hoạt động
             voucherRepository.save(km);
         } else {
-            km.setTrangThai(2); // Đã kết thúc
+            km.setTrangThai(2); // Đã kết thúc do hết hạn
             voucherRepository.save(km);
             return;
         }
+
 
         if (delayToStart > 0) {
             timer.schedule(new TimerTask() {
