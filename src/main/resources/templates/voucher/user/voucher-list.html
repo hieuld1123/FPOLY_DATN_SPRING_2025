@@ -155,9 +155,9 @@
 
                                             <select name="trangThai" class="form-select mx-2">
                                                 <option value="">Chọn trạng thái</option>
-                                                <option value="0">Chưa Bắt Đầu</option>
-                                                <option value="1">Đang Hoạt Động</option>
-                                                <option value="2">Hết Hạn</option>
+                                                <option value="0">Chưa diễn ra</option>
+                                                <option value="1">Đang diễn ra</option>
+                                                <option value="2">Đã kết thúc</option>
                                             </select>
 
                                             <input type="datetime-local" class="form-control" name="ngayBatDau">
@@ -214,18 +214,18 @@
                                     <span th:if="${voucher.hinhThucGiam == 'Theo Giá Tiền'}"
                                           th:text="${#numbers.formatDecimal(voucher.giaTriGiam, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}"></span>
                                 </td>
-                                <td th:text="${#numbers.formatDecimal(voucher.giaTriGiamToiDa, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}"></td>
+                                <td  th:text="${voucher.giaTriGiamToiDa != null ? #numbers.formatDecimal(voucher.giaTriGiamToiDa, 0, 'COMMA', 0, 'POINT') + ' VNĐ' : ''}"></td>
                                 <td th:text="${voucher.hinhThucGiam}"></td>
                                 <td th:text="${voucher.soLuong}"></td>
                                 <td th:text="${#temporals.format(voucher.ngayBatDau, 'dd/MM/yyyy HH:mm')}"></td>
                                 <td th:text="${#temporals.format(voucher.ngayKetThuc, 'dd/MM/yyyy HH:mm')}"></td>
                                 <td class="status">
                                                             <span th:if="${voucher.trangThai == 1}"
-                                                                  class="badge bg-success">Hoạt động</span>
+                                                                  class="badge bg-success">Đang diễn ra</span>
                                     <span th:if="${voucher.trangThai == 0}"
-                                          class="badge bg-warning">Chưa bắt đầu</span>
+                                          class="badge bg-warning">Chưa diễn ra</span>
                                     <span th:if="${voucher.trangThai == 2}"
-                                          class="badge bg-danger">Hết hạn</span>
+                                          class="badge bg-danger">Đã kết thúc</span>
                                 </td>
                                 <td>
                                     <a class="btn btn-warning btn-sm"

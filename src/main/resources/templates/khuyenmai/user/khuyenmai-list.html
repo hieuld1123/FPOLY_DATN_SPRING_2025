@@ -335,10 +335,10 @@
             type: "GET",
             dataType: "json",
             success: function (data) {
-                data.forEach(function (voucher) {
-                    let row = $("#khuyenmai-" + voucher.id);
+                data.forEach(function (khuyenmai) {
+                    let row = $("#khuyenmai-" + khuyenmai.id);
                     if (row.length === 0) {
-                        console.warn("Không tìm thấy dòng cho ID:", voucher.id);
+                        console.warn("Không tìm thấy dòng cho ID:", khuyenmai.id);
                         return;
                     }
 
@@ -350,11 +350,11 @@
 
                     statusCell.removeClass("bg-success bg-warning bg-danger");
 
-                    if (voucher.trangThai === 1) {
+                    if (khuyenmai.trangThai === 1) {
                         statusCell.addClass("bg-success").text("Đang diễn ra");
-                    } else if (voucher.trangThai === 0) {
+                    } else if (khuyenmai.trangThai === 0) {
                         statusCell.addClass("bg-warning").text("Chưa diễn ra");
-                    } else if (voucher.trangThai === 2) {
+                    } else if (khuyenmai.trangThai === 2) {
                         statusCell.addClass("bg-danger").text("Đã kết thúc");
                     }
 
