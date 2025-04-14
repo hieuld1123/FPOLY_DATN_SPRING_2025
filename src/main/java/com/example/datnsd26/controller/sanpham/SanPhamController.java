@@ -270,7 +270,7 @@ public class SanPhamController {
                         boolean found = false;
                         if (sanPhamChiTietList != null) {
                             for (SanPhamChiTiet spct2 : sanPhamChiTietList) {
-                                if (spct2.getMauSac().getId() == colorId.getId() && spct2.getKichCo().getTen().equals(sizeName)) {
+                                if (spct2.getSanPham().getId() == sanPham.getId() && spct2.getMauSac().getId() == colorId.getId() && spct2.getKichCo().getTen().equals(sizeName)) {
                                     spct2.setSoLuong(spct2.getSoLuong() + 1);
                                     found = true;
                                     break;
