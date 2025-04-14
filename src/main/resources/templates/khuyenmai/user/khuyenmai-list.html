@@ -181,13 +181,14 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr th:each="km, stat : ${danhSachKhuyenMai.content}">
+                                    <tr th:each="km, stat : ${danhSachKhuyenMai.content}"
+                                        th:id="'khuyenmai-' + ${km.id}">
                                         <td th:text="${danhSachKhuyenMai.number * danhSachKhuyenMai.size + stat.count}"></td>
                                         <td th:text="${km.tenChienDich}"></td>
                                         <td th:text="${km.hinhThucGiam}"></td>
                                         <td>
-                            <span th:if="${km.hinhThucGiam == 'Phần Trăm'}"
-                                  th:text="${#numbers.formatDecimal(km.giaTriGiam, 1, 'COMMA', 2, 'POINT') + '%'}"></span>
+                                             <span th:if="${km.hinhThucGiam == 'Phần Trăm'}"
+                                                   th:text="${#numbers.formatDecimal(km.giaTriGiam, 1, 'COMMA', 2, 'POINT') + '%'}"></span>
                                             <span th:if="${km.hinhThucGiam == 'Theo Giá Tiền'}"
                                                   th:text="${#numbers.formatDecimal(km.giaTriGiam, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}"></span>
                                         </td>
@@ -197,9 +198,9 @@
                                         </td>
                                         <td th:text="${#temporals.format(km.thoiGianBatDau, 'dd-MM-yyyy HH:mm')}"></td>
                                         <td th:text="${#temporals.format(km.thoiGianKetThuc, 'dd-MM-yyyy HH:mm')}"></td>
-                                        <td>
-                                    <span th:if="${km.trangThai == 0}"
-                                          class="badge bg-warning text-dark">Chưa diễn ra</span>
+                                        <td class="status">
+                                         <span th:if="${km.trangThai == 0}"
+                                               class="badge bg-warning text-dark">Chưa diễn ra</span>
                                             <span th:if="${km.trangThai == 1}"
                                                   class="badge bg-success text-right">Đang diễn ra</span>
                                             <span th:if="${km.trangThai == 2}"
@@ -207,23 +208,21 @@
                                         </td>
                                         <td>
                                             <div class="btn-group" role="group">
-                                                <a th:href="@{/admin/khuyen-mai/edit/{id}(id=${km.id})}"
-                                                   class="btn btn-sm btn-info me-2" title="Sửa">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
                                                 <a th:if="${km.trangThai == 2}"
-                                                   th:href="@{/admin/khuyen-mai/restore/{id}(id=${km.id})}"
                                                    class="btn btn-sm btn-success me-2"
-                                                   onclick="return confirm('Bạn có chắc muốn khôi phục khuyến mãi này?')"
+                                                   th:onclick="'restoreKhuyenMai(' + ${km.id} + ')'"
                                                    title="Khôi phục">
                                                     <i class="fas fa-redo"></i>
                                                 </a>
                                                 <a th:if="${km.trangThai == 1}"
-                                                   th:href="@{/admin/khuyen-mai/stop/{id}(id=${km.id})}"
                                                    class="btn btn-sm btn-warning me-2"
-                                                   onclick="return confirm('Bạn có chắc muốn ngừng khuyến mãi này?')"
+                                                   th:onclick="'endKhuyenMai(' + ${km.id} + ')'"
                                                    title="Ngừng hoạt động">
                                                     <i class="fas fa-stop-circle"></i>
+                                                </a>
+                                                <a th:href="@{/admin/khuyen-mai/edit/{id}(id=${km.id})}"
+                                                   class="btn btn-sm btn-info me-2" title="Sửa">
+                                                    <i class="fas fa-edit"></i>
                                                 </a>
                                                 <button type="button" class="btn btn-sm btn-danger"
                                                         th:attr="onclick=|confirmDelete(${km.id})|"
@@ -319,6 +318,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="/js/khuyenmai/khuyenmai-list.js"></script>
 <script>
     function getQueryParam(param) {
@@ -344,7 +344,7 @@
 
                     let statusCell = row.find(".status span");
                     if (statusCell.length === 0) {
-                        console.warn("Không tìm thấy ô trạng thái cho ID:", voucher.id);
+                        console.warn("Không tìm thấy ô trạng thái cho ID:", khuyenmai.id);
                         return;
                     }
 

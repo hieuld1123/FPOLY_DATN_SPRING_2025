@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -26,6 +27,7 @@ public class VoucherSchedulerService {
     private final ConcurrentHashMap<Long, Timer> timerMap = new ConcurrentHashMap<>();
 
     @EventListener(ApplicationReadyEvent.class)
+    @Transactional
     public void initAfterStartup() {
         List<Voucher> danhSach = voucherRepository.findAll();
         danhSach.forEach(this::scheduleKhuyenMai);

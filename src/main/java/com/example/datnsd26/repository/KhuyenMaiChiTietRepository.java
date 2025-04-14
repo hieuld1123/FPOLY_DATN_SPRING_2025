@@ -20,9 +20,8 @@ public interface KhuyenMaiChiTietRepository extends JpaRepository<KhuyenMaiChiti
 
     @Query("SELECT kmct FROM KhuyenMaiChitiet kmct " +
             "WHERE kmct.sanPhamChiTiet.id = :sanPhamId " +
-            "AND kmct.khuyenMai.trangThai = 1 " +
-            "AND :now BETWEEN kmct.khuyenMai.thoiGianBatDau AND kmct.khuyenMai.thoiGianKetThuc")
-    KhuyenMaiChitiet findActivePromotionBySanPham(Long sanPhamId, LocalDateTime now);
+            "AND kmct.khuyenMai.trangThai = 1 ")
+    KhuyenMaiChitiet findActivePromotionBySanPham(Long sanPhamId);
 
     @Query("SELECT kmct FROM KhuyenMaiChitiet kmct JOIN FETCH kmct.sanPhamChiTiet WHERE kmct.khuyenMai.id = :khuyenMaiId")
     List<KhuyenMaiChitiet> findByKhuyenMai_Id(Long khuyenMaiId);
@@ -43,6 +42,7 @@ public interface KhuyenMaiChiTietRepository extends JpaRepository<KhuyenMaiChiti
             "JOIN kmct.khuyenMai km " +
             "WHERE km.trangThai = 1")
     List<Long> findSanPhamDangKhuyenMai();
+
 
 
 }

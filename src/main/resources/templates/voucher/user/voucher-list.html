@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
-<div th:replace="components/head :: head"></div>
+<div th:replace="~{components/head :: head}"></div>
 <title>Danh sách Voucher</title>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -9,6 +9,8 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
 <!-- Tabler JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <style>
     /* Bố cục chính */
@@ -198,6 +200,7 @@
                                 <th>Ngày Bắt Đầu</th>
                                 <th>Ngày Kết Thúc</th>
                                 <th>Trạng Thái</th>
+                                <th>Trạng thái hiển thị</th>
                                 <th>Hành Động</th>
                             </tr>
                             </thead>
@@ -214,28 +217,47 @@
                                     <span th:if="${voucher.hinhThucGiam == 'Theo Giá Tiền'}"
                                           th:text="${#numbers.formatDecimal(voucher.giaTriGiam, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}"></span>
                                 </td>
-                                <td  th:text="${voucher.giaTriGiamToiDa != null ? #numbers.formatDecimal(voucher.giaTriGiamToiDa, 0, 'COMMA', 0, 'POINT') + ' VNĐ' : ''}"></td>
+                                <td th:text="${voucher.giaTriGiamToiDa != null ? #numbers.formatDecimal(voucher.giaTriGiamToiDa, 0, 'COMMA', 0, 'POINT') + ' VNĐ' : ''}"></td>
                                 <td th:text="${voucher.hinhThucGiam}"></td>
                                 <td th:text="${voucher.soLuong}"></td>
                                 <td th:text="${#temporals.format(voucher.ngayBatDau, 'dd/MM/yyyy HH:mm')}"></td>
                                 <td th:text="${#temporals.format(voucher.ngayKetThuc, 'dd/MM/yyyy HH:mm')}"></td>
                                 <td class="status">
-                                                            <span th:if="${voucher.trangThai == 1}"
-                                                                  class="badge bg-success">Đang diễn ra</span>
+                                    <span th:if="${voucher.trangThai == 1}"
+                                          class="badge bg-success">Đang diễn ra</span>
                                     <span th:if="${voucher.trangThai == 0}"
                                           class="badge bg-warning">Chưa diễn ra</span>
                                     <span th:if="${voucher.trangThai == 2}"
                                           class="badge bg-danger">Đã kết thúc</span>
                                 </td>
                                 <td>
-                                    <a class="btn btn-warning btn-sm"
-                                       th:href="@{/admin/vouchers/edit/{id}(id=${voucher.id})}"><i
-                                            class="fas fa-edit"></i> Sửa</a>
-                                    <a class="btn btn-danger btn-sm"
+                                    <span th:if="${voucher.congKhai}">Công khai</span>
+                                    <span th:if="${!voucher.congKhai}">Không công khai</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                    <a th:if="${voucher.trangThai == 2}"
+                                       class="btn btn-sm btn-success me-2"
+                                       th:onclick="'restoreKhuyenMai(' + ${voucher.id} + ')'"
+                                       title="Khôi phục">
+                                        <i class="fas fa-redo"></i>
+                                    </a>
+                                    <a th:if="${voucher.trangThai == 1}"
+                                       class="btn btn-sm btn-warning me-2"
+                                       th:onclick="'endKhuyenMai(' + ${voucher.id} + ')'"
+                                       title="Ngừng hoạt động">
+                                        <i class="fas fa-stop-circle"></i>
+                                    </a>
+                                    <a class="btn btn-sm btn-info me-2"
+                                       th:href="@{/admin/vouchers/edit/{id}(id=${voucher.id})}" title="Sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a class="btn btn-sm btn-danger"
                                        th:href="@{/admin/vouchers/delete/{id}(id=${voucher.id})}"
-                                       onclick="return confirm('Bạn có chắc muốn xóa?')"><i
-                                            class="fas fa-trash"></i>
-                                        Xóa</a>
+                                       onclick="return confirm('Bạn có chắc muốn xóa?')" title="Xóa">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                    </div>
                                 </td>
                             </tr>
                             </tbody>
@@ -256,4 +278,89 @@
     </div>
 </div>
 </body>
+
+<script>
+    // ... giữ nguyên code cũ ...
+
+    function restoreKhuyenMai(id) {
+        Swal.fire({
+            title: 'Xác nhận khôi phục',
+            text: 'Bạn có chắc chắn muốn khôi phục khuyến mãi này?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Có',
+            cancelButtonText: 'Không'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/admin/vouchers/restore/${id}`, {
+                    method: 'GET'
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Khôi phục thất bại!');
+                        }
+                        return response.text();
+                    })
+                    .then(() => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Khôi phục thành công!',
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+                            location.reload();
+                        });
+                    })
+                    .catch((error) => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: error.message || 'Không thể khôi phục khuyến mãi.'
+                        });
+                    });
+            }
+        });
+    }
+
+    function endKhuyenMai(id) {
+        Swal.fire({
+            title: 'Xác nhận kết thúc',
+            text: 'Bạn có chắc chắn muốn kết thúc khuyến mãi này?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Có',
+            cancelButtonText: 'Không'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/admin/vouchers/stop/${id}`, {
+                    method: 'GET'
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Kết thúc thất bại!');
+                        }
+                        return response.text();
+                    })
+                    .then(() => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Kết thúc thành công!',
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+                            location.reload();
+                        });
+                    })
+                    .catch((error) => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: error.message || 'Không thể kết thúc khuyến mãi.'
+                        });
+                    });
+            }
+        });
+    }
+
+</script>
 </html>
