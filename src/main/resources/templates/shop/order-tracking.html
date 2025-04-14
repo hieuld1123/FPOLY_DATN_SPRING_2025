@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8"/>
     <title>Tra cứu đơn hàng</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.30.0/tabler-icons.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/Footer.css">
     <link rel="stylesheet" href="/css/Navbar.css">
     <style>
@@ -78,140 +78,76 @@
             background-color: #ffc107;
             color: #000;
         }
-
     </style>
 </head>
+
 <body>
 <div th:replace="~{components/navbar :: navbar}"></div>
-
-<div class="card shadow-sm rounded-3 p-4">
-    <div class="card-header text-center">
-        <h2 class="card-title mb-0">
-            <i class="ti ti-search me-2"></i> Tra cứu đơn hàng
-        </h2>
-    </div>
-    <div class="card-body">
-        <form th:action="@{/shop/order-tracking}" method="post">
-            <div class="row justify-content-center">
-                <div class="col-md-8 col-lg-6">
-                    <div class="mb-3">
-                        <label for="maHoaDon" class="form-label">Mã hóa đơn</label>
-                        <input type="text" id="maHoaDon" name="maHoaDon" class="form-control"
-                               placeholder="Nhập mã hóa đơn">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="sdtNguoiNhan" class="form-label">Số điện thoại</label>
-                        <input type="text" id="sdtNguoiNhan" name="sdtNguoiNhan" class="form-control"
-                               placeholder="Nhập số điện thoại người nhận">
-                    </div>
-
-                    <!-- Nút ngắn và căn giữa -->
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-primary px-4">
-                            <i class="ti ti-search me-1"></i> Tìm kiếm
-                        </button>
-                    </div>
-
+<div class="container-xl" style="min-height:700px;">
+    <h1 class="my-5 text-center">
+        Tra cứu đơn hàng
+    </h1>
+    <!-- form search -->
+    <form th:action="@{/shop/order-tracking}" method="post">
+        <div class="row">
+            <div class="col-lg-5">
+                <div class="mb-3">
+                    <label for="maHoaDon" class="form-label">Mã hóa đơn</label>
+                    <input type="text" id="maHoaDon" name="maHoaDon" class="form-control"
+                           placeholder="Nhập mã hóa đơn">
                 </div>
             </div>
-        </form>
-    </div>
-</div>
-
-
-<div class="text-center mt-3">
-    <p th:if="${errorMessage}" th:text="${errorMessage}" class="text-danger fw-bold"></p>
-</div>
-
-<div th:if="${hoaDon != null}">
-    <div class="card mt-4 shadow-sm mb-5">
-        <div class="car-header"><h2 class="mb-3 mt-5 text-center"> Thông tin đơn hàng </h2></div>
-        <div class="card-body">
-            <div class="row">
-                <!-- Cột trái: Thông tin đơn hàng -->
-                <div class="col-md-6 mt-5">
-                    <div class="mx-auto" style="max-width: 400px;">
-                        <p><strong>Mã hóa đơn:</strong> <span th:text="${hoaDon.maHoaDon}">HD1</span></p>
-                        <p><strong>Người nhận:</strong> <span th:text="${hoaDon.tenNguoiNhan}">Nguyễn Văn A</span>
-                        </p>
-                        <p><strong>Số điện thoại:</strong> <span th:text="${hoaDon.sdtNguoiNhan}">0987xxx</span></p>
-                        <p><strong>Địa chỉ nhận hàng:</strong> <span
-                                th:text="${hoaDon.diaChiNguoiNhan}">123 ABC</span>
-                        </p>
-                        <p><strong>Phương thức thanh toán:</strong> <span th:text="${hoaDon.phuongThucThanhToan}">Tiền mặt</span>
-                        </p>
-                        <p><strong>Tổng tiền:</strong>
-                            <span th:text="${#numbers.formatDecimal(hoaDon.tongTien, 0, 'COMMA', 0, 'POINT')}">100.000</span>
-                            VNĐ
-                        </p>
-                        <p><strong>Trạng thái:</strong> <span th:text="${hoaDon.trangThai}">Đang giao</span></p>
-                    </div>
+            <div class="col-lg-5">
+                <div class="mb-3">
+                    <label for="sdtNguoiNhan" class="form-label">Số điện thoại</label>
+                    <input type="text" id="sdtNguoiNhan" name="sdtNguoiNhan" class="form-control"
+                           placeholder="Nhập số điện thoại người nhận">
                 </div>
-
-                <!-- Cột phải: Danh sách sản phẩm -->
-                <div class="col-md-6 d-flex justify-content-center  mt-5">
-                    <div class="row g-3 w-100" style="max-width: 400px;" th:each="item : ${chiTietList}">
-                        <div class="col-12">
-                            <div class="text-center">
-                                <!-- Ảnh sản phẩm -->
-                                <img th:if="${#lists.isEmpty(item.sanPhamChiTiet.hinhAnh) == false}"
-                                     th:src="@{'/uploads/' + ${item.sanPhamChiTiet.hinhAnh[0].tenAnh}}"
-                                     alt="Ảnh sản phẩm"
-                                     class="mb-3 rounded mx-auto d-block"
-                                     style="max-height: 200px; width: 100%; object-fit: cover;"/>
-
-                                <!-- Tên sản phẩm -->
-                                <h6 class="fw-bold" th:text="${item.sanPhamChiTiet.sanPham.tenSanPham}">Tên sản
-                                    phẩm</h6>
-
-                                <!-- Thương hiệu | Màu sắc | Kích thước -->
-                                <p class="mb-2 text-muted small">
-                                    <span th:text="${item.sanPhamChiTiet.thuongHieu.ten}">Nike</span> |
-                                    <span th:text="${item.sanPhamChiTiet.mauSac.ten}">Đen</span> |
-                                    <span th:text="${item.sanPhamChiTiet.kichCo.ten}">42</span>
-                                </p>
-
-                                <!-- Giá và số lượng -->
-                                <p class="text-danger fw-semibold"
-                                   th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
-                                    500.000 VNĐ
-                                </p>
-                                <p><strong>Số lượng:</strong> <span th:text="${item.soLuong}">1</span></p>
-                            </div>
-                        </div>
-                    </div>
-                </div> <!-- end col sản phẩm -->
-
+            </div>
+            <div class="col-lg-2 d-flex align-items-center">
+                <div class="">
+                    <button type="submit" class="btn btn-primary ps-3">
+                        <i class="ti ti-search me-1"></i> Tìm kiếm
+                    </button>
+                </div>
             </div>
         </div>
+        <!-- Msg lỗi -->
+        <div class="">
+            <p th:if="${errorMessage}" th:text="${errorMessage}" class="text-danger"></p>
+        </div>
+    </form>
 
-        <div class="timeline-wrapper position-relative px-3 py-4"
-             th:with="currentIndex=${allTrangThai.indexOf(currentStatus)}">
+    <div th:if="${hoaDon != null}">
+        <div class="card my-5 shadow-sm">
+            <div class="mt-5">
+                <h1 class="text-center"> Thông tin đơn hàng </h1>
+                <div class="timeline-wrapper position-relative"
+                     th:with="currentIndex=${allTrangThai.indexOf(currentStatus)}">
 
-            <!-- Đường line nền và tiến độ -->
-            <div class="timeline-line-bg"></div>
-            <div class="timeline-line-progress"
-                 th:with="stepWidth=${100.0 / (allTrangThai.size() - 1)},
+                    <!-- Đường line nền và tiến độ -->
+                    <div class="timeline-line-bg"></div>
+                    <div class="timeline-line-progress" th:with="stepWidth=${100.0 / (allTrangThai.size() - 1)},
               startLeft=${stepWidth * 0} + '%',
               progressWidth=${stepWidth * currentIndex} + '%'"
-                 th:style="'--start: ' + ${startLeft} + '; --progress: ' + ${progressWidth}">
-            </div>
+                         th:style="'--start: ' + ${startLeft} + '; --progress: ' + ${progressWidth}">
+                    </div>
 
 
-            <ul class="timeline list-unstyled d-flex justify-content-between align-items-start m-0 position-relative">
+                    <ul
+                            class="timeline list-unstyled d-flex justify-content-between align-items-start m-0 position-relative">
 
-                <li class="timeline-step text-center position-relative flex-fill"
-                    th:each="statusName, iterStat : ${allTrangThai}"
-                    th:classappend="|${iterStat.index == currentIndex ? 'active' : (iterStat.index < currentIndex ? 'completed' : '')}|">
+                        <li class="timeline-step text-center position-relative flex-fill"
+                            th:each="statusName, iterStat : ${allTrangThai}"
+                            th:classappend="|${iterStat.index == currentIndex ? 'active' : (iterStat.index < currentIndex ? 'completed' : '')}|">
 
-                    <!-- Đường line nối giữa các bước (ẩn bước cuối) -->
-                    <div class="timeline-line" th:if="${iterStat.index > 0 and !iterStat.last}"></div>
+                            <!-- Đường line nối giữa các bước (ẩn bước cuối) -->
+                            <div class="timeline-line" th:if="${iterStat.index > 0 and !iterStat.last}"></div>
 
-                    <!-- Icon trạng thái -->
-                    <div class="timeline-icon rounded-circle mx-auto mb-1 d-flex justify-content-center align-items-center">
-                        <i class="ti" style="color: white"
-                           th:classappend="
+                            <!-- Icon trạng thái -->
+                            <div
+                                    class="timeline-icon rounded-circle mx-auto mb-1 d-flex justify-content-center align-items-center">
+                                <i class="ti" style="color: white" th:classappend="
                         ${statusName.toLowerCase() == 'chờ xác nhận'} ? ' ti-clock' :
                         (${statusName.toLowerCase() == 'đã xác nhận'} ? ' ti-circle-check' :
                         (${statusName.toLowerCase() == 'đang chuẩn bị'} ? ' ti-package' :
@@ -219,27 +155,95 @@
                         (${statusName.toLowerCase() == 'hoàn thành'} ? ' ti-checkup-list' :
                         (${statusName.toLowerCase() == 'đã hủy'} ? ' ti-x' : ' ti-alert-triangle')))))
                    "></i>
-                    </div>
+                            </div>
 
-                    <!-- Tên trạng thái -->
-                    <p class="timeline-label fw-semibold mb-1" th:text="${statusName}">Trạng thái</p>
+                            <!-- Tên trạng thái -->
+                            <p class="timeline-label fw-semibold mb-1" th:text="${statusName}">Trạng thái</p>
 
-                    <!-- Thời gian hoặc chữ "Chưa cập nhật" -->
-                    <small class="text-muted"
-                           th:text="${thoiGianFormattedMap[statusName.toLowerCase()]} ?: 'Chưa cập nhật'">
-                        Thời gian
-                    </small>
-                </li>
-            </ul>
+                            <!-- Thời gian hoặc chữ "Chưa cập nhật" -->
+                            <small class="text-muted"
+                                   th:text="${thoiGianFormattedMap[statusName.toLowerCase()]} ?: 'Chưa cập nhật'">
+                                Thời gian
+                            </small>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="m-5">
+                <!-- Thông tin đơn hàng -->
+                <div>
+                    <p><strong>Mã hóa đơn:</strong> <span th:text="${hoaDon.maHoaDon}">HD1</span></p>
+                    <p><strong>Người nhận:</strong> <span th:text="${hoaDon.tenNguoiNhan}">Nguyễn Văn
+                                A</span>
+                    </p>
+                    <p><strong>Số điện thoại:</strong> <span th:text="${hoaDon.sdtNguoiNhan}">0987xxx</span>
+                    </p>
+                    <p><strong>Địa chỉ nhận hàng:</strong>
+                        <span th:text="${hoaDon.diaChiNguoiNhan} + ', '"></span>
+                        <span th:text="${hoaDon.xa} + ', '"></span>
+                        <span th:text="${hoaDon.quan} + ', '"></span>
+                        <span th:text="${hoaDon.tinh} + '.'"></span>
+                    </p>
+                    <p><strong>Phương thức thanh toán:</strong> <span
+                            th:text="${hoaDon.phuongThucThanhToan}"></span>
+                    </p>
+                    <p><strong>Tổng tiền:</strong>
+                        <span th:text="${#numbers.formatDecimal(hoaDon.tongTien, 0, 'COMMA', 0, 'POINT')}"></span>
+                        VNĐ
+                    </p>
+                    <p><strong>Trạng thái:</strong> <span th:text="${hoaDon.trangThai}"></span></p>
+                </div>
+                <!-- Danh sách sản phẩm -->
+                <h1 class="text-center mt-5"> Danh sách sản phẩm </h1>
+                <div class="card-table table-responsive mt-5">
+                    <table class="table table-vcenter">
+                        <thead>
+                        <tr>
+                            <th class="w-1">STT</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Đơn giá</th>
+                            <th>Số lượng</th>
+                            <th>Thành tiền</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="item, count : ${chiTietList}">
+                            <td th:text="${count.index + 1}"></td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="pe-2">
+                                                <span class="avatar avatar-sm me-3" th:style="'background-image: url(' + (${not #lists.isEmpty(item.sanPhamChiTiet.hinhAnh)} ?
+                                                                    @{/uploads/{file}(file=${item.sanPhamChiTiet.hinhAnh[0].tenAnh})} :
+                                                                    @{/static/img/default.jpg}) + ')'">
+                                                </span>
+                                    </div>
+                                    <div>
+                                        <span th:text="${item.sanPhamChiTiet.sanPham.tenSanPham}"></span>
+                                        -
+                                        <span th:text="${item.sanPhamChiTiet.mauSac.tenMauSac}"></span>
+                                        - Size
+                                        <span th:text="${item.sanPhamChiTiet.kichCo.ten}"></span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td
+                                    th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                            </td>
+                            <td th:text="${item.soLuong}"></td>
+                            <td
+                                    th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBan * item.soLuong, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!--                </div>-->
         </div>
-
-
     </div>
 </div>
-</div>
 <div th:replace="~{components/footer :: footer}"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-        crossorigin="anonymous"></script>
 </body>
 </html>
