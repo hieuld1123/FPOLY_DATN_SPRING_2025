@@ -147,10 +147,10 @@ public class TaiKhoanController {
     public String lichSuMuaHang(Model model, Principal principal) {
         String email = principal.getName();
         List<HoaDon> hoaDons = hoaDonRepository.findByKhachHang_TaiKhoan_EmailOrderByNgayTaoDesc(email);
+        System.out.println(hoaDons);
         model.addAttribute("hoaDon", hoaDons);
         return "tai-khoan/lich-su-mua-hang";
     }
-
 
 }
 

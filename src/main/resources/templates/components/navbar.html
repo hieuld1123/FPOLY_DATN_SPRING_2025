@@ -72,55 +72,50 @@
                             </a>
                         </div>
                         <!-- Nếu đã đăng nhập -->
-                        <div th:if="${#authorization.expression('isAuthenticated()')}">
-                            <button class="nav-link dropdown-toggle d-flex align-items-center" id="dropdownAccount"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
+                        <div th:if="${#authorization.expression('isAuthenticated()')}" class="nav-item dropdown">
+                            <a href="#" class="nav-link d-flex lh-1 p-0 px-2" data-bs-toggle="dropdown" aria-label="Open user menu">
 
                                 <!-- Ảnh đại diện -->
                                 <th:block th:switch="${true}">
-                                    <img class="rounded-circle me-2" width="35" height="35"
+                                    <img class="avatar avatar-sm rounded-circle me-2"
                                          th:case="${currentNhanVien != null}"
-                                         th:src="@{'/uploads/' + ${currentNhanVien.hinhAnh}}" alt="avatar"/>
+                                         th:src="@{'/uploads/' + ${currentNhanVien.hinhAnh}}" alt="avatar" />
 
-                                    <img class="rounded-circle me-2" width="35" height="35"
+                                    <img class="avatar avatar-sm rounded-circle me-2"
                                          th:case="${currentKhachHang != null}"
-                                         th:src="@{'/uploads/' + ${currentKhachHang.hinhAnh}}" alt="avatar"/>
+                                         th:src="@{'/uploads/' + ${currentKhachHang.hinhAnh}}" alt="avatar" />
 
-                                    <img class="rounded-circle me-2" width="35" height="35"
+                                    <img class="avatar avatar-sm rounded-circle me-2"
                                          th:case="*"
-                                         src="/img/default-avatar.png" alt="avatar"/>
+                                         src="/img/default-avatar.png" alt="avatar" />
                                 </th:block>
 
                                 <!-- Tên người dùng -->
-                                <span th:text="${currentNhanVien != null ? currentNhanVien.tenNhanVien :
-                        (currentKhachHang != null ? currentKhachHang.tenKhachHang : 'Tài khoản')}"></span>
-                            </button>
+                                <span class="d-none d-sm-inline-block"
+                                      th:text="${currentNhanVien != null ? currentNhanVien.tenNhanVien :
+                        (currentKhachHang != null ? currentKhachHang.tenKhachHang : 'Tài khoản')}">
+        </span>
+                            </a>
 
-                            <!-- Dropdown menu -->
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
-                                <li><a class="dropdown-item" href="">Thông tin cá nhân</a></li>
-                                <li><a class="dropdown-item" th:href="@{/khach-hang/lich-su-mua-hang}">Lịch sử mua
-                                    hàng</a></li>
-                                <li><a class="dropdown-item" th:href="@{/doi-mat-khau}">Đổi mật khẩu</a></li>
-                                <li>
-                                    <form th:action="@{/logout}" method="post" style="margin: 0;">
-                                        <button type="submit" class="dropdown-item">Đăng xuất</button>
-                                    </form>
-                                </li>
-                            </ul>
+                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                <!-- Thông tin cá nhân -->
+                                <a href="#" class="dropdown-item">Thông tin cá nhân</a>
+
+                                <!-- Lịch sử mua hàng (dành cho khách hàng) -->
+                                <a class="dropdown-item" th:href="@{/khach-hang/lich-su-mua-hang}">Lịch sử mua hàng</a>
+
+                                <!-- Đổi mật khẩu -->
+                                <a class="dropdown-item" th:href="@{/doi-mat-khau}">Đổi mật khẩu</a>
+
+                                <div class="dropdown-divider"></div>
+
+                                <!-- Logout -->
+                                <form th:action="@{/logout}" method="post" style="margin: 0;">
+                                    <button type="submit" class="dropdown-item">Đăng xuất</button>
+                                </form>
+                            </div>
                         </div>
 
-
-                        <!--                        <div class="nav-item dropdown">-->
-                        <!--                            <a href="#" class="nav-link d-flex lh-1 p-0 px-2" data-bs-toggle="dropdown" aria-label="Open user menu">-->
-                        <!--                                <img width="35" height="35" src="https://img.icons8.com/material-rounded/100/user-male-circle.png" alt="user-male-circle"/>-->
-                        <!--                            </a>-->
-                        <!--                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">-->
-                        <!--                                <a href="#" class="dropdown-item">Thông tin cá nhân</a>-->
-                        <!--                                <div class="dropdown-divider"></div>-->
-                        <!--                                <a href="./sign-in.html" class="dropdown-item">Đăng xuất</a>-->
-                        <!--                            </div>-->
-                        <!--                        </div>-->
 
                     </div>
                 </div>
