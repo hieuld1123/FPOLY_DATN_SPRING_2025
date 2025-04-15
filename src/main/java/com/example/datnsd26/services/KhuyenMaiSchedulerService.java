@@ -27,9 +27,7 @@ public class KhuyenMaiSchedulerService {
 
     private final KhuyenMaiRepository khuyenMaiRepository;
     private final KhuyenMaiChiTietRepository khuyenMaiChiTietRepository;
-    private final SanPhamChiTietRepository sanPhamChiTietRepository;
     private final CapNhatGiaKMServie capNhatGiaKMServie;
-
     private final ConcurrentHashMap<Long, Timer> timerMap = new ConcurrentHashMap<>();
 
     @EventListener(ApplicationReadyEvent.class)

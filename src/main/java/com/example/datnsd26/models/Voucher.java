@@ -32,13 +32,16 @@ public class Voucher {
     private Integer soLuong;
 
     @Column(nullable = false ,name = "gia_tri_giam")
-    private Double giaTriGiam;
+    private Float giaTriGiam;
 
     @Column(nullable = false ,name = "gia_tri_giam_toi_thieu")
-    private Double giaTriGiamToiThieu;
+    private Float giaTriGiamToiThieu;
 
     @Column(nullable = true,name = "gia_tri_giam_toi_da")
-    private Double giaTriGiamToiDa;
+    private Float giaTriGiamToiDa;
+
+    @Column(nullable = false, name = "cong_khai")
+    private Boolean congKhai;
 
 
     @Column(nullable = false,name = "ngay_bat_dau")
@@ -82,7 +85,10 @@ public class Voucher {
 
         this.ngayTao = now;
         this.ngayCapNhat = now;
-        this.trangThai = (this.trangThai == null) ? determineVoucherStatus() : this.trangThai;
+
+        if (this.trangThai == null) {
+            this.trangThai = 0;
+        }
     }
 
 
@@ -92,19 +98,18 @@ public class Voucher {
     @PreUpdate
     protected void onUpdate() {
         this.ngayCapNhat = LocalDateTime.now().withSecond(0).withNano(0);
-        this.trangThai = determineVoucherStatus();
     }
 
-    private Integer determineVoucherStatus() {
-        LocalDateTime now = LocalDateTime.now().withSecond(0).withNano(0);
-
-        if (now.isBefore(ngayBatDau)) {
-            return 0; // Chưa bắt đầu
-        } else if (now.isAfter(ngayKetThuc)) {
-            return 2; // Hết hạn
-        } else {
-            return 1; // Đang hoạt động
-        }
-    }
+//    private Integer determineVoucherStatus() {
+//        LocalDateTime now = LocalDateTime.now().withSecond(0).withNano(0);
+//
+//        if (now.isBefore(ngayBatDau)) {
+//            return 0; // Chưa bắt đầu
+//        } else if (now.isAfter(ngayKetThuc)) {
+//            return 2; // Hết hạn
+//        } else {
+//            return 1; // Đang hoạt động
+//        }
+//    }
 
 }

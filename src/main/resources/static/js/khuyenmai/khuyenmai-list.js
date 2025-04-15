@@ -54,3 +54,83 @@ function confirmDelete(id) {
 function changePageSize(size) {
     window.location.href = `/admin/khuyen-mai?page=0&size=${size}`;
 }
+
+function restoreKhuyenMai(id) {
+    Swal.fire({
+        title: 'Xác nhận khôi phục',
+        text: 'Bạn có chắc chắn muốn khôi phục khuyến mãi này?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Có',
+        cancelButtonText: 'Không'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/admin/khuyen-mai/restore/${id}`, {
+                method: 'GET'
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Khôi phục thất bại!');
+                    }
+                    return response.text();
+                })
+                .then(() => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Khôi phục thành công!',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        location.reload();
+                    });
+                })
+                .catch((error) => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: error.message || 'Không thể khôi phục khuyến mãi.'
+                    });
+                });
+        }
+    });
+}
+
+function endKhuyenMai(id) {
+    Swal.fire({
+        title: 'Xác nhận kết thúc',
+        text: 'Bạn có chắc chắn muốn kết thúc khuyến mãi này?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Có',
+        cancelButtonText: 'Không'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/admin/khuyen-mai/stop/${id}`, {
+                method: 'GET'
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Kết thúc thất bại!');
+                    }
+                    return response.text();
+                })
+                .then(() => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Kết thúc thành công!',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        location.reload();
+                    });
+                })
+                .catch((error) => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: error.message || 'Không thể kết thúc khuyến mãi.'
+                    });
+                });
+        }
+    });
+}

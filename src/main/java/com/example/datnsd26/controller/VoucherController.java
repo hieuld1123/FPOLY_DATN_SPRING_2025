@@ -13,10 +13,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -143,4 +145,30 @@ public class VoucherController {
             return "redirect:/admin/vouchers";
         }
     }
+
+    // ... existing code ...
+
+    @GetMapping("/restore/{id}")
+    public String restoreKhuyenMai(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            voucherService.restoreVoucher(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Khôi phục khuyến mãi thành công");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/admin/vouchers";
+    }
+
+    @GetMapping("/stop/{id}")
+    public String stopKhuyenMai(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            voucherService.endVoucher(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Đã ngừng khuyến mãi thành công");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/admin/vouchers";
+    }
+
+// ... rest of the class ...
 }

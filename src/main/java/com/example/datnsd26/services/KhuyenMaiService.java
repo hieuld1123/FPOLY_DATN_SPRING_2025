@@ -410,7 +410,7 @@ public class KhuyenMaiService {
 
         for (SanPhamChiTiet sp : allSanPhams) {
             // Lấy khuyến mãi đang active của sản phẩm
-            KhuyenMaiChitiet kmct = khuyenMaiChiTietRepository.findActivePromotionBySanPham(Long.valueOf(sp.getId()), now);
+            KhuyenMaiChitiet kmct = khuyenMaiChiTietRepository.findActivePromotionBySanPham(Long.valueOf(sp.getId()));
             if (kmct != null && kmct.getKhuyenMai().getTrangThai() == 1
                     && !kmct.getKhuyenMai().getId().equals(khuyenMaiId)) {
                 sanPhamDaApDungKhac.add(sp);
