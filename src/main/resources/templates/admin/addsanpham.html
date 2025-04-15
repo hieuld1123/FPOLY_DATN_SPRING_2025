@@ -621,6 +621,8 @@
                                             Tên màu sắc:
                                             <input type="text" id="tenMauSacInput" th:field="*{tenMauSac}"
                                                    style="width: 100%" class="form-control"/>
+                                            <div style="color: red; font-weight: initial;font-style: italic"
+                                             id="errorTenMauSac"></div>
                                         </p>
 
 
@@ -1587,7 +1589,7 @@
             errorMaTenSP.innerText = ""; // Xóa thông báo lỗi nếu có
         }
 
-// Kiểm tra trùng tên sản phẩm (không phân biệt chữ hoa chữ thường và khoảng trắng)
+        // Kiểm tra trùng tên sản phẩm (không phân biệt chữ hoa chữ thường và khoảng trắng)
         for (var i = 0; i < objectsFromControllerTenSP.length; i++) {
             var obj = objectsFromControllerTenSP[i];
             // Loại bỏ khoảng trắng và chuyển đổi về chữ thường để so sánh
@@ -1603,7 +1605,11 @@
 
         if (isMaValid) {
             errorMaTenSP.innerText = "";
-            themTenSP();
+            sessionStorage.setItem('successMessageThemTenSP', 'Thêm thành công!');
+            document.addTenSP.submit();
+
+            // Tạm thời bỏ qua function này, ta submit luôn
+            // themTenSP();
         }
 
         return false;
@@ -1645,7 +1651,9 @@
 
         if (isMaValid) {
             errorMaThuongHieu.innerText = "";
-            themThuongHieu();
+            sessionStorage.setItem('successMessageThemTenThuongHieu', 'Thêm thương hiệu thành công!');
+            document.addThuongHieu.submit();
+            // themThuongHieu();
         }
 
         return false;
@@ -1687,7 +1695,9 @@
 
         if (isMaValid) {
             errorMaChatLieu.innerText = "";
-            themChatLieu();
+            sessionStorage.setItem('successMessageThemTenChatLieu', 'Thêm chất liệu thành công!');
+            document.addChatLieu.submit();
+            // themChatLieu();
         }
 
         return false;
@@ -1727,12 +1737,47 @@
 
         if (isMaValid) {
             errorMaDeGiay.innerText = "";
-            themDeGiay();
+            sessionStorage.setItem('successMessageThemTenDeGiay', 'Thêm đế giày thành công!');
+            document.addDeGiay.submit();
+            // themDeGiay();
         }
         return false;
     }
 
     function validateTrungMauSac() {
+
+        var inputTenMauSac = document.getElementById("tenMauSacInput").value;
+        var errorTenMauSac = document.getElementById("errorTenMauSac");
+        var isMaValid = true;
+
+
+        // Kiểm tra xem trường "Tên thương hiệu" có trống không
+        if (inputTenMauSac.trim() === "") {
+            errorTenMauSac.innerText = "Vui lòng nhập tên màu sắc.";
+            return false; // Ngăn form được gửi đi
+        } else if (inputTenMauSac.trim().length > 20) {
+            errorTenMauSac.innerText = "Tên màu sắc không được vượt quá 20 ký tự.";
+            return false; // Ngăn form được gửi đi
+        } else if (specialCharPattern.test(inputTenMauSac.trim())) {
+            errorTenMauSac.innerText = "Tên màu sắc không được chứa ký tự đặc biệt.";
+            return false; // Ngăn form được gửi đi
+        } else {
+            errorTenMauSac.innerText = ""; // Xóa thông báo lỗi nếu có
+        }
+        // Kiểm tra trùng tên thương hiệu (không phân biệt chữ hoa chữ thường và khoảng trắng)
+        // for (var i = 0; i < objectsFromControllerThuongHieu.length; i++) {
+        //     var obj = objectsFromControllerThuongHieu[i];
+        //     // Loại bỏ khoảng trắng và chuyển đổi về chữ thường để so sánh
+        //     var normalizedInput = inputMaThuongHieu.trim().replace(/\s+/g, ' ').toLowerCase();
+        //     var normalizedObjName = obj.ten.trim().replace(/\s+/g, ' ').toLowerCase();
+        //
+        //     if (normalizedInput === normalizedObjName) {
+        //         errorMaThuongHieu.innerText = "Tên thương hiệu đã tồn tại!";
+        //         isMaValid = false; // Đánh dấu không hợp lệ
+        //         return false; // Ngăn form được gửi đi
+        //     }
+        // }
+
         // Khai báo và cấu hình Toast của SweetAlert2
         const Toast = Swal.mixin({
             toast: true,
@@ -1748,7 +1793,7 @@
 
         var inputMaMauSac = document.getElementById("tenInputMauSac").value;
         var isMaValid = true;
-// Kiểm tra trùng tên màu sắc (không phân biệt chữ hoa chữ thường và khoảng trắng)
+        // Kiểm tra trùng tên màu sắc (không phân biệt chữ hoa chữ thường và khoảng trắng)
         for (var i = 0; i < objectsFromControllerMauSac.length; i++) {
             var obj = objectsFromControllerMauSac[i];
             // Loại bỏ khoảng trắng và chuyển đổi về chữ thường để so sánh
@@ -1765,7 +1810,9 @@
             }
         }
         if (isMaValid) {
-            themMauSac();
+            sessionStorage.setItem('successMessageThemTenMauSac', 'Thêm màu sắc thành công!');
+            document.addMauSac.submit();
+            // themMauSac();
         }
         return false;
     }
@@ -1790,7 +1837,7 @@
         }
 
 
-// Kiểm tra trùng tên kích cỡ (không phân biệt chữ hoa chữ thường và khoảng trắng)
+        // Kiểm tra trùng tên kích cỡ (không phân biệt chữ hoa chữ thường và khoảng trắng)
         for (var i = 0; i < objectsFromControllerKichCo.length; i++) {
             var obj = objectsFromControllerKichCo[i];
             // Loại bỏ khoảng trắng và chuyển đổi về chữ thường để so sánh
@@ -1806,13 +1853,15 @@
 
         if (isMaValid) {
             errorMaKichCo.innerText = "";
-            themKichCo();
+            sessionStorage.setItem('successMessageThemTenKichCo', 'Thêm kích cỡ thành công!');
+            document.addKichCo.submit();
+            // themKichCo();
         }
 
         return false;
     }
 
-
+    // Tạm thời bỏ qua, không show modal mà submit luôn
     function themTenSP() {
         // Sử dụng SweetAlert2 thay vì hộp thoại confirm
         Swal.fire({

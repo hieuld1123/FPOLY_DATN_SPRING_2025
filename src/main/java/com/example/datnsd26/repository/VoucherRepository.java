@@ -18,6 +18,8 @@ import java.util.Optional;
 public interface VoucherRepository extends JpaRepository<Voucher, Long> {
     boolean existsByMaVoucher(String maVoucher);
     Optional<Voucher> findByMaVoucher(String maVoucher);
+    List<Voucher> findByTenVoucher(String tenVoucher);
+    List<Voucher> findByTenVoucherAndIdNot(String tenVoucher, Long id);
     List<Voucher> findByTrangThai(Integer trangThai);
     List<Voucher> findByNgayBatDauBeforeAndNgayKetThucAfter(LocalDateTime ngayBatDau, LocalDateTime now);
 
@@ -46,5 +48,11 @@ public interface VoucherRepository extends JpaRepository<Voucher, Long> {
                                  @Param("ngayBatDau") LocalDateTime ngayBatDau,
                                  @Param("ngayKetThuc") LocalDateTime ngayKetThuc,
                                  Pageable pageable);
+
+    List<Voucher> findByTrangThaiNot(Integer trangThai);
+
+//    @Modifying
+//    @Query("UPDATE Voucher v SET v.trangThai = :trangThai, v.ngayCapNhat = :ngayCapNhat WHERE v.id = :id")
+//    void updateTrangThai(@Param("id") Long id, @Param("trangThai") Integer trangThai, @Param("ngayCapNhat") LocalDateTime ngayCapNhat);
 }
 

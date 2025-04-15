@@ -29,7 +29,7 @@ public class CapNhatGiaKMServie {
         for (SanPhamChiTiet sp : danhSachSanPham) {
             // Lấy khuyến mãi đang active của sản phẩm
             KhuyenMaiChitiet kmct = khuyenMaiChiTietRepository
-                    .findActivePromotionBySanPham(Long.valueOf(sp.getId()), now);
+                    .findActivePromotionBySanPham(Long.valueOf(sp.getId()));
 
             Float giaSauGiam = sp.getGiaBan();
 
