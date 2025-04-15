@@ -35,5 +35,11 @@ public class HoaDonBinhRequest {
     private String diaChiNguoiNhan;
 
     private String phuongThucThanhToan;
+
     private String ghiChu;
+
+    private Long idVoucher; // sẽ là null nếu không áp dụng
+
+    private Float giamGia = 0.0f; // mặc định là 0 nếu không có
+
 }

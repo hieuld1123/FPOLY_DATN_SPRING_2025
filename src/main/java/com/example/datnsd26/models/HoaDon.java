@@ -46,34 +46,24 @@ public class HoaDon {
     @Column(name = "hinh_thuc_mua_hang", columnDefinition = "nvarchar(255)")
     private String hinhThucMuaHang;
 
-//    @NotBlank(message = "Họ và tên không được để trống")
     @Column(name = "ten_nguoi_nhan", columnDefinition = "nvarchar(255)")
     private String tenNguoiNhan;
 
-//    @NotBlank(message = "Số điện thoại không được để trống")
-//    @Pattern(regexp = "^(0[2-9]|84[2-9])[0-9]{8}$", message = "Số điện thoại không hợp lệ")
     @Column(name = "sdt_nguoi_nhan", columnDefinition = "nvarchar(255)")
     private String sdtNguoiNhan;
 
-//    @NotBlank(message = "Email không được để trống")
-//    @Email(message = "Email không hợp lệ")
     @Column(name = "email", columnDefinition = "NVARCHAR(255)")
     private String email;
 
-//    @NotBlank(message = "Vui lòng chọn tỉnh/thành phố")
     @Column(name = "tinh", columnDefinition = "NVARCHAR(100)")
     private String tinh;
 
-//    @NotBlank(message = "Vui lòng chọn quận/huyện")
     @Column(name = "quan", columnDefinition = "NVARCHAR(100)")
     private String quan;
 
-//    @NotBlank(message = "Vui lòng chọn xã/phường")
     @Column(name = "xa", columnDefinition = "NVARCHAR(100)")
     private String xa;
 
-//    @NotBlank(message = "Địa chỉ cụ thể không được để trống")
-//    @Size(min = 5, message = "Địa chỉ cụ thể phải có ít nhất 5 ký tự")
     @Column(name = "dia_chi_nguoi_nhan", columnDefinition = "nvarchar(255)")
     private String diaChiNguoiNhan;
 
@@ -100,4 +90,15 @@ public class HoaDon {
 
     @OneToMany(mappedBy = "hoaDon")
     private List<LichSuHoaDon> lichSuHoaDon = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "id_voucher", referencedColumnName = "id", nullable = true)
+    private Voucher voucher;
+
+    @Column(name = "giam_gia")
+    private Float giamGia;
+
+    @Column(name = "thanh_tien")
+    private Float thanhTien;
+
 }

@@ -4,6 +4,7 @@ import com.example.datnsd26.Dto.HoaDonBinhRequest;
 import com.example.datnsd26.models.*;
 import com.example.datnsd26.repository.*;
 import com.example.datnsd26.services.BinhMailService;
+import com.example.datnsd26.services.VoucherService;
 import com.example.datnsd26.services.cart.GioHangService;
 import com.example.datnsd26.services.cart.HoaDonService;
 import jakarta.mail.MessagingException;
@@ -17,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller
@@ -36,7 +38,8 @@ public class CartController {
     private final KhachHangRepository khachHangRepository;
     private final TaiKhoanRepository taiKhoanRepository;
     private final DiaChiRepository diaChiRepository;
-
+    private final VoucherRepository voucherRepository;
+    private final VoucherService voucherService;
 
     @GetMapping("/shop")
     public String shopPage(Model model) {
@@ -166,6 +169,9 @@ public class CartController {
                 .mapToInt(item -> item.getSoLuong() * item.getSanPhamChiTiet().getGiaBanSauGiam().intValue())
                 .sum();
 
+        List<Voucher> allValidVouchers = voucherRepository.findValidVouchers(LocalDateTime.now(), tongTamTinh);
+
+
         // 4. Xử lý Khách Hàng
         KhachHang khachHang = null;
         DiaChi diaChiMacDinh = null;
@@ -191,6 +197,7 @@ public class CartController {
         model.addAttribute("cart", danhSachHopLe);
         model.addAttribute("khachHang", khachHang); // null nếu là khách vãng lai
         model.addAttribute("diaChiMacDinh", diaChiMacDinh);
+        model.addAttribute("vouchers", allValidVouchers);
         return "shop/checkout";
     }
 
@@ -201,7 +208,6 @@ public class CartController {
             BindingResult bindingResult,
             Model model,
             Authentication auth,
-            RedirectAttributes redirectAttributes,
             HttpSession session) {
 
         List<Integer> selectedIds = (List<Integer>) session.getAttribute("selectedIds");
@@ -268,6 +274,20 @@ public class CartController {
             }
         }
 
+        Voucher voucher = null;
+        float giamGia = 0f;
+
+        if (hoaDonBinhRequest.getIdVoucher() != null) {
+            voucher = voucherRepository.findById(hoaDonBinhRequest.getIdVoucher()).orElse(null);
+            System.out.println(voucher);
+            if (voucher != null && voucher.getSoLuong() > 0) {
+                giamGia = voucherService.tinhGiamGia(tongTamTinh, voucher);
+
+                voucher.setSoLuong(voucher.getSoLuong() - 1);
+                voucherRepository.save(voucher);
+            }
+        }
+
         // Tạo Hóa Đơn
         HoaDon hoaDon = HoaDon.builder()
                 .tenNguoiNhan(khachHang != null ? khachHang.getTenKhachHang() : hoaDonBinhRequest.getTenNguoiNhan())
@@ -288,6 +308,10 @@ public class CartController {
                 .ghiChu(hoaDonBinhRequest.getGhiChu())
                 .khachHang(khachHang)
                 .nhanVien(null)
+                .giamGia(giamGia)
+                .tongTien(tongTamTinh)
+                .thanhTien(tongTamTinh - giamGia)
+                .voucher(voucher) // nếu entity HoaDon có quan hệ @ManyToOne với Voucher
                 .build();
 
         hoaDonService.saveHoaDon(hoaDon);

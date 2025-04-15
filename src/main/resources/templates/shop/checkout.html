@@ -130,85 +130,98 @@
                                     <button type="submit" class="btn btn-primary" id="btnSubmit">Đặt hàng</button>
                                 </div>
                             </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <div class="row cart-item mb-3" th:each="item : ${cart}">
-                            <div class="col-3">
-<!--                                <img src="" alt="Product 1" class="img-fluid rounded" />-->
-                                <img th:src="@{'/upload' + ${item.sanPhamChiTiet.hinhAnh[0].tenAnh.substring(item.sanPhamChiTiet.hinhAnh[0].tenAnh.lastIndexOf('upload') + 6)}}" alt="Product 1" class="img-fluid rounded" />
-                            </div>
                             <div class="col-6">
-                                <h5 class="card-title" th:text="${item.sanPhamChiTiet.sanPham.tenSanPham}"></h5>
-                                <p class="text-muted">
-                                    Giá:
-                                    <span
-                                            th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
-                                </p>
-                                <div class="row">
-                                    <div class="col-6">
-                                        <span class="fw-bold">Size: <span th:text="${item.sanPhamChiTiet.kichCo.ten}"></span></span>
-                                    </div>
-                                    <div class="col-6 d-flex flex-row">
-                                        <!-- Số lượng hiển thị -->
-                                        <span class="form-label fw-bold">Số lượng: <span
-                                                th:text="${item.soLuong}"></span></span>
-                                        <span class="form-label fw-bold ps-3">Màu sắc: <span
-                                                    th:text="${item.sanPhamChiTiet.mauSac.tenMauSac}"></span></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 text-end">
-                                <p class="fw-bold">
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                        <div class="row cart-item mb-3" th:each="item : ${cart}">
+                                            <div class="col-3">
+                                                <!--                                <img src="" alt="Product 1" class="img-fluid rounded" />-->
+                                                <img th:src="@{'/upload' + ${item.sanPhamChiTiet.hinhAnh[0].tenAnh.substring(item.sanPhamChiTiet.hinhAnh[0].tenAnh.lastIndexOf('upload') + 6)}}" alt="Product 1" class="img-fluid rounded" />
+                                            </div>
+                                            <div class="col-6">
+                                                <h5 class="card-title" th:text="${item.sanPhamChiTiet.sanPham.tenSanPham}"></h5>
+                                                <p class="text-muted">
+                                                    Giá:
+                                                    <span
+                                                            th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+                                                </p>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <span class="fw-bold">Size: <span th:text="${item.sanPhamChiTiet.kichCo.ten}"></span></span>
+                                                    </div>
+                                                    <div class="col-6 d-flex flex-row">
+                                                        <!-- Số lượng hiển thị -->
+                                                        <span class="form-label fw-bold">Số lượng: <span
+                                                                th:text="${item.soLuong}"></span></span>
+                                                        <span class="form-label fw-bold ps-3">Màu sắc: <span
+                                                                th:text="${item.sanPhamChiTiet.mauSac.tenMauSac}"></span></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 text-end">
+                                                <p class="fw-bold">
                                         <span th:id="'total-price-' + ${item.sanPhamChiTiet.id}"
                                               th:data-total-price="${item.soLuong * item.sanPhamChiTiet.giaBanSauGiam}"
                                               th:text="${#numbers.formatDecimal(item.soLuong * item.sanPhamChiTiet.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')}"></span>
-                                    VND
-                                </p>
-                            </div>
-                        </div>
-                        <hr />
-                    </div>
-                </div>
+                                                    VND
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <hr />
+                                    </div>
+                                </div>
 
-                <!-- Hiển thị tổng tiền -->
-                <div class="card cart-summary">
-                    <div class="card-body">
-                        <h5 class="card-title">Đơn hàng</h5>
-                        <hr/>
-                        <div class="d-flex justify-content-between mb-3">
-                            <span>Tạm tính</span>
-                            <span>
+                                <!-- Hiển thị tổng tiền -->
+                                <div class="card cart-summary">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Đơn hàng</h5>
+                                        <hr/>
+                                        <div class="mb-3">
+                                            <label for="voucherSelect" class="form-label">Chọn mã giảm giá</label>
+                                            <select id="voucherSelect" class="form-control" th:field="*{idVoucher}" >
+                                                <option value="" selected>-- Không áp dụng voucher --</option>
+                                                <option th:each="v : ${vouchers}"
+                                                        th:value="${v.id}"
+                                                        th:data-hinh-thuc-giam="${v.hinhThucGiam}"
+                                                        th:data-gia-tri-giam="${v.giaTriGiam}"
+                                                        th:data-gia-tri-giam-toi-da="${v.giaTriGiamToiDa}"
+                                                        th:text="${v.maVoucher + ' - ' + v.tenVoucher}">
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-3">
+                                            <span>Tạm tính</span>
+                                            <span>
                                     <span class="cart-total-price" th:data-total-price="${tongTamTinh}"
                                           th:text="${#numbers.formatDecimal(tongTamTinh, 0, 'COMMA', 0, 'POINT')}"></span>
                                     VND
                                 </span>
-                        </div>
-                        <div class="d-flex justify-content-between mb-3">
-                            <span>Phí vận chuyển</span>
-                            <span>
-                                    <span class="cart-total-price"
-                                          th:text="${tongTamTinh > 1000000? '0' : '30.000'}"></span>
-                                    <span> VND</span>
-                                </span>
-                        </div>
-                        <div class="d-flex justify-content-between mb-3">
-                            <span>Giảm giá</span>
-                            <span>0<span> VND</span></span>
-                        </div>
-                        <hr />
-                        <div class="d-flex justify-content-between mb-4">
-                            <strong>Thành tiền</strong>
-                            <strong>
-                                    <span class="cart-total-price-end"
-                                          th:text="${#numbers.formatDecimal(tongTamTinh + (tongTamTinh > 1000000 ? 0 : 30000), 0, 'COMMA', 0, 'POINT')}"></span>
-                                VND
-                            </strong>
-                        </div>
+                                        </div>
+                                        <!-- Giá giảm -->
+                                        <div class="d-flex justify-content-between mb-3">
+                                            <span>Giảm giá</span>
+                                            <span><span id="giamGia">0</span> VND</span>
+                                        </div>
+
+                                        <!-- Phí vận chuyển -->
+                                        <div class="d-flex justify-content-between mb-3">
+                                            <span>Phí vận chuyển</span>
+                                            <span><span id="phiShip"
+                                                        th:text="${tongTamTinh > 1000000 ? 0 : 30000}">0</span> VND</span>
+                                        </div>
+
+                                        <!-- Thành tiền -->
+                                        <div class="d-flex justify-content-between mb-4">
+                                            <strong>Thành tiền</strong>
+                                            <strong>
+                                <span id="thanhTien"
+                                      th:text="${tongTamTinh + (tongTamTinh > 1000000 ? 0 : 30000)}">0</span> VND
+                                            </strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -234,20 +247,63 @@
         crossorigin="anonymous"></script>
 <script src="/js/checkout.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         const form = document.getElementById("checkoutForm");
         const submitButton = document.getElementById("btnSubmit");
         const overlay = document.getElementById("loadingOverlay");
 
-        form.addEventListener("submit", function(event) {
-            overlay.classList.remove("d-none"); // Hiện overlay Bootstrap
+        const voucherSelect = document.getElementById("voucherSelect");
+        const tongTamTinhEl = document.querySelector(".cart-total-price");
+        const giamGiaEl = document.getElementById("giamGia");
+        const phiShipEl = document.getElementById("phiShip");
+        const thanhTienEl = document.getElementById("thanhTien");
+
+        function formatCurrency(number) {
+            return number.toLocaleString("vi-VN");
+        }
+
+        function calculate() {
+            const tongTamTinh = parseFloat(tongTamTinhEl.dataset.totalPrice);
+            const phiShip = parseInt(phiShipEl.textContent.replace(/\D/g, '')) || 0;
+            const voucherOption = voucherSelect.options[voucherSelect.selectedIndex];
+
+            const hinhThucGiam = voucherOption.getAttribute("data-hinh-thuc-giam");
+            const giaTriGiam = parseFloat(voucherOption.getAttribute("data-gia-tri-giam")) || 0;
+            const giaTriGiamToiDa = parseFloat(voucherOption.getAttribute("data-gia-tri-giam-toi-da")) || 0;
+
+            let tienGiam = 0;
+
+            if (hinhThucGiam === 'Phần Trăm') {
+                tienGiam = tongTamTinh * giaTriGiam / 100;
+                if (!isNaN(giaTriGiamToiDa) && giaTriGiamToiDa > 0 && tienGiam > giaTriGiamToiDa) {
+                    tienGiam = giaTriGiamToiDa;
+                }
+            } else if (hinhThucGiam === 'Theo Giá Tiền') {
+                tienGiam = giaTriGiam;
+            }
+
+            const thanhTien = tongTamTinh + phiShip - tienGiam;
+
+            giamGiaEl.textContent = formatCurrency(tienGiam);
+            thanhTienEl.textContent = formatCurrency(thanhTien);
+        }
+
+        // Gọi lại khi chọn voucher
+        voucherSelect.addEventListener("change", calculate);
+
+        // Gọi lại ban đầu nếu đã có sẵn voucher được chọn
+        calculate();
+
+        // Loading overlay khi submit form
+        form.addEventListener("submit", function (event) {
+            overlay.classList.remove("d-none");
             submitButton.disabled = true;
 
-            // Optional: disable toàn bộ nút khác
             const buttons = form.querySelectorAll("button");
             buttons.forEach(btn => btn.disabled = true);
         });
     });
 </script>
+
 </body>
 </html>

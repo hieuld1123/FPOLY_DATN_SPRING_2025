@@ -383,4 +383,24 @@ public class VoucherService {
         voucherRepository.save(voucher);
     }
 
+    //Code cua Binh. Cam xoa
+    public float tinhGiamGia(float tongTamTinh, Voucher voucher) {
+        if (voucher == null || voucher.getSoLuong() <= 0 || voucher.getHinhThucGiam() == null) {
+            return 0f;
+        }
+
+        float giamGia = 0f;
+
+        String loai = voucher.getHinhThucGiam().trim().toLowerCase();
+
+        if (loai.equals("phần trăm")) {
+            giamGia = tongTamTinh * voucher.getGiaTriGiam() / 100f;
+        } else if (loai.equals("theo giá tiền")) {
+            giamGia = voucher.getGiaTriGiam();
+        }
+
+        return Math.min(giamGia, tongTamTinh);
+    }
+
+
 }
