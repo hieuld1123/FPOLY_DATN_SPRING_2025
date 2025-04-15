@@ -81,35 +81,37 @@ VALUES
 INSERT INTO san_pham_chi_tiet
 (ma_san_pham_chi_tiet, qr_code, mo_ta, gioi_tinh, so_luong, gia_ban, gia_ban_sau_giam, ngay_tao, ngay_cap_nhat, trang_thai, id_san_pham, id_kich_co, id_mau_sac, id_chat_lieu, id_de_giay, id_thuong_hieu)
 VALUES
-    ('SP01-CT1-35', NULL, 'Biến thể của Vintas Denim', 1, 100, 500000, 450000, GETDATE(), GETDATE(), 1, 1, 1, 1, 1, 1, 1),
-    ('SP01-CT1-36', NULL, 'Biến thể của Vintas Denim', 1, 100, 500000, 450000, GETDATE(), GETDATE(), 1, 1, 2, 1, 1, 1, 1),
-    ('SP01-CT1-37', NULL, 'Biến thể của Vintas Denim', 1, 100, 500000, 450000, GETDATE(), GETDATE(), 1, 1, 3, 1, 1, 1, 1),
-    ('SP01-CT1-38', NULL, 'Biến thể của Vintas Denim', 1, 100, 500000, 450000, GETDATE(), GETDATE(), 1, 1, 4, 1, 1, 1, 1),
+    ('SP01-CT1-35', NULL, N'Biến thể của Vintas Denim', 1, 100, 500000, 450000, GETDATE(), GETDATE(), 1, 1, 1, 1, 1, 1, 1),
+    ('SP01-CT1-36', NULL, N'Biến thể của Vintas Denim', 1, 100, 500000, 450000, GETDATE(), GETDATE(), 1, 1, 2, 1, 1, 1, 1),
+    ('SP01-CT1-37', NULL, N'Biến thể của Vintas Denim', 1, 100, 500000, 450000, GETDATE(), GETDATE(), 1, 1, 3, 1, 1, 1, 1),
+    ('SP01-CT1-38', NULL, N'Biến thể của Vintas Denim', 1, 100, 500000, 450000, GETDATE(), GETDATE(), 1, 1, 4, 1, 1, 1, 1),
 
-    ('SP01-CT2-35', NULL, 'Biến thể của Vintas Denim', 1, 100, 500000, 450000, GETDATE(), GETDATE(), 1, 1, 1, 2, 1, 1, 1),
-    ('SP01-CT2-36', NULL, 'Biến thể của Vintas Denim', 1, 100, 500000, 450000, GETDATE(), GETDATE(), 1, 1, 2, 2, 1, 1, 1),
-    ('SP01-CT2-37', NULL, 'Biến thể của Vintas Denim', 1, 100, 500000, 450000, GETDATE(), GETDATE(), 1, 1, 3, 2, 1, 1, 1),
+    ('SP01-CT2-35', NULL, N'Biến thể của Vintas Denim', 1, 100, 500000, 450000, GETDATE(), GETDATE(), 1, 1, 1, 2, 1, 1, 1),
+    ('SP01-CT2-36', NULL, N'Biến thể của Vintas Denim', 1, 100, 500000, 450000, GETDATE(), GETDATE(), 1, 1, 2, 2, 1, 1, 1),
+    ('SP01-CT2-37', NULL, N'Biến thể của Vintas Denim', 1, 100, 500000, 450000, GETDATE(), GETDATE(), 1, 1, 3, 2, 1, 1, 1),
 
-    ('SP01-CT3-35', NULL, 'Biến thể của Vintas Denim', 1, 100, 500000, 450000, GETDATE(), GETDATE(), 1, 1, 1, 3, 1, 1, 1),
-    ('SP01-CT3-36', NULL, 'Biến thể của Vintas Denim', 1, 100, 500000, 450000, GETDATE(), GETDATE(), 1, 1, 2, 3, 1, 1, 1);
+    ('SP01-CT3-35', NULL, N'Biến thể của Vintas Denim', 1, 100, 500000, 450000, GETDATE(), GETDATE(), 1, 1, 1, 3, 1, 1, 1),
+    ('SP01-CT3-36', NULL, N'Biến thể của Vintas Denim', 1, 100, 500000, 450000, GETDATE(), GETDATE(), 1, 1, 2, 3, 1, 1, 1);
 
 -- Ảnh cho nhóm SP01-CT1 (màu sắc 1, kích cỡ 1, 2, 3, 4)
 INSERT INTO hinh_anh (ten_anh, ngay_tao, ngay_cap_nhat, trang_thai, id_san_pham_chi_tiet)
-SELECT 'https://www.converse.vn/media/catalog/product/cache/9f24855fac20eb8d4a46102f0f20e4a1/0/8/0882-CONA08579C12W09H-1.jpg',
+SELECT '/upload/pro_AV00142_2-500x500.jpg',
        GETDATE(), GETDATE(), 1, id
 FROM san_pham_chi_tiet
 WHERE id_san_pham = 1 AND id_mau_sac = 1;
 
 INSERT INTO hinh_anh (ten_anh, ngay_tao, ngay_cap_nhat, trang_thai, id_san_pham_chi_tiet)
-SELECT 'https://www.converse.vn/media/catalog/product/cache/9f24855fac20eb8d4a46102f0f20e4a1/0/8/0882-CON560846C00W009-1.jpg',
+SELECT '/upload/pro_AV00172_2-500x500.jpg',
        GETDATE(), GETDATE(), 1, id
 FROM san_pham_chi_tiet
 WHERE id_san_pham = 1 AND id_mau_sac = 2;
 
 INSERT INTO hinh_anh (ten_anh, ngay_tao, ngay_cap_nhat, trang_thai, id_san_pham_chi_tiet)
-SELECT 'https://www.converse.vn/media/catalog/product/cache/9f24855fac20eb8d4a46102f0f20e4a1/0/8/0882-CONA15113C00509H-1.jpg',
+SELECT '/upload/pro_AV00211_2-1-500x500.jpg',
        GETDATE(), GETDATE(), 1, id
 FROM san_pham_chi_tiet
 WHERE id_san_pham = 1 AND id_mau_sac = 3;
 
 select * from mau_sac
+
+select * from hinh_anh
