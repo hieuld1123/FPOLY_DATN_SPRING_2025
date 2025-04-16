@@ -23,16 +23,21 @@
             </ul>
         </div>
 
-        <div class="px-3">
-            <label class="form-check form-check-inline" for="select-all">
-                <input id="select-all" class="form-check-input" type="checkbox" />
-                <span class="form-check-label">Chọn tất cả</span>
-            </label>
+        <div class="text-start mb-4">
+            <a th:href="@{/shop/product/all-product}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left me-2"></i>Tiếp tục mua sắm
+            </a>
         </div>
         <div class="row">
             <div class="col-lg-8">
                 <div class="card mb-4">
                     <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-check form-check-inline" for="select-all">
+                                <input id="select-all" class="form-check-input" type="checkbox" />
+                                <span class="form-check-label">Chọn tất cả</span>
+                            </label>
+                        </div>
                         <div class="row cart-item mb-3" th:each="item : ${gioHang}" th:id="'cart-item-' + ${item.id}">
                             <div class="col-1">
                                 <input type="checkbox"
@@ -87,7 +92,7 @@
                                     <span th:id="'total-price-' + ${item.id}"
                                           th:text="${#numbers.formatDecimal(item.soLuong * item.sanPhamChiTiet.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
                                 </p>
-                                <div th:text="${item.soLuong == 0 ? 'Hết hàng' : 'Còn hàng'}" class="mb-3"></div>
+                                <div th:text="${!item.sanPhamChiTiet.trangThai ? 'Ngừng kinh doanh' : (item.sanPhamChiTiet.soLuong > 0 ? 'Còn hàng' : 'Hết hàng')}" class="mb-3"></div>
                                 <button type="button"
                                         class="btn btn-danger btn-sm delete-btn px-2 py-1"
                                         th:data-id="${item.id}">
@@ -97,11 +102,6 @@
                         </div>
                         <hr/>
                     </div>
-                </div>
-                <div class="text-start mb-4">
-                    <a th:href="@{/shop/product/all-product}" class="btn btn-outline-primary">
-                        <i class="bi bi-arrow-left me-2"></i>Tiếp tục mua sắm
-                    </a>
                 </div>
             </div>
             <div class="col-lg-4">

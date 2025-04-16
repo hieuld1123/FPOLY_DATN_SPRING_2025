@@ -210,7 +210,33 @@ public class CartController {
             Authentication auth,
             HttpSession session) {
 
+        // Lấy thông tin người dùng nếu đã đăng nhập
+        TaiKhoan taiKhoan = null;
+        KhachHang khachHang = null;
+        DiaChi diaChiMacDinh = null;
+
+        if (auth != null && auth.isAuthenticated()) {
+            String email = auth.getName();
+            taiKhoan = taiKhoanRepository.findByEmail(email).orElse(null);
+            if (taiKhoan != null) {
+                khachHang = khachHangRepository.findByTaiKhoan(taiKhoan);
+                diaChiMacDinh = khachHang.getDiaChi()
+                        .stream()
+                        .filter(DiaChi::getTrangThai) // hoặc .getTrangThai() nếu không dùng lombok getter
+                        .findFirst()
+                        .orElse(null);
+            }
+        }
+
         List<Integer> selectedIds = (List<Integer>) session.getAttribute("selectedIds");
+        if (selectedIds == null || selectedIds.isEmpty()) {
+            model.addAttribute("errorMessage", "Bạn chưa chọn sản phẩm nào để thanh toán. Vui lòng quay lại giỏ hàng.");
+            model.addAttribute("cart", new ArrayList<>());  // hiển thị sản phẩm da chon
+            model.addAttribute("tongTamTinh", 0);
+            model.addAttribute("khachHang", khachHang);
+            model.addAttribute("hoaDonBinhRequest", hoaDonBinhRequest);
+            return "shop/checkout"; // quay lại trang giỏ hàng
+        }
         List<GioHangChiTiet> danhSachThanhToan = gioHangChiTietRepository.findAllById(selectedIds);
         List<String> danhSachLoi = new ArrayList<>();
 
@@ -254,24 +280,6 @@ public class CartController {
             model.addAttribute("tongTamTinh", tongTamTinh);
             model.addAttribute("hoaDonBinhRequest", hoaDonBinhRequest);
             return "shop/checkout";
-        }
-
-        // Lấy thông tin người dùng nếu đã đăng nhập
-        TaiKhoan taiKhoan = null;
-        KhachHang khachHang = null;
-        DiaChi diaChiMacDinh = null;
-
-        if (auth != null && auth.isAuthenticated()) {
-            String email = auth.getName();
-            taiKhoan = taiKhoanRepository.findByEmail(email).orElse(null);
-            if (taiKhoan != null) {
-                khachHang = khachHangRepository.findByTaiKhoan(taiKhoan);
-                diaChiMacDinh = khachHang.getDiaChi()
-                        .stream()
-                        .filter(DiaChi::getTrangThai) // hoặc .getTrangThai() nếu không dùng lombok getter
-                        .findFirst()
-                        .orElse(null);
-            }
         }
 
         Voucher voucher = null;

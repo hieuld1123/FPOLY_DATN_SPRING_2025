@@ -5,39 +5,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thanh toán</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> </head>
-    <link rel="stylesheet" href="/css/Footer.css">
-    <link rel="stylesheet" href="/css/Navbar.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<link rel="stylesheet" href="/css/Footer.css">
+<link rel="stylesheet" href="/css/Navbar.css">
 </head>
 
 <body>
 <div class="">
     <div th:replace="components/navbar :: navbar"></div>
     <div class="container py-5">
-
         <h2 class="text-center mb-5">Thanh toán</h2>
-        
-        <div class="row">
-            <div class="col-12">
-                <div th:if="${successMessage}" class="alert alert-success" role="alert">
-                    <span th:text="${successMessage}"></span>
-                </div>
-                <!-- Errrrr -->
-                <div th:if="${errorMessage}" class="alert alert-danger mb-3">
-                    <strong th:text="${errorMessage}"></strong>
-                    <ul th:if="${errors}">
-                        <li th:each="err : ${errors}" th:text="${err}"></li>
-                    </ul>
-                </div>
+        <div>
+            <div th:if="${successMessage}" class="alert alert-success" role="alert">
+                <span th:text="${successMessage}"></span>
             </div>
-            <div class="col-6">
-                <div class="card cart-summary">
-                    <div class="card-body">
-                        <h5 class="card-title mb-3 text-primary">Thông tin nhận hàng</h5>
-                        <hr/>
-                        <form id="checkoutForm" th:action="@{/shop/place-order}" method="post" th:object="${hoaDonBinhRequest}">
+            <!-- Errrrr -->
+            <div th:if="${errorMessage}" class="alert alert-danger mb-3">
+                <strong th:text="${errorMessage}"></strong>
+                <ul th:if="${errors}">
+                    <li th:each="err : ${errors}" th:text="${err}"></li>
+                </ul>
+            </div>
+        </div>
+
+
+        <form id="checkoutForm" th:action="@{/shop/place-order}" method="post"
+              th:object="${hoaDonBinhRequest}">
+            <div class="row">
+                <div class="col-6">
+                    <div class="card cart-summary">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Thông tin nhận hàng</h5>
+                            <hr/>
                             <div th:if="${khachHang != null}">
                                 <div class="mb-2">
                                     <label class="fw-bold">Tên người nhận: </label>
@@ -130,115 +132,130 @@
                                     <button type="submit" class="btn btn-primary" id="btnSubmit">Đặt hàng</button>
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <div class="card mb-4">
-                                    <div class="card-body">
-                                        <div class="row cart-item mb-3" th:each="item : ${cart}">
-                                            <div class="col-3">
-                                                <!--                                <img src="" alt="Product 1" class="img-fluid rounded" />-->
-                                                <img th:src="@{'/upload' + ${item.sanPhamChiTiet.hinhAnh[0].tenAnh.substring(item.sanPhamChiTiet.hinhAnh[0].tenAnh.lastIndexOf('upload') + 6)}}" alt="Product 1" class="img-fluid rounded" />
-                                            </div>
-                                            <div class="col-6">
-                                                <h5 class="card-title" th:text="${item.sanPhamChiTiet.sanPham.tenSanPham}"></h5>
-                                                <p class="text-muted">
-                                                    Giá:
-                                                    <span
-                                                            th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
-                                                </p>
-                                                <div class="row">
-                                                    <div class="col-6">
-                                                        <span class="fw-bold">Size: <span th:text="${item.sanPhamChiTiet.kichCo.ten}"></span></span>
-                                                    </div>
-                                                    <div class="col-6 d-flex flex-row">
-                                                        <!-- Số lượng hiển thị -->
-                                                        <span class="form-label fw-bold">Số lượng: <span
-                                                                th:text="${item.soLuong}"></span></span>
-                                                        <span class="form-label fw-bold ps-3">Màu sắc: <span
-                                                                th:text="${item.sanPhamChiTiet.mauSac.tenMauSac}"></span></span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3 text-end">
-                                                <p class="fw-bold">
-                                        <span th:id="'total-price-' + ${item.sanPhamChiTiet.id}"
-                                              th:data-total-price="${item.soLuong * item.sanPhamChiTiet.giaBanSauGiam}"
-                                              th:text="${#numbers.formatDecimal(item.soLuong * item.sanPhamChiTiet.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')}"></span>
-                                                    VND
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <hr />
-                                    </div>
-                                </div>
+                        </div>
+                    </div>
+                </div>
 
-                                <!-- Hiển thị tổng tiền -->
-                                <div class="card cart-summary">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Đơn hàng</h5>
-                                        <hr/>
-                                        <div class="mb-3">
-                                            <label for="voucherSelect" class="form-label">Chọn mã giảm giá</label>
-                                            <select id="voucherSelect" class="form-control" th:field="*{idVoucher}" >
-                                                <option value="" selected>-- Không áp dụng voucher --</option>
-                                                <option th:each="v : ${vouchers}"
-                                                        th:value="${v.id}"
-                                                        th:data-hinh-thuc-giam="${v.hinhThucGiam}"
-                                                        th:data-gia-tri-giam="${v.giaTriGiam}"
-                                                        th:data-gia-tri-giam-toi-da="${v.giaTriGiamToiDa}"
-                                                        th:text="${v.maVoucher + ' - ' + v.tenVoucher}">
-                                                </option>
-                                            </select>
-                                        </div>
-                                        <div class="d-flex justify-content-between mb-3">
-                                            <span>Tạm tính</span>
-                                            <span>
+                <div class="col-6">
+                    <!-- Hiển thị tổng tiền -->
+                    <div class="card cart-summary">
+                        <div class="card-body">
+                            <h5 class="card-title">Đơn hàng</h5>
+                            <hr/>
+                            <div class="mb-3">
+                                <label for="voucherSelect" class="form-label">Chọn mã giảm giá</label>
+                                <select id="voucherSelect" class="form-control" th:field="*{idVoucher}">
+                                    <option value="" selected>-- Không áp dụng voucher --</option>
+                                    <option th:each="v : ${vouchers}"
+                                            th:value="${v.id}"
+                                            th:data-hinh-thuc-giam="${v.hinhThucGiam}"
+                                            th:data-gia-tri-giam="${v.giaTriGiam}"
+                                            th:data-gia-tri-giam-toi-da="${v.giaTriGiamToiDa}"
+                                            th:text="${v.maVoucher + ' - ' + v.tenVoucher}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span>Tạm tính</span>
+                                <span>
                                     <span class="cart-total-price" th:data-total-price="${tongTamTinh}"
                                           th:text="${#numbers.formatDecimal(tongTamTinh, 0, 'COMMA', 0, 'POINT')}"></span>
                                     VND
                                 </span>
-                                        </div>
-                                        <!-- Giá giảm -->
-                                        <div class="d-flex justify-content-between mb-3">
-                                            <span>Giảm giá</span>
-                                            <span><span id="giamGia">0</span> VND</span>
-                                        </div>
+                            </div>
+                            <!-- Giá giảm -->
+                            <div class="d-flex justify-content-between mb-3">
+                                <span>Giảm giá</span>
+                                <span><span id="giamGia">0</span> VND</span>
+                            </div>
 
-                                        <!-- Phí vận chuyển -->
-                                        <div class="d-flex justify-content-between mb-3">
-                                            <span>Phí vận chuyển</span>
-                                            <span><span id="phiShip"
-                                                        th:text="${tongTamTinh > 1000000 ? 0 : 30000}">0</span> VND</span>
-                                        </div>
+                            <!-- Phí vận chuyển -->
+                            <div class="d-flex justify-content-between mb-3">
+                                <span>Phí vận chuyển</span>
+                                <span><span id="phiShip"
+                                            th:text="${tongTamTinh > 1000000 ? 0 : 30000}">0</span> VND</span>
+                            </div>
 
-                                        <!-- Thành tiền -->
-                                        <div class="d-flex justify-content-between mb-4">
-                                            <strong>Thành tiền</strong>
-                                            <strong>
+                            <!-- Thành tiền -->
+                            <div class="d-flex justify-content-between mb-4">
+                                <strong>Thành tiền</strong>
+                                <strong>
                                 <span id="thanhTien"
                                       th:text="${tongTamTinh + (tongTamTinh > 1000000 ? 0 : 30000)}">0</span> VND
-                                            </strong>
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Danh sách sản phẩm -->
+                    <div class="card-table table-responsive mt-5">
+                        <div class="card cart-summary">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">Danh sách sản phẩm</h5>
+                                <table class="table table-vcenter">
+                            <thead>
+                            <tr>
+                                <th class="w-1">STT</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Đơn giá</th>
+                                <th class="w-1">Số lượng</th>
+                                <th>Thành tiền</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="item, count : ${cart}">
+                                <td th:text="${count.index + 1}"></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="pe-2">
+                                                <span class="avatar avatar-sm me-3" th:style="'background-image: url(' + (${not #lists.isEmpty(item.sanPhamChiTiet.hinhAnh)} ?
+                                                                    @{{file}(file=${item.sanPhamChiTiet.hinhAnh[0].tenAnh})} :
+                                                                    @{/static/img/default.jpg}) + ')'">
+                                                </span>
+                                        </div>
+                                        <div>
+                                            <span th:text="${item.sanPhamChiTiet.sanPham.tenSanPham}"></span>
+                                            -
+                                            <span th:text="${item.sanPhamChiTiet.mauSac.tenMauSac}"></span>
+                                            - Size
+                                            <span th:text="${item.sanPhamChiTiet.kichCo.ten}"></span>
                                         </div>
                                     </div>
-                                </div>
+                                </td>
+                                <td
+                                        th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                                </td>
+                                <td th:text="${item.soLuong}"></td>
+                                <td
+                                        th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBan * item.soLuong, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- Form nhập thông tin đặt hàng -->
+        </form>
     </div>
-    <div th:replace="~{components/footer :: footer}"></div>
+</div>
 
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-75 d-none justify-content-center align-items-center" style="z-index: 1050;">
-        <div class="text-center text-white">
-            <div class="spinner-border text-light mb-3" role="status" style="width: 3rem; height: 3rem;">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-            <div class="fs-5">🕐 Hệ thống đang tiến hành xử lý đơn hàng, vui lòng đợi...</div>
+<!-- Form nhập thông tin đặt hàng -->
+</div>
+<div th:replace="~{components/footer :: footer}"></div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay"
+     class="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-75 d-none justify-content-center align-items-center"
+     style="z-index: 1050;">
+    <div class="text-center text-white">
+        <div class="spinner-border text-light mb-3" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Loading...</span>
         </div>
+        <div class="fs-5">🕐 Hệ thống đang tiến hành xử lý đơn hàng, vui lòng đợi...</div>
     </div>
+</div>
 
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

@@ -213,7 +213,7 @@
                                 <div class="d-flex align-items-center">
                                     <div class="pe-2">
                                                 <span class="avatar avatar-sm me-3" th:style="'background-image: url(' + (${not #lists.isEmpty(item.sanPhamChiTiet.hinhAnh)} ?
-                                                                    @{/uploads/{file}(file=${item.sanPhamChiTiet.hinhAnh[0].tenAnh})} :
+                                                                    @{{file}(file=${item.sanPhamChiTiet.hinhAnh[0].tenAnh})} :
                                                                     @{/static/img/default.jpg}) + ')'">
                                                 </span>
                                     </div>
