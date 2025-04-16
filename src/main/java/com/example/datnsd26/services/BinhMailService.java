@@ -34,8 +34,12 @@ public class BinhMailService {
         emailContent.append("<p><strong>Tên khách hàng:</strong> ").append(hoaDon.getTenNguoiNhan()).append("</p>");
         emailContent.append("<p><strong>Số điện thoại:</strong> ").append(hoaDon.getSdtNguoiNhan()).append("</p>");
         emailContent.append("<p><strong>Email:</strong> ").append(hoaDon.getEmail()).append("</p>");
-        emailContent.append("<p><strong>Địa chỉ nhận hàng:</strong> ").append(hoaDon.getDiaChiNguoiNhan()).append("</p>");
-
+        emailContent.append("<p><strong>Địa chỉ nhận hàng:</strong> ")
+                .append(hoaDon.getDiaChiNguoiNhan())
+                .append(", ").append(hoaDon.getXa())
+                .append(", ").append(hoaDon.getQuan())
+                .append(", ").append(hoaDon.getTinh())
+                .append("</p>");
         // Chi tiết đơn hàng
         emailContent.append("<h3 style='margin-top: 30px; color:#34495e;'>🛍 Chi tiết đơn hàng</h3>");
         emailContent.append("<table style='width: 100%; border-collapse: collapse; margin-top: 10px;'>");
@@ -44,7 +48,7 @@ public class BinhMailService {
                 .append("<th style='padding: 10px;'>Sản phẩm</th>")
                 .append("<th style='padding: 10px;'>Đơn giá</th>")
                 .append("<th style='padding: 10px;'>Số lượng</th>")
-                .append("<th style='padding: 10px;'>Thành tiền</th>")
+                .append("<th style='padding: 10px;'>Tổng</th>")
                 .append("</tr>")
                 .append("</thead><tbody>");
 
@@ -66,10 +70,21 @@ public class BinhMailService {
         emailContent.append("</tbody></table>");
 
         // Tổng cộng
+        if (hoaDon.getVoucher() == null) {
+            emailContent.append("<p style='margin-top: 20px;'><strong>🚚 Giảm giá:</strong> 0 VND</p>");
+        } else {
+            String giaTriGiam = String.format("%,.0f", hoaDon.getGiamGia());
+            String maVoucher = hoaDon.getVoucher().getMaVoucher();
+            String tenVoucher = hoaDon.getVoucher().getTenVoucher();
+            emailContent.append("<p style='margin-top: 20px;'><strong>🚚 Giảm giá:</strong> ")
+                    .append(giaTriGiam).append(" VND")
+                    .append(" (").append(maVoucher).append(" - ").append(tenVoucher).append(")</p>");
+        }
+
         emailContent.append("<p style='margin-top: 20px;'><strong>🚚 Phí vận chuyển:</strong> ")
                 .append(String.format("%,.0f", hoaDon.getPhiVanChuyen())).append(" VND</p>");
-        emailContent.append("<p style='font-size: 16px;'><strong>💰 Tổng tiền:</strong> <span style='color:#e67e22;'>")
-                .append(String.format("%,.0f", tongTien + hoaDon.getPhiVanChuyen()))
+        emailContent.append("<p style='font-size: 16px;'><strong>💰 Thành tiền:</strong> <span style='color:#e67e22;'>")
+                .append(String.format("%,.0f", tongTien + hoaDon.getPhiVanChuyen() - hoaDon.getGiamGia()))
                 .append(" VND</span></p>");
 
         // Cảm ơn và liên hệ

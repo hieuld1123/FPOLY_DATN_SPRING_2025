@@ -54,5 +54,14 @@ public interface VoucherRepository extends JpaRepository<Voucher, Long> {
 //    @Modifying
 //    @Query("UPDATE Voucher v SET v.trangThai = :trangThai, v.ngayCapNhat = :ngayCapNhat WHERE v.id = :id")
 //    void updateTrangThai(@Param("id") Long id, @Param("trangThai") Integer trangThai, @Param("ngayCapNhat") LocalDateTime ngayCapNhat);
+
+    @Query("SELECT v FROM Voucher v " +
+            "WHERE v.trangThai = 1 " +
+            "AND v.soLuong > 0 " +
+            "AND :now BETWEEN v.ngayBatDau AND v.ngayKetThuc " +
+            "AND v.congKhai = true " +
+            "AND :tong > v.giaTriGiamToiThieu")
+    List<Voucher> findValidVouchers(@Param("now") LocalDateTime now, @Param("tong") float tongTamTinh);
+
 }
 
