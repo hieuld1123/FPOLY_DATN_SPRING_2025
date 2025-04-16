@@ -22,6 +22,10 @@ $(document).ready(function () {
         location.href = `/quan-ly/hoa-don/${invoiceCode}`;
     });
 
+    $(document).on("click", "#save-all-btn", function () {
+        location.href = `/quan-ly/hoa-don/${invoiceCode}`;
+    });
+
 
     const fetchInvoice = async () => {
         try {
