@@ -272,3 +272,38 @@
     border: 2px solid #007bff;
     border-right: none;
 }
+
+/* Đảm bảo phần mã giảm giá nhỏ và tinh tế */
+.discount-section {
+    display: flex;
+    justify-content: flex-start; /* Căn trái hoặc flex-end nếu muốn căn phải */
+}
+
+.input-group-sm {
+    max-width: 300px; /* Giới hạn chiều rộng của phần nhập mã */
+}
+
+.discount-section .form-control {
+    font-size: 0.85rem; /* Chữ nhỏ hơn */
+    padding: 0.3rem 0.5rem; /* Giảm padding để nhỏ gọn */
+    border-radius: 4px 0 0 4px; /* Bo góc nhẹ */
+}
+
+.discount-section .btn {
+    font-size: 0.85rem; /* Chữ nút nhỏ hơn */
+    padding: 0.3rem 0.75rem; /* Giảm padding nút */
+    border-radius: 0 4px 4px 0; /* Bo góc nút */
+    background-color: #007bff; /* Màu nút */
+    border: none;
+}
+
+.discount-section .btn:hover {
+    background-color: #0056b3; /* Hiệu ứng hover */
+}
+
+/* Responsive: Đảm bảo hiển thị tốt trên mobile */
+@media (max-width: 576px) {
+    .input-group-sm {
+        max-width: 100%; /* Chiếm toàn bộ chiều rộng trên mobile */
+    }
+}

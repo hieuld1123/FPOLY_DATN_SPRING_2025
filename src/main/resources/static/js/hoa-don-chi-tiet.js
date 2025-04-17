@@ -35,8 +35,8 @@ $(document).ready(function () {
         const btnCancelInvoice = document.getElementById("btn-cancel-invoice");
         btnCancelInvoice.disabled = !data.allowCancel;
 
-        const btnModifyInvoice = document.getElementById("btn-modify-invoice");
-        btnModifyInvoice.disabled = !data.allowCancel;
+        // const btnModifyInvoice = document.getElementById("btn-modify-invoice");
+        // btnModifyInvoice.disabled = !data.allowCancel;
 
         const btnCompleted = document.getElementById("btn-completed");
         btnCompleted.disabled = !data.completed;
@@ -123,8 +123,8 @@ $(document).ready(function () {
                         <td><img src="${product.image}" alt="Product Image" width="50"></td>
                         <td>${product.name}<br><small>${product.code}</small></td>
                         <td>${product.quantity}</td>
-                        <td class="text-right">${product.unit_price.toLocaleString()}VND</td>
-                        <td class="text-right">${product.total_price.toLocaleString()}VND</td>
+                        <td class="text-start">${product.unit_price.toLocaleString()}VND</td>
+                        <td class="text-start">${product.total_price.toLocaleString()}VND</td>
                     </tr>
                 `;
         });

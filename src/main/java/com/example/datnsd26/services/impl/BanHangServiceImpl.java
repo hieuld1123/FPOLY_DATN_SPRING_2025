@@ -197,6 +197,12 @@ public class BanHangServiceImpl implements BanHangService {
     @Transactional(rollbackOn = Exception.class)
     public void payment(PaymentRequest paymentRequest) {
         HoaDon hoaDon = findHoaDonById(paymentRequest.getInvoiceId());
+        List<HoaDonChiTiet> danhSachSanPham = hoaDon.getDanhSachSanPham();
+        danhSachSanPham.forEach(sp -> {
+            if(Boolean.FALSE.equals(sp.getSanPhamChiTiet().getTrangThai())){
+                throw new InvalidDataException(String.format("Sản phẩm %s đã ngừng kinh doanh", sp.getSanPhamChiTiet().getMaSanPhamChiTiet()));
+            }
+        });
         hoaDon.setNhanVien(authUtil.getNhanVien());
         hoaDon.setHinhThucMuaHang(paymentRequest.getType());
         hoaDon.setPhiVanChuyen(0f);

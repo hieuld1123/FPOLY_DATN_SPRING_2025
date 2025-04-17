@@ -71,7 +71,11 @@ const handlePayment = async () => {
       }
     );
     const result = await response.json();
-    if (result.status === 202) window.location.reload();
+    if (result.status === 202) {
+      window.location.reload();
+    }else{
+      alert(result.message);
+    }
   } catch (error) {
     console.error("Payment error:", error);
   }
@@ -889,8 +893,7 @@ $(document).ready(() => {
         alert("Tạo khách hàng thất bại: " + result.message);
       }
     } catch (error) {
-      console.error("Error creating customer:", error);
-      alert("Đã có lỗi xảy ra khi tạo khách hàng!");
+      alert(error);
     }
   });
 
