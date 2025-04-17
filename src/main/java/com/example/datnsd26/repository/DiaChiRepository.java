@@ -2,6 +2,7 @@ package com.example.datnsd26.repository;
 
 import com.example.datnsd26.controller.request.AddressRequest;
 import com.example.datnsd26.models.DiaChi;
+import com.example.datnsd26.models.KhachHang;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -37,4 +38,5 @@ public interface DiaChiRepository extends JpaRepository<DiaChi,Integer> {
             @Param("addressDetail") String addressDetail
     );
 
+    List<DiaChi> findByKhachHang(KhachHang khachHang);
 }

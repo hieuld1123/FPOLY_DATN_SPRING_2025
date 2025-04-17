@@ -66,8 +66,8 @@
                         <div th:if="${#authorization.expression('isAnonymous()')}">
                             <a th:href="@{/login}" class="nav-link d-flex align-items-center">
                                 <img class="rounded-circle me-2" width="35" height="35"
-                                     th:if="${currentNhanVien == null and currentKhachHang == null}"
-                                     src="https://img.icons8.com/material-rounded/100/user-male-circle.png"
+                                     th:if="${currentKhachHang != null}"
+                                     th:src="@{'/uploads/' + ${currentKhachHang.hinhAnh}}"
                                      alt="avatar"/>
                             </a>
                         </div>
@@ -78,10 +78,6 @@
                                 <!-- Ảnh đại diện -->
                                 <th:block th:switch="${true}">
                                     <img class="avatar avatar-sm rounded-circle me-2"
-                                         th:case="${currentNhanVien != null}"
-                                         th:src="@{'/uploads/' + ${currentNhanVien.hinhAnh}}" alt="avatar" />
-
-                                    <img class="avatar avatar-sm rounded-circle me-2"
                                          th:case="${currentKhachHang != null}"
                                          th:src="@{'/uploads/' + ${currentKhachHang.hinhAnh}}" alt="avatar" />
 
@@ -90,22 +86,22 @@
                                          src="/img/default-avatar.png" alt="avatar" />
                                 </th:block>
 
+
                                 <!-- Tên người dùng -->
                                 <span class="d-none d-sm-inline-block"
-                                      th:text="${currentNhanVien != null ? currentNhanVien.tenNhanVien :
-                        (currentKhachHang != null ? currentKhachHang.tenKhachHang : 'Tài khoản')}">
+                                      th:text="${currentKhachHang != null ? currentKhachHang.tenKhachHang : 'Tài khoản'}">
         </span>
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                 <!-- Thông tin cá nhân -->
-                                <a href="#" class="dropdown-item">Thông tin cá nhân</a>
+                                <a th:href="@{/thong-tin-ca-nhan}" class="dropdown-item">Thông tin cá nhân</a>
 
                                 <!-- Lịch sử mua hàng (dành cho khách hàng) -->
                                 <a class="dropdown-item" th:href="@{/khach-hang/lich-su-mua-hang}">Lịch sử mua hàng</a>
 
                                 <!-- Đổi mật khẩu -->
-                                <a class="dropdown-item" th:href="@{/doi-mat-khau}">Đổi mật khẩu</a>
+                                <a class="dropdown-item" th:href="@{/}">Đổi mật khẩu</a>
 
                                 <div class="dropdown-divider"></div>
 

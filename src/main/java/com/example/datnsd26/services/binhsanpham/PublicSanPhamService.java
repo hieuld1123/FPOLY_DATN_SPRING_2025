@@ -91,9 +91,9 @@ public class PublicSanPhamService {
 
         // Sắp xếp
         if ("price_asc".equals(sortOrder)) {
-            finalList.sort(Comparator.comparing(SanPhamChiTiet::getGiaBan));
+            finalList.sort(Comparator.comparing(SanPhamChiTiet::getGiaBanSauGiam));
         } else if ("price_desc".equals(sortOrder)) {
-            finalList.sort(Comparator.comparing(SanPhamChiTiet::getGiaBan).reversed());
+            finalList.sort(Comparator.comparing(SanPhamChiTiet::getGiaBanSauGiam).reversed());
         } else if ("name_asc".equals(sortOrder)) {
             finalList.sort(Comparator.comparing(spct -> spct.getSanPham().getTenSanPham(), Comparator.nullsLast(String::compareToIgnoreCase)));
         } else if ("name_desc".equals(sortOrder)) {

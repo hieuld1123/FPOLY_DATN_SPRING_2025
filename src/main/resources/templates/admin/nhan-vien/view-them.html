@@ -362,7 +362,7 @@
         let anh = document.getElementById("fileInput").value;
 
         // Kiểm tra tên nhân viên
-        let nameRegex = /^[A-Za-zÀ-ỹ\s]{2,50}$/; //cho phép tiếng Việt, dấu cách, không có ký tự đặc biệt
+        let nameRegex = /^(?!.*  )[A-Za-zÀ-ỹ]{1,}( [A-Za-zÀ-ỹ]{1,}){1,49}$/; //cho phép tiếng Việt, dấu cách, không có ký tự đặc biệt
         if (tenNhanVien === "") {
             document.getElementById("errorTen").innerText = "Tên nhân viên không được để trống!";
             isValid = false;
@@ -463,7 +463,11 @@
         }
 
         // Kiểm tra địa chỉ cụ thể
-        if (diaChiCuThe === "") {
+        const regex = /^[A-Za-zÀ-ỹ0-9\s,.\-\/()]{5,255}$/;
+        if (!regex.test(diaChiCuThe.trim())) {
+            document.getElementById("errorDuong").innerText = "Địa chỉ chứa ký tự không hợp lệ hoặc quá ngắn!";
+            isValid = false;
+        }else if (diaChiCuThe === "") {
             document.getElementById("errorDuong").innerText = "Vui lòng nhập địa chỉ cụ thể!";
             isValid = false;
         } else {
