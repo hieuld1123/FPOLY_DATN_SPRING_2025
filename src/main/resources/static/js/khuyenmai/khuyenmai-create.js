@@ -281,6 +281,20 @@ document.addEventListener('DOMContentLoaded', async function () {
             isValid = false;
         }
 
+
+        // Kiểm tra giá trị giảm chung
+        const isPercent = hinhThucGiam.value === 'Phần Trăm';
+        if (isPercent && parseFloat(giaTriGiam.value) > 100 || parseFloat(giaTriGiam.value) <= 0 ) {
+            errorMessage = 'Giá trị giảm chung theo phần trăm phải từ 1% đến 100% ';
+            isValid = false;
+        }
+        const isPercentt = hinhThucGiam.value === 'Theo Giá Tiền';
+        if (isPercentt && parseFloat(giaTriGiam.value) <= 0 ) {
+            errorMessage = 'Giá trị giảm chung  theo giá tiền phải lớn hơn 0 ';
+            isValid = false;
+        }
+
+
         // Kiểm tra ngày bắt đầu & ngày kết thúc không bỏ trống
         if (!thoiGianBatDau.value || !thoiGianKetThuc.value) {
             errorMessage = 'Vui lòng chọn ngày bắt đầu và ngày kết thúc';
@@ -315,12 +329,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             isValid = false;
         }
 
-        // Kiểm tra mức giảm
-        const isPercent = hinhThucGiam.value === 'Phần Trăm';
-        if (isPercent && parseFloat(giaTriGiam.value) > 100) {
-            errorMessage = 'Giá trị giảm theo phần trăm không được vượt quá 100%';
-            isValid = false;
-        }
 
         checkboxes.forEach((checkbox, index) => {
             if (checkbox.checked) {
@@ -328,13 +336,28 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const giaGoc = parseFloat(giaGocCells[index].dataset.gia);
                 const mucGiam = parseFloat(mucGiamInput.value);
 
-                if (!mucGiam || mucGiam <= 0) {
-                    errorMessage = 'Vui lòng nhập mức giảm hợp lệ cho tất cả sản phẩm được chọn';
+                if (!mucGiam) {
+                    errorMessage ="vui lòng nhập mức giảm";
                     isValid = false;
                 }
 
+                // if ( mucGiam <= 0) {
+                //     errorMessage = ' mức giảm phải lớn hơn 0';
+                //     isValid = false;
+                // }
+
                 if (!isPercent && mucGiam >= giaGoc) {
                     errorMessage = 'Mức giảm không được lớn hơn hoặc bằng giá gốc của sản phẩm';
+                    isValid = false;
+                }
+
+                if (hinhThucGiam.value === "Phần Trăm" && mucGiam > 100 || mucGiam <= 0 ) {
+                    errorMessage = 'Mức giảm theo phần trăm phải từ 1% đến 100% ';
+                    isValid = false;
+                }
+
+                if (hinhThucGiam.value ==="Theo Giá Tiền" && mucGiam <= 0 ) {
+                    errorMessage = 'Mức giảm theo giá tiền phải lớn hơn 0 ';
                     isValid = false;
                 }
             }
