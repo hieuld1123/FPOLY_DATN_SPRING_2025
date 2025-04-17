@@ -10,7 +10,17 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SanPhamInfo {
-    String key;
-    Boolean trangThai;
-    Integer soLuong;
+    private String key;
+    private String trangThai; // Giữ nguyên kiểu String trong form để dễ dàng bind dữ liệu
+    private Integer soLuong;
+
+    // Phương thức chuyển trangThai sang Boolean
+    public Boolean getTrangThaiBoolean() {
+        if (this.trangThai == null || this.trangThai.isEmpty()) {
+            return null; // Trạng thái null khi không chọn
+        }
+        return this.trangThai.equals("true"); // Chuyển từ String sang Boolean
+    }
 }
+
+

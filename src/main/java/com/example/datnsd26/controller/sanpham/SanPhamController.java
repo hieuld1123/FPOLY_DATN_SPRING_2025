@@ -155,10 +155,14 @@ public class SanPhamController {
 
     @GetMapping("/listsanpham")
     public String hienthi(Model model, @ModelAttribute("tim") SanPhamInfo info) {
+        System.out.println("Trang Thai trong SanPhamInfo: " + info.getTrangThai());  // Kiểm tra giá trị của trangThai
+
         List<Object[]> list;
         String trimmedKey = (info.getKey() != null) ? info.getKey().trim().replaceAll("\\s+", " ") : null;
+        Boolean parsedTrangThai = info.getTrangThaiBoolean(); // Lấy giá trị trạng thái dưới dạng Boolean
+
         boolean isKeyEmpty = (trimmedKey == null || trimmedKey.isEmpty());
-        boolean isTrangthaiNull = (info.getTrangThai() == null);
+        boolean isTrangthaiNull = (parsedTrangThai == null); // Kiểm tra nếu parsedTrangThai là null (Tất cả)
         List<SanPham> listSanPham = sanPhamRepositoty.findAll();
         for (SanPham sp : listSanPham) {
             List<SanPhamChiTiet> listSPCT = sanPhamChiTietRepository.findBySanPhamId(sp.getId());
@@ -178,8 +182,18 @@ public class SanPhamController {
             list = sanPhamRepositoty.findProductsWithTotalQuantityOrderByDateDesc();
 
         } else {
-            list = sanPhamRepositoty.findByMaSanPhamAndTenSanPhamAndTrangThai("%" + trimmedKey + "%", "%" + trimmedKey + "%", info.getTrangThai());
+            if (parsedTrangThai == null) {
+                list = sanPhamRepositoty.findByMaSanPhamAndTenSanPhamNoTrangThai(
+                        "%" + trimmedKey + "%", "%" + trimmedKey + "%"
+                );
+            } else {
+                list = sanPhamRepositoty.findByMaSanPhamAndTenSanPhamAndTrangThai(
+                        "%" + trimmedKey + "%", "%" + trimmedKey + "%", parsedTrangThai
+                );
+            }
         }
+        System.out.println("Key: " + info.getKey());
+        System.out.println("Parsed Trang Thai Integer: " + parsedTrangThai);  // Kiểm tra giá trị parsedTrangThai
         model.addAttribute("list", list);
         model.addAttribute("fillSearch", trimmedKey);
         model.addAttribute("fillTrangThai", info.getTrangThai());

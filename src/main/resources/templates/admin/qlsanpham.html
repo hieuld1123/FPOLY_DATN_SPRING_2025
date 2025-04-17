@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
-<div th:replace="components/head :: head"></div>
+<div th:replace="~{components/head :: head}"></div>
 <meta charset="UTF-8"/>
 <title>NineShoes</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
@@ -208,17 +208,10 @@
                                         </div>
 
 
-                                        <select id="statusSelect" class="form-select mx-2" name="trangthai"
-                                                style="width: 250px">
+                                        <select id="statusSelect" class="form-select mx-2" name="trangThai" style="width: 250px">
                                             <option value="" th:selected="${fillTrangThai == null}">Tất cả</option>
-                                            <option value="true"
-                                                    th:selected="${fillTrangThai != null && fillTrangThai}">Đang
-                                                kinh doanh
-                                            </option>
-                                            <option value="false"
-                                                    th:selected="${fillTrangThai != null && !fillTrangThai}">Ngừng
-                                                kinh doanh
-                                            </option>
+                                            <option value="true" th:selected="${fillTrangThai != null && fillTrangThai == 'true'}">Đang kinh doanh</option>
+                                            <option value="false" th:selected="${fillTrangThai != null && fillTrangThai == 'false'}">Ngừngkinh doanh</option>
                                         </select>
                                     </div>
                                 </form>

@@ -17,7 +17,7 @@ public class MauSacRestController {
         return ResponseEntity.ok(mauSac);
     }
 
-    @PutMapping("/updateMauSac/{id}")
+    @PutMapping("/api/updateMauSac/{id}")
     public ResponseEntity<String> updateMauSac(@PathVariable Integer id, @RequestBody MauSac updatedMauSac) {
         MauSac existingMauSac = mauSacRepository.findById(id).orElse(null);
         if (existingMauSac == null) {
@@ -26,6 +26,10 @@ public class MauSacRestController {
         String trimmedTenMauSac = (updatedMauSac.getTen() != null)
                 ? updatedMauSac.getTen().trim().replaceAll("\\s+", " ")
                 : null;
+        String trimmedUpdatedTenMauSac = (updatedMauSac.getTenMauSac() != null)
+                ? updatedMauSac.getTenMauSac().trim().replaceAll("\\s+", " ")
+                : null;
+        existingMauSac.setTenMauSac(trimmedUpdatedTenMauSac);
         existingMauSac.setTen(trimmedTenMauSac);
         mauSacRepository.save(existingMauSac);
         return ResponseEntity.ok("redirect:/listMauSac");

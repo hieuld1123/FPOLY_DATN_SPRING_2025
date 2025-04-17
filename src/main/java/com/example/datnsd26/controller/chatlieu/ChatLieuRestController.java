@@ -17,7 +17,7 @@ public class ChatLieuRestController {
         return ResponseEntity.ok(chatLieu);
     }
 
-    @PutMapping("/updateChatLieu/{id}")
+    @PutMapping("/api/updateChatLieu/{id}")
     public ResponseEntity<String> updateChatLieu(@PathVariable Integer id, @RequestBody ChatLieu updatedChatLieu) {
         ChatLieu existingChatLieu = chatLieuRepository.findById(id).orElse(null);
         if (updatedChatLieu == null) {

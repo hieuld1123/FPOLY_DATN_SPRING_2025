@@ -17,7 +17,7 @@ public class KichCoRestController {
         return ResponseEntity.ok(kichCo);
     }
 
-    @PutMapping("/updateKichCo/{id}")
+    @PutMapping("/api/updateKichCo/{id}")
     public ResponseEntity<String> updateKichCo(@PathVariable Integer id, @RequestBody KichCo updatedKicCo) {
         KichCo existingKichCo = kichCoRepository.findById(id).orElse(null);
         if (existingKichCo == null) {

@@ -28,19 +28,43 @@ public interface SanPhamRepositoty extends JpaRepository<SanPham, Integer> {
     boolean existsByTenSanPham(String tensanpham);
 
     // search bên sp
-    @Query("SELECT " +
-            "sp.id, " +
-            "sp.tenSanPham, " +
-            "sp.ngayTao," +
-            "SUM(spct.soLuong) as tongSoLuong ," +
-            "sp.trangThai," +
-            "sp.maSanPham " +
+//    @Query("SELECT " +
+//            "sp.id, " +
+//            "sp.tenSanPham, " +
+//            "sp.ngayTao," +
+//            "SUM(spct.soLuong) as tongSoLuong ," +
+//            "sp.trangThai," +
+//            "sp.maSanPham " +
+//            "FROM SanPham sp " +
+//            "JOIN sp.spct spct " +
+//            "WHERE (sp.maSanPham LIKE?1 OR sp.tenSanPham LIKE ?2)AND(?3 IS NULL OR sp.trangThai=?3) " +
+//            "GROUP BY sp.id, sp.tenSanPham, sp.ngayTao, sp.trangThai, sp.maSanPham " +
+//            "ORDER BY sp.ngayTao DESC, tongSoLuong DESC")
+//    List<Object[]> findByMaSanPhamAndTenSanPhamAndTrangThai(String masanpham, String key, Boolean trangthai);
+
+
+    /// 1. Trường hợp không lọc theo trạng thái
+    @Query("SELECT sp.id, sp.tenSanPham, sp.ngayTao, SUM(spct.soLuong), sp.trangThai, sp.maSanPham " +
             "FROM SanPham sp " +
             "JOIN sp.spct spct " +
-            "WHERE (sp.maSanPham LIKE?1 OR sp.tenSanPham LIKE ?2)AND(?3 IS NULL OR sp.trangThai=?3) " +
+            "WHERE (sp.maSanPham LIKE ?1 OR sp.tenSanPham LIKE ?2) " +
             "GROUP BY sp.id, sp.tenSanPham, sp.ngayTao, sp.trangThai, sp.maSanPham " +
-            "ORDER BY sp.ngayTao DESC, tongSoLuong DESC")
-    List<Object[]> findByMaSanPhamAndTenSanPhamAndTrangThai(String masanpham, String key, Boolean trangthai);
+            "ORDER BY sp.ngayTao DESC")
+    List<Object[]> findByMaSanPhamAndTenSanPhamNoTrangThai(String ma, String ten);
+
+    // 2. Trường hợp lọc theo trạng thái (sửa từ Integer sang Boolean)
+    @Query("SELECT sp.id, sp.tenSanPham, sp.ngayTao, SUM(spct.soLuong), sp.trangThai, sp.maSanPham " +
+            "FROM SanPham sp " +
+            "JOIN sp.spct spct " +
+            "WHERE (sp.maSanPham LIKE ?1 OR sp.tenSanPham LIKE ?2) AND sp.trangThai = ?3 " +
+            "GROUP BY sp.id, sp.tenSanPham, sp.ngayTao, sp.trangThai, sp.maSanPham " +
+            "ORDER BY sp.ngayTao DESC")
+    List<Object[]> findByMaSanPhamAndTenSanPhamAndTrangThai(String ma, String ten, Boolean trangThai);
+
+
+
+
+
 
     // các sp mới nhất bên sp
     @Query("SELECT " +

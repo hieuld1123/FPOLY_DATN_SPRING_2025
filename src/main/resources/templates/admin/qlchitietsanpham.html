@@ -294,7 +294,7 @@
                                 </div>
                                 <div>
                                     <label>Giới tính:</label>
-                                    <select id="statusSelect" class="form-select" name="gioitinh"
+                                    <select id="statusSelect" class="form-select" name="gioiTinh"
                                             style="width: 150px; height: 45px;"
                                             onchange="submitForm()">
                                         <option value="" th:selected="${fillGioiTinh == null}">Tất cả</option>
@@ -308,16 +308,16 @@
                                 </div>
                                 <div>
                                     <label>Trạng thái:</label>
-                                    <select id="" class="form-select" name="trangthai"
+                                    <select id="" class="form-select" name="trangThai"
                                             style="width: 150px; height: 45px;"
                                             onchange="submitForm()">
                                         <option value="" th:selected="${fillTrangThai == null}">Tất cả</option>
                                         <option value="true"
-                                                th:selected="${fillTrangThai != null && fillTrangThai}">Đang kinh
+                                                th:selected="${fillTrangThai != null && fillTrangThai == 'true'}">Đang kinh
                                             doanh
                                         </option>
                                         <option value="false"
-                                                th:selected="${fillTrangThai != null && !fillTrangThai}">Ngừng kinh
+                                                th:selected="${fillTrangThai != null && fillTrangThai == 'false'}">Ngừng kinh
                                             doanh
                                         </option>
                                     </select>
@@ -340,10 +340,8 @@
                                 data-bs-target="#chinhsuasoluongvagia">
                             Chỉnh sửa chung
                         </button>
-                        <a th:href="@{/allSPCT}">
-                            <button class="btn btn-primary">
-                                Danh sách sản phẩm chi tiết
-                            </button>
+                        <a th:href="@{/allSPCT}" class="btn btn-primary">
+                            Danh sách sản phẩm chi tiết
                         </a>
                     </div>
                     <div class="d-flex">
