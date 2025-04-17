@@ -428,7 +428,7 @@
         let sdt = document.getElementById("inputSdt").value.trim();
 
         // Kiểm tra tên
-        let nameRegex = /^[A-Za-zÀ-ỹ\s]{2,50}$/; //cho phép tiếng Việt, dấu cách, không có ký tự đặc biệt
+        let nameRegex = /^(?!.*  )[A-Za-zÀ-ỹ]{1,}( [A-Za-zÀ-ỹ]{1,}){1,49}$/; //cho phép tiếng Việt, dấu cách, không có ký tự đặc biệt
         if (tenKhachHang === "") {
             document.getElementById("errorTen").innerText = "Tên khách hàng không được để trống!";
             isValid = false;

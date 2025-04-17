@@ -142,5 +142,8 @@ public class NhanVienService {
         return nhanVienRepository.searchByTenOrSdtOrTrangThai(tenSdtMa, trangthai, vaiTro, pageable);
     }
 
+    public NhanVien findByEmail(String email) {
+        return nhanVienRepository.findByEmail(email).orElse(null);
+    }
 }
 

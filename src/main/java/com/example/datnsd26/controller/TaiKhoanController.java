@@ -3,10 +3,9 @@ package com.example.datnsd26.controller;
 import com.example.datnsd26.Dto.DiaChiDTO;
 import com.example.datnsd26.Dto.KhachHangDto;
 import com.example.datnsd26.Dto.NhanVienTKDto;
-import com.example.datnsd26.models.HoaDon;
-import com.example.datnsd26.models.TaiKhoan;
+import com.example.datnsd26.models.*;
 import com.example.datnsd26.repository.HoaDonRepository;
-import com.example.datnsd26.services.TaiKhoanService;
+import com.example.datnsd26.services.*;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +13,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Controller
@@ -32,6 +31,16 @@ public class TaiKhoanController {
 
     @Autowired
     HoaDonRepository hoaDonRepository;
+
+    @Autowired
+    NhanVienService nhanVienService;
+
+    @Autowired
+    KhachHangService khachHangService;
+    @Autowired
+    DiaChiService diaChiService;
+    @Autowired
+    private FileLoadService fileLoadService;
 
     @GetMapping("/doi-mat-khau")
     public String hienThiFormDoiMatKhau(@RequestParam("email") String email, Model model) {
@@ -68,14 +77,14 @@ public class TaiKhoanController {
         taiKhoanService.save(taiKhoan);
         redirectAttributes.addFlashAttribute("successMessage", "Vui lòng đăng nhập");
 
-        return "redirect:/dang-nhap";
+        return "redirect:/login";
     }
 
-    @GetMapping("/dang-nhap")
-    public String dangNhap(Model model) {
-        model.addAttribute("taiKhoan", new TaiKhoan());
-        return "/tai-khoan/dang-nhap";
-    }
+//    @GetMapping("/dang-nhap")
+//    public String dangNhap(Model model) {
+//        model.addAttribute("taiKhoan", new TaiKhoan());
+//        return "/tai-khoan/dang-nhap";
+//    }
 
 
     @GetMapping("user/dang-ky")
@@ -91,7 +100,7 @@ public class TaiKhoanController {
     @PostMapping("user/dang-ky")
     public String dangKy2(@ModelAttribute("khachHangDto") KhachHangDto khachHangDto) throws MessagingException {
         taiKhoanService.dangKy(khachHangDto);
-        return "/tai-khoan/dang-nhap";
+        return "login";
     }
     @GetMapping("/quen-mat-khau")
     public String hienThiQuenMatKhau() {
@@ -127,7 +136,7 @@ public class TaiKhoanController {
                                     Model model) {
         boolean success = taiKhoanService.datLaiMatKhau(token, matKhauMoi);
         if (success) {
-            return "tai-khoan/dang-nhap";
+            return "login";
         } else {
             model.addAttribute("error", "Liên kết không hợp lệ hoặc đã hết hạn!");
             return "tai-khoan/dat-lai-mat-khau";
@@ -147,10 +156,124 @@ public class TaiKhoanController {
     public String lichSuMuaHang(Model model, Principal principal) {
         String email = principal.getName();
         List<HoaDon> hoaDons = hoaDonRepository.findByKhachHang_TaiKhoan_EmailOrderByNgayTaoDesc(email);
-        System.out.println(hoaDons);
         model.addAttribute("hoaDon", hoaDons);
         return "tai-khoan/lich-su-mua-hang";
     }
+    @GetMapping("/thong-tin-ca-nhan")
+    public String thongTinCaNhanKH(Model model, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        String email = principal.getName();
+        KhachHang khachHang = khachHangService.findByEmail(email);
+        if (khachHang != null) {
+            model.addAttribute("currentKhachHang", khachHang);
+            // Lấy danh sách địa chỉ của khách hàng
+            List<DiaChi> danhSachDiaChi = diaChiService.findByKhachHang(khachHang); // hoặc khachHang.getDiaChis()
+            List<DiaChiDTO> listDiaChiDTO = danhSachDiaChi.stream()
+                    .filter(DiaChi::getTrangThai)
+                    .map(diaChi -> {
+                        DiaChiDTO dto = new DiaChiDTO();
+                        dto.setId(diaChi.getId());
+                        dto.setTinh(diaChi.getTinh());
+                        dto.setHuyen(diaChi.getHuyen());
+                        dto.setXa(diaChi.getXa());
+                        dto.setDiaChiCuThe(diaChi.getDiaChiCuThe());
+                        dto.setTrangThai(diaChi.getTrangThai());
+                        return dto;
+                    }).collect(Collectors.toList());
+
+            model.addAttribute("listDiaChi", listDiaChiDTO);
+            return "tai-khoan/thong-tin-khach-hang"; //
+        }
+
+        return "redirect:/";
+    }
+    @GetMapping("/thong-tin-ca-nhan/sua/{id}")
+    public String hienThiFormSuaThongTin(@PathVariable("id") Integer id, Model model) {
+        KhachHang khachHang = khachHangService.findById(id);
+        if (khachHang == null) {
+            return "redirect:/thong-tin-ca-nhan";
+        }
+
+        KhachHangDto khachHangDto = new KhachHangDto();
+        khachHangDto.setId(khachHang.getId());
+        khachHangDto.setHinhAnh(khachHang.getHinhAnh());
+        khachHangDto.setMaKhachHang(khachHang.getMaKhachHang());
+        khachHangDto.setTenKhachHang(khachHang.getTenKhachHang());
+        khachHangDto.setEmail(khachHang.getTaiKhoan().getEmail());
+        khachHangDto.setSdt(khachHang.getTaiKhoan().getSdt());
+        khachHangDto.setTrangThai(khachHang.getTrangThai());
+        khachHangDto.setVaiTro(khachHang.getTaiKhoan().getVaiTro());
+        khachHangDto.setGioiTinh(khachHang.getGioiTinh());
+        khachHangDto.setNgaySinh(khachHang.getNgaySinh());
+        khachHangDto.setNgayTao(khachHang.getNgayTao());
+        khachHangDto.setNgayCapNhat(khachHang.getNgayCapNhat());
+
+        // Load danh sách địa chỉ
+        List<DiaChi> danhSachDiaChi = diaChiService.findByKhachHangId(id);
+        if (danhSachDiaChi == null) {
+            danhSachDiaChi = new ArrayList<>();
+        }
+
+        List<DiaChiDTO> listDiaChiDTO = danhSachDiaChi.stream()
+                .map(diaChi -> {
+                    DiaChiDTO dto = new DiaChiDTO();
+                    dto.setId(diaChi.getId());
+                    dto.setTinh(diaChi.getTinh());
+                    dto.setHuyen(diaChi.getHuyen());
+                    dto.setXa(diaChi.getXa());
+                    dto.setDiaChiCuThe(diaChi.getDiaChiCuThe());
+                    dto.setTrangThai(diaChi.getTrangThai());
+                    return dto;
+                }).collect(Collectors.toList());
+
+        khachHangDto.setListDiaChi(listDiaChiDTO);
+
+        model.addAttribute("khachHang", khachHangDto);
+        return "tai-khoan/sua-thong-tin-khach-hang"; // View của user, không phải admin
+    }
+    @PostMapping("/thong-tin-ca-nhan/sua/{id}")
+    public String suaKhachHang(@ModelAttribute("khachHang") KhachHangDto khachHangDto,
+                               @RequestParam(name = "anh") MultipartFile anh,
+                               @RequestParam("oldImage") String oldImage,
+                               @PathVariable Integer id) {
+        if (!anh.isEmpty()) {
+            String fileName = fileLoadService.uploadFile(anh);
+            khachHangDto.setHinhAnh(fileName);
+        } else {
+            khachHangDto.setHinhAnh(oldImage);
+        }
+        khachHangService.update(khachHangDto, id);
+        return "redirect:/thong-tin-ca-nhan";
+    }
+
+
+    @GetMapping("/doi-mat-khau-kh")
+    public String hienThiFormDoiMatKhauKhachHang(Model model, Principal principal) {
+        if (principal == null) return "redirect:/login";
+
+        String email = principal.getName();
+        model.addAttribute("email", email);
+        return "/tai-khoan/doi-mat-khau";
+    }
+    @GetMapping("/admin/thong-tin-nv")
+    public String thongTinNhanVien(Model model, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        String email = principal.getName();
+        NhanVien nhanVien = nhanVienService.findByEmail(email);
+        if (nhanVien != null) {
+            model.addAttribute("currentNhanVien", nhanVien);
+            return "tai-khoan/thong-tin-nhan-vien";
+        }
+
+        return "redirect:/"; // tạm điều hướng nếu không phải nhân viên
+    }
+
 
 }
 
