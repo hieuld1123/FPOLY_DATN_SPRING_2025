@@ -257,18 +257,31 @@
                 </div>
                 <div class="card-body financial-info">
                   <div class="row financial-info-row">
-                    <div class="col-9">
-                      <div class="mb-3">
-                        <label class="form-label">Ghi chú đơn hàng</label>
-                        <textarea
-                          class="form-control"
-                          rows="3"
-                          id="input-note"
-                          disabled
-                          placeholder="VD: Hàng tăng cổ riêng"
-                        ></textarea>
+                      <div class="col-9">
+                          <div class="mb-3">
+                              <label class="form-label">Ghi chú đơn hàng</label>
+                              <textarea
+                                      class="form-control"
+                                      rows="3"
+                                      id="input-note"
+                                      disabled
+                                      placeholder="VD: Hàng tăng cổ riêng"
+                              ></textarea>
+
+                              <!-- Phần mã giảm giá -->
+                              <div class="discount-section mt-3" id="discount-section" style="display: none;">
+                                  <div class="input-group input-group-sm">
+                                      <input
+                                              type="text"
+                                              id="discount-code"
+                                              class="form-control"
+                                              placeholder="Nhập mã giảm giá"
+                                      />
+                                      <button class="btn btn-primary" id="apply-discount-btn">Áp dụng</button>
+                                  </div>
+                              </div>
+                          </div>
                       </div>
-                    </div>
 
                     <div class="col-3">
                       <div class="row">
@@ -538,6 +551,8 @@
                         type="text"
                         class="form-control"
                         placeholder="Nhập tên người nhận"
+                        minlength="1"
+                        maxlength="30"
                       />
                       <small class="text-danger"></small>
                     </div>
@@ -567,6 +582,7 @@
                         type="email"
                         class="form-control"
                         placeholder="abc@gmail.com"
+                        maxlength="60"
                       />
                       <small class="text-danger"></small>
                     </div>
@@ -619,6 +635,7 @@
                         type="text"
                         class="form-control"
                         placeholder="Nhập địa chỉ cụ thể"
+                        maxlength="200"
                       />
                       <small class="text-danger"></small>
                     </div>
