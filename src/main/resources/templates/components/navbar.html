@@ -66,11 +66,11 @@
                         <div th:if="${#authorization.expression('isAnonymous()')}">
                             <a th:href="@{/login}" class="nav-link d-flex align-items-center">
                                 <img class="rounded-circle me-2" width="35" height="35"
-                                     th:if="${currentKhachHang != null}"
-                                     th:src="@{'/uploads/' + ${currentKhachHang.hinhAnh}}"
+                                     th:src="${currentKhachHang != null and currentKhachHang.hinhAnh != null} ? @{/uploads/{img}(img=${currentKhachHang.hinhAnh})} : @{/uploads/default.jpg}"
                                      alt="avatar"/>
                             </a>
                         </div>
+
                         <!-- Nếu đã đăng nhập -->
                         <div th:if="${#authorization.expression('isAuthenticated()')}" class="nav-item dropdown">
                             <a href="#" class="nav-link d-flex lh-1 p-0 px-2" data-bs-toggle="dropdown" aria-label="Open user menu">
