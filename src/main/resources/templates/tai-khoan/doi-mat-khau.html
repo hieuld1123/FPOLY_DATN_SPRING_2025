@@ -46,6 +46,8 @@
 <div class="container">
     <h2 class="text-center">Đặt lại mật khẩu</h2>
     <form action="/doi-mat-khau" method="post" onsubmit="return validateForm()">
+        <input type="hidden" name="_csrf" value="${_csrf.token}" />
+
         <input type="hidden" name="email" th:value="${email}">
 
         <div class="mb-3 password-wrapper">

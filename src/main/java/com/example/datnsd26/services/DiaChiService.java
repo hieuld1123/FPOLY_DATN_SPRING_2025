@@ -40,4 +40,7 @@ public class DiaChiService {
         DiaChi diaChi = diaChiRepository.findById(diaChiId).orElse(null);
         return (diaChi != null && diaChi.getKhachHang() != null) ? diaChi.getKhachHang().getId() : null;
     }
+    public List<DiaChi> findByKhachHang(KhachHang khachHang) {
+        return diaChiRepository.findByKhachHang(khachHang);
+    }
 }

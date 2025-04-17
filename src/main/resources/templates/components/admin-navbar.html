@@ -151,23 +151,11 @@
 
                     <!-- Thông tin tài khoản -->
                     <div class="d-flex flex-column">
-            <span class="fw-bold"
-                  th:text="${currentNhanVien != null
-                        ? currentNhanVien.tenNhanVien
-                        : (currentKhachHang != null
-                            ? currentKhachHang.tenKhachHang
-                            : 'Tài khoản')}">
-            </span>
-                        <span class="text-muted small"
-                              th:text="${
-          currentNhanVien != null
-              ? currentNhanVien.taiKhoan.vaiTro.displayName
-              : (currentKhachHang != null
-                  ? currentKhachHang.taiKhoan.vaiTro.displayName
-                  : (currentTaiKhoan != null
-                      ? currentTaiKhoan.vaiTro.displayName
-                      : ''))
-      }">
+         <span class="fw-bold" th:text="${currentNhanVien != null ? currentNhanVien.tenNhanVien : 'Tài khoản'}">
+</span>
+                        <span class="text-muted small" th:text="${currentNhanVien != null
+    ? currentNhanVien.taiKhoan.vaiTro.displayName
+    : ''}">
 </span>
 
                     </div>
@@ -175,11 +163,11 @@
 
                 <!-- Dropdown menu -->
                 <ul class="dropdown-menu dropdown-menu-end mt-2 shadow" aria-labelledby="dropdownAccount">
-                    <li><a class="dropdown-item" href="#">🔧 Cài đặt</a></li>
-                    <li><a class="dropdown-item" th:href="@{/doi-mat-khau}">🔐 Đổi mật khẩu</a></li>
+                    <li><a class="dropdown-item" th:href="@{/admin/thong-tin-nv}">Thông tin cá nhân</a></li>
+                    <li><a class="dropdown-item" th:href="@{/doi-mat-khau}">Đổi mật khẩu</a></li>
                     <li>
                         <form th:action="@{/logout}" method="post" style="margin: 0;">
-                            <button type="submit" class="dropdown-item text-danger">🚪 Đăng xuất</button>
+                            <button type="submit" class="dropdown-item text-danger">Đăng xuất</button>
                         </form>
                     </li>
                 </ul>

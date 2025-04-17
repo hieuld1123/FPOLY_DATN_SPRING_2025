@@ -168,4 +168,11 @@ public class KhachHangService {
     public Page<KhachHang> findByTenSdtMaTT(String tenSdtMaE, Boolean trangThai, Pageable p) {
         return khachHangRepository.findByTenSdtMaTT(tenSdtMaE, trangThai, p);
     }
+
+    public KhachHang findByEmail(String email) {
+        return khachHangRepository.findByEmail(email).orElse(null);
+    }
+    public KhachHang findById(Integer id) {
+        return khachHangRepository.findById(id).orElse(null);
+    }
 }

@@ -392,7 +392,7 @@
         let anh = document.getElementById("fileInput").value;
 
         // Kiểm tra tên nhân viên
-        let nameRegex = /^[A-Za-zÀ-ỹ\s]{2,50}$/; //cho phép tiếng Việt, dấu cách, không có ký tự đặc biệt
+        let nameRegex = /^(?!.*  )[A-Za-zÀ-ỹ]{1,}( [A-Za-zÀ-ỹ]{1,}){1,49}$/; //cho phép tiếng Việt, dấu cách, không có ký tự đặc biệt
         if (tenNhanVien === "") {
             document.getElementById("errorTen").innerText = "Tên nhân viên không được để trống!";
             isValid = false;
