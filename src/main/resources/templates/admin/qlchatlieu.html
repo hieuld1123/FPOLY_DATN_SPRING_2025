@@ -204,19 +204,6 @@
                                                    name="key"
                                                    class="form-control" th:value="${fillSearch}">
                                         </div>
-
-                                        <select id="statusSelect" class="form-select mx-2" name="trangthai"
-                                                style="width: 250px">
-                                            <option value="" th:selected="${fillTrangThai == null}">Tất cả</option>
-                                            <option value="true"
-                                                    th:selected="${fillTrangThai != null && fillTrangThai}">Đang kinh
-                                                doanh
-                                            </option>
-                                            <option value="false"
-                                                    th:selected="${fillTrangThai != null && !fillTrangThai}">Ngừng kinh
-                                                doanh
-                                            </option>
-                                        </select>
                                     </div>
                                 </form>
 
@@ -275,7 +262,6 @@
                         <tr>
                             <th>STT</th>
                             <th>Tên chất liệu</th>
-                            <th>Trạng thái</th>
                             <th>Thao tác</th>
                         </tr>
                         </thead>
@@ -287,16 +273,6 @@
                                                   th:text="${#strings.substring(cl.ten, 0, 20)} + '...'"></span>
                                 <span th:unless="${#strings.length(cl.ten) > 20}"
                                       th:text="${cl.ten}"></span>
-                            </td>
-                            <td class="tdSameWidth">
-                                <form name="updateTrangThaiForm"
-                                      th:action="@{/chatlieu/updateTrangThai/{id}(id=${cl.id})}"
-                                      method="post" onsubmit="return confirmUpdateChatLieu(this);">
-                                    <button type="submit" style=" border: none; border-radius: 5px"
-                                            th:classappend="${cl.trangThai == true ? 'bg-success' : 'bg-danger'}">
-                                        <span th:text="${cl.trangThai == true ? 'Đang kinh doanh' : 'Ngừng kinh doanh'}"></span>
-                                    </button>
-                                </form>
                             </td>
                             <td>
                                 <a style="font-size: 18px;" th:data-id="${cl.id}"
@@ -580,7 +556,7 @@
                     if (result.isConfirmed) {
                         const updatedChatLieu = {ten};
 
-                        fetch(`/updateChatLieu/${id}`, {
+                        fetch(`/api/updateChatLieu/${id}`, {
                             method: 'PUT',
                             headers: {
                                 'Content-Type': 'application/json',

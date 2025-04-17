@@ -37,7 +37,7 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
             "AND (:idMauSac IS NULL OR spct.mauSac.id = :idMauSac) " +
             "AND (:idChatLieu IS NULL OR spct.chatLieu.id = :idChatLieu) " +
             "AND (:gioiTinh IS NULL OR spct.gioiTinh = :gioiTinh) " +
-            "AND (:trangThai IS NULL OR spct.sanPham.trangThai = :trangThai)")
+            "AND (:trangThai IS NULL OR spct.trangThai = :trangThai)")
     List<SanPhamChiTiet> searchBySanPham(
             @Param("sanPham") SanPham sanPham,
             @Param("key") String key,
@@ -105,7 +105,7 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
             "AND (?7 IS NULL OR " +
             "spct.chatLieu.id=?7) AND (?8 IS NULL OR " +
             "spct.gioiTinh=?8) AND (?9 IS NULL OR " +
-            "spct.sanPham.trangThai=?9)")
+            "spct.trangThai=?9)")
     List<SanPhamChiTiet> search(String key, String maSPCT, Integer idthuonghieu, Integer iddegiay, Integer idkichco, Integer idmausac, Integer idchatlieu, Boolean gioitinh, Boolean trangthai);
 
 
@@ -160,25 +160,26 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
     List<PublicSanPhamResponse> findAllSortedByPriceDesc();
 
     Optional<SanPhamChiTiet> findFirstBySanPham_MaSanPham(String maSanPham);
+
     @Query("SELECT ha.tenAnh FROM HinhAnh ha WHERE ha.sanPhamChiTiet.id = :idSpct")
     List<String> findHinhAnhUrlsById(@Param("idSpct") Integer idSpct);
 
     @Query(value = """
-    SELECT TOP 5
-        sp.ma_san_pham AS maSanPham,
-        sp.ten_san_pham AS tenSanPham,
-        SUM(spct.so_luong) AS tongSoLuongTon,
-        (
-            SELECT TOP 1 ha.ten_anh 
-            FROM hinh_anh ha 
-            JOIN san_pham_chi_tiet spct2 ON ha.id_san_pham_chi_tiet = spct2.id
-            WHERE spct2.id_san_pham = sp.id
-        ) AS anhDaiDien
-    FROM san_pham_chi_tiet spct
-    JOIN san_pham sp ON spct.id_san_pham = sp.id
-    GROUP BY sp.ma_san_pham, sp.ten_san_pham, sp.id
-    ORDER BY tongSoLuongTon ASC
-    """, nativeQuery = true)
+            SELECT TOP 5
+                sp.ma_san_pham AS maSanPham,
+                sp.ten_san_pham AS tenSanPham,
+                SUM(spct.so_luong) AS tongSoLuongTon,
+                (
+                    SELECT TOP 1 ha.ten_anh 
+                    FROM hinh_anh ha 
+                    JOIN san_pham_chi_tiet spct2 ON ha.id_san_pham_chi_tiet = spct2.id
+                    WHERE spct2.id_san_pham = sp.id
+                ) AS anhDaiDien
+            FROM san_pham_chi_tiet spct
+            JOIN san_pham sp ON spct.id_san_pham = sp.id
+            GROUP BY sp.ma_san_pham, sp.ten_san_pham, sp.id
+            ORDER BY tongSoLuongTon ASC
+            """, nativeQuery = true)
     List<Object[]> getTopSanPhamSapHetNative();
 
     // Tìm theo sản phẩm và trạng thái
@@ -201,7 +202,6 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
             @Param("mauSacIds") List<Long> mauSacIds,
             @Param("trangThai") Boolean trangThai
     );
-
 
 
 }

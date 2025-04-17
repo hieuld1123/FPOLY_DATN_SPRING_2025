@@ -17,7 +17,7 @@ public class ThuongHieuRestController {
         return ResponseEntity.ok(thuongHieu);
     }
 
-    @PutMapping("/updateThuongHieu/{id}")
+    @PutMapping("/api/updateThuongHieu/{id}")
     public ResponseEntity<String> updateDeGiay(@PathVariable Integer id, @RequestBody ThuongHieu updatedThuongHieu) {
         ThuongHieu existingThuongHieu = thuongHieuRepository.findById(id).orElse(null);
         if (updatedThuongHieu == null) {
