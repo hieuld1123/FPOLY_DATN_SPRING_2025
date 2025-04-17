@@ -23,7 +23,6 @@ public class CapNhatGiaKMServie {
 
     @Transactional
     public void capNhatGiaSanPham() {
-        LocalDateTime now = LocalDateTime.now();
         List<SanPhamChiTiet> danhSachSanPham = sanPhamChiTietRepository.findAll();
 
         for (SanPhamChiTiet sp : danhSachSanPham) {

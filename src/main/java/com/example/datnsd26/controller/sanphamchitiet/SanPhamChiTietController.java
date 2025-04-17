@@ -4,6 +4,7 @@ import com.example.datnsd26.models.*;
 import com.example.datnsd26.info.SanPhamChiTietInfo;
 import com.example.datnsd26.info.ThuocTinhInfo;
 import com.example.datnsd26.repository.*;
+import com.example.datnsd26.services.CapNhatGiaKMServie;
 import com.example.datnsd26.services.impl.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +63,7 @@ public class SanPhamChiTietController {
 
     @Autowired
     HinhAnhRepository hinhAnhRepository;
+
 
     //Cập nhật trạng thái sản phẩm chi tiết
 
@@ -433,6 +435,7 @@ public class SanPhamChiTietController {
             spctNeedToUpdateGia.setGiaBanSauGiam(giaBanSauGiam.floatValue());
             sanPhamChiTietRepository.save(spctNeedToUpdateGia);
             sanPhamChiTietRepository.updateSoLuongVaGiaTienById(id, soluong, giatien);
+
         }
         return "redirect:/detailsanpham/" + firstProductId;
     }
