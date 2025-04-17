@@ -47,8 +47,31 @@ public class VoucherService {
         return voucherRepository.findById(id);
     }
 
+    private String generateVoucherCode() {
+        String prefix = "VC";
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        StringBuilder randomString = new StringBuilder();
+        int length = 8; // Độ dài chuỗi random
+
+        for (int i = 0; i < length; i++) {
+            int index = (int) (Math.random() * chars.length());
+            randomString.append(chars.charAt(index));
+        }
+
+        return prefix + randomString.toString();
+    }
+
     public Voucher createVoucher(Voucher voucher) {
         Map<String, String> errors = new HashMap<>();
+
+        if (voucher.getMaVoucher() == null || voucher.getMaVoucher().trim().isEmpty()) {
+            String newCode;
+            do {
+                newCode = generateVoucherCode();
+            } while (voucherRepository.findByMaVoucher(newCode).isPresent());
+            voucher.setMaVoucher(newCode);
+        }
+
         validateVoucher(voucher, false, errors);
         if (!errors.isEmpty()) {
             throw new VoucherValidationException(errors);

@@ -268,6 +268,7 @@ public class CartController {
             model.addAttribute("errors", danhSachLoi);
             model.addAttribute("cart", danhSachThanhToan);  // hiển thị sản phẩm da chon
             model.addAttribute("tongTamTinh", tongTamTinh);
+            model.addAttribute("khachHang", khachHang);
             model.addAttribute("hoaDonBinhRequest", hoaDonBinhRequest);
             return "shop/checkout";
         }
@@ -278,6 +279,7 @@ public class CartController {
 //            model.addAttribute("errors", danhSachLoi);
             model.addAttribute("cart", danhSachThanhToan);  // hiển thị sản phẩm da chon
             model.addAttribute("tongTamTinh", tongTamTinh);
+            model.addAttribute("khachHang", khachHang);
             model.addAttribute("hoaDonBinhRequest", hoaDonBinhRequest);
             return "shop/checkout";
         }
@@ -361,6 +363,7 @@ public class CartController {
         model.addAttribute("cart", new ArrayList<>());
         model.addAttribute("tongTamTinh", 0);
         model.addAttribute("hoaDonBinhRequest", new HoaDonBinhRequest());
+        model.addAttribute("khachHang", khachHang);
         return "shop/checkout";
     }
 
