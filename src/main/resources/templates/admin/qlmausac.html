@@ -204,20 +204,6 @@
                                                    class="form-control" name="key"
                                                    th:value="${fillSearch}">
                                         </div>
-
-
-                                        <select id="statusSelect" class="form-select mx-2" name="trangthai"  style="width: 250px">
-                                            <option value="" th:selected="${fillTrangThai == null}">Tất cả</option>
-                                            <option value="true"
-                                                    th:selected="${fillTrangThai != null && fillTrangThai}">Đang sử
-                                                dụng
-                                            </option>
-                                            <option value="false"
-                                                    th:selected="${fillTrangThai != null && !fillTrangThai}">Ngừng
-                                                sử
-                                                dụng
-                                            </option>
-                                        </select>
                                     </div>
                                 </form>
                                 <div class="ms-3">
@@ -256,8 +242,11 @@
                                                         <p style="font-weight: bold">
                                                             <span style="color: red">* </span>
                                                             Tên màu sắc:
-                                                            <input type="text" id="nameColorInput" th:field="*{tenMauSac}"
+                                                            <input type="text" id="nameColorInput"
+                                                                   th:field="*{tenMauSac}"
                                                                    style="width:100%;" class="form-control">
+                                                        <div style="color: red; font-weight: initial;font-style: italic"
+                                                             id="errorTenMauSac"></div>
                                                         </p>
                                                         <button id="submitButton" class="btn btn-primary">
                                                             Thêm
@@ -287,7 +276,6 @@
                         <tr>
                             <th>STT</th>
                             <th>Màu sắc</th>
-                            <th>Trạng thái</th>
                             <th>Thao tác</th>
                         </tr>
                         </thead>
@@ -298,17 +286,6 @@
                                 <input type="color" th:value="${ms.ten}" class="form-control"
                                        disabled>
                                 <p th:text="${ms.tenMauSac + ' - ' + ms.ten}" style="color: red">
-                            </td>
-                            <td class="tdSameWidth">
-                                <form name="updateTrangThaiForm"
-                                      th:action="@{/mausac/updateTrangThai/{id}(id=${ms.id})}"
-                                      method="post"
-                                      onsubmit="return confirmUpdateMauSac(this);">
-                                    <button type="submit" style=" border: none;"
-                                            th:classappend="${ms.trangThai == true ? 'bg-success' : 'bg-danger'}">
-                                        <span th:text="${ms.trangThai == true ? 'Đang sử dụng' : 'Ngừng sử dụng'}"></span>
-                                    </button>
-                                </form>
                             </td>
                             <td>
                                 <a style=" font-size: 18px;" th:data-id="${ms.id}"
@@ -339,6 +316,13 @@
                                             sắc:</label>
                                         <input type="color" class="form-control" id="tenMauSac">
                                         <div id="duplicate-error-message" class="text-danger"
+                                             style="display: none;">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="updatedTenMauSac" class="form-label">Tên màu sắc:</label>
+                                        <input type="text" class="form-control" id="updatedTenMauSac">
+                                        <div id="duplicate-tenMauSac-error-message" class="text-danger"
                                              style="display: none;">
                                         </div>
                                     </div>
@@ -375,6 +359,7 @@
 
 <script th:inline="javascript">
     /*<![CDATA[*/
+    const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
     var objectsFromController = /*[[${list}]]*/ [];
 
     // Khai báo và cấu hình Toast của SweetAlert2
@@ -393,7 +378,22 @@
     // Hàm kiểm tra trùng mã màu sắc
     function validateTrung() {
         var inputMa = document.getElementById("colorInput").value;
+        var errorTenMauSac = document.getElementById("errorTenMauSac");
+        var nameColorInput = document.getElementById("nameColorInput").value;
         var isMaValid = true;
+
+        if (nameColorInput.trim() === "") {
+            errorTenMauSac.innerText = "Vui lòng nhập tên màu sắc.";
+            return false; // Ngăn form được gửi đi
+        } else if (nameColorInput.trim().length > 20) {
+            errorTenMauSac.innerText = "Tên màu sắc không được vượt quá 20 ký tự.";
+            return false; // Ngăn form được gửi đi
+        } else if (specialCharPattern.test(nameColorInput.trim())) {
+            errorTenMauSac.innerText = "Tên màu sắc không được chứa ký tự đặc biệt.";
+            return false; // Ngăn form được gửi đi
+        } else {
+            errorTenMauSac.innerText = ""; // Xóa thông báo lỗi nếu có
+        }
 
         // Kiểm tra trùng tên màu sắc
         for (var i = 0; i < objectsFromController.length; i++) {
@@ -495,8 +495,9 @@
 </script>
 
 <!--cập nhật-->
-<script>
+<script th:inline="javascript">
     let originalName = ''; // Biến toàn cục để lưu tên ban đầu
+    let originTenMauSac = '';
 
     function fillShoeSoleNameMauSac(element) {
         const id = element.getAttribute('data-id');
@@ -513,7 +514,9 @@
                 // Hiển thị thông tin trong modal
                 document.getElementById('tenMauSac').value = data.ten || '';
                 document.getElementById('mauSacId').value = data.id || id;
+                document.getElementById('updatedTenMauSac').value = data.tenMauSac || '';
                 originalName = data.ten || ''; // Lưu tên ban đầu
+                originTenMauSac = data.tenMauSac || '';
                 checkChanges(); // Kiểm tra thay đổi ban đầu
             })
             .catch(error => {
@@ -524,9 +527,10 @@
 
     function checkChanges() {
         const currentName = document.getElementById('tenMauSac').value.trim();
+        const currentTenMauSac = document.getElementById('updatedTenMauSac').value.trim();
         const updateButton = document.getElementById('updateButton');
         // So sánh tên hiện tại với tên ban đầu
-        if (currentName === originalName) {
+        if (currentName === originalName || currentTenMauSac === originTenMauSac) {
             updateButton.disabled = true; // Vô hiệu hóa nút nếu không thay đổi
         } else {
             updateButton.disabled = false; // Kích hoạt nút nếu có thay đổi
@@ -554,11 +558,35 @@
 
         const id = document.getElementById('mauSacId').value;
         let ten = document.getElementById('tenMauSac').value;
+        let tenMauSac = document.getElementById('updatedTenMauSac').value;
+
+        // Loại bỏ khoảng trắng ở đầu và cuối và chỉ giữ lại một khoảng trắng giữa các từ
+        tenMauSac = tenMauSac.trim().replace(/\s+/g, ' ');
         // Loại bỏ khoảng trắng ở đầu và cuối và chỉ giữ lại một khoảng trắng giữa các từ
         ten = ten.trim().replace(/\s+/g, ' ');
         const duplicateErrorMessage = document.getElementById('duplicate-error-message');
+        const duplicateTenMauSacErrorMessage = document.getElementById('duplicate-tenMauSac-error-message');
+        // Reset thông báo lỗi
+        duplicateTenMauSacErrorMessage.style.display = 'none';
         // Reset thông báo lỗi
         duplicateErrorMessage.style.display = 'none';
+
+        if (tenMauSac.trim() === "") {
+            duplicateTenMauSacErrorMessage.innerText = "Vui lòng nhập tên màu sắc.";
+            duplicateTenMauSacErrorMessage.style.display = 'block';
+            return false; // Ngăn form được gửi đi
+        } else if (tenMauSac.trim().length > 20) {
+            duplicateTenMauSacErrorMessage.innerText = "Tên màu sắc không được vượt quá 20 ký tự.";
+            duplicateTenMauSacErrorMessage.style.display = 'block';
+            return false; // Ngăn form được gửi đi
+        } else if (specialCharPattern.test(tenMauSac.trim())) {
+            duplicateTenMauSacErrorMessage.innerText = "Tên màu sắc không được chứa ký tự đặc biệt.";
+            duplicateTenMauSacErrorMessage.style.display = 'block';
+            return false; // Ngăn form được gửi đi
+        } else {
+            duplicateTenMauSacErrorMessage.innerText = ""; // Xóa thông báo lỗi nếu có
+        }
+
         // Kiểm tra tên trùng
         fetch(`/checkTenMauSac?ten=${encodeURIComponent(ten)}`)
             .then(response => response.json())
@@ -580,8 +608,8 @@
                     cancelButtonText: 'Không'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        const updatedDeGiay = {ten};
-                        fetch(`/updateMauSac/${id}`, {
+                        const updatedDeGiay = {ten, tenMauSac};
+                        fetch(`/api/updateMauSac/${id}`, {
                             method: 'PUT',
                             headers: {
                                 'Content-Type': 'application/json',

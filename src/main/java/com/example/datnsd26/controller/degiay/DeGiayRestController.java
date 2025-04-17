@@ -17,7 +17,7 @@ public class DeGiayRestController {
         return ResponseEntity.ok(degiay);
     }
 
-    @PutMapping("/updateDeGiay/{id}")
+    @PutMapping("/api/updateDeGiay/{id}")
     public ResponseEntity<String> updateDeGiay(@PathVariable Integer id, @RequestBody DeGiay updatedDeGiay) {
         DeGiay existingDeGiay = deGiayRepository.findById(id).orElse(null);
         if (existingDeGiay == null) {

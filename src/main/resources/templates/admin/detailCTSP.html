@@ -233,7 +233,7 @@
         <!-- Main content -->
         <div class="main-content">
             <div class="col-6">
-                <a th:href="@{#}" class="back-link">
+                <a th:href="@{/detailsanpham/{id}(id=${hehe.sanPham.id})}" class="back-link">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                          class="bi bi-arrow-left" viewBox="0 0 16 16">
                         <path fill-rule="evenodd"
@@ -302,7 +302,7 @@
                                     <p style="font-weight: bold">
                                         <span style="color: red">* </span>Thương hiệu:
                                         <select th:field="*{thuongHieu.id}" class="form-control"
-                                                style="width:430px">
+                                                style="width:430px" readonly>
                                             <option th:each="th : ${th}" th:value="${th.id}"
                                                     th:text="${th.ten}"></option>
                                         </select>
@@ -332,7 +332,7 @@
                                 <div class="d-flex">
                                     <p style="font-weight: bold">
                                         <span style="color: red">* </span>Chất liệu:
-                                        <select th:field="*{chatLieu.id}" class="form-control" style="width:430px">
+                                        <select th:field="*{chatLieu.id}" class="form-control" style="width:430px" readonly>
                                             <option th:each="cl : ${cl}" th:value="${cl.id}"
                                                     th:text="${cl.ten}"></option>
                                         </select>
@@ -346,7 +346,7 @@
                                     </p>
                                     <p style="margin-left:92px; font-weight: bold">
                                         <span style="color: red">* </span>Đế giày:
-                                        <select th:field="*{deGiay.id}" class="form-control" style="width:430px">
+                                        <select th:field="*{deGiay.id}" class="form-control" style="width:430px" readonly>
                                             <option th:each="dg : ${dg}" th:value="${dg.id}"
                                                     th:text="${dg.ten}"></option>
                                         </select>
@@ -362,7 +362,7 @@
                                 <div class="d-flex">
                                     <p style="font-weight: bold">
                                         <span style="color: red">* </span>Kích cỡ:
-                                        <select th:field="*{kichCo.id}" class="form-control" style="width:430px">
+                                        <select th:field="*{kichCo.id}" class="form-control" style="width:430px" readonly>
                                             <option th:each="kc : ${kc}" th:value="${kc.id}"
                                                     th:text="${kc.ten}"></option>
                                         </select>
@@ -381,9 +381,9 @@
                                         <!--                                                        th:text="${ms.ten}"></option>-->
                                         <!--                                            </select>-->
                                         <select id="mausac-select" th:field="*{mauSac.id}" class="form-control"
-                                                style="width:430px">
+                                                style="width:430px" readonly>
                                             <option th:each="ms : ${ms}" th:value="${ms.id}"
-                                                    th:text="${ms.ten}" th:data-color="${ms.ten}"></option>
+                                                    th:text="${ms.tenMauSac}" th:data-color="${ms.ten}"></option>
                                         </select>
                                     </p>
                                     <p>
@@ -712,10 +712,10 @@
 <!--validate form-->
 <script>
     function validateForm() {
-        var tensanpham = document.forms["updateProduct"]["sanpham.tensanpham"].value;
-        var soluong = document.forms["updateProduct"]["soluong"].value;
-        var giatien = document.forms["updateProduct"]["giatien"].value;
-        var mota = document.forms["updateProduct"]["mota"].value;
+        var tensanpham = document.forms["updateProduct"]["sanPham.tenSanPham"].value;
+        var soluong = document.forms["updateProduct"]["soLuong"].value;
+        var giatien = document.forms["updateProduct"]["giaBan"].value;
+        var mota = document.forms["updateProduct"]["moTa"].value;
 
         // Xóa các thông báo lỗi cũ trước khi validate lại
         clearErrors();
@@ -856,7 +856,9 @@
 
         if (isMaValid) {
             errorMaThuongHieu.innerText = "";
-            themThuongHieu();
+            sessionStorage.setItem('ThemNhanhThuocTinh', 'Thêm thương hiệu thành công!');
+            document.addThuongHieu.submit();
+            // themThuongHieu();
         }
 
         return false;
@@ -899,7 +901,9 @@
 
         if (isMaValid) {
             errorMaChatLieu.innerText = "";
-            themChatLieu();
+            sessionStorage.setItem('ThemNhanhThuocTinh', 'Thêm chất liệu thành công!');
+            document.addChatLieu.submit();
+            // themChatLieu();
         }
 
         return false;
@@ -939,7 +943,9 @@
 
         if (isMaValid) {
             errorMaDeGiay.innerText = "";
-            themDeGiay();
+            sessionStorage.setItem('ThemNhanhThuocTinh', 'Thêm đế giày thành công!');
+            document.addDeGiay.submit();
+            // themDeGiay();
         }
         return false;
     }
@@ -977,7 +983,10 @@
             }
         }
         if (isMaValid) {
-            themMauSac();
+
+            sessionStorage.setItem('ThemNhanhThuocTinh', 'Thêm màu sắc thành công!');
+            document.addMauSac.submit();
+            // themMauSac();
         }
         return false;
     }
@@ -1018,7 +1027,9 @@
 
         if (isMaValid) {
             errorMaKichCo.innerText = "";
-            themKichCo();
+            sessionStorage.setItem('ThemNhanhThuocTinh', 'Thêm kích cỡ thành công!');
+            document.addKichCo.submit();
+            // themKichCo();
         }
 
         return false;

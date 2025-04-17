@@ -115,7 +115,7 @@ public class SanPhamChiTietController {
                         info.getGioiTinh() == null &&
                         info.getTrangThai() == null
         );
-        if (isAllFiltersNull) {
+        if (isAllFiltersNull || info.getTrangThai() == null) {
             list = sanPhamChiTietRepository.findAll();
         } else {
             list = sanPhamChiTietRepository.search(
@@ -283,6 +283,7 @@ public class SanPhamChiTietController {
         existingSanPhamChiTiet.setNgayCapNhat(currentTime);
         existingSanPhamChiTiet.setSoLuong(sanPhamChiTiet.getSoLuong());
         existingSanPhamChiTiet.setGiaBan(sanPhamChiTiet.getGiaBan());
+        existingSanPhamChiTiet.setGiaBanSauGiam(sanPhamChiTiet.getGiaBan());
         existingSanPhamChiTiet.setMoTa(sanPhamChiTiet.getMoTa());
         existingSanPhamChiTiet.setTrangThai(sanPhamChiTiet.getTrangThai());
         existingSanPhamChiTiet.setGioiTinh(sanPhamChiTiet.getGioiTinh());
@@ -342,6 +343,7 @@ public class SanPhamChiTietController {
         existingSanPhamChiTiet.setNgayCapNhat(currentTime);
         existingSanPhamChiTiet.setSoLuong(sanPhamChiTiet.getSoLuong());
         existingSanPhamChiTiet.setGiaBan(sanPhamChiTiet.getGiaBan());
+        existingSanPhamChiTiet.setGiaBanSauGiam(sanPhamChiTiet.getGiaBan());
         existingSanPhamChiTiet.setMoTa(sanPhamChiTiet.getMoTa());
         existingSanPhamChiTiet.setTrangThai(sanPhamChiTiet.getTrangThai());
         existingSanPhamChiTiet.setGioiTinh(sanPhamChiTiet.getGioiTinh());
@@ -426,6 +428,10 @@ public class SanPhamChiTietController {
             firstProductId = sanPhamChiTietRepository.findIdBySanpham(firstSPCTId);
         }
         for (Integer id : listInt) {
+            SanPhamChiTiet spctNeedToUpdateGia = sanPhamChiTietImp.findById(id);
+            BigDecimal giaBanSauGiam = new BigDecimal(String.valueOf(giatien));
+            spctNeedToUpdateGia.setGiaBanSauGiam(giaBanSauGiam.floatValue());
+            sanPhamChiTietRepository.save(spctNeedToUpdateGia);
             sanPhamChiTietRepository.updateSoLuongVaGiaTienById(id, soluong, giatien);
         }
         return "redirect:/detailsanpham/" + firstProductId;

@@ -203,20 +203,6 @@
                                             <input type="text" id="searchInput" placeholder="Tìm kiếm kích cỡ"
                                                    class="form-control" name="key" th:value="${fillSearch}">
                                         </div>
-
-
-                                        <select id="statusSelect" class="form-select mx-2" name="trangthai"
-                                                style="width: 250px">
-                                            <option value="" th:selected="${fillTrangThai == null}">Tất cả</option>
-                                            <option value="true"
-                                                    th:selected="${fillTrangThai != null && fillTrangThai}">Đang kinh
-                                                doanh
-                                            </option>
-                                            <option value="false"
-                                                    th:selected="${fillTrangThai != null && !fillTrangThai}">Ngừng kinh
-                                                doanh
-                                            </option>
-                                        </select>
                                     </div>
                                 </form>
                                 <div class="ms-3">
@@ -283,7 +269,6 @@
                         <tr>
                             <th>STT</th>
                             <th>Tên kích cỡ</th>
-                            <th>Trạng thái</th>
                             <th>Thao tác</th>
                         </tr>
                         </thead>
@@ -295,17 +280,6 @@
                                                   th:text="${#strings.substring(kc.ten, 0, 20)} + '...'"></span>
                                 <span th:unless="${#strings.length(kc.ten) > 20}"
                                       th:text="${kc.ten}"></span>
-                            </td>
-                            <td class="tdSameWidth">
-                                <form name="updateTrangThaiForm"
-                                      th:action="@{/kichco/updateTrangThai/{id}(id=${kc.id})}"
-                                      method="post"
-                                      onsubmit="return confirmUpdateKichCo(this);">
-                                    <button type="submit" style=" border: none;"
-                                            th:classappend="${kc.trangThai == true ? 'bg-success' : 'bg-danger'}">
-                                        <span th:text="${kc.trangThai == true ? 'Đang kinh doanh' : 'Ngừng kinh doanh'}"></span>
-                                    </button>
-                                </form>
                             </td>
                             <td>
                                 <a style="font-size: 18px;" th:data-id="${kc.id}"
@@ -356,7 +330,7 @@
                                     <!--                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>-->
                                     <button type="button" class="btn btn-primary"
                                             onclick="updateShoeSoleNameKichCo()"
-                                               id="updateButton" disabled>Cập nhật
+                                            id="updateButton" disabled>Cập nhật
                                     </button>
 
                                 </div>
@@ -399,7 +373,7 @@
             errorMa.innerText = "Tên kích cỡ không được vượt quá 20 ký tự.";
             return false; // Ngăn form được gửi đi
         } else if (/[^0-9\s]/.test(inputMa.trim())) {
-            errorMa.innerText = "Tên kích cỡ chỉ được phép chứa chữ.";
+            errorMa.innerText = "Tên kích cỡ chỉ được phép chứa số.";
             return false; // Ngăn form được gửi đi
         } else {
             errorMa.innerText = ""; // Xóa thông báo lỗi nếu có
@@ -599,7 +573,7 @@
                     if (result.isConfirmed) {
                         const updateKichCo = {ten};
 
-                        fetch(`/updateKichCo/${id}`, {
+                        fetch(`/api/updateKichCo/${id}`, {
                             method: 'PUT',
                             headers: {
                                 'Content-Type': 'application/json',

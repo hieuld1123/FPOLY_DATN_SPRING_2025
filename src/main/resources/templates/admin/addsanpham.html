@@ -621,7 +621,7 @@
                                             Tên màu sắc:
                                             <input type="text" id="tenMauSacInput" th:field="*{tenMauSac}"
                                                    style="width: 100%" class="form-control"/>
-                                            <div style="color: red; font-weight: initial;font-style: italic"
+                                        <div style="color: red; font-weight: initial;font-style: italic"
                                              id="errorTenMauSac"></div>
                                         </p>
 
@@ -1764,19 +1764,6 @@
         } else {
             errorTenMauSac.innerText = ""; // Xóa thông báo lỗi nếu có
         }
-        // Kiểm tra trùng tên thương hiệu (không phân biệt chữ hoa chữ thường và khoảng trắng)
-        // for (var i = 0; i < objectsFromControllerThuongHieu.length; i++) {
-        //     var obj = objectsFromControllerThuongHieu[i];
-        //     // Loại bỏ khoảng trắng và chuyển đổi về chữ thường để so sánh
-        //     var normalizedInput = inputMaThuongHieu.trim().replace(/\s+/g, ' ').toLowerCase();
-        //     var normalizedObjName = obj.ten.trim().replace(/\s+/g, ' ').toLowerCase();
-        //
-        //     if (normalizedInput === normalizedObjName) {
-        //         errorMaThuongHieu.innerText = "Tên thương hiệu đã tồn tại!";
-        //         isMaValid = false; // Đánh dấu không hợp lệ
-        //         return false; // Ngăn form được gửi đi
-        //     }
-        // }
 
         // Khai báo và cấu hình Toast của SweetAlert2
         const Toast = Swal.mixin({
