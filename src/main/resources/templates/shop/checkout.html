@@ -223,11 +223,11 @@
                                     </div>
                                 </td>
                                 <td
-                                        th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                                        th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
                                 </td>
                                 <td th:text="${item.soLuong}"></td>
                                 <td
-                                        th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBan * item.soLuong, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                                        th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBanSauGiam * item.soLuong, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
                                 </td>
                             </tr>
                             </tbody>
