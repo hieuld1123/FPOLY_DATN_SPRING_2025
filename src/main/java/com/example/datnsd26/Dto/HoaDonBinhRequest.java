@@ -11,6 +11,7 @@ import lombok.Setter;
 @Setter
 public class HoaDonBinhRequest {
     @NotBlank(message = "Họ và tên không được để trống")
+    @Size(max = 100, message = "Họ và tên không được vượt quá 100 ký tự")
     private String tenNguoiNhan;
 
     @NotBlank(message = "Số điện thoại không được để trống")
@@ -19,6 +20,7 @@ public class HoaDonBinhRequest {
 
     @NotBlank(message = "Email không được để trống")
     @Email(message = "Email không hợp lệ")
+    @Size(max = 100, message = "Email không được vượt quá 100 ký tự")
     private String email;
 
     @NotBlank(message = "Vui lòng chọn tỉnh/thành phố")
@@ -31,11 +33,12 @@ public class HoaDonBinhRequest {
     private String xa;
 
     @NotBlank(message = "Địa chỉ cụ thể không được để trống")
-    @Size(min = 5, message = "Địa chỉ cụ thể phải có ít nhất 5 ký tự")
+    @Size(min = 3, max = 100, message = "Địa chỉ cụ thể phải từ 3 đến 100 ký tự")
     private String diaChiNguoiNhan;
 
     private String phuongThucThanhToan;
 
+    @Size(max = 100, message = "Ghi chú không được vượt quá 100 ký tự")
     private String ghiChu;
 
     private Long idVoucher; // sẽ là null nếu không áp dụng
