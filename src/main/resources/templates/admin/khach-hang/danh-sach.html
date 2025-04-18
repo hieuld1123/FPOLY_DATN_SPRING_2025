@@ -184,7 +184,12 @@
                                         <td th:text="${khachHang.taiKhoan.email}"></td>
                                         <td th:text="${khachHang.taiKhoan.sdt}"></td>
                                         <td th:text="${khachHang.gioiTinh ? 'Nam' : 'Nữ'}"></td>
-                                        <td th:text="${khachHang.trangThai ? 'Hoạt động' : 'Ngừng hoạt động'}"></td>
+                                        <td>
+    <span class="badge px-2 py-1" style="color: white"
+          th:classappend="${khachHang.trangThai } ? ' bg-success' : ' bg-danger'"
+          th:text="${khachHang.trangThai } ? 'Hoạt động' : 'Ngừng hoạt động'">
+    </span>
+                                        </td>
                                     </tr>
                                     </tbody>
                                 </table>

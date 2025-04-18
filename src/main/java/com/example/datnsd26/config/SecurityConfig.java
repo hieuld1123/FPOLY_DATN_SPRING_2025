@@ -24,7 +24,7 @@ public class SecurityConfig {
                         .ignoringRequestMatchers("/shop/**", "/api/**", "/san-pham/**", "/addProduct")) // Disable CSRF cho REST/API
                 .authorizeHttpRequests(auth -> auth
                         // ✅ Public access (ai cũng xem được)
-                        .requestMatchers("/login", "user/dang-ky", "/quen-mat-khau","/dat-lai-mat-khau","/doi-mat-khau","/trangchu/**", "/css/**","/uploads/**","/upload/**", "/js/**", "/carousel/**").permitAll()
+                        .requestMatchers("/login", "/user/dang-ky", "/quen-mat-khau","/dat-lai-mat-khau","/doi-mat-khau","/trangchu/**", "/css/**","/uploads/**","/upload/**", "/js/**").permitAll()
                         .requestMatchers("/shop/**", "/api/**").permitAll()
 
                         // ✅ Admin-only pages
