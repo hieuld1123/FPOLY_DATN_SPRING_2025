@@ -71,7 +71,11 @@ const handlePayment = async () => {
       }
     );
     const result = await response.json();
-    if (result.status === 202) window.location.reload();
+    if (result.status === 202) {
+      window.location.reload();
+    }else{
+      alert(result.message);
+    }
   } catch (error) {
     console.error("Payment error:", error);
   }
@@ -169,7 +173,13 @@ const handleInvoiceChange = async (id) => {
     const $productTableBody = $(".product-table tbody");
     formData.totalItem = invoice.listSanPham.length;
 
-    if (invoice.khachHang && invoice.khachHang.id) {
+    if(!invoice.khachHang && formData.type === "Có giao hàng"){
+        $("#updateInfoCustomer").css("display", "block");
+    }else{
+        $("#updateInfoCustomer").css("display", "none");
+    }
+
+    if (invoice.khachHang && invoice.khachHang.tenKhachHang) {
       const customer = invoice.khachHang;
       const customerId = String(customer.id);
       formData.customerId = customerId;
@@ -300,6 +310,11 @@ const handleInvoiceChange = async (id) => {
               formData.district = null;
               formData.ward = null;
               formData.addressDetail = null;
+              if (formData.type === "Có giao hàng"){
+                $("#updateInfoCustomer").css("display", "block");
+              }else{
+                $("#updateInfoCustomer").css("display", "none");
+              }
             } else {
               alert("Xóa khách hàng thất bại!");
             }
@@ -889,8 +904,7 @@ $(document).ready(() => {
         alert("Tạo khách hàng thất bại: " + result.message);
       }
     } catch (error) {
-      console.error("Error creating customer:", error);
-      alert("Đã có lỗi xảy ra khi tạo khách hàng!");
+      alert(error);
     }
   });
 
@@ -903,9 +917,13 @@ $(document).ready(() => {
     $("#modal-address-detail").val("");
     $("#addAddressModal .text-danger").text("");
 
-    $("#existingAddress").prop("checked", true);
-    $("#existing-address-section").show();
-    $("#new-address-section").hide();
+    // $("#existingAddress").prop("checked", true);
+    // $("#existing-address-section").show();
+    // $("#new-address-section").hide();
+    // Become
+    $("#newAddress").prop("checked", true);
+    $("#existing-address-section").hide();
+    $("#new-address-section").show();
 
     const $modalProvince = $("#modal-province");
     const $modalDistrict = $("#modal-district");
@@ -917,37 +935,37 @@ $(document).ready(() => {
       (e) => (formData.modal_addressDetail = e.target.value)
     );
 
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/v1/ban-hang/customer-addresses/${formData.currentCustomerId}`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      const result = await response.json();
-      if (result.status === 200 && result.data?.length) {
-        const addresses = result.data;
-        $("#existing-addresses").html(
-          '<option value="">Chọn địa chỉ</option>' +
-            addresses
-              .map((address, index) => {
-                const fullAddress = `${address.addressDetail}, ${address.ward}, ${address.district}, ${address.province}`;
-                return `<option value="${index}" data-province="${address.province}" data-district="${address.district}" data-ward="${address.ward}" data-address-detail="${address.addressDetail}">${fullAddress}</option>`;
-              })
-              .join("")
-        );
-      } else {
-        $("#existing-addresses").html(
-          '<option value="">Không có địa chỉ nào</option>'
-        );
-      }
-    } catch (error) {
-      console.error("Error loading addresses:", error);
-      $("#existing-addresses").html(
-        '<option value="">Không có địa chỉ nào</option>'
-      );
-    }
+    // try {
+    //   const response = await fetch(
+    //     `http://localhost:8080/api/v1/ban-hang/customer-addresses/${formData.currentCustomerId}`,
+    //     {
+    //       method: "GET",
+    //       headers: { "Content-Type": "application/json" },
+    //     }
+    //   );
+    //   const result = await response.json();
+    //   if (result.status === 200 && result.data?.length) {
+    //     const addresses = result.data;
+    //     $("#existing-addresses").html(
+    //       '<option value="">Chọn địa chỉ</option>' +
+    //         addresses
+    //           .map((address, index) => {
+    //             const fullAddress = `${address.addressDetail}, ${address.ward}, ${address.district}, ${address.province}`;
+    //             return `<option value="${index}" data-province="${address.province}" data-district="${address.district}" data-ward="${address.ward}" data-address-detail="${address.addressDetail}">${fullAddress}</option>`;
+    //           })
+    //           .join("")
+    //     );
+    //   } else {
+    //     $("#existing-addresses").html(
+    //       '<option value="">Không có địa chỉ nào</option>'
+    //     );
+    //   }
+    // } catch (error) {
+    //   console.error("Error loading addresses:", error);
+    //   $("#existing-addresses").html(
+    //     '<option value="">Không có địa chỉ nào</option>'
+    //   );
+    // }
   });
 
   $(".address-option").on("change", function () {
@@ -1070,6 +1088,11 @@ $(document).ready(() => {
     if (this.value === "Có giao hàng") {
       $("#shipping-fee-container").show();
       formData.shippingFee = $("#shipping-fee").val();
+      if (!formData.customer) {
+        $("#updateInfoCustomer").css("display", "block");
+      }else{
+        $("#updateInfoCustomer").css("display", "none");
+      }
     } else {
       $("#shipping-fee-container").hide();
       $("#shipping-fee").val(0);
@@ -1078,6 +1101,7 @@ $(document).ready(() => {
       $("#tong").text(formData.totalMoney.toLocaleString("vi-VN") + " đ");
       formData.shippingFee = 0;
       $paymentButton.prop("disabled", false);
+      $("#updateInfoCustomer").css("display", "none");
     }
   });
 
@@ -1112,8 +1136,187 @@ $(document).ready(() => {
       formData.shippingFee = shippingFee;
       $paymentButton.prop("disabled", false);
     }
-
     updatePaymentInfo();
+  });
+
+  $(document).on("click", "#updateInfoCustomer", function () {
+    $("#invoiceInfoModal").modal("show");
+  });
+
+
+  $("#invoiceInfoModal").on("show.bs.modal", function () {
+    const $province = $("#invoice_province");
+    const $district = $("#invoice_district");
+    const $ward = $("#invoice_ward");
+
+    // Reset dropdowns
+    $province.val("");
+    $district.val("").prop("disabled", true);
+    $ward.val("").prop("disabled", true);
+
+    // Load provinces
+    const loadProvinces = async (provinceSelect, districtSelect, wardSelect, formDataKey) => {
+      try {
+        const response = await fetch("https://provinces.open-api.vn/api/?depth=3");
+        if (!response.ok) throw new Error("Failed to fetch provinces");
+
+        const data = await response.json();
+        provinceSelect.html(
+            '<option value="">Chọn tỉnh/thành</option>' +
+            data.map((p) => `<option value="${p.code}">${p.name}</option>`).join("")
+        );
+
+        provinceSelect.on("change", function () {
+          const code = this.value;
+          districtSelect.html('<option value="">Chọn quận/huyện</option>').prop("disabled", true);
+          wardSelect.html('<option value="">Chọn xã/phường</option>').prop("disabled", true);
+
+          if (code) {
+            const province = data.find((p) => p.code == code);
+            formData[formDataKey + "province"] = province.name;
+
+            districtSelect.html(
+                '<option value="">Chọn quận/huyện</option>' +
+                province.districts.map((d) => `<option value="${d.code}">${d.name}</option>`).join("")
+            ).prop("disabled", false);
+          }
+        });
+
+        districtSelect.on("change", function () {
+          const code = this.value;
+          wardSelect.html('<option value="">Chọn xã/phường</option>').prop("disabled", true);
+
+          if (code) {
+            const province = data.find((p) => p.code == provinceSelect.val());
+            const district = province.districts.find((d) => d.code == code);
+            formData[formDataKey + "district"] = district.name;
+
+            wardSelect.html(
+                '<option value="">Chọn xã/phường</option>' +
+                district.wards.map((w) => `<option value="${w.code}">${w.name}</option>`).join("")
+            ).prop("disabled", false);
+          }
+        });
+
+        wardSelect.on("change", function () {
+          formData[formDataKey + "ward"] = $(this).find("option:selected").text();
+        });
+      } catch (error) {
+        console.error("Error loading provinces:", error);
+        provinceSelect.html('<option value="">Không thể tải tỉnh/thành</option>');
+        alert("Không thể tải danh sách tỉnh/thành phố. Vui lòng thử lại sau!");
+      }
+    };
+    loadProvinces($province, $district, $ward, "invoice_");
+  });
+
+  $(document).on("click", "#saveInvoiceInfoBtn", async function () {
+    $("#invoiceInfoModal .text-danger").text("");
+
+    const recipientName = $("#invoice_recipient_name").val().trim();
+    const phoneNumber = $("#invoice_phone_number").val().trim();
+    const email = $("#invoice_email").val().trim();
+    const province = $("#invoice_province option:selected").text();
+    const district = $("#invoice_district option:selected").text();
+    const ward = $("#invoice_ward option:selected").text();
+    const addressDetail = $("#invoice_address_detail").val().trim();
+
+    let isValid = true;
+
+    if (!recipientName) {
+      $("#invoice_recipient_name")
+          .siblings(".text-danger")
+          .text("Tên người nhận không được để trống!");
+      isValid = false;
+    }
+
+    if (!phoneNumber) {
+      $("#invoice_phone_number")
+          .siblings(".text-danger")
+          .text("Số điện thoại không được để trống!");
+      isValid = false;
+    } else {
+      const phonePattern = /^[0-9]{10,11}$/;
+      if (!phonePattern.test(phoneNumber)) {
+        $("#invoice_phone_number")
+            .siblings(".text-danger")
+            .text("Số điện thoại không hợp lệ! Vui lòng nhập 10-11 chữ số.");
+        isValid = false;
+      }
+    }
+
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      $("#invoice_email").siblings(".text-danger").text("Email không hợp lệ!");
+      isValid = false;
+    }
+
+    if (!province || province === "Chọn tỉnh/thành") {
+      $("#invoice_province")
+          .siblings(".text-danger")
+          .text("Vui lòng chọn tỉnh/thành phố!");
+      isValid = false;
+    }
+
+    if (!district || district === "Chọn quận/huyện") {
+      $("#invoice_district").siblings(".text-danger").text("Vui lòng chọn quận/huyện!");
+      isValid = false;
+    }
+
+    if (!ward || ward === "Chọn xã/phường") {
+      $("#invoice_ward").siblings(".text-danger").text("Vui lòng chọn xã/phường!");
+      isValid = false;
+    }
+
+    if (!addressDetail) {
+      $("#invoice_address_detail")
+          .siblings(".text-danger")
+          .text("Địa chỉ cụ thể không được để trống!");
+      isValid = false;
+    }
+
+    if (!isValid) return;
+
+    const deliveryInfo = {
+      recipient_name: recipientName,
+      phone_number: phoneNumber,
+      email: email || null,
+      province: province,
+      district: district,
+      ward: ward,
+      addressDetail: addressDetail,
+    };
+
+    try {
+      const response = await fetch(
+          `http://localhost:8080/api/v1/ban-hang/add-customer-invoice/${formData.invoiceId}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(deliveryInfo),
+          }
+      );
+
+      const result = await response.json();
+
+      if (result.status === 200) {
+        $("#recipient_name").val("");
+        $("#phone_number").val("");
+        $("#email").val("");
+        $("#province").val("");
+        $("#district").val("").prop("disabled", true);
+        $("#ward").val("").prop("disabled", true);
+        $("#address-detail").val("");
+        $("#invoiceInfoModal").modal("hide");
+        $("#updateInfoCustomer").css("display", "none");
+        await handleInvoiceChange(formData.invoiceId);
+      } else {
+        alert("Thêm khách hàng thất bại: " + result.message);
+      }
+    } catch (error) {
+      alert(error);
+    }
   });
   loadInvoices();
 });

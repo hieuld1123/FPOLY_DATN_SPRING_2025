@@ -75,7 +75,7 @@ public class NhanVienService {
         taiKhoan.setSdt(nhanVien.getSdt());
         taiKhoan.setEmail(nhanVien.getEmail());
         taiKhoan.setTrangThai(true);
-        taiKhoan.setVaiTro(nhanVien.getVaiTro());
+        taiKhoan.setVaiTro(TaiKhoan.Role.EMPLOYEE);
         taiKhoanRepository.save(taiKhoan);
 
         NhanVien nv = new NhanVien();
@@ -118,7 +118,7 @@ public class NhanVienService {
         TaiKhoan existingTaiKhoan = existingNhanVien.getTaiKhoan();
         existingTaiKhoan.setSdt(nhanVien.getSdt());
         existingTaiKhoan.setEmail(nhanVien.getEmail());
-        existingTaiKhoan.setVaiTro(nhanVien.getVaiTro());
+//        existingTaiKhoan.setVaiTro(nhanVien.getVaiTro());
         if (existingNhanVien.getTrangThai() == false) {
             existingTaiKhoan.setTrangThai(false);
         } else {

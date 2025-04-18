@@ -63,19 +63,16 @@ public class BanHangServiceImpl implements BanHangService {
                         .gia(sp.getSanPhamChiTiet().getGiaBanSauGiam())
                         .soLuong(sp.getSoLuong())
                         .soLuongTonKho(sp.getSanPhamChiTiet().getSoLuong())
-                        .hinhAnh("https://th.bing.com/th/id/OIP.8tQmmY_ccVpcxBxu0Z0mzwHaE8?rs=1&pid=ImgDetMain") // TODO
+                        .hinhAnh(sp.getSanPhamChiTiet().getHinhAnh().get(0).getTenAnh())
                         .build()
         ).toList();
-        KhachHang kh = hoaDon.getKhachHang();
         return HoaDonChiTietResponse.builder()
                 .tongTien(hoaDon.getTongTien())
                 .shippingFee(hoaDon.getPhiVanChuyen())
                 .ghiChu(hoaDon.getGhiChu() == null ? null : hoaDon.getGhiChu().trim())
-                .khachHang(kh == null ? null : HoaDonChiTietResponse.Customer.builder()
-                        .id(kh.getId())
-                        .maKhachHang(kh.getMaKhachHang())
-                        .tenKhachHang(kh.getTenKhachHang())
-                        .soDienThoai(kh.getTaiKhoan().getSdt())
+                .khachHang(!StringUtils.hasLength(hoaDon.getTenNguoiNhan()) ? null : HoaDonChiTietResponse.Customer.builder()
+                        .tenKhachHang(hoaDon.getTenNguoiNhan())
+                        .soDienThoai(hoaDon.getSdtNguoiNhan())
                         .diaChi(String.format("%s, %s, %s, %s", hoaDon.getDiaChiNguoiNhan(), hoaDon.getXa(), hoaDon.getQuan(), hoaDon.getTinh()))
                         .build())
                 .listSanPham(listSanPham)
@@ -107,7 +104,7 @@ public class BanHangServiceImpl implements BanHangService {
                 .tenSanPham(String.format("%s [%s - %s]", sp.getSanPham().getTenSanPham(), sp.getMauSac().getTenMauSac(), sp.getKichCo().getTen()))
                 .gia(sp.getGiaBanSauGiam()) // Note: update
                 .soLuong(sp.getSoLuong())
-                .hinhAnh("https://th.bing.com/th/id/OIP.8tQmmY_ccVpcxBxu0Z0mzwHaE8?rs=1&pid=ImgDetMain") // TODO
+                .hinhAnh(sp.getHinhAnh().get(0).getTenAnh())
                 .build()).toList();
     }
 
@@ -197,6 +194,12 @@ public class BanHangServiceImpl implements BanHangService {
     @Transactional(rollbackOn = Exception.class)
     public void payment(PaymentRequest paymentRequest) {
         HoaDon hoaDon = findHoaDonById(paymentRequest.getInvoiceId());
+        List<HoaDonChiTiet> danhSachSanPham = hoaDon.getDanhSachSanPham();
+        danhSachSanPham.forEach(sp -> {
+            if(Boolean.FALSE.equals(sp.getSanPhamChiTiet().getTrangThai())){
+                throw new InvalidDataException(String.format("Sản phẩm %s đã ngừng kinh doanh", sp.getSanPhamChiTiet().getMaSanPhamChiTiet()));
+            }
+        });
         hoaDon.setNhanVien(authUtil.getNhanVien());
         hoaDon.setHinhThucMuaHang(paymentRequest.getType());
         hoaDon.setPhiVanChuyen(0f);
@@ -347,51 +350,41 @@ public class BanHangServiceImpl implements BanHangService {
                 .district(dc.getHuyen())
                 .ward(dc.getXa())
                 .addressDetail(dc.getDiaChiCuThe())
-                .build()).collect(Collectors.toList());
+                .build()).toList();
     }
 
     @Override
     @Transactional(rollbackOn = Exception.class)
     public void updateAddress(Integer customerId, Integer invoiceId, AddressRequest request) {
-        KhachHang kh = findKhachHangById(customerId);
-        DiaChi dc;
-        Optional<DiaChi> firstByValues = this.diaChiRepository.findFirstByValues(customerId,
-                request.getProvince(),
-                request.getDistrict(),
-                request.getWard(),
-                request.getAddressDetail());
-        if (firstByValues.isPresent()) {
-            dc = firstByValues.get();
-        }else{
-            dc = DiaChi.builder()
-                    .tinh(request.getProvince())
-                    .huyen(request.getDistrict())
-                    .xa(request.getWard())
-                    .diaChiCuThe(request.getAddressDetail())
-                    .khachHang(kh)
-                    .trangThai(true)
-                    .build();
-            dc = this.diaChiRepository.save(dc);
-        }
         HoaDon hd = findHoaDonById(invoiceId);
-        hd.setXa(dc.getXa());
-        hd.setQuan(dc.getHuyen());
-        hd.setTinh(dc.getTinh());
-        hd.setDiaChiNguoiNhan(dc.getDiaChiCuThe());
+        hd.setXa(request.getWard());
+        hd.setQuan(request.getDistrict());
+        hd.setTinh(request.getProvince());
+        hd.setDiaChiNguoiNhan(request.getAddressDetail());
         this.hoaDonRepository.save(hd);
     }
 
     @Override
     @Transactional(rollbackOn = Exception.class)
     public void updatePhone(Integer customerId, String phoneNumber, Integer invoiceId) {
-        KhachHang kh = findKhachHangById(customerId);
-        TaiKhoan tk = kh.getTaiKhoan();
-        tk.setSdt(phoneNumber);
-        this.taiKhoanRepository.save(tk);
         HoaDon hd = findHoaDonById(invoiceId);
         hd.setSdtNguoiNhan(phoneNumber);
         this.hoaDonRepository.save(hd);
+    }
 
+    @Override
+    public void addCustomerInvoice(Integer invoiceId, StoreCustomerRequest request) {
+        HoaDon hd = findHoaDonById(invoiceId);
+        if (hd != null) {
+            hd.setXa(request.getWard());
+            hd.setQuan(request.getDistrict());
+            hd.setTinh(request.getProvince());
+            hd.setDiaChiNguoiNhan(request.getAddressDetail());
+            hd.setTenNguoiNhan(request.getRecipient_name());
+            hd.setEmail(request.getEmail());
+            hd.setSdtNguoiNhan(request.getPhone_number());
+            this.hoaDonRepository.save(hd);
+        }
     }
 
     private HoaDonChiTiet findHoaDonChiTietById(int id) {
