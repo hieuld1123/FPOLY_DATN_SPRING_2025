@@ -115,3 +115,17 @@ WHERE id_san_pham = 1 AND id_mau_sac = 3;
 select * from mau_sac
 
 select * from hinh_anh
+
+INSERT INTO tai_khoan (email, sdt, matKhau, vaiTro, trangThai, reset_token)
+VALUES ('admin@gmail.com', '0123456789', '$2a$10$c/0f56WsPLRCLd7L0REp5uzShMtGqLFC/qpc/iMISdEypxiy7fntW', 'ADMIN', 1, NULL);
+INSERT INTO tai_khoan (email, sdt, matKhau, vaiTro, trangThai, reset_token)
+VALUES ('employee@gmail.com', '0123456789', '$2a$10$c/0f56WsPLRCLd7L0REp5uzShMtGqLFC/qpc/iMISdEypxiy7fntW', 'EMPLOYEE', 1, NULL);
+
+select * from tai_khoan
+select * from nhan_vien
+
+INSERT INTO nhan_vien (id_tai_khoan, ma_nhan_vien, ho_ten, dia_chi_cu_the, tinh_thanh_pho, quan_huyen, xa_phuong, gioi_tinh, hinh_anh, ngay_sinh, trang_thai, ngay_tao, ngay_cap_nhat)
+VALUES (1, 'NVADMIN01', N'Nguyễn Văn An', N'123 Đường ABC, Phường XYZ', N'Hà Nội', N'Ba Đình', N'Phúc Xá', 1, null, '1990-01-01', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO nhan_vien (id_tai_khoan, ma_nhan_vien, ho_ten, dia_chi_cu_the, tinh_thanh_pho, quan_huyen, xa_phuong, gioi_tinh, hinh_anh, ngay_sinh, trang_thai, ngay_tao, ngay_cap_nhat)
+VALUES (2, 'NV00002', N'Hoàng Thị Hà Lan', N'123 Đường Nguyễn Lan', N'Hà Nội', N'Hà Đông', N'Văn Quán', 2, null, '1990-01-01', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

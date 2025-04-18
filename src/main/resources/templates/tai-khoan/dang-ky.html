@@ -3,135 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <title>Đăng Ký</title>
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: url('https://images.unsplash.com/photo-1508780709619-79562169bc64?auto=format&fit=crop&w=1600&q=80') no-repeat center center fixed;
+            background-size: cover;
+        }
 
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+
+        .register-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .register-container {
+            display: flex;
+            flex-direction: row;
+            width: 90%;
+            max-width: 1000px;
+            background: black;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 40px;
+            color: #fff;
+        }
+
+        .register-intro {
+            flex: 1;
+            padding-right: 30px;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .register-intro h2 {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .register-form {
+            flex: 2;
+            padding-left: 30px;
+        }
+
+        .btn-primary {
+            background-color: #0066ff;
+            border: none;
+        }
+
+        @media (max-width: 768px) {
+            .register-container {
+                flex-direction: column;
+                padding: 20px;
+            }
+
+            .register-intro {
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+                margin-bottom: 20px;
+                padding-right: 0;
+                padding-bottom: 20px;
+                text-align: center;
+            }
+
+            .register-form {
+                padding-left: 0;
+            }
+        }
+        .form-label {
+            color: #e6e6e6;
+        }
+
+        .form-check-label {
+            color: #e6e6e6;
+        }
+
+        .form-control,
+        .form-select {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #e6e6e6;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .form-control:focus,
+        .form-select:focus {
+            background-color: #333333;  /* Màu nền đen khi focus */
+            color: #e6e6e6;  /* Màu chữ trắng khi focus */
+            border: 1px solid #555555;  /* Viền màu xám khi focus */
+        }
+
+        .form-control::placeholder {
+            color: #dcdcdc;
+        }
+
+        .form-error {
+            color: red;
+        }
+
+        a.text-decoration-none {
+            color: #66ccff;
+        }
+
+        a.text-decoration-none:hover {
+            color: #99ddff;
+        }
+        .register-container,
+        .register-intro h2,
+        .form-label,
+        .form-check-label {
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+    </style>
 </head>
 <body>
-<div class="container-xl">
-    <div class="card">
-        <div class="register-card">
-            <div class="card-header">
-                <h3 class="card-title text-center text-primary">Đăng ký</h3>
-            </div>
-            <div class="card-body">
-                <form  id="registerForm" th:action="@{/user/dang-ky}" th:object="${khachHangDto}" method="post" onsubmit="return validate(event)">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <input type="text" class="form-control" th:field="*{tenKhachHang}"
-                                   id="inputTen" th:errorclass="is-invalid"
-                                   placeholder="Họ và tên">
-                            <p style="color: red; font-weight: initial;" id="errorTen"></p>
-                        </div>
+<div class="bg-overlay"></div>
 
-                        <div class="col-md-6 mb-3">
+<div class="register-wrapper">
+    <div class="register-container">
+        <div class="register-intro">
+            <h2>Chào mừng bạn đến Nine Shoes!</h2>
+            <p>Tạo tài khoản để tận hưởng trải nghiệm mua sắm tốt nhất với chúng tôi. Đăng ký nhanh chóng và dễ dàng chỉ
+                trong vài bước.</p>
+        </div>
+        <div class="register-form">
+            <form id="registerForm" th:action="@{/user/dang-ky}" th:object="${khachHangDto}" method="post"
+                  onsubmit="return validate(event)">
+                <div class="row g-3">
 
-                            <input type="date" class="form-control" th:field="*{ngaySinh}"
-                                   id="inputNgSinh" th:errorclass="is-invalid">
-                            <p style="color: red; font-weight: initial;" id="errorNgSinh"></p>
-                        </div>
+                    <!-- Tên và ngày sinh -->
+                    <div class="col-md-6">
+                        <label class="form-label">Họ và tên</label>
+                        <input type="text" class="form-control" th:field="*{tenKhachHang}" id="inputTen"
+                               placeholder="Họ và tên">
+                        <div class="form-error" id="errorTen"></div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Ngày sinh</label>
+                        <input type="date" class="form-control" th:field="*{ngaySinh}" id="inputNgSinh">
+                        <div class="form-error" id="errorNgSinh"></div>
+                    </div>
 
-                            <div class="d-flex">
-                                <input class="form-check-input" type="radio" th:field="*{gioiTinh}" id="radioGT"
-                                       style="margin-right: 5px" value="true" checked> Nam
-                                <input class="form-check-input ms-3" type="radio" th:field="*{gioiTinh}"
-                                       style="margin-right:5px" value="false"> Nữ
+                    <!-- Giới tính và Email -->
+                    <div class="col-md-6">
+                        <label class="form-label">Giới tính</label>
+                        <div class="d-flex gap-3 mt-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" th:field="*{gioiTinh}" value="true"
+                                       id="radioNam">
+                                <label class="form-check-label" for="radioNam">Nam</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" th:field="*{gioiTinh}" value="false"
+                                       id="radioNu">
+                                <label class="form-check-label" for="radioNu">Nữ</label>
                             </div>
                         </div>
-                        <div class="col-md-6 mb-3">
-
-                            <input type="email" class="form-control" th:field="*{email}"
-                                   id="inputEmail"
-                                   placeholder="Email">
-                            <p style="color: red; font-weight: initial;" id="errorEmail"></p>
-
-                        </div>
-
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <input type="text" class="form-control" th:field="*{sdt}"
-                                   id="inputSdt"
-                                   placeholder="Số điện thoại">
-                            <p style="color: red; font-weight: initial;" id="errorSdt"></p>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <input type="text" class="form-control"
-                                   th:field="*{listDiaChi[0].diaChiCuThe}"
-                                   id="inputDuong" th:errorclass="is-invalid" placeholder="Địa chỉ cụ thể">
-                            <p style="color: red; font-weight: initial;" id="errorDuong"></p>
-                        </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" th:field="*{email}" id="inputEmail"
+                               placeholder="Email">
+                        <div class="form-error" id="errorEmail"></div>
                     </div>
 
-                    <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    <select class="form-control form-select" id="city"  name="city"
-                                            th:field="*{listDiaChi[0].tinh}" >
-                                        <option value="" selected>Chọn tỉnh thành</option>
-                                    </select>
-                                    <p style="color: red; font-weight: initial;" id="errorTinh"></p>
-                                </div>
-
-                                <div class="col-md-4 mb-3">
-                                    <select class="form-control form-select" id="district" name="district"
-                                            th:field="*{listDiaChi[0].huyen}">
-                                        <option value="" selected>Chọn quận huyện</option>
-                                    </select>
-                                    <p style="color: red; font-weight: initial;" id="errorQuan"></p>
-                                </div>
-
-                                <div class="col-md-4 mb-3">
-                                    <select class="form-control form-select" id="ward"  name="ward"
-                                            th:field="*{listDiaChi[0].xa}">
-                                        <option value="" selected>Chọn phường xã</option>
-                                    </select>
-                                    <p style="color: red; font-weight: initial;" id="errorPhuong"></p>
-                                </div>
+                    <!-- Số điện thoại và địa chỉ cụ thể -->
+                    <div class="col-md-6">
+                        <label class="form-label">Số điện thoại</label>
+                        <input type="text" class="form-control" th:field="*{sdt}" id="inputSdt"
+                               placeholder="Số điện thoại">
+                        <div class="form-error" id="errorSdt"></div>
                     </div>
 
-
-                    <div class="row">
-                        <div class="col-md-6 mt-3 position-relative">
-                            <input type="password" class="form-control" th:field="*{matKhau}"
-                                   id="matKhau"
-                                   placeholder="Mật khẩu">
-                            <i class="fa-solid fa-eye toggle-password position-absolute"
-                               style="right: 30px; top: 30%; transform: translateY(-50%); cursor: pointer;"
-                               onclick="togglePassword('matKhau', this)"></i>
-                            <p style="color: red; font-weight: initial;" id="errorMatKhau"></p>
-                        </div>
-
-
-                        <div class="col-md-6 mt-3 position-relative">
-                            <input type="password" class="form-control pr-4" id="nhaplaiMK"
-                                   placeholder="Nhập lại mật khẩu">
-                            <i class="fa-solid fa-eye toggle-password position-absolute"
-                               style="right: 30px; top: 30%; transform: translateY(-50%); cursor: pointer;"
-                               onclick="togglePassword('nhaplaiMK', this)"></i>
-                            <p style="color: red; font-weight: initial;" id="errorNhaplaiMK"></p>
-                        </div>
-
+                    <div class="col-md-6">
+                        <label class="form-label">Địa chỉ cụ thể</label>
+                        <input type="text" class="form-control" th:field="*{listDiaChi[0].diaChiCuThe}" id="inputDuong"
+                               placeholder="Số nhà, tên đường...">
+                        <div class="form-error" id="errorDuong"></div>
                     </div>
 
+                    <!-- Tỉnh - Huyện - Xã -->
+                    <div class="col-md-4">
+                        <label class="form-label">Tỉnh/Thành</label>
+                        <select class="form-select" id="city" th:field="*{listDiaChi[0].tinh}">
+                            <option value="">Chọn tỉnh thành</option>
+                        </select>
+                        <div class="form-error" id="errorTinh"></div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Quận/Huyện</label>
+                        <select class="form-select" id="district" th:field="*{listDiaChi[0].huyen}">
+                            <option value="">Chọn quận huyện</option>
+                        </select>
+                        <div class="form-error" id="errorQuan"></div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Phường/Xã</label>
+                        <select class="form-select" id="ward" th:field="*{listDiaChi[0].xa}">
+                            <option value="">Chọn phường xã</option>
+                        </select>
+                        <div class="form-error" id="errorPhuong"></div>
+                    </div>
+
+                    <!-- Mật khẩu và xác nhận -->
+                    <div class="col-md-6 position-relative">
+                        <label class="form-label">Mật khẩu</label>
+                        <input type="password" class="form-control" th:field="*{matKhau}" id="matKhau"
+                               placeholder="Mật khẩu">
+                        <i class="fa-solid fa-eye toggle-password position-absolute"
+                           style="right: 20px; top: 70%; transform: translateY(-50%);"
+                           onclick="togglePassword('matKhau', this)"></i>
+                        <div class="form-error" id="errorMatKhau"></div>
+                    </div>
+
+                    <div class="col-md-6 position-relative">
+                        <label class="form-label">Nhập lại mật khẩu</label>
+                        <input type="password" class="form-control" id="nhaplaiMK" placeholder="Nhập lại mật khẩu">
+                        <i class="fa-solid fa-eye toggle-password position-absolute"
+                           style="right: 20px; top: 70%; transform: translateY(-50%);"
+                           onclick="togglePassword('nhaplaiMK', this)"></i>
+                        <div class="form-error" id="errorNhaplaiMK"></div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
                     <button type="submit" class="btn btn-primary w-100">Đăng Ký</button>
-                </form>
+                </div>
+
                 <p class="text-center mt-3">
-                    Đã có tài khoản? <a href="/dang-nhap" class="text-decoration-none">Đăng nhập</a>
+                    Đã có tài khoản? <a href="/login" class="text-decoration-none">Đăng nhập</a>
                 </p>
-            </div>
+            </form>
         </div>
     </div>
 </div>
 
+<!-- Script -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<!-- Include lại toàn bộ script của bạn ở đây -->
 <script th:inline="javascript">
     var listTK = /*[[${taiKhoan}]]*/ '[]';
     console.log("Dữ liệu tài khoản:", listTK);
@@ -139,6 +270,8 @@
 <!--Chọn tỉnh/huyện/xã-->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("radioNam").checked = true;
+
         var citis = document.querySelector("#city");
         var districts = document.querySelector("#district");
         var wards = document.querySelector("#ward");
@@ -408,5 +541,4 @@
     }
 </script>
 </body>
-
 </html>

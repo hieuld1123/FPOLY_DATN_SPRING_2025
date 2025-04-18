@@ -41,6 +41,16 @@ public class ShopController {
         return "/shop/ve-chung-toi";
     }
 
+    @GetMapping("/shop/chinh-sach")
+    public String chinhSach() {
+        return "/shop/chinh-sach";
+    }
+
+    @GetMapping("/shop/khuyen-mai")
+    public String khuyenMai() {
+        return "/shop/khuyen-mai";
+    }
+
     @GetMapping("/shop/lien-he")
     public String lienHe() {
         return "/shop/lien-he";

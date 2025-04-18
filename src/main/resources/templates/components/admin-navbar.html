@@ -146,7 +146,7 @@
                     <!-- Avatar -->
                     <img th:if="${currentNhanVien != null}" th:src="@{'/uploads/' + ${currentNhanVien.hinhAnh}}"
                          class="avatar rounded-circle me-2 shadow-sm" width="40" height="40"/>
-                    <img th:if="${currentNhanVien == null}" src="/img/default-avatar.png"
+                    <img th:if="${currentNhanVien == null}" src="https://res.cloudinary.com/djukvrgjm/image/upload/v1744982346/vsqiguenpso7cq08prsr.jpg"
                          class="avatar rounded-circle me-2 shadow-sm" width="40" height="40"/>
 
                     <!-- Thông tin tài khoản -->
@@ -164,7 +164,7 @@
                 <!-- Dropdown menu -->
                 <ul class="dropdown-menu dropdown-menu-end mt-2 shadow" aria-labelledby="dropdownAccount">
                     <li><a class="dropdown-item" th:href="@{/admin/thong-tin-nv}">Thông tin cá nhân</a></li>
-                    <li><a class="dropdown-item" th:href="@{/doi-mat-khau}">Đổi mật khẩu</a></li>
+                    <li><a class="dropdown-item" th:href="@{/doi-mat-khau(email=${currentNhanVien.taiKhoan.email})}">Đổi mật khẩu</a></li>
                     <li>
                         <form th:action="@{/logout}" method="post" style="margin: 0;">
                             <button type="submit" class="dropdown-item text-danger">Đăng xuất</button>
