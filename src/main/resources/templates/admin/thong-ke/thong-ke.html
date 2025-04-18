@@ -246,7 +246,7 @@
 
                 <div class="card mt-3 w-75 shadow-lg rounded-4 border-0">
                     <div class="card-header rounded-top-4 py-4 d-flex justify-content-center">
-                        <h3 class="fw-bold mb-1">🔥 Top 5 sản phẩm bán chạy</h3>
+                        <h3 class="fw-bold mb-1"> Top 5 sản phẩm bán nhiều nhất</h3>
                     </div>
 
                     <div class="card-body p-4">
@@ -274,7 +274,7 @@
 
                 <div class="card mt-3 w-75 shadow-lg rounded-4 border-0">
                     <div class="card-header rounded-top-4 py-4 d-flex justify-content-center">
-                        <h3 class="fw-bold mb-1">🔥 Top 5 sản phẩm sắp hết</h3>
+                        <h3 class="fw-bold mb-1"> Top 5 sản phẩm sắp hết</h3>
                     </div>
 
                     <div class="card-body p-4">
@@ -408,6 +408,16 @@
                     horizontal: false,
                     columnWidth: '50%',
                     distributed: true // Cho phép mỗi cột có màu riêng
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val) {
+                    return val.toLocaleString('vi-VN') + ' đ';
+                },
+                style: {
+                    fontSize: '12px',
+                    colors: ['#000']
                 }
             },
             series: [{

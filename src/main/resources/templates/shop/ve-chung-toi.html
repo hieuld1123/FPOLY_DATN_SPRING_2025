@@ -11,118 +11,147 @@
     <link rel="stylesheet" href="/css/Footer.css">
     <link rel="stylesheet" href="/css/Navbar.css">
     <style>
-        .about-section {
-            margin-top: 30px;
-            padding: 30px 0;
-            background-color: #f8f9fa;
+        .hero-section {
+            position: relative;
+            overflow: hidden;
         }
 
-        .about-header {
-            text-align: center;
-            margin-bottom: 40px;
+        .hero-section .overlay {
+            background-color: rgba(0, 0, 0, 0.5); /* lớp tối mờ */
+            z-index: 1;
         }
 
-        .about-header h1 {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #222;
+        .ve-chung-toi-title {
+            z-index: 2;
+            position: relative;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6); /* đổ bóng cho chữ */
         }
-
-        .about-header p {
-            font-size: 1.1rem;
-            color: #666;
-        }
-
-        .about-text {
-            margin-bottom: 30px;
-        }
-
-        .about-text h2 {
-            font-size: 1.8rem;
-            color: #222;
-            margin-bottom: 20px;
-        }
-
-        .about-text p {
-            font-size: 1.1rem;
-            color: #555;
-            line-height: 1.8;
-        }
-
-        .contact-info p {
-            font-size: 1.1rem;
-            color: #555;
-            margin-bottom: 10px;
-        }
-
-        .social-icons i {
+        .ve-chung-toi-title p {
             font-size: 1.5rem;
-            margin-right: 15px;
-            color: #555;
-        }
-
-        .social-icons i:hover {
-            color: #007bff;
+            font-weight: 500;
+            color: #fff;
+            text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.6); /* đổ bóng nhẹ */
+            transition: color 0.3s ease;
         }
     </style>
 </head>
 
 <body>
 <div th:replace="~{components/navbar :: navbar}"></div>
-<!-- Header -->
-<div class="container mt-5">
-    <div class="about-header">
-        <h1>Về chúng tôi</h1>
-        <p>Giới thiệu về Nine Shoes – Cửa hàng giày sneaker thời trang hàng đầu</p>
+
+<!-- Hero Section -->
+<section class="hero-section position-relative text-center text-white py-5"
+         style="background: url('https://giayxshop.vn/wp-content/uploads/2025/02/3472561212671_295229436169914_3468221751151387751_n.jpg') center/cover no-repeat;">
+
+    <div class="overlay position-absolute top-0 start-0 w-100 h-100"></div>
+
+    <div class="container position-relative py-5 ve-chung-toi-title">
+        <h1 class="display-4 fw-bold">Về chúng tôi</h1>
+        <p class="lead">Nine Shoes – Khơi nguồn đam mê từ từng bước chân</p>
     </div>
+</section>
 
-    <div class="about-section">
-        <div class="row">
-            <!-- Lịch sử ra đời -->
-            <div class="col-md-12 about-text">
-                <h2>Lịch sử ra đời</h2>
-                <p>Nine Shoes được thành lập vào năm 2024 với mục tiêu trở thành một thương hiệu giày sneaker nổi bật, cung cấp những sản phẩm giày thể thao cao cấp, phong cách và chất lượng. Chúng tôi bắt đầu với một nhóm chuyên gia đam mê thiết kế và sản xuất giày, không ngừng sáng tạo để mang lại những đôi giày không chỉ đẹp mà còn bền bỉ và thoải mái cho khách hàng.</p>
+
+<!-- About Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-4 align-items-center">
+            <div class="col-1"></div>
+            <div class="col-md-5">
+                <img src="https://i.pinimg.com/736x/c9/c9/69/c9c969e51cc612f7c5f284e2e76adcc8.jpg"
+                     class="img-fluid rounded-4 shadow" width="70%" height="70%">
             </div>
-
-            <!-- Sản phẩm -->
-            <div class="col-md-12 about-text">
-                <h2>Sản phẩm của chúng tôi</h2>
-                <p>Chúng tôi cung cấp các mẫu giày sneaker phong cách, từ những đôi giày thể thao năng động, đến những đôi giày thời trang phù hợp với mọi lứa tuổi. Các sản phẩm của Nine Shoes được làm từ chất liệu cao cấp, kiểm tra chất lượng nghiêm ngặt, mang đến sự thoải mái và bền bỉ cho người dùng.</p>
-            </div>
-
-            <!-- Cam kết -->
-            <div class="col-md-12 about-text">
-                <h2>Cam kết của Nine Shoes</h2>
-                <ul>
-                    <li><strong>Chất lượng sản phẩm:</strong> Mỗi đôi giày đều được kiểm tra chất lượng kỹ lưỡng trước khi đến tay khách hàng.</li>
-                    <li><strong>Dịch vụ khách hàng:</strong> Đội ngũ nhân viên hỗ trợ tận tình, sẵn sàng giải đáp mọi thắc mắc và giúp bạn lựa chọn sản phẩm phù hợp.</li>
-                    <li><strong>Giá cả hợp lý:</strong> Nine Shoes cam kết mang đến sản phẩm chất lượng cao với mức giá hợp lý nhất.</li>
-                </ul>
-            </div>
-
-            <!-- Tầm nhìn và sứ mệnh -->
-            <div class="col-md-12 about-text">
-                <h2>Tầm nhìn và sứ mệnh</h2>
-                <p>Với tầm nhìn trở thành thương hiệu giày sneaker hàng đầu tại Việt Nam, Nine Shoes không ngừng sáng tạo và phát triển để cung cấp những đôi giày thể thao với chất lượng vượt trội. Sứ mệnh của chúng tôi là mang đến cho khách hàng những sản phẩm giày thể thao không chỉ đẹp mà còn đảm bảo sự thoải mái, phù hợp với phong cách và nhu cầu sử dụng của từng cá nhân.</p>
+            <div class="col-md-6">
+                <h2 class="fw-bold mb-3">Hành trình của chúng tôi</h2>
+                <p class="text-muted">
+                    Được thành lập vào năm 2025, Nine Shoes không chỉ là một cửa hàng giày – chúng tôi là biểu tượng của
+                    phong cách, chất lượng và sự đổi mới. Mỗi sản phẩm đều là tâm huyết của đội ngũ trẻ trung và nhiệt
+                    huyết.
+                </p>
             </div>
         </div>
     </div>
+</section>
 
-    <!-- Liên hệ -->
-    <div class="contact-info mt-5">
-        <h2>Liên hệ với chúng tôi</h2>
-        <p>Email: <a href="mailto:contact@sm4s.vn">contact@nineshoes.com</a></p>
-        <p>Hotline (Zalo): 0901191616</p>
-        <p>Điện thoại: 1900 6680</p>
-        <div class="social-icons">
-            <a href="#" class="text-white"><i class="fab fa-facebook-f"></i></a>
-            <a href="#" class="text-white"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="text-white"><i class="fab fa-twitter"></i></a>
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Điều gì khiến chúng tôi khác biệt?</h2>
+            <p class="text-muted">Cam kết chất lượng – Phong cách vượt trội – Dịch vụ tận tâm</p>
+        </div>
+        <div class="row text-center g-4">
+            <div class="col-md-4">
+                <div class="card shadow-sm h-100 border-0">
+                    <div class="card-body">
+                        <i class="fa-solid fa-shoe-prints fa-2x text-primary mb-3"></i>
+                        <h5 class="card-title">Chất lượng sản phẩm</h5>
+                        <p class="card-text text-muted">Mỗi đôi giày đều trải qua kiểm định kỹ lưỡng trước khi đến tay
+                            bạn.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm h-100 border-0">
+                    <div class="card-body">
+                        <i class="fa-solid fa-headset fa-2x text-success mb-3"></i>
+                        <h5 class="card-title">Hỗ trợ tận tâm</h5>
+                        <p class="card-text text-muted">Đội ngũ tư vấn chuyên nghiệp sẵn sàng hỗ trợ bạn mọi lúc.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm h-100 border-0">
+                    <div class="card-body">
+                        <i class="fa-solid fa-tags fa-2x text-warning mb-3"></i>
+                        <h5 class="card-title">Giá cả hợp lý</h5>
+                        <p class="card-text text-muted">Sản phẩm chất lượng cao, giá cả phù hợp với mọi người.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-<br>
+</section>
+
+<!-- Vision and Mission -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-4 align-items-center">
+            <div class="col-md-5 order-md-2">
+                <img src="https://i.pinimg.com/736x/f9/d7/36/f9d736a7ff54fa48d823c3fe17f17de1.jpg" width="70%"
+                     height="70%" class="img-fluid rounded-4 shadow">
+            </div>
+            <div class="col-2"></div>
+            <div class="col-md-5 order-md-1">
+                <h2 class="fw-bold mb-3">Tầm nhìn & Sứ mệnh</h2>
+                <p class="text-muted">
+                    Nine Shoes mong muốn trở thành thương hiệu giày sneaker hàng đầu tại Việt Nam. Chúng tôi luôn đổi
+                    mới để cung cấp sản phẩm vượt trội về cả kiểu dáng và chất lượng, phục vụ đa dạng phong cách sống
+                    hiện đại.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact -->
+<section class="py-5 text-center bg-white">
+    <div class="container">
+        <h2 class="fw-bold mb-3">Liên hệ với chúng tôi</h2>
+        <p class="mb-3 text-muted">Chúng tôi luôn sẵn sàng lắng nghe bạn</p>
+        <p>Email: <a href="mailto:contact@nineshoes.com">contact@nineshoes.com</a></p>
+        <p>Hotline (Zalo): 0901191616 | Điện thoại: 1900 6680</p>
+        <div class="d-flex justify-content-center gap-3 mt-3">
+            <a href="#" class="text-primary fs-4"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="text-danger fs-4"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="text-info fs-4"><i class="fab fa-twitter"></i></a>
+        </div>
+    </div>
+</section>
+
 <div th:replace="~{components/footer :: footer}"></div>
+
+
 <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         crossorigin="anonymous"></script>

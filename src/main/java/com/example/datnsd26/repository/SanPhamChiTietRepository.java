@@ -159,10 +159,6 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
     @Query("SELECT p FROM SanPhamChiTiet p ORDER BY p.giaBan DESC")
     List<PublicSanPhamResponse> findAllSortedByPriceDesc();
 
-    Optional<SanPhamChiTiet> findFirstBySanPham_MaSanPham(String maSanPham);
-
-    @Query("SELECT ha.tenAnh FROM HinhAnh ha WHERE ha.sanPhamChiTiet.id = :idSpct")
-    List<String> findHinhAnhUrlsById(@Param("idSpct") Integer idSpct);
 
     @Query(value = """
             SELECT TOP 5
@@ -178,6 +174,7 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
             FROM san_pham_chi_tiet spct
             JOIN san_pham sp ON spct.id_san_pham = sp.id
             GROUP BY sp.ma_san_pham, sp.ten_san_pham, sp.id
+               HAVING SUM(spct.so_luong) < 5
             ORDER BY tongSoLuongTon ASC
             """, nativeQuery = true)
     List<Object[]> getTopSanPhamSapHetNative();
