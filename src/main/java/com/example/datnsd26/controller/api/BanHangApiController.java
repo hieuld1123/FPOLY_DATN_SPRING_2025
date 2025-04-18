@@ -145,6 +145,15 @@ public class BanHangApiController {
                 .build();
     }
 
+    @PutMapping("/add-customer-invoice/{invoiceId}")
+    public ApiResponse addCustomerInvoice(@PathVariable Integer invoiceId, @RequestBody StoreCustomerRequest request) throws MessagingException {
+        this.banHangService.addCustomerInvoice(invoiceId, request);
+        return ApiResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Customer added to invoice")
+                .build();
+    }
+
     @GetMapping("/customer-addresses/{customerId}")
     public ApiResponse getCustomerAddresses(@PathVariable Integer customerId) {
         return ApiResponse.builder()
