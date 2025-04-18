@@ -164,7 +164,7 @@
                 <!-- Dropdown menu -->
                 <ul class="dropdown-menu dropdown-menu-end mt-2 shadow" aria-labelledby="dropdownAccount">
                     <li><a class="dropdown-item" th:href="@{/admin/thong-tin-nv}">Thông tin cá nhân</a></li>
-                    <li><a class="dropdown-item" th:href="@{/doi-mat-khau}">Đổi mật khẩu</a></li>
+                    <li><a class="dropdown-item" th:href="@{/doi-mat-khau(email=${currentNhanVien.taiKhoan.email})}">Đổi mật khẩu</a></li>
                     <li>
                         <form th:action="@{/logout}" method="post" style="margin: 0;">
                             <button type="submit" class="dropdown-item text-danger">Đăng xuất</button>
