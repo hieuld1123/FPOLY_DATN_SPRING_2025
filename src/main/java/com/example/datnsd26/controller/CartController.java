@@ -220,11 +220,15 @@ public class CartController {
             taiKhoan = taiKhoanRepository.findByEmail(email).orElse(null);
             if (taiKhoan != null) {
                 khachHang = khachHangRepository.findByTaiKhoan(taiKhoan);
-                diaChiMacDinh = khachHang.getDiaChi()
-                        .stream()
-                        .filter(DiaChi::getTrangThai) // hoặc .getTrangThai() nếu không dùng lombok getter
-                        .findFirst()
-                        .orElse(null);
+                if(khachHang != null) {
+                    diaChiMacDinh = khachHang.getDiaChi()
+                            .stream()
+                            .filter(DiaChi::getTrangThai) // hoặc .getTrangThai() nếu không dùng lombok getter
+                            .findFirst()
+                            .orElse(null);
+                }
+
+
             }
         }
 
