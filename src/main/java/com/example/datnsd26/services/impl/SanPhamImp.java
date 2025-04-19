@@ -73,15 +73,17 @@ public class SanPhamImp implements SanPhamService {
     }
 
     @Override
-    public List<SanPhamSapHetDto> layTopSanPhamSapHet() {
-        List<Object[]> results = sanPhamChiTietRepository.getTopSanPhamSapHetNative();
+    public List<SanPhamSapHetDto> layTopSanPhamSapHet(int page, int pageSize) {
+        int offset = (page - 1) * pageSize;
+        List<Object[]> results = sanPhamChiTietRepository.getTopSanPhamSapHetNative(offset, pageSize);
         return results.stream().map(obj -> new SanPhamSapHetDto(
                 (String) obj[0],                            // maSanPham
                 (String) obj[1],                            // tenSanPham
-                ((Number) obj[2]).intValue(),               // tongSoLuongTon
-                (String) obj[3]                             // anhDaiDien
+                (String) obj[2],                            // kichThuoc
+                ((Number) obj[3]).intValue()               // soLuongTon
         )).collect(Collectors.toList());
     }
+
 
 
     public void updateProductStatus(Integer id, boolean trangthai) {
