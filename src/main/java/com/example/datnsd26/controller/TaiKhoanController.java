@@ -255,7 +255,7 @@ public class TaiKhoanController {
         model.addAttribute("email", email);
         return "/tai-khoan/doi-mat-khau";
     }
-    @GetMapping("/admin/thong-tin-nv")
+    @GetMapping("/quan-ly/thong-tin-nv")
     public String thongTinNhanVien(Model model, Principal principal) {
         if (principal == null) {
             return "redirect:/login";

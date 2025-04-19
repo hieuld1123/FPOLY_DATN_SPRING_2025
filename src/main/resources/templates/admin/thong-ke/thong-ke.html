@@ -91,66 +91,66 @@
         <!-- Main content -->
         <div class="main-content">
             <div class="card shadow-sm p-3">
-                    <form action="/admin/thong-ke" method="get" class="row g-3 align-items-end" id="form-loc-thong-ke">
-                        <!-- Kiểu lọc -->
-                        <div class="col-md-2">
-                            <label class="form-label fw-bold">Kiểu lọc</label>
-                            <select name="kieuLoc" class="form-select">
-                                <option value="ngay" th:selected="${kieuLoc == 'ngay'}">Theo ngày</option>
-                                <option value="thang" th:selected="${kieuLoc == 'thang'}">Theo tháng</option>
-                                <option value="nam" th:selected="${kieuLoc == 'nam'}">Theo năm</option>
-                            </select>
-                        </div>
+                <form action="/admin/thong-ke" method="get" class="row g-3 align-items-end" id="form-loc-thong-ke">
+                    <!-- Kiểu lọc -->
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold">Kiểu lọc</label>
+                        <select name="kieuLoc" class="form-select">
+                            <option value="ngay" th:selected="${kieuLoc == 'ngay'}">Theo ngày</option>
+                            <option value="thang" th:selected="${kieuLoc == 'thang'}">Theo tháng</option>
+                            <option value="nam" th:selected="${kieuLoc == 'nam'}">Theo năm</option>
+                        </select>
+                    </div>
 
-                        <!-- Từ ngày - đến ngày -->
-                        <div class="col-md-2" id="locNgay">
-                            <label for="tuNgay" class="form-label fw-bold">Từ ngày</label>
-                            <input type="date" class="form-control" id="tuNgay" name="tuNgay"
-                                   th:value="${tuNgay != null ? #dates.format(tuNgay, 'yyyy-MM-dd') : ''}">
-                        </div>
-                        <div class="col-md-2" id="locNgayDen">
-                            <label for="denNgay" class="form-label fw-bold">Đến ngày</label>
-                            <input type="date" class="form-control" id="denNgay" name="denNgay"
-                                   th:value="${denNgay != null ? #dates.format(denNgay, 'yyyy-MM-dd') : ''}">
-                        </div>
+                    <!-- Từ ngày - đến ngày -->
+                    <div class="col-md-2" id="locNgay">
+                        <label for="tuNgay" class="form-label fw-bold">Từ ngày</label>
+                        <input type="date" class="form-control" id="tuNgay" name="tuNgay"
+                               th:value="${tuNgay != null ? #dates.format(tuNgay, 'yyyy-MM-dd') : ''}">
+                    </div>
+                    <div class="col-md-2" id="locNgayDen">
+                        <label for="denNgay" class="form-label fw-bold">Đến ngày</label>
+                        <input type="date" class="form-control" id="denNgay" name="denNgay"
+                               th:value="${denNgay != null ? #dates.format(denNgay, 'yyyy-MM-dd') : ''}">
+                    </div>
 
-                        <!-- Tháng -->
-                        <div class="col-md-2" id="locThang">
-                            <label for="thang" class="form-label fw-bold">Tháng</label>
-                            <select class="form-select" id="thang" name="thang">
-                                <option value="">-- Chọn tháng --</option>
-                                <option th:each="i : ${#numbers.sequence(1, 12)}"
-                                        th:value="${i}"
-                                        th:text="${i}"
-                                        th:selected="${thang != null and thang == i}">
-                                </option>
-                            </select>
-                        </div>
+                    <!-- Tháng -->
+                    <div class="col-md-2" id="locThang">
+                        <label for="thang" class="form-label fw-bold">Tháng</label>
+                        <select class="form-select" id="thang" name="thang">
+                            <option value="">-- Chọn tháng --</option>
+                            <option th:each="i : ${#numbers.sequence(1, 12)}"
+                                    th:value="${i}"
+                                    th:text="${i}"
+                                    th:selected="${thang != null and thang == i}">
+                            </option>
+                        </select>
+                    </div>
 
-                        <!-- Năm -->
-                        <div class="col-md-2" id="locNam">
-                            <label for="nam" class="form-label fw-bold">Năm</label>
-                            <select class="form-select" id="nam" name="nam">
-                                <option value="">-- Chọn năm --</option>
-                                <option th:each="n : ${#numbers.sequence(2020, 2030)}"
-                                        th:value="${n}"
-                                        th:text="${n}"
-                                        th:selected="${nam != null and nam == n}">
-                                </option>
-                            </select>
-                        </div>
+                    <!-- Năm -->
+                    <div class="col-md-2" id="locNam">
+                        <label for="nam" class="form-label fw-bold">Năm</label>
+                        <select class="form-select" id="nam" name="nam">
+                            <option value="">-- Chọn năm --</option>
+                            <option th:each="n : ${#numbers.sequence(2020, 2030)}"
+                                    th:value="${n}"
+                                    th:text="${n}"
+                                    th:selected="${nam != null and nam == n}">
+                            </option>
+                        </select>
+                    </div>
 
-                        <!-- Buttons -->
-                        <div class="col-md-2 d-flex gap-2">
-                            <button type="submit" class="btn btn-primary w-100">
-                                Lọc
-                            </button>
-                            <a href="/admin/thong-ke" id="btn-reset-loc" class="btn btn-outline-secondary w-100">
-                                Bỏ lọc
-                            </a>
-                        </div>
-                    </form>
-                </div>
+                    <!-- Buttons -->
+                    <div class="col-md-2 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            Lọc
+                        </button>
+                        <a href="/admin/thong-ke" id="btn-reset-loc" class="btn btn-outline-secondary w-100">
+                            Bỏ lọc
+                        </a>
+                    </div>
+                </form>
+            </div>
 
 
             <div class="row">
@@ -246,10 +246,11 @@
 
                 <div class="card mt-3 w-75 shadow-lg rounded-4 border-0">
                     <div class="card-header rounded-top-4 py-4 d-flex justify-content-center">
-                        <h3 class="fw-bold mb-1"> Top 5 sản phẩm bán nhiều nhất</h3>
+                        <h3 class="fw-bold mb-1"> Top 5 sản phẩm bán nhiều nhất*</h3>
                     </div>
 
                     <div class="card-body p-4">
+                        <p class="text-muted mb-4 fst-italic">*Danh sách này hiển thị 5 sản phẩm có số lượng bán cao nhất, dựa trên tổng số lượng được ghi nhận trong các hóa đơn đã hoàn thành.</p>
                         <table class="table table-hover table-bordered align-middle text-center shadow-sm rounded-3 overflow-hidden">
                             <thead class="table-light fw-semibold">
                             <tr>
@@ -272,18 +273,19 @@
                     </div>
                 </div>
 
-                <div class="card mt-3 w-75 shadow-lg rounded-4 border-0">
+                <div class="card mt-3 w-75 mx-auto shadow-lg rounded-4 border-0">
                     <div class="card-header rounded-top-4 py-4 d-flex justify-content-center">
-                        <h3 class="fw-bold mb-1"> Top 5 sản phẩm sắp hết</h3>
+                        <h3 class="fw-bold mb-0">Danh sách sản phẩm sắp hết*</h3>
                     </div>
-
                     <div class="card-body p-4">
-                        <table class="table table-hover table-bordered align-middle text-center shadow-sm rounded-3 overflow-hidden">
+                        <p class="text-muted fst-italic">*Danh sách này hiển thị các sản phẩm có số lượng tồn kho dưới 5 đơn vị, cần được bổ sung ngay.</p>
+                        <table class="table table-hover table-bordered align-middle text-center shadow-sm rounded-3">
                             <thead class="table-light fw-semibold">
                             <tr>
                                 <th>STT</th>
                                 <th>Mã sản phẩm</th>
                                 <th>Tên sản phẩm</th>
+                                <th class="fw-bold">Kích thước</th>
                                 <th class="text-danger">Số lượng còn lại</th>
                             </tr>
                             </thead>
@@ -292,20 +294,45 @@
                                 <td th:text="${iterStat.index + 1}" class="fw-bold text-primary"></td>
                                 <td th:text="${sp.maSanPham}" class="text-dark fw-medium"></td>
                                 <td th:text="${sp.tenSanPham}" class="text-dark"></td>
-                                <td th:text="${sp.tongSoLuongTon}" class="fw-bold text-danger"></td>
+                                <td th:text="${sp.kichThuoc}" class="text-dark"></td>
+                                <td th:text="${sp.soLuongTon}" class="fw-bold text-danger"></td>
                             </tr>
                             </tbody>
                         </table>
 
+                        <!-- Phân trang -->
+                        <div class="pagination d-flex justify-content-center mt-4">
+                            <a th:href="@{'/admin/thong-ke?page=' + ${page - 1} + '&pageSize=' + ${pageSize}}"
+                               th:if="${page > 1}" class="me-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                     viewBox="0 0 24 24"
+                                     fill="none" stroke="currentColor" stroke-width="2"
+                                     stroke-linecap="round"
+                                     stroke-linejoin="round" class="icon icon-1">
+                                    <path d="M15 6l-6 6l6 6"></path>
+                                </svg>
+                                Trước
+                            </a>
+                            <span class="align-self-center">Trang: <span th:text="${page}"></span></span>
+                            <a th:href="@{'/admin/thong-ke?page=' + ${page + 1} + '&pageSize=' + ${pageSize}}"
+                               class="ms-2">
+                                Sau
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                     viewBox="0 0 24 24"
+                                     fill="none" stroke="currentColor" stroke-width="2"
+                                     stroke-linecap="round"
+                                     stroke-linejoin="round" class="icon icon-1">
+                                    <path d="M9 6l6 6l-6 6"></path>
+                                </svg>
+                            </a>
+                        </div>
                     </div>
                 </div>
-
-
             </div>
         </div>
     </div>
 </div>
-</div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script th:inline="javascript">
@@ -337,6 +364,16 @@
                     fontSize: '17px',
                     fontWeight: 'bold',
                     color: '#263238'
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val) {
+                    return val.toLocaleString('vi-VN') + ' đ';
+                },
+                style: {
+                    fontSize: '12px',
+                    colors: ['#000']
                 }
             },
             plotOptions: {
@@ -377,9 +414,7 @@
                 '#2E294E', '#1B998B', '#E84855', '#FF8066', '#AA00FF',
                 '#00BCD4', '#FFB300', '#66BB6A', '#FF7043', '#D4E157',
                 '#6A1B9A', '#3949AB', '#039BE5', '#C2185B'],
-            dataLabels: {
-                enabled: false
-            }
+
         };
 
         let chart = new ApexCharts(document.querySelector("#chartDoanhThu"), options);
@@ -549,7 +584,6 @@
         }
     });
 </script>
-
 
 
 </body>

@@ -3,11 +3,16 @@ package com.example.datnsd26.controller;
 import com.example.datnsd26.controller.response.PublicSanPhamResponse;
 import com.example.datnsd26.models.*;
 import com.example.datnsd26.repository.*;
+import com.example.datnsd26.services.KhachHangService;
+import com.example.datnsd26.services.TaiKhoanService;
 import com.example.datnsd26.services.binhsanpham.PublicSanPhamService;
 import com.example.datnsd26.services.cart.GioHangService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -33,27 +38,27 @@ public class ShopController {
     public String homepage(Model model) {
         List<PublicSanPhamResponse> products = publicSanPhamService.getAllProducts();
         model.addAttribute("products", products);
-        return "/shop/homepage";
+        return "shop/homepage";
     }
 
     @GetMapping("/shop/ve-chung-toi")
     public String veChungToi() {
-        return "/shop/ve-chung-toi";
+        return "shop/ve-chung-toi";
     }
 
     @GetMapping("/shop/chinh-sach")
     public String chinhSach() {
-        return "/shop/chinh-sach";
+        return "shop/chinh-sach";
     }
 
     @GetMapping("/shop/khuyen-mai")
     public String khuyenMai() {
-        return "/shop/khuyen-mai";
+        return "shop/khuyen-mai";
     }
 
     @GetMapping("/shop/lien-he")
     public String lienHe() {
-        return "/shop/lien-he";
+        return "shop/lien-he";
     }
 
     @GetMapping("/shop/product/all-product")
@@ -102,7 +107,7 @@ public class ShopController {
         model.addAttribute("deGiay", listDeGiay);
         model.addAttribute("chatLieu", listChatLieu);
 
-        return "/shop/all-product";
+        return "shop/all-product";
     }
 
 
@@ -140,7 +145,7 @@ public class ShopController {
         model.addAttribute("kichCoTonTai", kichCoTonTai);
         model.addAttribute("danhSachHinhAnh", danhSachHinhAnh);
 
-        return "/shop/product-details";
+        return "shop/product-details";
     }
 
     @GetMapping("/shop/product/details")
@@ -202,7 +207,7 @@ public class ShopController {
         model.addAttribute("danhSachKichCo", danhSachKichCo);
         model.addAttribute("kichCoTonTai", kichCoTonTai);
 
-        return "/shop/product-details";
+        return "shop/product-details";
     }
 
 

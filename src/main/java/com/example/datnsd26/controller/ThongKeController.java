@@ -41,6 +41,8 @@ public class ThongKeController {
                           @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date denNgay,
                           @RequestParam(required = false) Integer thang,
                           @RequestParam(required = false) Integer nam,
+                          @RequestParam(defaultValue = "1") int page,
+                          @RequestParam(defaultValue = "5") int pageSize,
                           Model model) {
         Date today = new Date();
 
@@ -155,10 +157,12 @@ public class ThongKeController {
 
         // Thống kê sản phẩm
         List<SanPhamThongKeDTO> banChay = sanPhamService.layTopSanPhamBanChay(5);
-        List<SanPhamSapHetDto> sapHet = sanPhamService.layTopSanPhamSapHet();
+        List<SanPhamSapHetDto> sapHet = sanPhamService.layTopSanPhamSapHet(page, pageSize);
 
         model.addAttribute("topSanPhamBanChay", banChay);
         model.addAttribute("topSanPhamSapHet", sapHet);
+        model.addAttribute("page", page);
+        model.addAttribute("pageSize", pageSize);
         model.addAttribute("kieuLoc", kieuLoc);
 
 
