@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class SanPhamSapHetDto {
     private String maSanPham;
     private String tenSanPham;
-    private Integer tongSoLuongTon;
-    private String anhDaiDien;
+    private String kichThuoc;
+    private Integer soLuongTon;
 }
