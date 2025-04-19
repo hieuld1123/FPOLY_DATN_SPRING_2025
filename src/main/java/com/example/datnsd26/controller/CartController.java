@@ -11,6 +11,7 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -119,6 +120,15 @@ public class CartController {
                                Authentication auth,
                                RedirectAttributes redirectAttributes,
                                HttpSession session) {
+
+        boolean isAuthenticated = auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken);
+        boolean isCustomer = false;
+
+        if (isAuthenticated) {
+            isCustomer = auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_CUSTOMER"));
+        }
+
         List<GioHangChiTiet> gioHangHienTai = gioHangService.getGioHangHienTai(auth).getChiTietList();
         if (gioHangHienTai == null || gioHangHienTai.isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Giỏ hàng của bạn hiện đang trống.");
@@ -192,6 +202,9 @@ public class CartController {
         }
 
         // Sau khi xử lý danhSachHopLe thành công trong controller /checkout:
+
+        model.addAttribute("isAuthenticated", isAuthenticated);
+        model.addAttribute("isCustomer", isCustomer);
         session.setAttribute("selectedIds", selectedIds);
         model.addAttribute("tongTamTinh", tongTamTinh);
         model.addAttribute("cart", danhSachHopLe);
@@ -232,8 +245,18 @@ public class CartController {
             }
         }
 
+        boolean isAuthenticated = auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken);
+        boolean isCustomer = false;
+
+        if (isAuthenticated) {
+            isCustomer = auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_CUSTOMER"));
+        }
+
         List<Integer> selectedIds = (List<Integer>) session.getAttribute("selectedIds");
         if (selectedIds == null || selectedIds.isEmpty()) {
+            model.addAttribute("isAuthenticated", isAuthenticated);
+            model.addAttribute("isCustomer", isCustomer);
             model.addAttribute("errorMessage", "Bạn chưa chọn sản phẩm nào để thanh toán. Vui lòng quay lại giỏ hàng.");
             model.addAttribute("cart", new ArrayList<>());  // hiển thị sản phẩm da chon
             model.addAttribute("tongTamTinh", 0);
@@ -268,6 +291,8 @@ public class CartController {
 
         if (!danhSachLoi.isEmpty()) {
             System.out.println("VaoDay roiiii");
+            model.addAttribute("isAuthenticated", isAuthenticated);
+            model.addAttribute("isCustomer", isCustomer);
             model.addAttribute("errorMessage", "Một số sản phẩm không hợp lệ:");
             model.addAttribute("errors", danhSachLoi);
             model.addAttribute("cart", danhSachThanhToan);  // hiển thị sản phẩm da chon
@@ -279,6 +304,8 @@ public class CartController {
 
         // Validate thông tin giao hàng
         if (auth == null && bindingResult.hasErrors()) {
+            model.addAttribute("isAuthenticated", isAuthenticated);
+            model.addAttribute("isCustomer", isCustomer);
             model.addAttribute("errorMessage", "Vui lòng điền đầy đủ thông tin");
 //            model.addAttribute("errors", danhSachLoi);
             model.addAttribute("cart", danhSachThanhToan);  // hiển thị sản phẩm da chon
@@ -371,6 +398,8 @@ public class CartController {
         // Xóa session selectedIds sau khi đặt hàng xong
         session.removeAttribute("selectedIds");
 
+        model.addAttribute("isAuthenticated", isAuthenticated);
+        model.addAttribute("isCustomer", isCustomer);
         model.addAttribute("successMessage", "Đặt hàng thành công. Vui lòng kiểm tra email. Chúng tôi sẽ liên hệ với bạn qua số điện thoại để xác nhận đơn hàng.");
         model.addAttribute("cart", new ArrayList<>());
         model.addAttribute("tongTamTinh", 0);

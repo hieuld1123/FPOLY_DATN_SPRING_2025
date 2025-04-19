@@ -29,6 +29,9 @@
                     <li th:each="err : ${errors}" th:text="${err}"></li>
                 </ul>
             </div>
+            <div th:if="${isAuthenticated and !isCustomer}" class="alert alert-info mb-3" style="font-size: 0.95rem;">
+                <strong>Lưu ý:</strong> Nhân viên/Admin của <strong>Nineshoes</strong> vui lòng nhập chính xác địa chỉ email đã đăng ký với hệ thống để hoàn tất đơn hàng đúng cách.
+            </div>
         </div>
 
 
