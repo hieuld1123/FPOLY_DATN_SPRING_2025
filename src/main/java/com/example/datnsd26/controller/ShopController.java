@@ -163,19 +163,32 @@ public class ShopController {
         // Lấy danh sách kích cỡ
         List<KichCo> danhSachKichCo = kichCoRepository.findAll();
 
-        // Xác định biến thể phù hợp
+        // Tìm biến thể phù hợp với idSanPham + mauSac + kichCo
         SanPhamChiTiet spct = danhSachBienThe.stream()
                 .filter(sp -> (mauSac == null || sp.getMauSac().getId().equals(mauSac)) &&
                         (kichCo == null || sp.getKichCo().getId().equals(kichCo)))
                 .findFirst()
-                .orElse(danhSachBienThe.isEmpty() ? null : danhSachBienThe.get(0)); // Nếu không có, trả về null hoặc sản phẩm đầu tiên
+                .orElse(null);
 
-        // Nếu không tìm thấy sản phẩm phù hợp, có thể xử lý theo cách khác (ví dụ: hiển thị thông báo lỗi)
+        // Nếu không tìm thấy biến thể với kichCo hiện tại, nhưng có mauSac → tự động chọn kichCo đầu tiên hợp lệ
+        if (spct == null && mauSac != null) {
+            Optional<SanPhamChiTiet> firstMatch = danhSachBienThe.stream()
+                    .filter(sp -> sp.getMauSac().getId().equals(mauSac))
+                    .findFirst();
+
+            if (firstMatch.isPresent()) {
+                // Redirect sang URL có kichCo đầu tiên hợp lệ
+                SanPhamChiTiet valid = firstMatch.get();
+                return "redirect:/shop/product/details?idSanPham=" + idSanPham
+                        + "&mauSac=" + mauSac
+                        + "&kichCo=" + valid.getKichCo().getId();
+            }
+        }
+
+        // Nếu không tìm thấy biến thể nào, xử lý lỗi
         if (spct == null) {
-            // Trường hợp không tìm thấy sản phẩm phù hợp với màu sắc và kích cỡ đã chọn
-            // Bạn có thể muốn hiển thị một trang lỗi hoặc thông báo cho người dùng
             model.addAttribute("errorMessage", "Không tìm thấy sản phẩm phù hợp với lựa chọn của bạn.");
-            return "/shop/product-details"; // Hoặc trang lỗi
+            return "/shop/product-details";
         }
 
         // Xác định kích cỡ có sẵn cho màu sắc đã chọn
@@ -191,5 +204,6 @@ public class ShopController {
 
         return "/shop/product-details";
     }
+
 
 }
