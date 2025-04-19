@@ -298,6 +298,11 @@ public class CartController {
             }
         }
 
+        float phiShip = 0f;
+        if(tongTamTinh <= 1000000) {
+             phiShip = 30000.0f;
+        }
+
         // Tạo Hóa Đơn
         HoaDon hoaDon = HoaDon.builder()
                 .tenNguoiNhan(khachHang != null ? khachHang.getTenKhachHang() : hoaDonBinhRequest.getTenNguoiNhan())
@@ -311,7 +316,7 @@ public class CartController {
                 .ngayTao(new Date())
                 .ngayCapNhat(new Date())
                 .trangThai("Chờ xác nhận")
-                .phiVanChuyen(tongTamTinh > 1000000 ? 0.0f : 30000.0f)
+                .phiVanChuyen(phiShip)
                 .tongTien(tongTamTinh)
                 .phuongThucThanhToan("Thanh toán khi nhận hàng")
                 .thanhToan(true)
@@ -319,8 +324,7 @@ public class CartController {
                 .khachHang(khachHang)
                 .nhanVien(null)
                 .giamGia(giamGia)
-                .tongTien(tongTamTinh)
-                .thanhTien(tongTamTinh - giamGia)
+                .thanhTien(tongTamTinh - giamGia + phiShip)
                 .voucher(voucher) // nếu entity HoaDon có quan hệ @ManyToOne với Voucher
                 .build();
 
