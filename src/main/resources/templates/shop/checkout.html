@@ -67,7 +67,7 @@
                                     <textarea th:field="*{ghiChu}" class="form-control" rows="3"></textarea>
                                 </div>
                                 <div class="mb-2">
-                                    <a href="#">Thay đổi thông tin nhận hàng</a>
+                                    <a th:href="@{/thong-tin-ca-nhan/sua/{id}(id=${khachHang.id})}">Thay đổi thông tin nhận hàng</a>
                                 </div>
                                 <div class="my-3">
                                     <button type="submit" class="btn btn-primary">Đặt hàng</button>

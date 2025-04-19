@@ -360,6 +360,10 @@ public class CartController {
             e.printStackTrace();
         }
 
+        for (Integer id : selectedIds) {
+            gioHangService.xoaSanPhamKhoiGioHang(id);
+        }
+
         // Xóa session selectedIds sau khi đặt hàng xong
         session.removeAttribute("selectedIds");
 
