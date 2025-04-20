@@ -233,7 +233,7 @@ public class CartController {
             taiKhoan = taiKhoanRepository.findByEmail(email).orElse(null);
             if (taiKhoan != null) {
                 khachHang = khachHangRepository.findByTaiKhoan(taiKhoan);
-                if(khachHang != null) {
+                if (khachHang != null) {
                     diaChiMacDinh = khachHang.getDiaChi()
                             .stream()
                             .filter(DiaChi::getTrangThai) // hoặc .getTrangThai() nếu không dùng lombok getter
@@ -330,8 +330,8 @@ public class CartController {
         }
 
         float phiShip = 0f;
-        if(tongTamTinh <= 1000000) {
-             phiShip = 30000.0f;
+        if (tongTamTinh <= 1000000) {
+            phiShip = 30000.0f;
         }
 
         // Tạo Hóa Đơn
