@@ -179,6 +179,7 @@ const handleInvoiceChange = async (id) => {
     formData.invoiceId = id;
     formData.voucherId = null;
     formData.discountMoney = 0;
+    calculateTotalWithDiscount();
     enableElement();
     $("#search-customer").prop("disabled", false);
     $("#voucher-select").prop("disabled", false);
