@@ -231,7 +231,7 @@
                                                 <div class="modal-body">
                                                     <form id="addForm" th:method="post" name="addMauSac"
                                                           th:object="${mausac}"
-                                                          th:action="@{/addSaveMauSac}"
+                                                          th:action="@{/admin/addSaveMauSac}"
                                                           onsubmit="return validateTrung()">
                                                         <p style="font-weight: bold">
                                                             <span style="color: red">* </span>
@@ -621,7 +621,7 @@
                                     // Lưu thông báo vào sessionStorage
                                     sessionStorage.setItem('successMessage', 'Cập nhật thành công!');
                                     // Chuyển hướng
-                                    window.location.href = '/listMauSac';
+                                    window.location.href = '/admin/mau-sac';
                                 } else {
                                     throw new Error('Cập nhật thất bại');
                                 }

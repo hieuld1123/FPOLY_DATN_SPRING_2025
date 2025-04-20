@@ -223,7 +223,7 @@
                                                 <div class="modal-body">
                                                     <form id="addForm" name="addDeGiay" th:method="post"
                                                           th:object="${degiay}"
-                                                          th:action="@{/addSave}" onsubmit="return validateTrung()">
+                                                          th:action="@{/admin/addSave}" onsubmit="return validateTrung()">
                                                         <p style="font-weight: bold">
                                                             <span style="color: red">* </span>
                                                             Tên đế giày:
@@ -543,7 +543,7 @@
                                     // Lưu thông báo vào sessionStorage
                                     sessionStorage.setItem('successMessage', 'Cập nhật thành công!');
                                     // Chuyển hướng
-                                    window.location.href = '/listdegiay';
+                                    window.location.href = '/admin/de-giay';
                                 } else {
                                     throw new Error('Cập nhật thất bại');
                                 }

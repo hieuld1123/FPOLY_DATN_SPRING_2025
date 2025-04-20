@@ -28,7 +28,7 @@ public class ThuongHieuRestController {
                 : null;
         existingThuongHieu.setTen(trimmedTenThuongHieu);
         thuongHieuRepository.save(existingThuongHieu);
-        return ResponseEntity.ok("redirect:/listthuonghieu");
+        return ResponseEntity.ok("redirect:/admin/thuong-hieu");
     }
 
     @GetMapping("/checkTenThuongHieu")

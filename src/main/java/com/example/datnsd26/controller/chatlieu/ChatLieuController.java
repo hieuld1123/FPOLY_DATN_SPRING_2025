@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@RequestMapping("/admin")
 @Controller
 public class ChatLieuController {
     @Autowired
@@ -21,7 +22,7 @@ public class ChatLieuController {
     @Autowired
     ChatLieuService chatLieuService;
 
-    @GetMapping("/chatlieu")
+    @GetMapping("/chat-lieu")
     public String display(@ModelAttribute("search") ThuocTinhInfo info, @ModelAttribute("chatlieu") ChatLieu chatLieu, Model model) {
         List<ChatLieu> list;
         String trimmedKey = (info.getKey() != null) ? info.getKey().trim().replaceAll("\\s+", " ") : null;
@@ -46,13 +47,13 @@ public class ChatLieuController {
             chatLieuRepository.save(existingChatLieu);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái thành công!");
         }
-        return "redirect:/chatlieu";
+        return "redirect:/admin/chat-lieu";
     }
 
     @PostMapping("/updateChatLieu/{id}")
     public String updateChatLieu(@PathVariable Integer id) {
         chatLieuRepository.updateTrangThaiToFalseById(id);
-        return "redirect:/chatlieu";
+        return "redirect:/admin/chat-lieu";
     }
 
     @PostMapping("/add")
@@ -66,7 +67,7 @@ public class ChatLieuController {
         chatLieu.setNgayTao(currentTime);
         chatLieu.setNgayCapNhat(currentTime);
         chatLieuService.add(chatLieu);
-        return "redirect:/chatlieu";
+        return "redirect:/admin/chat-lieu";
     }
 
     @PostMapping("/addChatLieuModal")
@@ -114,6 +115,6 @@ public class ChatLieuController {
     @GetMapping("/chatlieu/delete/{id}")
     public String delete(@PathVariable int id) {
         chatLieuService.deleteById(id);
-        return "redirect:/chatlieu";
+        return "redirect:/admin/chat-lieu";
     }
 }

@@ -233,7 +233,7 @@
         <!-- Main content -->
         <div class="main-content">
             <div class="col-6">
-                <a th:href="@{/allSPCT}" class="back-link">
+                <a th:href="@{/quan-ly/san-pham-chi-tiet}" class="back-link">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                          class="bi bi-arrow-left" viewBox="0 0 16 16">
                         <path fill-rule="evenodd"
@@ -438,7 +438,7 @@
                                         <div class="modal-body">
                                             <form id="addFormThuongHieu" name="addThuongHieu" th:method="post"
                                                   th:object="${thuonghieu}"
-                                                  th:action="@{/addThuongHieuSua}"
+                                                  th:action="@{/admin/addThuongHieuSua}"
                                                   onsubmit="return validateTrungThuongHieu()">
                                                 <p style="font-weight: bold">
                                                     <span style="color: red">* </span>
@@ -472,7 +472,7 @@
                                         </div>
                                         <div class="modal-body">
                                             <form id="addFormChatLieu" name="addChatLieu" th:method="post"
-                                                  th:action="@{/addChatLieuSua}" th:object="${chatlieu}"
+                                                  th:action="@{/admin/addChatLieuSua}" th:object="${chatlieu}"
                                                   onsubmit="return validateTrungChatLieu()">
                                                 <p style="font-weight: bold">
                                                     <span style="color: red">* </span>
@@ -506,7 +506,7 @@
                                         <div class="modal-body">
                                             <form id="addFormDeGiay" name="addDeGiay" th:method="post"
                                                   th:object="${degiay}"
-                                                  th:action="@{/addDeGiaySua}"
+                                                  th:action="@{/admin/addDeGiaySua}"
                                                   onsubmit="return validateTrungDeGiay()">
                                                 <p style="font-weight: bold">
                                                     <span style="color: red">* </span>
@@ -539,7 +539,7 @@
                                         <div class="modal-body">
                                             <form id="addFormKichCo" name="addKichCo"
                                                   onsubmit="return validateTrungKichCo()"
-                                                  method="post" th:action="@{/addKichCoSua}"
+                                                  method="post" th:action="@{/admin/addKichCoSua}"
                                                   th:object="${kichco}">
                                                 <p style="font-weight: bold">
                                                     <span style="color: red">* </span>Tên kích cỡ:
@@ -573,7 +573,7 @@
                                         <div class="modal-body">
                                             <form id="addFormMauSac" th:method="post" name="addMauSac"
                                                   th:object="${mausac}"
-                                                  th:action="@{/addMauSacSua}"
+                                                  th:action="@{/admin/addMauSacSua}"
                                                   onsubmit="return validateTrungMauSac()">
                                                 <p style="font-weight: bold">
                                                     <span style="color: red">* </span>

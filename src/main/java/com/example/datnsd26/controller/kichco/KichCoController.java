@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@RequestMapping("/admin")
 @Controller
 public class KichCoController {
     @Autowired
@@ -23,7 +24,7 @@ public class KichCoController {
     @Autowired
     private KichCoRepository kichCoRepository;
 
-    @GetMapping("/listKichCo")
+    @GetMapping("/kich-co")
     public String listKichCo(Model model, @ModelAttribute("kichco") KichCo kichCo, @ModelAttribute("tim") ThuocTinhInfo info) {
         List<KichCo> list;
         String trimmedKey = (info.getKey() != null) ? info.getKey().trim().replaceAll("\\s+", " ") : null;
@@ -49,13 +50,13 @@ public class KichCoController {
             kichCoRepository.save(existingKichCo);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái thành công!");
         }
-        return "redirect:/listKichCo";
+        return "redirect:/admin/kich-co";
     }
 
     @PostMapping("/updateKichCo/{id}")
     public String updateKichCo(@PathVariable Integer id) {
         kichCoRepository.updateTrangThaiToFalseById(id);
-        return "redirect:/listKichCo";
+        return "redirect:/admin/kich-co";
     }
 
     @PostMapping("/addSaveKichCo")
@@ -68,7 +69,7 @@ public class KichCoController {
         kichCo.setNgayTao(currentTime);
         kichCo.setNgayCapNhat(currentTime);
         kichCoRepository.save(kichCo);
-        return "redirect:/listKichCo";
+        return "redirect:/admin/kich-co";
     }
 
     @PostMapping("/addKichCoModal")
