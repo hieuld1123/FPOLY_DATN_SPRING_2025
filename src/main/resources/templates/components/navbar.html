@@ -76,21 +76,20 @@
                             <a href="#" class="nav-link d-flex lh-1 p-0 px-2" data-bs-toggle="dropdown" aria-label="Open user menu">
 
                                 <!-- Ảnh đại diện -->
-                                <th:block th:switch="${true}">
-                                    <img class="avatar avatar-sm rounded-circle me-2"
-                                         th:case="${currentKhachHang != null}"
-                                         th:src="@{'/uploads/' + ${currentKhachHang.hinhAnh}}" alt="avatar" />
+                                <img class="avatar avatar-sm rounded-circle me-2"
+                                     th:src="@{${currentKhachHang != null} ? '/uploads/' + ${currentKhachHang.hinhAnh}
+              : (${currentNhanVien != null} ? '/uploads/' + ${currentNhanVien.hinhAnh}
+              : 'https://res.cloudinary.com/djukvrgjm/image/upload/v1744982346/vsqiguenpso7cq08prsr.jpg')}"
+                                     alt="avatar" />
 
-                                    <img class="avatar avatar-sm rounded-circle me-2"
-                                         th:case="*"
-                                         src="https://res.cloudinary.com/djukvrgjm/image/upload/v1744982346/vsqiguenpso7cq08prsr.jpg" alt="avatar" />
-                                </th:block>
 
 
                                 <!-- Tên người dùng -->
                                 <span class="d-none d-sm-inline-block"
-                                      th:text="${currentKhachHang != null ? currentKhachHang.tenKhachHang : 'Tài khoản'}">
-        </span>
+                                      th:text="${currentKhachHang != null} ? ${currentKhachHang.tenKhachHang}
+               : (${currentNhanVien != null} ? ${currentNhanVien.tenNhanVien} : 'Tài khoản')">
+</span>
+
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
