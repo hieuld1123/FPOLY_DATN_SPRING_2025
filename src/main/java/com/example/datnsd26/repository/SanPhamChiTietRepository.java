@@ -159,28 +159,24 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
     @Query("SELECT p FROM SanPhamChiTiet p ORDER BY p.giaBan DESC")
     List<PublicSanPhamResponse> findAllSortedByPriceDesc();
 
-    Optional<SanPhamChiTiet> findFirstBySanPham_MaSanPham(String maSanPham);
-
-    @Query("SELECT ha.tenAnh FROM HinhAnh ha WHERE ha.sanPhamChiTiet.id = :idSpct")
-    List<String> findHinhAnhUrlsById(@Param("idSpct") Integer idSpct);
 
     @Query(value = """
-            SELECT TOP 5
-                sp.ma_san_pham AS maSanPham,
-                sp.ten_san_pham AS tenSanPham,
-                SUM(spct.so_luong) AS tongSoLuongTon,
-                (
-                    SELECT TOP 1 ha.ten_anh 
-                    FROM hinh_anh ha 
-                    JOIN san_pham_chi_tiet spct2 ON ha.id_san_pham_chi_tiet = spct2.id
-                    WHERE spct2.id_san_pham = sp.id
-                ) AS anhDaiDien
-            FROM san_pham_chi_tiet spct
-            JOIN san_pham sp ON spct.id_san_pham = sp.id
-            GROUP BY sp.ma_san_pham, sp.ten_san_pham, sp.id
-            ORDER BY tongSoLuongTon ASC
-            """, nativeQuery = true)
-    List<Object[]> getTopSanPhamSapHetNative();
+    SELECT
+        sp.ma_san_pham AS maSanPham,
+        sp.ten_san_pham AS tenSanPham,
+        kc.ten AS kichThuoc,
+        spct.so_luong AS soLuongTon
+    FROM san_pham_chi_tiet spct
+    JOIN san_pham sp ON spct.id_san_pham = sp.id
+    JOIN kich_co kc ON spct.id_kich_co = kc.id
+    WHERE spct.so_luong < 5
+    ORDER BY spct.so_luong ASC
+    OFFSET :offset ROWS
+    FETCH NEXT :pageSize ROWS ONLY
+    """, nativeQuery = true)
+    List<Object[]> getTopSanPhamSapHetNative(@Param("offset") int offset, @Param("pageSize") int pageSize);
+
+
 
     // Tìm theo sản phẩm và trạng thái
     List<SanPhamChiTiet> findBySanPhamAndTrangThaiTrue(SanPham sanPham);

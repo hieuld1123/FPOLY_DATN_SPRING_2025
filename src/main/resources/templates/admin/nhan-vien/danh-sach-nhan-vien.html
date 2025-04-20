@@ -155,19 +155,10 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table card-table table-vcenter text-nowrap datatable table-hover">
-                                    <thead>
+                                <table class="table table-vcenter text-nowrap datatable table-hover">
+                                    <thead class="thead-light fw-bold">
                                     <tr>
-                                        <th class="w-1">
-                                            STT
-                                            <!-- Download SVG icon from http://tabler.io/icons/icon/chevron-up -->
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                 stroke-width="2"
-                                                 stroke-linecap="round" stroke-linejoin="round"
-                                                 class="icon icon-sm icon-thick icon-2">
-                                                <path d="M6 15l6 -6l6 6"></path>
-                                            </svg>
+                                        <th class="w-1 fw-bold">STT
                                         </th>
                                         <th>Mã nhân viên</th>
                                         <th>Họ tên</th>
@@ -193,7 +184,13 @@
                                         <td th:text="${nv.taiKhoan.sdt}"></td>
                                         <td th:text="${nv.gioiTinh ? 'Nam' : 'Nữ'}"></td>
                                         <td th:text="${nv.taiKhoan.vaiTro.getDisplayName()}"></td>
-                                        <td th:text="${nv.trangThai ? 'Đang làm việc' : 'Đã nghỉ'}"></td>
+                                        <td>
+    <span class="badge px-2 py-1" style="color: white"
+          th:classappend="${nv.trangThai} ? ' bg-success' : ' bg-danger'"
+          th:text="${nv.trangThai} ? 'Đang làm việc' : 'Đã nghỉ'">
+    </span>
+                                        </td>
+
                                     </tr>
                                     </tbody>
                                 </table>

@@ -4,44 +4,129 @@
     <meta charset="UTF-8">
     <title>Đặt lại mật khẩu</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://res.cloudinary.com/djukvrgjm/image/upload/v1744907525/hkcummiowsgndevlxg4y.jpg'); /* Thay bằng ảnh nền thật của bạn */
+            background-size: cover;
+            background-position: center;
+            filter: blur(8px);
+            z-index: -2;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+
+        .container-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .card {
+            width: 600px;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+
+        .shop-intro {
+            font-size: 18px;
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        h3 {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .form-label {
+            font-weight: 600;
+        }
+
+        .toggle-password {
+            right: 10px;
+            top: 70%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+
+        .btn-success {
+            padding: 12px;
+            font-size: 18px;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                width: 100%;
+                padding: 30px;
+            }
+        }
+    </style>
 </head>
-<body class="d-flex justify-content-center align-items-center vh-100">
-<div class="card p-4 shadow-lg" style="width: 400px;">
-    <h3 class="text-center">Đặt lại mật khẩu</h3>
-    <form th:action="@{/dat-lai-mat-khau}" method="post" onsubmit="return validateForm()">
-        <input type="hidden" name="token" th:value="${token}">
+<body>
+<div class="background"></div>
+<div class="overlay"></div>
 
-        <div class="mb-3 position-relative">
-            <label for="matKhauMoi" class="form-label">Mật khẩu mới</label>
-            <input type="password" class="form-control" id="matKhauMoi" name="matKhauMoi">
-            <i class="fa-solid fa-eye toggle-password position-absolute"
-               style="right: 10px; top: 70%; transform: translateY(-50%); cursor: pointer;"
-               onclick="togglePassword('matKhauMoi', this)"></i>
-            <p style="color: red; font-size: 14px;" id="errorMatKhau"></p>
-        </div>
+<div class="container-wrapper">
+    <div class="card shadow-lg">
+        <h3>Đặt lại mật khẩu</h3>
+        <p class="shop-intro">Chào mừng bạn quay lại! Hãy thiết lập mật khẩu mới để tiếp tục mua sắm tại <strong>Nine Shoes</strong></p>
 
-        <div class="mb-3 position-relative">
-            <label for="nhapLaiMatKhauMoi" class="form-label">Nhập lại mật khẩu mới</label>
-            <input type="password" class="form-control" id="nhapLaiMatKhauMoi" name="nhapLaiMatKhauMoi">
-            <i class="fa-solid fa-eye toggle-password position-absolute"
-               style="right: 10px; top: 70%; transform: translateY(-50%); cursor: pointer;"
-               onclick="togglePassword('nhapLaiMatKhauMoi', this)"></i>
-            <p style="color: red; font-size: 14px;" id="errorNhaplaiMK"></p>
-        </div>
+        <form th:action="@{/dat-lai-mat-khau}" method="post" onsubmit="return validateForm()">
+            <input type="hidden" name="token" th:value="${token}">
 
-        <button type="submit" class="btn btn-success w-100">Xác nhận</button>
-    </form>
+            <div class="mb-3 position-relative">
+                <label for="matKhauMoi" class="form-label">Mật khẩu mới</label>
+                <input type="password" class="form-control" id="matKhauMoi" name="matKhauMoi">
+                <i class="fa-solid fa-eye toggle-password position-absolute" onclick="togglePassword('matKhauMoi', this)"></i>
+                <p class="text-danger mt-1" id="errorMatKhau" style="font-size: 14px;"></p>
+            </div>
 
-    <div th:if="${error}" class="alert alert-danger mt-3" th:text="${error}"></div>
-    <div th:if="${success}" class="alert alert-success mt-3" th:text="${success}"></div>
+            <div class="mb-3 position-relative">
+                <label for="nhapLaiMatKhauMoi" class="form-label">Nhập lại mật khẩu mới</label>
+                <input type="password" class="form-control" id="nhapLaiMatKhauMoi" name="nhapLaiMatKhauMoi">
+                <i class="fa-solid fa-eye toggle-password position-absolute" onclick="togglePassword('nhapLaiMatKhauMoi', this)"></i>
+                <p class="text-danger mt-1" id="errorNhaplaiMK" style="font-size: 14px;"></p>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 mt-2">Xác nhận</button>
+        </form>
+
+        <div th:if="${error}" class="alert alert-danger mt-3" th:text="${error}"></div>
+        <div th:if="${success}" class="alert alert-success mt-3" th:text="${success}"></div>
+    </div>
 </div>
 
 <script>
     function togglePassword(fieldId, eyeIcon) {
-        let field = document.getElementById(fieldId);
+        const field = document.getElementById(fieldId);
         if (field.type === "password") {
             field.type = "text";
             eyeIcon.classList.remove("fa-eye");
@@ -54,54 +139,47 @@
     }
 
     function validateForm() {
-        let password = document.getElementById("matKhauMoi").value.trim();
-        let confirmPassword = document.getElementById("nhapLaiMatKhauMoi").value.trim();
-        let errorMatKhau = document.getElementById("errorMatKhau");
-        let errorNhaplaiMK = document.getElementById("errorNhaplaiMK");
+        const password = document.getElementById("matKhauMoi").value.trim();
+        const confirmPassword = document.getElementById("nhapLaiMatKhauMoi").value.trim();
+        const errorMatKhau = document.getElementById("errorMatKhau");
+        const errorNhaplaiMK = document.getElementById("errorNhaplaiMK");
 
-        // Xóa thông báo lỗi trước đó
         errorMatKhau.innerText = "";
         errorNhaplaiMK.innerText = "";
 
         let isValid = true;
 
-        // Kiểm tra ô mật khẩu có bị bỏ trống không
+        const regexMatKhau = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-        // Kiểm tra ô nhập lại mật khẩu có bị bỏ trống không
-        if (!confirmPassword) {
-            errorNhaplaiMK.innerText = "Vui lòng nhập lại mật khẩu.";
-            isValid = false;
-        }
-
-        let regexMatKhau = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
         if (!password) {
             errorMatKhau.innerText = "Vui lòng nhập mật khẩu.";
             isValid = false;
         } else if (!regexMatKhau.test(password)) {
-            errorMatKhau.innerText = "Mật khẩu phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt!";
+            errorMatKhau.innerText = "Mật khẩu phải từ 8 ký tự, gồm chữ hoa, thường, số và ký tự đặc biệt.";
             isValid = false;
         }
 
-        // Kiểm tra mật khẩu nhập lại
-        if (password !== confirmPassword) {
+        if (!confirmPassword) {
+            errorNhaplaiMK.innerText = "Vui lòng nhập lại mật khẩu.";
+            isValid = false;
+        } else if (password !== confirmPassword) {
             errorNhaplaiMK.innerText = "Mật khẩu nhập lại không khớp.";
             isValid = false;
         }
-        if (!isValid) {
-            return false;
-        } else {
-            Swal.fire({
-                title: "Thành công!",
-                text: "Mật khẩu đã được đặt lại! Vui lòng đăng nhập.",
-                icon: "success",
-                confirmButtonText: "OK"
-            }).then(() => {
-                document.querySelector("form").submit();
-            });
-            return false;
-        }
-    }
 
+        if (!isValid) return false;
+
+        Swal.fire({
+            title: "Thành công!",
+            text: "Mật khẩu đã được đặt lại! Vui lòng đăng nhập.",
+            icon: "success",
+            confirmButtonText: "OK"
+        }).then(() => {
+            document.querySelector("form").submit();
+        });
+
+        return false;
+    }
 </script>
 
 </body>

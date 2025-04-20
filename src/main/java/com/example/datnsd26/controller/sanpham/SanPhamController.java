@@ -5,6 +5,7 @@ import com.example.datnsd26.info.*;
 import com.example.datnsd26.repository.*;
 import com.example.datnsd26.services.QRCodeGenerator;
 import com.example.datnsd26.services.impl.*;
+import com.example.datnsd26.utilities.CloudinaryUtil;
 import com.google.zxing.WriterException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -73,6 +74,9 @@ public class SanPhamController {
 
     @Autowired
     NhanVienRepository nhanvienRPo;
+
+    @Autowired
+    CloudinaryUtil cloudinaryUtil;
 
 
     private String taoChuoiNgauNhien(int doDaiChuoi, String kiTu) {
@@ -444,7 +448,6 @@ public class SanPhamController {
         return "forward:/viewaddSPPOST";
     }
 
-
     @PostMapping("/addImage")
     public String addImage(
             @RequestParam(name = "anh1") List<MultipartFile> anhFiles1,
@@ -480,46 +483,56 @@ public class SanPhamController {
             }
         }
         sanPhamChiTietList.clear();
-//        for (int i = 0; i < spctIds.size(); i++) {
-//            Integer spctId = spctIds.get(i);
-//            SanPhamChiTiet spct = sanPhamChiTietRepository.findById(spctId).orElse(null);
-//            if (spct != null) {
-//                MultipartFile anhFile1 = anhFiles1.get(i);
-//                if (!anhFile1.isEmpty()) {
-//                    addAnh(spct, anhFile1);
-//                }
-//                MultipartFile anhFile2 = anhFiles2.get(i);
-//                if (!anhFile2.isEmpty()) {
-//                    addAnh(spct, anhFile2);
-//                }
-//                MultipartFile anhFile3 = anhFiles3.get(i);
-//                if (!anhFile3.isEmpty()) {
-//                    addAnh(spct, anhFile3);
-//                }
-//            }
-//        }
+
         for (int i = 0; i < uniqueList.size(); i++) {
             SanPhamChiTiet spct = uniqueList.get(i);
             List<SanPhamChiTiet> spctSameImage = sanPhamChiTietImp.findByIdSanPhamAndIdMauSac(spct.getSanPham().getId(), spct.getMauSac().getId());
 
-
             byte[] file1Bytes = anhFiles1.get(i).getBytes();
             byte[] file2Bytes = anhFiles2.get(i).getBytes();
             byte[] file3Bytes = anhFiles3.get(i).getBytes();
-            String name1 = anhFiles1.get(i).getOriginalFilename();
-            String name2 = anhFiles2.get(i).getOriginalFilename();
-            String name3 = anhFiles3.get(i).getOriginalFilename();
+            LocalDateTime now = LocalDateTime.now();
 
+            // Upload images to Cloudinary and get URLs
+            String url1 = null, url2 = null, url3 = null;
+            if (file1Bytes.length > 0) {
+                Map<String, String> uploadResult1 = cloudinaryUtil.upload(anhFiles1.get(i));
+                url1 = uploadResult1.get("url");
+            }
+            if (file2Bytes.length > 0) {
+                Map<String, String> uploadResult2 = cloudinaryUtil.upload(anhFiles2.get(i));
+                url2 = uploadResult2.get("url");
+            }
+            if (file3Bytes.length > 0) {
+                Map<String, String> uploadResult3 = cloudinaryUtil.upload(anhFiles3.get(i));
+                url3 = uploadResult3.get("url");
+            }
 
+            // Save image URLs in the database for each product detail
             for (SanPhamChiTiet spctInList : spctSameImage) {
-                if (file1Bytes.length > 0) {
-                    addAnhFromBytes(spctInList, file1Bytes, name1);
+                if (url1 != null) {
+                    HinhAnh anh1 = new HinhAnh();
+                    anh1.setTenAnh(url1); // Save the URL from Cloudinary
+                    anh1.setNgayTao(now);
+                    anh1.setNgayCapNhat(now);
+                    anh1.setSanPhamChiTiet(spctInList);
+                    anhRepository.save(anh1);
                 }
-                if (file2Bytes.length > 0) {
-                    addAnhFromBytes(spctInList, file2Bytes, name2);
+                if (url2 != null) {
+                    HinhAnh anh2 = new HinhAnh();
+                    anh2.setTenAnh(url2); // Save the URL from Cloudinary
+                    anh2.setNgayTao(now);
+                    anh2.setNgayCapNhat(now);
+                    anh2.setSanPhamChiTiet(spctInList);
+                    anhRepository.save(anh2);
                 }
-                if (file3Bytes.length > 0) {
-                    addAnhFromBytes(spctInList, file3Bytes, name3);
+                if (url3 != null) {
+                    HinhAnh anh3 = new HinhAnh();
+                    anh3.setTenAnh(url3); // Save the URL from Cloudinary
+                    anh3.setNgayTao(now);
+                    anh3.setNgayCapNhat(now);
+                    anh3.setSanPhamChiTiet(spctInList);
+                    anhRepository.save(anh3);
                 }
             }
         }
@@ -528,6 +541,75 @@ public class SanPhamController {
         redirectAttributes.addFlashAttribute("success", true);
         return "redirect:/listsanpham";
     }
+
+
+
+//    @PostMapping("/addImage")
+//    public String addImage(
+//            @RequestParam(name = "anh1") List<MultipartFile> anhFiles1,
+//            @RequestParam(name = "anh2") List<MultipartFile> anhFiles2,
+//            @RequestParam(name = "anh3") List<MultipartFile> anhFiles3,
+//            RedirectAttributes redirectAttributes,
+//            Model model
+//    ) throws IOException {
+//        SanPham sanPham = sanPhamChiTietList.get(0).getSanPham();
+//        List<SanPhamChiTiet> listsanPhamChiTietDB = sanPhamChiTietRepository.findBySanPham(sanPham);
+//
+//        if (listsanPhamChiTietDB.isEmpty()) {
+//            for (SanPhamChiTiet spct : sanPhamChiTietList) {
+//                sanPhamChiTietRepository.save(spct);
+//            }
+//        } else {
+//            for (SanPhamChiTiet spctList : sanPhamChiTietList) {
+//                SanPhamChiTiet spctTim = sanPhamChiTietRepository.findSPCT(
+//                        spctList.getMauSac(), spctList.getKichCo(), spctList.getThuongHieu(),
+//                        spctList.getChatLieu(), spctList.getDeGiay(), spctList.getSanPham());
+//                if (spctTim != null) {
+//                    spctTim.setSoLuong(spctTim.getSoLuong() + spctList.getSoLuong());
+//                    if (spctList.getHinhAnh() != null) {
+//                        for (HinhAnh anh : spctList.getHinhAnh()) {
+//                            anh.setSanPhamChiTiet(spctTim);
+//                            anhRepository.save(anh);
+//                        }
+//                    }
+//                    sanPhamChiTietRepository.save(spctTim);
+//                } else {
+//                    sanPhamChiTietRepository.save(spctList);
+//                }
+//            }
+//        }
+//        sanPhamChiTietList.clear();
+//
+//        for (int i = 0; i < uniqueList.size(); i++) {
+//            SanPhamChiTiet spct = uniqueList.get(i);
+//            List<SanPhamChiTiet> spctSameImage = sanPhamChiTietImp.findByIdSanPhamAndIdMauSac(spct.getSanPham().getId(), spct.getMauSac().getId());
+//
+//
+//            byte[] file1Bytes = anhFiles1.get(i).getBytes();
+//            byte[] file2Bytes = anhFiles2.get(i).getBytes();
+//            byte[] file3Bytes = anhFiles3.get(i).getBytes();
+//            String name1 = anhFiles1.get(i).getOriginalFilename();
+//            String name2 = anhFiles2.get(i).getOriginalFilename();
+//            String name3 = anhFiles3.get(i).getOriginalFilename();
+//
+//
+//            for (SanPhamChiTiet spctInList : spctSameImage) {
+//                if (file1Bytes.length > 0) {
+//                    addAnhFromBytes(spctInList, file1Bytes, name1);
+//                }
+//                if (file2Bytes.length > 0) {
+//                    addAnhFromBytes(spctInList, file2Bytes, name2);
+//                }
+//                if (file3Bytes.length > 0) {
+//                    addAnhFromBytes(spctInList, file3Bytes, name3);
+//                }
+//            }
+//        }
+//
+//        uniqueList.clear();
+//        redirectAttributes.addFlashAttribute("success", true);
+//        return "redirect:/listsanpham";
+//    }
 
     private void addAnhFromBytes(SanPhamChiTiet spct, byte[] fileData, String originalFilename) {
         try {

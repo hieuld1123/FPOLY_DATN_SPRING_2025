@@ -3,11 +3,16 @@ package com.example.datnsd26.controller;
 import com.example.datnsd26.controller.response.PublicSanPhamResponse;
 import com.example.datnsd26.models.*;
 import com.example.datnsd26.repository.*;
+import com.example.datnsd26.services.KhachHangService;
+import com.example.datnsd26.services.TaiKhoanService;
 import com.example.datnsd26.services.binhsanpham.PublicSanPhamService;
 import com.example.datnsd26.services.cart.GioHangService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -33,17 +38,27 @@ public class ShopController {
     public String homepage(Model model) {
         List<PublicSanPhamResponse> products = publicSanPhamService.getAllProducts();
         model.addAttribute("products", products);
-        return "/shop/homepage";
+        return "shop/homepage";
     }
 
     @GetMapping("/shop/ve-chung-toi")
     public String veChungToi() {
-        return "/shop/ve-chung-toi";
+        return "shop/ve-chung-toi";
+    }
+
+    @GetMapping("/shop/chinh-sach")
+    public String chinhSach() {
+        return "shop/chinh-sach";
+    }
+
+    @GetMapping("/shop/khuyen-mai")
+    public String khuyenMai() {
+        return "shop/khuyen-mai";
     }
 
     @GetMapping("/shop/lien-he")
     public String lienHe() {
-        return "/shop/lien-he";
+        return "shop/lien-he";
     }
 
     @GetMapping("/shop/product/all-product")
@@ -92,7 +107,7 @@ public class ShopController {
         model.addAttribute("deGiay", listDeGiay);
         model.addAttribute("chatLieu", listChatLieu);
 
-        return "/shop/all-product";
+        return "shop/all-product";
     }
 
 
@@ -130,7 +145,7 @@ public class ShopController {
         model.addAttribute("kichCoTonTai", kichCoTonTai);
         model.addAttribute("danhSachHinhAnh", danhSachHinhAnh);
 
-        return "/shop/product-details";
+        return "shop/product-details";
     }
 
     @GetMapping("/shop/product/details")
@@ -153,19 +168,32 @@ public class ShopController {
         // Lấy danh sách kích cỡ
         List<KichCo> danhSachKichCo = kichCoRepository.findAll();
 
-        // Xác định biến thể phù hợp
+        // Tìm biến thể phù hợp với idSanPham + mauSac + kichCo
         SanPhamChiTiet spct = danhSachBienThe.stream()
                 .filter(sp -> (mauSac == null || sp.getMauSac().getId().equals(mauSac)) &&
                         (kichCo == null || sp.getKichCo().getId().equals(kichCo)))
                 .findFirst()
-                .orElse(danhSachBienThe.isEmpty() ? null : danhSachBienThe.get(0)); // Nếu không có, trả về null hoặc sản phẩm đầu tiên
+                .orElse(null);
 
-        // Nếu không tìm thấy sản phẩm phù hợp, có thể xử lý theo cách khác (ví dụ: hiển thị thông báo lỗi)
+        // Nếu không tìm thấy biến thể với kichCo hiện tại, nhưng có mauSac → tự động chọn kichCo đầu tiên hợp lệ
+        if (spct == null && mauSac != null) {
+            Optional<SanPhamChiTiet> firstMatch = danhSachBienThe.stream()
+                    .filter(sp -> sp.getMauSac().getId().equals(mauSac))
+                    .findFirst();
+
+            if (firstMatch.isPresent()) {
+                // Redirect sang URL có kichCo đầu tiên hợp lệ
+                SanPhamChiTiet valid = firstMatch.get();
+                return "redirect:/shop/product/details?idSanPham=" + idSanPham
+                        + "&mauSac=" + mauSac
+                        + "&kichCo=" + valid.getKichCo().getId();
+            }
+        }
+
+        // Nếu không tìm thấy biến thể nào, xử lý lỗi
         if (spct == null) {
-            // Trường hợp không tìm thấy sản phẩm phù hợp với màu sắc và kích cỡ đã chọn
-            // Bạn có thể muốn hiển thị một trang lỗi hoặc thông báo cho người dùng
             model.addAttribute("errorMessage", "Không tìm thấy sản phẩm phù hợp với lựa chọn của bạn.");
-            return "/shop/product-details"; // Hoặc trang lỗi
+            return "/shop/product-details";
         }
 
         // Xác định kích cỡ có sẵn cho màu sắc đã chọn
@@ -179,7 +207,8 @@ public class ShopController {
         model.addAttribute("danhSachKichCo", danhSachKichCo);
         model.addAttribute("kichCoTonTai", kichCoTonTai);
 
-        return "/shop/product-details";
+        return "shop/product-details";
     }
+
 
 }

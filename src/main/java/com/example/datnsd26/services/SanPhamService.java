@@ -20,7 +20,7 @@ public interface SanPhamService {
     SanPham findById(Integer Id);
 
     List<SanPhamThongKeDTO> layTopSanPhamBanChay(int limit);
-    List<SanPhamSapHetDto> layTopSanPhamSapHet();
+    List<SanPhamSapHetDto> layTopSanPhamSapHet(int page, int pageSize);
 
 }
 

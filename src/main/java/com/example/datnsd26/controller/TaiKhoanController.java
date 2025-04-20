@@ -9,6 +9,8 @@ import com.example.datnsd26.services.*;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -44,21 +46,23 @@ public class TaiKhoanController {
 
     @GetMapping("/doi-mat-khau")
     public String hienThiFormDoiMatKhau(@RequestParam("email") String email, Model model) {
+        if (email == null || email.isEmpty()) {
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (principal instanceof UserDetails) {
+                email = ((UserDetails) principal).getUsername();  // Thường username là email
+            }
+        }
         model.addAttribute("email", email);
         return "/tai-khoan/doi-mat-khau";
     }
 
     @PostMapping("/doi-mat-khau")
-    public String doiMatKhau(@RequestParam String email,
+    public String doiMatKhau(@RequestParam(value = "email", required = false) String email,
                              @RequestParam String matKhauCu,
                              @RequestParam String matKhauMoi,
                              RedirectAttributes redirectAttributes) {
-        TaiKhoan taiKhoan = taiKhoanService.findByEmail(email);
 
-        System.out.println("Mật khẩu nhập vào: " + matKhauCu);
-        System.out.println("Mật nhập vào mã hóa: " + passwordEncoder.encode(matKhauCu));
-        System.out.println("Mật khẩu trong database: " + taiKhoan.getMatKhau());
-        System.out.println("Kết quả kiểm tra: " + passwordEncoder.matches(matKhauCu, taiKhoan.getMatKhau()));
+        TaiKhoan taiKhoan = taiKhoanService.findByEmail(email);
 
         // Kiểm tra mật khẩu cũ có đúng không
         if (!passwordEncoder.matches(matKhauCu, taiKhoan.getMatKhau())) {
@@ -79,13 +83,6 @@ public class TaiKhoanController {
 
         return "redirect:/login";
     }
-
-//    @GetMapping("/dang-nhap")
-//    public String dangNhap(Model model) {
-//        model.addAttribute("taiKhoan", new TaiKhoan());
-//        return "/tai-khoan/dang-nhap";
-//    }
-
 
     @GetMapping("user/dang-ky")
     public String dangKy(Model model) {
@@ -258,7 +255,7 @@ public class TaiKhoanController {
         model.addAttribute("email", email);
         return "/tai-khoan/doi-mat-khau";
     }
-    @GetMapping("/admin/thong-tin-nv")
+    @GetMapping("/quan-ly/thong-tin-nv")
     public String thongTinNhanVien(Model model, Principal principal) {
         if (principal == null) {
             return "redirect:/login";

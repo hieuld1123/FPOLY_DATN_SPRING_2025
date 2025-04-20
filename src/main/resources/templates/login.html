@@ -2,102 +2,162 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Đăng nhập</title>
+    <title>Đăng nhập - Nine Shoes</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        function validateForm() {
-            let email = document.getElementById("email").value.trim();
-            let password = document.getElementById("password").value.trim();
-            let isValid = true;
-
-            if (email === "") {
-                document.getElementById("errorEmail").innerText = "Email không được để trống!";
-                isValid = false;
-            } else {
-                document.getElementById("errorEmail").innerText = "";
-            }
-
-            if (password === "") {
-                document.getElementById("errorPassword").innerText = "Mật khẩu không được để trống!";
-                isValid = false;
-            } else {
-                document.getElementById("errorPassword").innerText = "";
-            }
-
-            return isValid;
-        }
-    </script>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            position: relative;
+            font-family: 'Segoe UI', sans-serif;
+            background: url('https://res.cloudinary.com/djukvrgjm/image/upload/v1744907525/hkcummiowsgndevlxg4y.jpg') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
             display: flex;
-            justify-content: center;
             align-items: center;
-            height: 100vh;
+            justify-content: center;
+            overflow: hidden;
         }
+
+        .background-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            z-index: 1;
+        }
+
         .login-container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px 0px #aaa;
-            width: 350px;
+            position: relative;
+            z-index: 2;
+            background: #ffffff;
+            padding: 60px 50px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .welcome-text {
             text-align: center;
+            margin-bottom: 40px;
         }
-        h2 { text-align: center; }
+
+        .welcome-text h1 {
+            font-size: 34px;
+            color: #333;
+            margin: 0;
+        }
+
+        .welcome-text p {
+            font-size: 17px;
+            color: black;
+            margin-top: 10px;
+        }
+
         .form-group {
-            margin-bottom: 15px;
-            text-align: left;
+            margin-bottom: 30px;
+            position: relative;
         }
-        label { font-weight: bold; }
+
+        label {
+            font-weight: 600;
+            font-size: 17px;
+            margin-bottom: 10px;
+            display: block;
+            color: #444;
+        }
+
         input {
             width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 16px 18px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 12px;
+            outline: none;
+            transition: border 0.3s;
         }
-        .error { color: red; font-size: 12px; }
+
+        input:focus {
+            border-color: #6c63ff;
+        }
+
+        .toggle-password {
+            position: absolute;
+            top: 70%;
+            right: 15px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #888;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 6px;
+        }
+
         .btn {
             width: 100%;
-            background-color: #28a745;
+            padding: 16px;
+            background-color: #6c63ff;
             color: white;
-            padding: 10px;
+            font-size: 18px;
+            font-weight: bold;
             border: none;
-            border-radius: 5px;
+            border-radius: 12px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
-        .btn:hover { background-color: #218838; }
+
+        .btn:hover {
+            background-color: #574b90;
+        }
+
         .links {
-            margin-top: 15px;
+            text-align: center;
+            margin-top: 30px;
+            font-size: 16px;
         }
+
         .links a {
+            color: #6c63ff;
             text-decoration: none;
-            color: #007bff;
-            margin: 0 10px;
+            margin: 0 12px;
         }
+
         .links a:hover {
             text-decoration: underline;
         }
-        .form-group {
-            position: relative;
-        }
-        .toggle-password {
-            position: absolute;
-            right: 10px;  /* Cách mép phải */
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
+
+        @media (max-width: 600px) {
+            .login-container {
+                padding: 40px 30px;
+            }
+
+            .welcome-text h1 {
+                font-size: 26px;
+            }
+
+            .btn {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 <body>
-
+<div class="background-overlay"></div>
 <div class="login-container">
-    <p th:if="${successMessage}" th:text="${successMessage}" style="display: none;" class="d-none" id="successMessage"></p>
+    <p th:if="${successMessage}" th:text="${successMessage}" style="display: none;" id="successMessage"></p>
 
-    <h2>Đăng nhập</h2>
+    <div class="welcome-text">
+        <h1>Chào mừng bạn đến với Nine Shoes</h1>
+        <p>Đăng nhập để bắt đầu hành trình thời trang cùng chúng tôi</p>
+    </div>
 
     <form th:action="@{/login}" method="post" onsubmit="return validateForm()">
         <div class="form-group">
@@ -108,10 +168,8 @@
 
         <div class="form-group">
             <label>Mật khẩu:</label>
-            <div style="position: relative;">
-                <input type="password" id="password" name="password" class="form-control" placeholder="Vui lòng nhập mật khẩu">
-                <i class="fa-solid fa-eye toggle-password" onclick="togglePassword('password', this)"></i>
-            </div>
+            <input type="password" id="password" name="password" placeholder="Vui lòng nhập mật khẩu">
+            <i class="fa-solid fa-eye toggle-password" onclick="togglePassword('password', this)"></i>
             <p id="errorPassword" class="error"></p>
         </div>
 
@@ -125,18 +183,23 @@
         <a th:href="@{/quen-mat-khau}">Quên mật khẩu?</a>
     </div>
 </div>
+
 <script>
+    function validateForm() {
+        let email = document.getElementById("email").value.trim();
+        let password = document.getElementById("password").value.trim();
+
+        document.getElementById("errorEmail").innerText = email === "" ? "Email không được để trống!" : "";
+        document.getElementById("errorPassword").innerText = password === "" ? "Mật khẩu không được để trống!" : "";
+
+        return email !== "" && password !== "";
+    }
+
     function togglePassword(fieldId, icon) {
-        var passwordField = document.getElementById(fieldId);
-        if (passwordField.type === "password") {
-            passwordField.type = "text";
-            icon.classList.remove("fa-eye");
-            icon.classList.add("fa-eye-slash");
-        } else {
-            passwordField.type = "password";
-            icon.classList.remove("fa-eye-slash");
-            icon.classList.add("fa-eye");
-        }
+        let input = document.getElementById(fieldId);
+        input.type = input.type === "password" ? "text" : "password";
+        icon.classList.toggle("fa-eye");
+        icon.classList.toggle("fa-eye-slash");
     }
 </script>
 
@@ -152,8 +215,6 @@
             });
         }
 
-        /* Hiển thị lỗi đăng nhập nếu có */
-        /* 💡 sửa lại đoạn này */
         let errorMessage = /*[[${errorMessage}]]*/ null;
         if (errorMessage !== null && errorMessage.trim() !== "") {
             Swal.fire({
@@ -165,7 +226,6 @@
         }
     });
 </script>
-
 
 </body>
 </html>

@@ -66,11 +66,11 @@
                         <div th:if="${#authorization.expression('isAnonymous()')}">
                             <a th:href="@{/login}" class="nav-link d-flex align-items-center">
                                 <img class="rounded-circle me-2" width="35" height="35"
-                                     th:if="${currentKhachHang != null}"
-                                     th:src="@{'/uploads/' + ${currentKhachHang.hinhAnh}}"
+                                     src="https://res.cloudinary.com/djukvrgjm/image/upload/v1744982346/vsqiguenpso7cq08prsr.jpg"
                                      alt="avatar"/>
                             </a>
                         </div>
+
                         <!-- Nếu đã đăng nhập -->
                         <div th:if="${#authorization.expression('isAuthenticated()')}" class="nav-item dropdown">
                             <a href="#" class="nav-link d-flex lh-1 p-0 px-2" data-bs-toggle="dropdown" aria-label="Open user menu">
@@ -83,7 +83,7 @@
 
                                     <img class="avatar avatar-sm rounded-circle me-2"
                                          th:case="*"
-                                         src="/img/default-avatar.png" alt="avatar" />
+                                         src="https://res.cloudinary.com/djukvrgjm/image/upload/v1744982346/vsqiguenpso7cq08prsr.jpg" alt="avatar" />
                                 </th:block>
 
 
@@ -101,8 +101,10 @@
                                 <a class="dropdown-item" th:href="@{/khach-hang/lich-su-mua-hang}">Lịch sử mua hàng</a>
 
                                 <!-- Đổi mật khẩu -->
-                                <a class="dropdown-item" th:href="@{/}">Đổi mật khẩu</a>
-
+                                <a class="dropdown-item"
+                                   th:href="@{/doi-mat-khau(email=${currentKhachHang?.taiKhoan?.email})}">
+                                    Đổi mật khẩu
+                                </a>
                                 <div class="dropdown-divider"></div>
 
                                 <!-- Logout -->
@@ -150,9 +152,19 @@
                                         </span><span class="nav-link-title" style="font-size: 16px">Liên hệ</span>
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" th:href="@{/shop/chinh-sach}">
+                                        <span class="nav-link-title" style="font-size: 16px"> Chính sách</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" th:href="@{/shop/khuyen-mai}">
+                                        <span class="nav-link-title" style="font-size: 16px">Khuyến mãi</span>
+                                    </a>
+                                </li>
                                 <li class="nav-item ms-auto">
                                     <form id="searchForm" action="/shop/product/all-product" method="get"
-                                          class="d-flex align-items-center" style="width: 350px;">
+                                          class="d-flex align-items-center" style="width: 230px;">
                                         <div class="input-icon w-100">
         <span class="input-icon-addon">
             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="20" height="20" viewBox="0 0 24 24"

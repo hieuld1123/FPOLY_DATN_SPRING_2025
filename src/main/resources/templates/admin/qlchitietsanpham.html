@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
-<div th:replace="~{components/head :: head}" ></div>
+<div th:replace="~{components/head :: head}"></div>
 <meta charset="UTF-8"/>
 <title>NineShoes</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
@@ -24,7 +24,8 @@
 
 <!-- Select2 (Dropdown multiple) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css">
 
 <!-- Bootstrap Color Picker -->
 <link rel="stylesheet"
@@ -313,11 +314,13 @@
                                             onchange="submitForm()">
                                         <option value="" th:selected="${fillTrangThai == null}">Tất cả</option>
                                         <option value="true"
-                                                th:selected="${fillTrangThai != null && fillTrangThai == 'true'}">Đang kinh
+                                                th:selected="${fillTrangThai != null && fillTrangThai == 'true'}">Đang
+                                            kinh
                                             doanh
                                         </option>
                                         <option value="false"
-                                                th:selected="${fillTrangThai != null && fillTrangThai == 'false'}">Ngừng kinh
+                                                th:selected="${fillTrangThai != null && fillTrangThai == 'false'}">Ngừng
+                                            kinh
                                             doanh
                                         </option>
                                     </select>
@@ -434,10 +437,12 @@
                                             <div th:class="'carousel-item' + (${index.index == 0} ? ' active' : '')">
                                                 <!-- Hình ảnh carousel -->
                                                 <img th:if="${anhs.tenAnh != null}"
-                                                     th:src="@{'/upload' + ${anhs.tenAnh.substring(anhs.tenAnh.lastIndexOf('upload') + 6)}}"
+                                                     th:src="${anhs.tenAnh}"
                                                      class="d-block w-100 carousel-img rounded-3"
-                                                     alt="Ảnh" style="width: 120px; height: 120px">
+                                                     alt="Ảnh" style="width: 120px; height: 120px;
+                                                     filter: brightness(1.2) contrast(1.2); background-color: white;">
                                             </div>
+<!--                                        th:src="@{'/upload' + ${anhs.tenAnh.substring(anhs.tenAnh.lastIndexOf('upload') + 6)}}"-->
                                         </th:block>
                                     </div>
                                     <button class="carousel-control-prev" type="button"
