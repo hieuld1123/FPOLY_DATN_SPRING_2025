@@ -11,4 +11,5 @@ public class PaymentRequest {
     private String type;
     private String paymentMethod;
     private float shippingFee;
+    private Long voucherId;
 }

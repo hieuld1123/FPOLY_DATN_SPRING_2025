@@ -141,7 +141,7 @@ $(document).ready(function () {
                 </div>
                 <div class="row mb-2">
                     <div class="col-8">Mã giảm giá</div>
-                    <div class="col-4 text-end">${data.summary.discount.toLocaleString()}</div>
+                    <div class="col-4 text-end">${data.summary.discount > 0 ? "-" : ""} ${data.summary.discount.toLocaleString()}</div>
                 </div>
                 <div class="row mb-2">
                     <div class="col-8 fw-semibold">Thành tiền</div>
@@ -239,7 +239,7 @@ $(document).ready(function () {
             <h3>Tổng kết</h3>
             <div><span>Tổng tiền (${data.products.length} sản phẩm):</span><span>${data.summary.subtotal.toLocaleString()} VND</span></div>
             <div><span>Phí giao hàng:</span><span>${data.summary.shipping_fee.toLocaleString()} VND</span></div>
-            <div><span>Mã giảm giá:</span><span>${data.summary.discount.toLocaleString()} VND</span></div>
+            <div><span>Mã giảm giá:</span><span>${data.summary.discount > 0 ? "-" : ""} ${data.summary.discount.toLocaleString()} VND</span></div>
             <div><strong>Thành tiền:</strong><strong>${data.summary.total.toLocaleString()} VND</strong></div>
         </div>
         <div class="section thank-you">

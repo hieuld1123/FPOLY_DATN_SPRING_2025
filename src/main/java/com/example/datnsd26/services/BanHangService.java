@@ -44,4 +44,6 @@ public interface BanHangService {
     void updatePhone(Integer customerId, String phoneNumber, Integer invoiceId);
 
     void addCustomerInvoice(Integer invoiceId, StoreCustomerRequest request);
+
+    List<VoucherResponse> getVouchers();
 }

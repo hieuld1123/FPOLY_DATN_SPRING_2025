@@ -20,11 +20,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -90,7 +88,7 @@ public class HoaDonServiceImp implements HoaDonService {
                         .build())
                 .products(hd.getDanhSachSanPham().stream().map(s -> InvoiceInformation.Product.builder()
                         .id(s.getSanPhamChiTiet().getId())
-                        .image("https://th.bing.com/th/id/OIP.8tQmmY_ccVpcxBxu0Z0mzwHaE8?rs=1&pid=ImgDetMain")
+                        .image(s.getSanPhamChiTiet().getHinhAnh().get(0).getTenAnh())
                         .code(s.getSanPhamChiTiet().getMaSanPhamChiTiet())
                         .name(String.format("%s [%s - %s]", s.getSanPhamChiTiet().getSanPham().getTenSanPham(), s.getSanPhamChiTiet().getMauSac().getTenMauSac(), s.getSanPhamChiTiet().getKichCo().getTen()))
                         .quantity(s.getSoLuong())
@@ -100,8 +98,8 @@ public class HoaDonServiceImp implements HoaDonService {
                 .summary(InvoiceInformation.Summary.builder()
                         .subtotal(hd.getTongTien())
                         .shipping_fee(hd.getPhiVanChuyen())
-                        .discount(0)
-                        .total(hd.getTongTien() + hd.getPhiVanChuyen())
+                        .discount(hd.getGiamGia())
+                        .total(hd.getThanhTien())
                         .build())
                 .build();
     }

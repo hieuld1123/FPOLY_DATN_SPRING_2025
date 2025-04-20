@@ -8,11 +8,10 @@ import com.example.datnsd26.services.BanHangService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-@Slf4j
+@Slf4j(topic = "BAN-HANG-API-CONTROLLER")
 @RestController
 @RequestMapping("/api/${api.version}/ban-hang")
 @RequiredArgsConstructor
@@ -23,7 +22,7 @@ public class BanHangApiController {
     public ApiResponse createHoaDon() {
         return ApiResponse.builder()
                 .status(HttpStatus.OK.value())
-                .message("Success")
+                .message("Create invoice")
                 .data(banHangService.createHoaDon())
                 .build();
     }
@@ -178,6 +177,15 @@ public class BanHangApiController {
         return ApiResponse.builder()
                 .status(HttpStatus.ACCEPTED.value())
                 .message("Success")
+                .build();
+    }
+
+    @GetMapping("/vouchers")
+    public ApiResponse getVouchers() {
+        return ApiResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("List vouchers")
+                .data(banHangService.getVouchers())
                 .build();
     }
 }
