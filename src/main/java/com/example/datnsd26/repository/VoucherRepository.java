@@ -67,7 +67,9 @@ public interface VoucherRepository extends JpaRepository<Voucher, Long> {
             "WHERE v.trangThai = 1 " +
             "AND v.soLuong > 0 " +
             "AND :now BETWEEN v.ngayBatDau AND v.ngayKetThuc " +
-            "AND v.congKhai = true ")
+            "AND v.congKhai = true " +
+            "AND v.trangThai = 1 "
+    )
     List<Voucher> findValidVouchers(@Param("now") LocalDateTime now);
 
 }

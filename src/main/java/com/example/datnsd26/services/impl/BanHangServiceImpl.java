@@ -204,7 +204,10 @@ public class BanHangServiceImpl implements BanHangService {
         });
         if(paymentRequest.getVoucherId() != null){
             Voucher voucher = this.voucherRepository.findById(paymentRequest.getVoucherId()).orElseThrow(() -> new EntityNotFound("Không tìm thấy voucher"));
-            if(voucher.getSoLuong() <= 0){
+            if(voucher.getSoLuong() <= 0 || voucher.getTrangThai() == 2){
+                throw new InvalidDataException("Voucher không khả dụng!");
+            }
+            if (voucher.getNgayKetThuc().isBefore(LocalDateTime.now())) {
                 throw new InvalidDataException("Voucher đã hết hạn sử dụng");
             }
             if(voucher.getGiaTriGiamToiThieu() > hoaDon.getTongTien()){
