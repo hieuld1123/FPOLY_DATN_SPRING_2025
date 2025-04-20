@@ -368,9 +368,10 @@
                                             <div th:class="'carousel-item' + (${index.index == 0} ? ' active' : '')">
                                                 <!-- Hình ảnh carousel -->
                                                 <img th:if="${anhs.tenAnh != null}"
-                                                     th:src="@{'/upload' + ${anhs.tenAnh.substring(anhs.tenAnh.lastIndexOf('upload') + 6)}}"
+                                                     th:src="${anhs.tenAnh}"
                                                      class="d-block w-100 carousel-img rounded-3"
-                                                     alt="Ảnh" style="width: 120px; height: 120px">
+                                                     alt="Ảnh" style="width: 120px; height: 120px;
+                                                     filter: brightness(1.2) contrast(1.2); background-color: white;">
                                             </div>
                                         </th:block>
                                     </div>
