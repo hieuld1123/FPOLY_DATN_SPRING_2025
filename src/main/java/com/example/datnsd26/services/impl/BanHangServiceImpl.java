@@ -202,9 +202,29 @@ public class BanHangServiceImpl implements BanHangService {
                 throw new InvalidDataException(String.format("Sản phẩm %s đã ngừng kinh doanh", sp.getSanPhamChiTiet().getMaSanPhamChiTiet()));
             }
         });
+        if(paymentRequest.getVoucherId() != null){
+            Voucher voucher = this.voucherRepository.findById(paymentRequest.getVoucherId()).orElseThrow(() -> new EntityNotFound("Không tìm thấy voucher"));
+            if(voucher.getSoLuong() <= 0){
+                throw new InvalidDataException("Voucher đã hết hạn sử dụng");
+            }
+            if(voucher.getGiaTriGiamToiThieu() > hoaDon.getTongTien()){
+                throw new InvalidDataException("Giá trị hóa đơn không đủ để sử dụng voucher");
+            }
+            if(voucher.getHinhThucGiam().equalsIgnoreCase("Theo Giá Tiền")){
+                hoaDon.setGiamGia(voucher.getGiaTriGiam());
+            }else{
+                hoaDon.setGiamGia((voucher.getGiaTriGiam() / 100) * hoaDon.getTongTien());
+                if((voucher.getGiaTriGiam() / 100) * hoaDon.getTongTien() > voucher.getGiaTriGiamToiDa()){
+                    hoaDon.setGiamGia(voucher.getGiaTriGiamToiDa());
+                }
+            }
+            hoaDon.setVoucher(voucher);
+            hoaDon.setThanhTien(hoaDon.getTongTien() - voucher.getGiaTriGiam());
+            voucher.setSoLuong(voucher.getSoLuong() - 1);
+            this.voucherRepository.save(voucher);
+        }
         hoaDon.setNhanVien(authUtil.getNhanVien());
         hoaDon.setHinhThucMuaHang(paymentRequest.getType());
-        hoaDon.setPhiVanChuyen(0f);
         hoaDon.setPhiVanChuyen(paymentRequest.getShippingFee());
         hoaDon.setTrangThai(paymentRequest.getType().equalsIgnoreCase("Offline") ? "Hoàn thành" : "Chờ xác nhận");
         if (hoaDon.getHinhThucMuaHang().equalsIgnoreCase("Có giao hàng")) {
@@ -223,6 +243,7 @@ public class BanHangServiceImpl implements BanHangService {
         if (hoaDon.getHinhThucMuaHang().equalsIgnoreCase("Có giao hàng")) {
             lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Đã xác nhận").hoaDon(hoaDon).build());
         }
+        hoaDon.setThanhTien(hoaDon.getTongTien() + hoaDon.getPhiVanChuyen() - hoaDon.getGiamGia());
         this.hoaDonRepository.save(hoaDon);
     }
 
@@ -337,9 +358,9 @@ public class BanHangServiceImpl implements BanHangService {
             hd.setQuan(dc.getHuyen());
             hd.setTinh(dc.getTinh());
             hd.setDiaChiNguoiNhan(dc.getDiaChiCuThe());
-            hd.setTenNguoiNhan(kh.getTaiKhoan().getSdt());
+            hd.setTenNguoiNhan(kh.getTenKhachHang());
             hd.setEmail(kh.getTaiKhoan().getEmail());
-            hd.setSdtNguoiNhan(kh.getTaiKhoan().getEmail());
+            hd.setSdtNguoiNhan(kh.getTaiKhoan().getSdt());
             this.hoaDonRepository.save(hd);
         }
         return kh.getId();

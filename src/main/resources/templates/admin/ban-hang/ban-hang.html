@@ -209,7 +209,7 @@
                                 <div class="col-9">
                                     <div class="mb-3">
                                         <label class="form-label">Ghi chú đơn hàng</label>
-                                        <textarea class="form-control" rows="3" id="input-note" disabled placeholder="VD: Hàng tăng cổ riêng"></textarea>
+                                        <textarea class="form-control" rows="3" id="input-note" disabled placeholder="VD: Hàng tăng cổ riêng" maxlength="200"></textarea>
 
                                         <!-- Phần mã giảm giá -->
                                         <div class="discount-section mt-3" id="discount-section" style="display: none">
@@ -232,7 +232,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-8 text-muted">Mã giảm giá</div>
-                                        <div class="col-4 text-muted">0</div>
+                                        <div class="col-4 text-muted" id="discount">0</div>
                                     </div>
                                     <div class="row">
                                         <div class="col-8">Khách phải trả</div>
@@ -385,7 +385,7 @@
                             <div class="row mb-3">
                                 <label for="recipient_name" class="col-sm-4 col-form-label">Tên người nhận:</label>
                                 <div class="col-sm-8">
-                                    <input id="recipient_name" type="text" class="form-control" placeholder="Nhập tên người nhận" minlength="1" maxlength="30" />
+                                    <input id="recipient_name" type="text" class="form-control" placeholder="Nhập tên người nhận" minlength="1" maxlength="50" />
                                     <small class="text-danger"></small>
                                 </div>
                             </div>
@@ -491,7 +491,7 @@
                         <div class="row mb-3">
                             <label for="invoice_recipient_name" class="col-sm-4 col-form-label">Tên người nhận:</label>
                             <div class="col-sm-8">
-                                <input id="invoice_recipient_name" type="text" class="form-control" placeholder="Nhập tên người nhận" minlength="1" maxlength="30" />
+                                <input id="invoice_recipient_name" type="text" class="form-control" placeholder="Nhập tên người nhận" minlength="1" maxlength="50" />
                                 <small class="text-danger"></small>
                             </div>
                         </div>

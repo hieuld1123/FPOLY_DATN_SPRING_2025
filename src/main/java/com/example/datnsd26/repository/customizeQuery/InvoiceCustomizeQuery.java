@@ -91,7 +91,7 @@ public class InvoiceCustomizeQuery {
                 .purchaseMethod(i.getHinhThucMuaHang())
                 .creationDate(i.getNgayTao())
                 .status(i.getTrangThai())
-                .value(i.getTongTien())
+                .value(i.getThanhTien())
                 .recipientName(i.getTenNguoiNhan())
                 .phoneNumber(i.getSdtNguoiNhan())
                 .address(i.getDiaChiNguoiNhan())

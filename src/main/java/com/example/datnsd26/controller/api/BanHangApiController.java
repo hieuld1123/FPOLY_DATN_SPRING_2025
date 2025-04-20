@@ -92,7 +92,6 @@ public class BanHangApiController {
 
     @PutMapping("/payment")
     public ApiResponse payment(@RequestBody PaymentRequest paymentRequest) {
-        log.info("Voucher id {}", paymentRequest.getVoucherId());
         this.banHangService.payment(paymentRequest);
         return ApiResponse.builder()
                 .status(HttpStatus.ACCEPTED.value())
