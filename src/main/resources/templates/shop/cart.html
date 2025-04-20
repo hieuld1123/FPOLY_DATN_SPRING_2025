@@ -12,7 +12,8 @@
 </head>
 <body>
 <div th:replace="components/navbar :: navbar"></div>
-<div class="container mt-3">
+<div class="container my-5">
+    <h1 class="text-center mt-5">GIỎ HÀNG</h1>
     <form id="checkout-form" th:action="@{/shop/checkout}" method="POST">
         <!-- Errrrr -->
         <div th:if="${errorMessage}" class="alert alert-danger py-3">

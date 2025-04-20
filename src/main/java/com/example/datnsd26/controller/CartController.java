@@ -318,21 +318,32 @@ public class CartController {
         Voucher voucher = null;
         float giamGia = 0f;
 
-        if (hoaDonBinhRequest.getIdVoucher() != null) {
-            voucher = voucherRepository.findById(hoaDonBinhRequest.getIdVoucher()).orElse(null);
-            System.out.println(voucher);
-            if (voucher != null && voucher.getSoLuong() > 0) {
-                giamGia = voucherService.tinhGiamGia(tongTamTinh, voucher);
-
-                voucher.setSoLuong(voucher.getSoLuong() - 1);
-                voucherRepository.save(voucher);
-            }
-        }
-
         float phiShip = 0f;
         if (tongTamTinh <= 1000000) {
             phiShip = 30000.0f;
         }
+
+        if (hoaDonBinhRequest.getIdVoucher() != null) {
+            voucher = voucherRepository.findById(hoaDonBinhRequest.getIdVoucher()).orElse(null);
+            if (voucher == null || voucher.getTrangThai() != 1 || voucher.getSoLuong() <= 0 ||
+                    voucher.getNgayBatDau().isAfter(LocalDateTime.now()) || voucher.getNgayKetThuc().isBefore(LocalDateTime.now()) ||
+                    !voucher.getCongKhai() || tongTamTinh < voucher.getGiaTriGiamToiThieu()) {
+                model.addAttribute("isAuthenticated", isAuthenticated);
+                model.addAttribute("isCustomer", isCustomer);
+                model.addAttribute("errorMessage", "Voucher bạn chọn không hợp lệ hoặc đã hết lượt sử dụng.");
+                model.addAttribute("cart", danhSachThanhToan);
+                model.addAttribute("tongTamTinh", tongTamTinh);
+                model.addAttribute("khachHang", khachHang);
+                model.addAttribute("hoaDonBinhRequest", hoaDonBinhRequest);
+                model.addAttribute("vouchers", voucherRepository.findValidVouchers(LocalDateTime.now(), tongTamTinh)); // Load lại danh sách voucher hợp lệ
+                return "shop/checkout";
+            }
+            // Nếu voucher hợp lệ, tiếp tục áp dụng giảm giá và cập nhật số lượng
+            giamGia = voucherService.tinhGiamGia(tongTamTinh, voucher);
+            voucher.setSoLuong(voucher.getSoLuong() - 1);
+            voucherRepository.save(voucher);
+        }
+
 
         // Tạo Hóa Đơn
         HoaDon hoaDon = HoaDon.builder()
