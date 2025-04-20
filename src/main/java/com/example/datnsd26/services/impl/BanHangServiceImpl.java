@@ -180,7 +180,7 @@ public class BanHangServiceImpl implements BanHangService {
         HoaDon hoaDon = findHoaDonById(hoaDonChiTiet.getHoaDon().getId());
         hoaDon.setTongTien((float) hoaDon.getDanhSachSanPham()
                 .stream()
-                .mapToDouble(sp -> sp.getSoLuong() * sp.getSanPhamChiTiet().getGiaBan())
+                .mapToDouble(sp -> sp.getSoLuong() * sp.getSanPhamChiTiet().getGiaBanSauGiam())
                 .sum());
         hoaDonRepository.save(hoaDon);
     }
