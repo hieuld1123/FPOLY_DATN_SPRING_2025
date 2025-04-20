@@ -7,6 +7,8 @@ const DEFAULT_FORM_DATA = {
   customer: null,
   paymentMethod: "Thanh toán tại cửa hàng",
   shippingFee: 0,
+  totalMoney: 0,
+  voucherId: null,
 };
 
 let formData = { ...DEFAULT_FORM_DATA };
@@ -57,6 +59,7 @@ const handlePayment = async () => {
 
   const payload = {
     invoiceId: formData.invoiceId,
+    voucherId: formData.voucherId,
     type: formData.type || "Offline",
     ...Object.fromEntries(Object.entries(formData).slice(5)),
   };
@@ -145,10 +148,34 @@ const loadInvoices = async () => {
   }
 };
 
+const loadVouchers = async () => {
+  try {
+    const response = await fetch("http://localhost:8080/api/v1/ban-hang/vouchers", {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+    const { data: vouchers } = await response.json();
+    const $voucherSelect = $("#voucher-select");
+    $voucherSelect.html('<option value="">Chọn voucher</option>');
+    if (vouchers?.length) {
+      vouchers.forEach((voucher) => {
+        const isDisabled = formData.totalMoney < voucher.giaTriGiamToiThieu;
+        $voucherSelect.append(
+          `<option value="${voucher.id}" ${isDisabled ? 'disabled' : ''}>${voucher.maVoucher} - ${voucher.tenVoucher}</option>`
+        );
+      });
+    }
+  } catch (error) {
+    console.error("Error loading vouchers:", error);
+  }
+};
+
 const handleInvoiceChange = async (id) => {
   formData.invoiceId = id;
+  formData.voucherId = null;
   enableElement();
   $("#search-customer").prop("disabled", false);
+  $("#voucher-select").prop("disabled", false);
   try {
     const response = await fetch(
       `http://localhost:8080/api/v1/ban-hang/hoa-don/${id}`,
@@ -172,6 +199,8 @@ const handleInvoiceChange = async (id) => {
     formData.totalMoney = invoice.tongTien;
     const $productTableBody = $(".product-table tbody");
     formData.totalItem = invoice.listSanPham.length;
+
+    await loadVouchers();
 
     if(!invoice.khachHang && formData.type === "Có giao hàng"){
         $("#updateInfoCustomer").css("display", "block");
@@ -1318,5 +1347,11 @@ $(document).ready(() => {
       alert(error);
     }
   });
+
+  $("#voucher-select").on("change", function () {
+    const selectedVoucherId = $(this).val();
+    formData.voucherId = selectedVoucherId;
+  });
+
   loadInvoices();
 });

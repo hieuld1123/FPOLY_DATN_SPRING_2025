@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -42,6 +43,7 @@ public class BanHangServiceImpl implements BanHangService {
     private final DiaChiRepository diaChiRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final VoucherRepository voucherRepository;
 
     @Override
     public List<HoaDonResponse> getHoaDon() {
@@ -385,6 +387,20 @@ public class BanHangServiceImpl implements BanHangService {
             hd.setSdtNguoiNhan(request.getPhone_number());
             this.hoaDonRepository.save(hd);
         }
+    }
+
+    @Override
+    public List<VoucherResponse> getVouchers() {
+        return this.voucherRepository.findValidVouchers(LocalDateTime.now()).stream().map(voucher -> VoucherResponse.builder()
+                .id(voucher.getId())
+                .maVoucher(voucher.getMaVoucher())
+                .tenVoucher(voucher.getTenVoucher())
+                .hinhThucGiam(voucher.getHinhThucGiam())
+                .soLuong(voucher.getSoLuong())
+                .giaTriGiam(voucher.getGiaTriGiam())
+                .giaTriGiamToiThieu(voucher.getGiaTriGiamToiThieu())
+                .giaTriGiamToiDa(voucher.getGiaTriGiamToiDa())
+                .build()).toList();
     }
 
     private HoaDonChiTiet findHoaDonChiTietById(int id) {

@@ -26,6 +26,7 @@ public class SecurityConfig {
                         // ✅ Public access (ai cũng xem được)
                         .requestMatchers("/login", "user/dang-ky", "/quen-mat-khau","/dat-lai-mat-khau","/doi-mat-khau","/trangchu/**", "/css/**","/uploads/**","/upload/**", "/js/**", "/carousel/**").permitAll()
                         .requestMatchers("/shop/**", "/api/**").permitAll()
+                        .requestMatchers("/api/**").permitAll()
 
                         // ✅ Admin-only pages
                         .requestMatchers("/admin/**").hasRole("ADMIN")
