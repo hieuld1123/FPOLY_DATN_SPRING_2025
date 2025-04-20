@@ -12,7 +12,8 @@
 </head>
 <body>
 <div th:replace="components/navbar :: navbar"></div>
-<div class="container mt-3">
+<div class="container my-5">
+    <h1 class="text-center mt-5">GIỎ HÀNG</h1>
     <form id="checkout-form" th:action="@{/shop/checkout}" method="POST">
         <!-- Errrrr -->
         <div th:if="${errorMessage}" class="alert alert-danger py-3">
@@ -42,6 +43,7 @@
                                 <input type="checkbox"
                                        name="selectedIds"
                                        th:value="${item.id}"
+                                       th:data-price="${item.soLuong * item.sanPhamChiTiet.giaBanSauGiam}"
                                        class="form-check-input item-checkbox"/>
                             </div>
                             <div class="col-3">
@@ -110,8 +112,7 @@
                         <div class="d-flex justify-content-between mb-3">
                             <span>Tạm tính</span>
                             <span>
-                                <span class="cart-total-price"
-                                      th:text="${#numbers.formatDecimal(tongTamTinh, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+                                <span class="cart-total-price"></span>
                             </span>
                         </div>
                         <div class="d-flex justify-content-between mb-3">
@@ -122,8 +123,7 @@
                         <div class="d-flex justify-content-between mb-4">
                             <strong>Tổng cộng</strong>
                             <strong>
-                                <span class="cart-total-price-end"
-                                      th:text="${#numbers.formatDecimal(tongTamTinh, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+                                <span class="cart-total-price-end"></span>
                             </strong>
                         </div>
                         <button type="submit" class="btn btn-success mt-3 w-100">Thanh toán</button>

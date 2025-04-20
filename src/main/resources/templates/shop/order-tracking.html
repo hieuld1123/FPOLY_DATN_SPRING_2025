@@ -188,11 +188,27 @@
                     <p><strong>Phương thức thanh toán:</strong> <span
                             th:text="${hoaDon.phuongThucThanhToan}"></span>
                     </p>
+
+                    <hr/>
                     <p><strong>Tổng tiền:</strong>
                         <span th:text="${#numbers.formatDecimal(hoaDon.tongTien, 0, 'COMMA', 0, 'POINT')}"></span>
                         VNĐ
                     </p>
-                    <p><strong>Trạng thái:</strong> <span th:text="${hoaDon.trangThai}"></span></p>
+                    <p><strong>Phí vận chuyển:</strong>
+                        <span th:text="${#numbers.formatDecimal(hoaDon.phiVanChuyen, 0, 'COMMA', 0, 'POINT')}"></span>
+                        VNĐ
+                    </p>
+                    <div th:if="${hoaDon.voucher != null}">
+                        <p><span class="fw-bold">Giảm giá: </span> <span th:text="${hoaDon.voucher.maVoucher}"></span> <span th:text="'-'+${#numbers.formatDecimal(hoaDon.giamGia, 0, 'COMMA', 0, 'POINT')}"></span> </p>
+                    </div>
+                    <div th:if="${hoaDon.voucher == null}">
+                        <p><span class="fw-bold">Giảm giá: </span> <span th:text="${#numbers.formatDecimal(hoaDon.giamGia, 0, 'COMMA', 0, 'POINT')}"></span></p>
+                    </div>
+                    <p class="fw-bold text-orange"><strong>Thành tiền:</strong>
+                        <span th:text="${#numbers.formatDecimal(hoaDon.thanhTien, 0, 'COMMA', 0, 'POINT')}"></span>
+                        VNĐ
+                    </p>
+                    <p class="fw-bold text-orange"><strong>Trạng thái:</strong> <span th:text="${hoaDon.trangThai}"></span></p>
                 </div>
                 <!-- Danh sách sản phẩm -->
                 <h1 class="text-center mt-5"> Danh sách sản phẩm </h1>
@@ -204,7 +220,7 @@
                             <th>Tên sản phẩm</th>
                             <th>Đơn giá</th>
                             <th>Số lượng</th>
-                            <th>Thành tiền</th>
+                            <th>Tổng tiền</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -228,11 +244,11 @@
                                 </div>
                             </td>
                             <td
-                                    th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                                    th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
                             </td>
                             <td th:text="${item.soLuong}"></td>
                             <td
-                                    th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBan * item.soLuong, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                                    th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBanSauGiam * item.soLuong, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
                             </td>
                         </tr>
                         </tbody>
