@@ -162,7 +162,7 @@ public class PublicSanPhamService {
                     String tenAnh = null;
                     if (spct != null && spct.getHinhAnh() != null && !spct.getHinhAnh().isEmpty()) {
                         String rawTenAnh = spct.getHinhAnh().get(0).getTenAnh();
-                        tenAnh = rawTenAnh.startsWith("/upload/") ? rawTenAnh : "/upload/" + rawTenAnh;
+                        tenAnh = rawTenAnh;
                     }
 
                     // ✅ Lấy tên thương hiệu nếu có
