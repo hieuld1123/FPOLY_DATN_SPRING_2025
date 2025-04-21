@@ -198,17 +198,17 @@
                                         </td>
                                         <td th:text="${#temporals.format(km.thoiGianBatDau, 'dd-MM-yyyy HH:mm')}"></td>
                                         <td th:text="${#temporals.format(km.thoiGianKetThuc, 'dd-MM-yyyy HH:mm')}"></td>
-                                        <td class="status">
-                                         <span th:if="${km.trangThai == 0}"
-                                               class="badge bg-warning text-dark">Chưa diễn ra</span>
+                                        <td class="align-middle " >
                                             <span th:if="${km.trangThai == 1}"
-                                                  class="badge bg-success text-right">Đang diễn ra</span>
+                                                  class="badge bg-success text-white px-2 py-1">Đang diễn ra</span>
+                                            <span th:if="${km.trangThai == 0}"
+                                                  class="badge bg-warning text-white px-2 py-1">Chưa diễn ra</span>
                                             <span th:if="${km.trangThai == 2}"
-                                                  class="badge bg-danger text-right">Đã kết thúc</span>
+                                                  class="badge bg-danger text-white px-2 py-1">Đã kết thúc</span>
                                         </td>
                                         <td>
                                             <div class="btn-group" role="group">
-                                                <a th:if="${km.trangThai == 2}"
+                                                <a th:if="${km.trangThai == 2 and #temporals.createNow().isBefore(km.thoiGianKetThuc)}"
                                                    class="btn btn-sm btn-success me-2"
                                                    th:onclick="'restoreKhuyenMai(' + ${km.id} + ')'"
                                                    title="Khôi phục">
@@ -358,14 +358,6 @@
                         statusCell.addClass("bg-danger").text("Đã kết thúc");
                     }
 
-                    statusCell.css({
-                        "display": "flex",
-                        "align-items": "center",
-                        "justify-content": "center",
-                        "width": "100%",
-                        "padding": "5px 10px",
-                        "border-radius": "10px"
-                    });
                 });
             },
             error: function (xhr) {

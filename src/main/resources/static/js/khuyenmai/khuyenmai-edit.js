@@ -7,7 +7,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     const giaGocElements = document.querySelectorAll(".giaGoc");
     const checkboxes = document.querySelectorAll(".chonSanPham");
     const selectAll = document.getElementById("selectAll");
-    const searchForm = document.querySelector("form");
+    // const searchForm = document.querySelector("form");
+    const searchInput = document.getElementById('searchInput');
     const giaGocCells = document.querySelectorAll('.giaGoc');
     const mucGiamUnits = document.querySelectorAll('.mucGiamUnit');
     const giaSauGiamCells = document.querySelectorAll('.giaSauGiam');
@@ -420,6 +421,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Hàm kiểm tra form
     function validateForm() {
+        let isValid = true;
+        let hasSelectedProduct = false;
+
         const startDate = new Date(document.getElementById("thoiGianBatDau").value);
         const endDate = new Date(document.getElementById("thoiGianKetThuc").value);
 
@@ -430,58 +434,15 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         const giaTriGiam = document.getElementById("giaTriGiam").value;
-
-        if(!giaTriGiam){
-            showToastError("Giá trị giảm chung không được bỏ trống");
-            return false;
-        }
-        if (giaTriGiam <= 0) {
+        if (!giaTriGiam || giaTriGiam <= 0) {
             showToastError("Giá trị giảm chung phải lớn hơn 0.");
             return false;
         }
-        // Kiểm tra giá trị giảm chung
-        const isPercent = hinhThucGiam.value === 'Phần Trăm';
-        if (isPercent && parseFloat(giaTriGiam.value) > 100 || parseFloat(giaTriGiam.value) <= 0 ) {
-            showToastError = 'Giá trị giảm chung theo phần trăm phải từ 1% đến 100% ';
-            isValid = false;
+
+        if (endDate <= startDate) {
+            showToastError("Thời gian kết thúc phải sau thời gian bắt đầu");
+            return false;
         }
-        const isPercentt = hinhThucGiam.value === 'Theo Giá Tiền';
-        if (isPercentt && parseFloat(giaTriGiam.value) <= 0 ) {
-            showToastError = 'Giá trị giảm chung theo giá tiền phải lớn hơn 0 ';
-            isValid = false;
-        }
-
-        // Kiểm tra ngày bắt đầu & ngày kết thúc không bỏ trống
-        if (!startDate.value || !endDate.value) {
-            showToastError = 'Vui lòng chọn ngày bắt đầu và ngày kết thúc';
-            isValid = false;
-        } else {
-            let batDau = new Date(startDate.value);
-            let ketThuc = new Date(endDate.value);
-            let ngayHienTai = new Date();
-
-            // Đặt giây & mili-giây về 0 để không tính giây
-            batDau.setSeconds(0, 0);
-            ketThuc.setSeconds(0, 0);
-            ngayHienTai.setSeconds(0, 0);
-
-            // Kiểm tra ngày bắt đầu không được là quá khứ (không tính giây)
-            if (batDau < ngayHienTai) {
-                showToastError = 'Ngày bắt đầu không được là quá khứ';
-                isValid = false;
-            }
-
-            // Ngày kết thúc phải sau ngày bắt đầu
-            if (ketThuc <= batDau) {
-                showToastError = 'Thời gian kết thúc phải sau thời gian bắt đầu';
-                isValid = false;
-            }
-        }
-
-
-
-        let hasSelectedProduct = false;
-        let isValid = true;
 
         checkboxes.forEach((checkbox, index) => {
             if (checkbox.checked) {
@@ -501,14 +462,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                     return;
                 }
 
-                if (hinhThucGiam.value === "Phần Trăm" && mucGiam > 100 || mucGiam <= 0) {
-                    showToastError("Mức giảm theo phần trăm phải từ 1% đến 100% ");
-                    isValid = false;
-                    return;
-                }
-
-                if(hinhThucGiam.value === "Theo Giá Tiền" && mucGiam <= 0){
-                    showToastError("Mức giảm theo giá tiền phải lớn hơn 0");
+                if (hinhThucGiam.value === "Phần Trăm" && mucGiam > 100) {
+                    showToastError("Mức giảm không được vượt quá 100%");
                     isValid = false;
                     return;
                 }
@@ -527,6 +482,41 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         return isValid;
+    }
+
+    function searchProducts() {
+        const searchText = searchInput.value.toLowerCase();
+        const tableRows = document.querySelectorAll('tbody tr');
+        let hasVisibleRows = false;
+
+        tableRows.forEach(row => {
+            const productName = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
+            const productId = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+
+            if (productName.includes(searchText) || productId.includes(searchText)) {
+                row.style.display = '';
+                hasVisibleRows = true;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Ẩn phân trang nếu không có kết quả tìm kiếm
+        const paginationElement = document.querySelector('.pagination');
+        if (paginationElement) {
+            paginationElement.style.display = searchText ? 'none' : '';
+        }
+
+        // Hiển thị thông báo nếu không có kết quả
+        if (!hasVisibleRows && searchText) {
+            showToastError("Không tìm thấy sản phẩm phù hợp");
+        }
+    }
+
+    // Thêm sự kiện lắng nghe cho input tìm kiếm
+    if (searchInput) {
+        searchInput.addEventListener('input', searchProducts);
+        searchInput.addEventListener('keyup', searchProducts);
     }
 
     // Khởi tạo trạng thái ban đầu

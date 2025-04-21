@@ -106,13 +106,17 @@
 
                     statusCell.removeClass("bg-success bg-warning bg-danger");
 
+                    let statusHtml = '';
                     if (voucher.trangThai === 1) {
-                        statusCell.addClass("bg-success").text("Đang diễn ra");
+                        statusHtml = '<span class="badge bg-success text-white px-2 py-1">Đang diễn ra</span>';
                     } else if (voucher.trangThai === 0) {
-                        statusCell.addClass("bg-warning").text("Chưa diễn ra");
+                        statusHtml = '<span class="badge bg-warning text-white px-2 py-1">Chưa diễn ra</span>';
                     } else if (voucher.trangThai === 2) {
-                        statusCell.addClass("bg-danger").text("Đã kết thúc");
+                        statusHtml = '<span class="badge bg-danger text-white px-2 py-1">Đã kết thúc</span>';
                     }
+
+// Cập nhật đúng phần tử bên trong mà không làm mất class bố cục
+                    row.find(".status").html(statusHtml);
                 });
             },
             error: function (xhr) {
@@ -200,7 +204,6 @@
                                 <th>Ngày Bắt Đầu</th>
                                 <th>Ngày Kết Thúc</th>
                                 <th>Trạng Thái</th>
-                                <th>Trạng thái hiển thị</th>
                                 <th>Hành Động</th>
                             </tr>
                             </thead>
@@ -222,41 +225,37 @@
                                 <td th:text="${voucher.soLuong}"></td>
                                 <td th:text="${#temporals.format(voucher.ngayBatDau, 'dd/MM/yyyy HH:mm')}"></td>
                                 <td th:text="${#temporals.format(voucher.ngayKetThuc, 'dd/MM/yyyy HH:mm')}"></td>
-                                <td class="status">
+                                <td class=" align-middle">
                                     <span th:if="${voucher.trangThai == 1}"
-                                          class="badge bg-success">Đang diễn ra</span>
+                                          class="badge bg-success text-white px-2 py-1">Đang diễn ra</span>
                                     <span th:if="${voucher.trangThai == 0}"
-                                          class="badge bg-warning">Chưa diễn ra</span>
+                                          class="badge bg-warning text-white px-2 py-1">Chưa diễn ra</span>
                                     <span th:if="${voucher.trangThai == 2}"
-                                          class="badge bg-danger">Đã kết thúc</span>
-                                </td>
-                                <td>
-                                    <span th:if="${voucher.congKhai}">Công khai</span>
-                                    <span th:if="${!voucher.congKhai}">Không công khai</span>
+                                          class="badge bg-danger text-white px-2 py-1">Đã kết thúc</span>
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                    <a th:if="${voucher.trangThai == 2}"
-                                       class="btn btn-sm btn-success me-2"
-                                       th:onclick="'restoreKhuyenMai(' + ${voucher.id} + ')'"
-                                       title="Khôi phục">
-                                        <i class="fas fa-redo"></i>
-                                    </a>
-                                    <a th:if="${voucher.trangThai == 1}"
-                                       class="btn btn-sm btn-warning me-2"
-                                       th:onclick="'endKhuyenMai(' + ${voucher.id} + ')'"
-                                       title="Ngừng hoạt động">
-                                        <i class="fas fa-stop-circle"></i>
-                                    </a>
-                                    <a class="btn btn-sm btn-info me-2"
-                                       th:href="@{/admin/vouchers/edit/{id}(id=${voucher.id})}" title="Sửa">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a class="btn btn-sm btn-danger"
-                                       th:href="@{/admin/vouchers/delete/{id}(id=${voucher.id})}"
-                                       onclick="return confirm('Bạn có chắc muốn xóa?')" title="Xóa">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
+                                        <a th:if="${voucher.trangThai == 2 and #temporals.createNow().isBefore(voucher.ngayKetThuc)  and voucher.soLuong > 0 }"
+                                           class="btn btn-sm btn-success me-2"
+                                           th:onclick="'restoreKhuyenMai(' + ${voucher.id} + ')'"
+                                           title="Khôi phục">
+                                            <i class="fas fa-redo"></i>
+                                        </a>
+                                        <a th:if="${voucher.trangThai == 1}"
+                                           class="btn btn-sm btn-warning me-2"
+                                           th:onclick="'endKhuyenMai(' + ${voucher.id} + ')'"
+                                           title="Ngừng hoạt động">
+                                            <i class="fas fa-stop-circle"></i>
+                                        </a>
+                                        <a class="btn btn-sm btn-info me-2"
+                                           th:href="@{/admin/vouchers/edit/{id}(id=${voucher.id})}" title="Sửa">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a class="btn btn-sm btn-danger"
+                                           th:href="@{/admin/vouchers/delete/{id}(id=${voucher.id})}"
+                                           onclick="return confirm('Bạn có chắc muốn xóa?')" title="Xóa">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
                                     </div>
                                 </td>
                             </tr>

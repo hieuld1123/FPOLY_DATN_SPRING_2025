@@ -41,7 +41,7 @@ public class Voucher {
     private Float giaTriGiamToiDa;
 
     @Column(nullable = false, name = "cong_khai")
-    private Boolean congKhai;
+    private Boolean congKhai = true;
 
 
     @Column(nullable = false,name = "ngay_bat_dau")

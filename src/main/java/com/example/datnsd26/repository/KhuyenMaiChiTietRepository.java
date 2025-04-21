@@ -2,6 +2,7 @@ package com.example.datnsd26.repository;
 
 import com.example.datnsd26.models.KhuyenMai;
 import com.example.datnsd26.models.KhuyenMaiChitiet;
+import com.example.datnsd26.models.SanPhamChiTiet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -43,6 +44,8 @@ public interface KhuyenMaiChiTietRepository extends JpaRepository<KhuyenMaiChiti
             "WHERE km.trangThai = 1")
     List<Long> findSanPhamDangKhuyenMai();
 
+    @Query("SELECT k FROM KhuyenMaiChitiet k WHERE k.sanPhamChiTiet.id = :id AND k.khuyenMai.trangThai = 2 ORDER BY k.khuyenMai.thoiGianKetThuc DESC")
+    KhuyenMaiChitiet findMostRecentEndedPromotionBySanPham(@Param("id") Long id);
 
 
 }

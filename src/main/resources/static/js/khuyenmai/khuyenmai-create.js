@@ -254,7 +254,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
 
     // Form Validation
-    form.addEventListener('submit', function (event) {
+    form.addEventListener("submit", function (event) {
         event.preventDefault();
 
         let isValid = true;
@@ -368,26 +368,33 @@ document.addEventListener('DOMContentLoaded', async function () {
             return;
         }
 
-        Swal.fire({
-            title: 'Bạn có muốn thêm không?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Có',
-            cancelButtonText: 'Không'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Thêm thành công!',
-                    text: 'Đợt khuyến mãi đã được thêm vào hệ thống.',
-                    showConfirmButton: false,
-                    timer: 1500
-                }).then(() => {
-                    form.classList.add('was-validated');
-                    form.submit();
-                });
-            }
-        });
+        if (action === 'search') {
+            // Xử lý tìm kiếm (nếu bạn muốn xử lý tìm kiếm riêng biệt)
+            console.log('Tìm kiếm với giá trị:', key.value);
+            form.submit(); // Hoặc xử lý AJAX nếu muốn tìm kiếm mà không reload trang
+        } else if (action === 'save') {
+            // Xử lý lưu (đồng ý thêm khuyến mãi)
+            Swal.fire({
+                title: 'Bạn có muốn thêm không?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Có',
+                cancelButtonText: 'Không'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thêm thành công!',
+                        text: 'Đợt khuyến mãi đã được thêm vào hệ thống.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        form.classList.add('was-validated');
+                        form.submit(); // Gửi form sau khi xác nhận
+                    });
+                }
+            });
+        }
     });
 
     function validate(event) {

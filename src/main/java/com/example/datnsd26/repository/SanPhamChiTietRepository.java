@@ -1,12 +1,12 @@
 package com.example.datnsd26.repository;
 
-import com.example.datnsd26.Dto.SanPhamSapHetDto;
 import com.example.datnsd26.controller.response.PublicSanPhamResponse;
 import com.example.datnsd26.models.SanPhamChiTiet;
 import com.example.datnsd26.models.*;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 
 @Repository
@@ -146,6 +145,17 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
 
     Page<SanPhamChiTiet> findAll(Pageable pageable);
 
+//    @Query("SELECT sp FROM SanPhamChiTiet sp " +
+//            "WHERE (:keyword IS NULL OR sp.sanPham.tenSanPham LIKE %:keyword% OR sp.maSanPhamChiTiet LIKE %:keyword%) " +
+//            "AND (:idMauSac IS NULL OR sp.mauSac.id = :idMauSac) " +
+//            "AND (:idKichCo IS NULL OR sp.kichCo.id = :idKichCo)")
+//    Page<SanPhamChiTiet> searchProducts(
+//            @Param("keyword") String keyword,
+//            @Param("idMauSac") Integer idMauSac,
+//            @Param("idKichCo") Integer idKichCo,
+//            Pageable pageable);
+
+
 
     @Query("SELECT p FROM SanPhamChiTiet p ORDER BY p.sanPham.tenSanPham ASC")
     List<PublicSanPhamResponse> findAllSortedByNameAsc();
@@ -198,6 +208,7 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
             @Param("mauSacIds") List<Long> mauSacIds,
             @Param("trangThai") Boolean trangThai
     );
+
 
 
 }
