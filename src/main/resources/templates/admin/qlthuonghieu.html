@@ -227,7 +227,7 @@
                                                 <div class="modal-body">
                                                     <form id="addForm" name="addThuongHieu" th:method="post"
                                                           th:object="${thuonghieu}"
-                                                          th:action="@{/addSaveThuongHieu}"
+                                                          th:action="@{/admin/addSaveThuongHieu}"
                                                           onsubmit="return validateTrung()">
                                                         <p style="font-weight: bold">
                                                             Tên thương hiệu:
@@ -587,7 +587,7 @@
                                     // Lưu thông báo vào sessionStorage
                                     sessionStorage.setItem('successMessage', 'Cập nhật thành công!');
                                     // Chuyển hướng
-                                    window.location.href = '/listthuonghieu';
+                                    window.location.href = '/admin/thuong-hieu';
                                 } else {
                                     throw new Error('Cập nhật thất bại');
                                 }

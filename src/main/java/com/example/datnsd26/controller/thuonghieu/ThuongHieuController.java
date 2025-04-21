@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@RequestMapping("/admin")
 @Controller
 public class ThuongHieuController {
     @Autowired
@@ -23,7 +24,7 @@ public class ThuongHieuController {
     @Autowired
     ThuongHieuImp thuongHieuImp;
 
-    @GetMapping("/listthuonghieu")
+    @GetMapping("/thuong-hieu")
     public String hienthi(@RequestParam(defaultValue = "0") int p, Model model, @ModelAttribute("thuonghieu") ThuongHieu thuongHieu,@ModelAttribute("tim") ThuocTinhInfo info) {
         List<ThuongHieu> list;
         String trimmedKey = (info.getKey() != null) ? info.getKey().trim().replaceAll("\\s+", " ") : null;
@@ -48,7 +49,7 @@ public class ThuongHieuController {
             thuongHieuRepository.save(existingThuongHieu);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái thành công!");
         }
-        return "redirect:/listthuonghieu";
+        return "redirect:/admin/thuong-hieu";
     }
 
     @PostMapping("/addSaveThuongHieu")
@@ -68,7 +69,7 @@ public class ThuongHieuController {
         thuongHieu.setNgayTao(currentTime);
         thuongHieu.setNgayCapNhat(currentTime);
         thuongHieuImp.add(thuongHieu);
-        return "redirect:/listthuonghieu";
+        return "redirect:/admin/thuong-hieu";
     }
 
 

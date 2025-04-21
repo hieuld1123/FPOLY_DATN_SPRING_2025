@@ -157,7 +157,7 @@ public class SanPhamController {
     List<SanPhamChiTiet> uniqueList = new ArrayList<>();
 
 
-    @GetMapping("/listsanpham")
+    @GetMapping("/quan-ly/san-pham")
     public String hienthi(Model model, @ModelAttribute("tim") SanPhamInfo info) {
         System.out.println("Trang Thai trong SanPhamInfo: " + info.getTrangThai());  // Kiểm tra giá trị của trangThai
 
@@ -344,7 +344,7 @@ public class SanPhamController {
     }
 
 
-    @GetMapping("/detailsanpham/{id}")
+    @GetMapping("/quan-ly/chi-tiet-san-pham/{id}")
     public String detailsanpham(@PathVariable Integer id, Model model, @ModelAttribute("search") SanPhamChiTietInfo info) {
         List<SanPhamChiTiet> listSPCT = sanPhamChiTietRepository.findBySanPhamId(id);
         for (SanPhamChiTiet spct : listSPCT) {
@@ -539,7 +539,7 @@ public class SanPhamController {
 
         uniqueList.clear();
         redirectAttributes.addFlashAttribute("success", true);
-        return "redirect:/listsanpham";
+        return "redirect:/quan-ly/san-pham";
     }
 
 

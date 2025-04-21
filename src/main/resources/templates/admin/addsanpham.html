@@ -404,6 +404,118 @@
                             </div>
                         </div>
 
+                        <div class="d-flex justify-content-end mt-2">
+                            <!-- Chọn kích cỡ -->
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="#" class="text-decoration-underline text-primary fw-bold" data-bs-toggle="modal"
+                                       data-bs-target="#modal-size">
+                                        <i class="ti ti-ruler me-1"></i>Hướng dẫn chọn size
+                                    </a>
+                                    <!-- Modal -->
+                                    <div class="modal modal-blur fade" id="modal-size" tabindex="-1" role="dialog" aria-hidden="true">
+                                        <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title"><i class="ti ti-ruler-measure me-2"></i>Tra cứu & chọn size giày</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <!-- Nhập chiều dài chân -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-6">
+                                                            <label class="form-label">Chiều dài chân (cm):</label>
+                                                            <input type="number" id="input-cm" class="form-control" placeholder="Ví dụ: 24.8" min="20" max="30" step="0.1">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label class="form-label">Giới tính:</label>
+                                                            <select id="gender" class="form-select">
+                                                                <option value="nam">Nam</option>
+                                                                <option value="nu">Nữ</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-12 mt-3 text-end">
+                                                            <button type="button" class="btn btn-primary" onclick="traCuuSize()">
+                                                                <i class="ti ti-search me-1"></i>Tra cứu size
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Kết quả -->
+                                                    <div id="result" class="mb-4" style="display: none;">
+                                                        <h4><i class="ti ti-check me-2"></i>Kết quả tra cứu:</h4>
+                                                        <p>Chiều dài chân: <strong><span id="cm-result"></span> cm</strong></p>
+                                                        <p>Size giày phù hợp: <strong class="text-blue" id="size-result"></strong></p>
+                                                    </div>
+
+                                                    <!-- Bảng size -->
+                                                    <h4 class="mt-4"><i class="ti ti-table me-2"></i>Bảng size giày Nam</h4>
+                                                    <div class="table-responsive mb-4">
+                                                        <table class="table table-bordered text-center">
+                                                            <thead class="table-primary">
+                                                            <tr><th>Chiều dài chân (cm)</th><th>Size Nam (VN)</th></tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            <tr><td>23.7 – 24.1</td><td>38</td></tr>
+                                                            <tr><td>24.2 – 24.6</td><td>39</td></tr>
+                                                            <tr><td>24.7 – 25.1</td><td>40</td></tr>
+                                                            <tr><td>25.2 – 25.6</td><td>41</td></tr>
+                                                            <tr><td>25.7 – 26.1</td><td>42</td></tr>
+                                                            <tr><td>26.2 – 26.6</td><td>43</td></tr>
+                                                            <tr><td>26.7 – 27.1</td><td>44</td></tr>
+                                                            <tr><td>27.2 – 27.6</td><td>45</td></tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+
+                                                    <h4><i class="ti ti-table me-2"></i>Bảng size giày Nữ</h4>
+                                                    <div class="table-responsive mb-4">
+                                                        <table class="table table-bordered text-center">
+                                                            <thead class="table-pink">
+                                                            <tr><th>Chiều dài chân (cm)</th><th>Size Nữ (VN)</th></tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            <tr><td>22.1 – 22.5</td><td>35</td></tr>
+                                                            <tr><td>22.6 – 23.0</td><td>36</td></tr>
+                                                            <tr><td>23.1 – 23.5</td><td>37</td></tr>
+                                                            <tr><td>23.6 – 24.0</td><td>38</td></tr>
+                                                            <tr><td>24.1 – 24.5</td><td>39</td></tr>
+                                                            <tr><td>24.6 – 25.0</td><td>40</td></tr>
+                                                            <tr><td>25.1 – 25.5</td><td>41</td></tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+
+                                                    <!-- Hướng dẫn đo -->
+                                                    <h4><i class="ti ti-notes me-2"></i>Hướng dẫn đo chiều dài chân</h4>
+                                                    <ol>
+                                                        <li>Chuẩn bị giấy trắng, bút và thước đo.</li>
+                                                        <li>Đặt tờ giấy trên mặt sàn, đặt chân lên giấy.</li>
+                                                        <li>Vẽ dấu gót chân và đầu ngón chân dài nhất.</li>
+                                                        <li>Dùng thước đo khoảng cách hai điểm (đơn vị cm).</li>
+                                                        <li>Nên đo cả hai chân và chọn chiều dài lớn hơn.</li>
+                                                    </ol>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-link" data-bs-dismiss="modal">Đóng</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="form-selectgroup">
+                                    <label th:each="kc : ${danhSachKichCo}" class="form-selectgroup-item"
+                                           th:classappend="${!kichCoTonTai.contains(kc.id)} ? 'text-decoration-line-through text-secondary'">
+                                        <input type="radio" name="kichCo" th:value="${kc.id}" class="form-selectgroup-input"
+                                               th:checked="${spct.kichCo.id == kc.id}"
+                                               th:disabled="${!kichCoTonTai.contains(kc.id)}" onchange="this.form.submit()"/>
+                                        <span class="form-selectgroup-label" th:text="${kc.ten}"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Button xác nhận thêm biến thể -->
                         <div class="d-flex justify-content-end mt-5">
                             <button type="submit" class="btn btn-primary"
@@ -496,7 +608,7 @@
                                 <div class="modal-body">
                                     <form id="addFormThuongHieu" name="addThuongHieu" th:method="post"
                                           th:object="${thuonghieu}"
-                                          th:action="@{/addThuongHieuModal}"
+                                          th:action="@{/admin/addThuongHieuModal}"
                                           onsubmit="return validateTrungThuongHieu()">
                                         <p style="font-weight: bold">
                                             <span style="color: red">* </span>
@@ -534,7 +646,7 @@
                                 </div>
                                 <div class="modal-body">
                                     <form id="addFormChatLieu" name="addChatLieu" th:method="post"
-                                          th:action="@{/addChatLieuModal}" th:object="${chatlieu}"
+                                          th:action="@{/admin/addChatLieuModal}" th:object="${chatlieu}"
                                           onsubmit="return validateTrungChatLieu()">
                                         <p style="font-weight: bold">
                                             <span style="color: red">* </span>
@@ -917,6 +1029,47 @@
 
 </body>
 </html>
+
+<!-- Script tra size -->
+<script>
+    const sizeNam = [
+        { size: 38, min: 23.7, max: 24.1 },
+        { size: 39, min: 24.2, max: 24.6 },
+        { size: 40, min: 24.7, max: 25.1 },
+        { size: 41, min: 25.2, max: 25.6 },
+        { size: 42, min: 25.7, max: 26.1 },
+        { size: 43, min: 26.2, max: 26.6 },
+        { size: 44, min: 26.7, max: 27.1 },
+        { size: 45, min: 27.2, max: 27.6 },
+    ];
+
+    const sizeNu = [
+        { size: 35, min: 22.1, max: 22.5 },
+        { size: 36, min: 22.6, max: 23.0 },
+        { size: 37, min: 23.1, max: 23.5 },
+        { size: 38, min: 23.6, max: 24.0 },
+        { size: 39, min: 24.1, max: 24.5 },
+        { size: 40, min: 24.6, max: 25.0 },
+        { size: 41, min: 25.1, max: 25.5 },
+    ];
+
+    function traCuuSize() {
+        const cm = parseFloat(document.getElementById('input-cm').value);
+        const gender = document.getElementById('gender').value;
+        const table = gender === 'nam' ? sizeNam : sizeNu;
+
+        const result = table.find(item => cm >= item.min && cm <= item.max);
+
+        if (result) {
+            document.getElementById('cm-result').innerText = cm;
+            document.getElementById('size-result').innerText = result.size;
+            document.getElementById('result').style.display = 'block';
+        } else {
+            document.getElementById('result').style.display = 'none';
+            alert("Chiều dài chân không khớp size nào trong bảng. Vui lòng kiểm tra lại!");
+        }
+    }
+</script>
 
 <!--thư viện để chọn nhiều giá trị trên select -->
 

@@ -223,7 +223,7 @@
                                                 </div>
                                                 <div class="modal-body">
                                                     <form id="addForm" name="addChatLieu" th:method="post"
-                                                          th:action="@{/add}"
+                                                          th:action="@{/admin/add}"
                                                           th:object="${chatlieu}" onsubmit="return validateTrung()">
                                                         <p style="font-weight: bold">
                                                             <span style="color: red">* </span>
@@ -568,7 +568,7 @@
                                     // Lưu thông báo vào sessionStorage
                                     sessionStorage.setItem('successMessage', 'Cập nhật thành công!');
                                     // Chuyển hướng
-                                    window.location.href = '/chatlieu';
+                                    window.location.href = '/admin/chat-lieu';
                                 } else {
                                     throw new Error('Cập nhật thất bại');
                                 }

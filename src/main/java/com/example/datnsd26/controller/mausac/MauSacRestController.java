@@ -32,7 +32,7 @@ public class MauSacRestController {
         existingMauSac.setTenMauSac(trimmedUpdatedTenMauSac);
         existingMauSac.setTen(trimmedTenMauSac);
         mauSacRepository.save(existingMauSac);
-        return ResponseEntity.ok("redirect:/listMauSac");
+        return ResponseEntity.ok("redirect:/admin/mau-sac");
     }
 
     @GetMapping("/checkTenMauSac")
