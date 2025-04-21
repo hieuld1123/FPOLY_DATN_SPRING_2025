@@ -118,7 +118,6 @@ public class VoucherService {
                     voucher.setNgayBatDau(newVoucher.getNgayBatDau());
                     voucher.setNgayKetThuc(newVoucher.getNgayKetThuc());
                     voucher.setTrangThai(determineVoucherStatus(newVoucher));
-                    voucher.setCongKhai(newVoucher.getCongKhai());
                     Voucher updated = voucherRepository.save(voucher);
 
                     // 🔁 Cập nhật lại thời điểm thay đổi trạng thái
@@ -175,9 +174,6 @@ public class VoucherService {
             }
         }
 
-        if (voucher.getCongKhai() == null) {
-            errors.put("congKhai", "Vui lòng chọn trạng thái hiển thị");
-        }
 
         if (voucher.getSoLuong() == null) {
             errors.put("soLuong", "Số lượng không được để trống");

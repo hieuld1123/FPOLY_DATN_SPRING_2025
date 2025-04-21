@@ -1,8 +1,12 @@
 package com.example.datnsd26.controller;
 
+import com.example.datnsd26.info.SanPhamCTinfo;
+import com.example.datnsd26.info.SanPhamChiTietInfo;
 import com.example.datnsd26.models.KhuyenMai;
 import com.example.datnsd26.models.SanPhamChiTiet;
 import com.example.datnsd26.repository.KhuyenMaiChiTietRepository;
+import com.example.datnsd26.repository.KichCoRepository;
+import com.example.datnsd26.repository.MauSacRepository;
 import com.example.datnsd26.repository.SanPhamChiTietRepository;
 import com.example.datnsd26.services.KhuyenMaiSchedulerService;
 import com.example.datnsd26.services.KhuyenMaiService;
@@ -12,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,9 +28,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * Controller xử lý các chức năng liên quan đến Khuyến Mãi
@@ -44,7 +51,15 @@ public class KhuyenMaiController {
     private SanPhamChiTietService sanPhamChiTietService;
 
     @Autowired
+    private MauSacRepository mauSacRepository;
+
+    @Autowired
+    private KichCoRepository kichCoRepository;
+
+    @Autowired
     private KhuyenMaiSchedulerService khuyenMaiSchedulerService;
+
+
     /**
      * Hiển thị danh sách khuyến mãi
      */
@@ -68,6 +83,7 @@ public class KhuyenMaiController {
     /**
      * Hiển thị form tạo mới khuyến mãi
      */
+
     @GetMapping("/create")
     public String viewCreate(Model model,
                              @RequestParam(defaultValue = "0") int page,
@@ -291,22 +307,30 @@ public class KhuyenMaiController {
         return ResponseEntity.ok(danhSachSanPham);
     }
 
-    @GetMapping("/search-products")
-    public String searchProducts(
-            @RequestParam(required = false) String searchTerm,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
-            Model model) {
-        if (searchTerm == null) {
-            searchTerm = "";
-        }
-        Pageable pageable = PageRequest.of(page, size);
-        LocalDateTime now = LocalDateTime.now();
-        Page<SanPhamChiTiet> productPage = sanPhamChiTietRepository.findAvailableProductsWithSearch(searchTerm, now, pageable);
-        model.addAttribute("productPage", productPage);
-        model.addAttribute("keyword", searchTerm);
-        return "/admin/khuyenmai/user/product-search";
-    }
+//    @GetMapping("/search-products")
+//    @ResponseBody
+//    public Page<SanPhamChiTiet> searchProducts(
+//            @RequestParam(required = false) String keyword,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size) {
+//
+//        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
+//
+//        Specification<SanPhamChiTiet> spec = (root, query, cb) -> {
+//            List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
+//
+//            if (keyword != null && !keyword.isEmpty()) {
+//                predicates.add(cb.or(
+//                        cb.like(cb.lower(root.get("sanPham").get("tenSanPham")), "%" + keyword.toLowerCase() + "%"),
+//                        cb.like(cb.lower(root.get("maSanPham")), "%" + keyword.toLowerCase() + "%")
+//                ));
+//            }
+//
+//            return cb.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
+//        };
+//
+//        return sanPhamChiTietRepository.findAll(spec, pageable);
+//    }
 
     @GetMapping("/search")
     public String searchKhuyenMai(

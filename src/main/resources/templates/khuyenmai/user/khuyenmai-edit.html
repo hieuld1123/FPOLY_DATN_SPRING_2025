@@ -181,10 +181,9 @@
 
                             <div class="col-md-7">
                                 <div class="card mb-3">
-                                    <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm..."
-                                           class="form-control mb-2">
+                                    <input type="text" id="searchInput" class="form-control" placeholder="Tìm kiếm theo mã hoặc tên sản phẩm...">
                                     <div class="table-responsive">
-                                        <table class="table table-bordered" id="productTableBody">
+                                        <table  class="table table-bordered" id="productTableBody">
                                             <thead>
                                             <tr>
                                                 <th style="width: 50px;">
@@ -218,8 +217,8 @@
                                                                 <!-- Hình ảnh carousel -->
                                                                 <img th:if="${anhs.tenAnh != null}"
                                                                      th:src="@{'/upload' + ${anhs.tenAnh.substring(anhs.tenAnh.lastIndexOf('upload') + 6)}}"
-                                                                     class="d-block w-100 carousel-img rounded-3"
-                                                                     alt="Ảnh">
+                                                                     style="width: 60px; height: 60px; object-fit: contain;"
+                                                                     class="rounded-3" alt="Ảnh sản phẩm">
                                                             </div>
                                                         </th:block>
                                                     </div>
