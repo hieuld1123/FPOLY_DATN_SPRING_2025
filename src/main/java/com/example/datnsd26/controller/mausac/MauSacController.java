@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@RequestMapping("/admin")
 @Controller
 public class MauSacController {
     @Autowired
@@ -23,7 +24,7 @@ public class MauSacController {
     @Autowired
     MauSacRepository mauSacRepository;
 
-    @GetMapping("/listMauSac")
+    @GetMapping("/mau-sac")
     public String listMauSac(@RequestParam(defaultValue = "0") int p, @ModelAttribute("mausac") MauSac mauSac, @ModelAttribute("tim") ThuocTinhInfo info, Model model) {
         List<MauSac> page;
         String trimmedKey = (info.getKey() != null) ? info.getKey().trim().replaceAll("\\s+", " ") : null;
@@ -49,7 +50,7 @@ public class MauSacController {
             mauSacRepository.save(existingMauSac);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái thành công!");
         }
-        return "redirect:/listMauSac";
+        return "redirect:/admin/mau-sac";
     }
 
     @PostMapping("/addSaveMauSac")
@@ -63,7 +64,7 @@ public class MauSacController {
         mauSac.setNgayTao(currentTime);
         mauSac.setNgayCapNhat(currentTime);
         mauSacRepository.save(mauSac);
-        return "redirect:/listMauSac";
+        return "redirect:/admin/mau-sac";
     }
 
     @PostMapping("/addMauSacModal")

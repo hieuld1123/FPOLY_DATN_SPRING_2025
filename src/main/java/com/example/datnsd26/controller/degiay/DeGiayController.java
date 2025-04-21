@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@RequestMapping("/admin")
 @Controller
 public class DeGiayController {
     @Autowired
@@ -22,7 +23,7 @@ public class DeGiayController {
     @Autowired
     private DeGiayImp deGiayImp;
 
-    @GetMapping("/listdegiay")
+    @GetMapping("/de-giay")
     public String listDeGiay(Model model, @ModelAttribute("degiay") DeGiay deGiay, @ModelAttribute("tim") ThuocTinhInfo info) {
         List<DeGiay> list;
         String trimmedKey = (info.getKey() != null) ? info.getKey().trim().replaceAll("\\s+", " ") : null;
@@ -52,7 +53,7 @@ public class DeGiayController {
             deGiayRepository.save(existingDeGiay);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái thành công!");
         }
-        return "redirect:/listdegiay";
+        return "redirect:/admin/de-giay";
     }
 
     @PostMapping("/addSave")
@@ -66,7 +67,7 @@ public class DeGiayController {
         deGiay.setNgayCapNhat(currentTime);
         deGiayImp.add(deGiay);
 
-        return "redirect:/listdegiay";
+        return "redirect:/admin/de-giay";
     }
 
     @PostMapping("/addDeGiayModal")

@@ -102,7 +102,7 @@ public class SanPhamChiTietController {
     }
 
 
-    @GetMapping("/allSPCT")
+    @GetMapping("/quan-ly/san-pham-chi-tiet")
     public String allSPCT(Model model, @ModelAttribute("search") SanPhamChiTietInfo info) {
         List<SanPhamChiTiet> list;
         String trimmedKey = (info.getKey() != null) ? info.getKey().trim().replaceAll("\\s+", " ") : null;

@@ -28,7 +28,7 @@ public class DeGiayRestController {
                 : null;
         existingDeGiay.setTen(trimmedTenDeGiay);
         deGiayRepository.save(existingDeGiay);
-        return ResponseEntity.ok("redirect:/listdegiay");
+        return ResponseEntity.ok("redirect:/admin/de-giay");
     }
 
     @GetMapping("/checkTenDeGiay")

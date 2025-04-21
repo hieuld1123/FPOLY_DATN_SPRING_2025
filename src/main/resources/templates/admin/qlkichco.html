@@ -229,7 +229,7 @@
                                                 <div class="modal-body">
                                                     <form id="addForm" name="addKichCo" th:method="post"
                                                           th:object="${kichco}"
-                                                          th:action="@{/addSaveKichCo}"
+                                                          th:action="@{/admin/addSaveKichCo}"
                                                           onsubmit="return validateTrung()">
                                                         <p style="font-weight: bold">
                                                             <span style="color: red">* </span>
@@ -585,7 +585,7 @@
                                     // Lưu thông báo vào sessionStorage
                                     sessionStorage.setItem('successMessage', 'Cập nhật thành công!');
                                     // Chuyển hướng
-                                    window.location.href = '/listKichCo';
+                                    window.location.href = '/admin/kich-co';
                                 } else {
                                     throw new Error('Cập nhật thất bại');
                                 }

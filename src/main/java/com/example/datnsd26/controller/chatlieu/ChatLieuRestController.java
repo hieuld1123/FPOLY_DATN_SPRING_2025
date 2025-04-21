@@ -28,7 +28,7 @@ public class ChatLieuRestController {
                 : null;
         existingChatLieu.setTen(trimmedTenChatLieu);
         chatLieuRepository.save(existingChatLieu);
-        return ResponseEntity.ok("redirect:/chatlieu");
+        return ResponseEntity.ok("redirect:/admin/chat-lieu");
     }
 
     @GetMapping("/checkTenChatLieu")

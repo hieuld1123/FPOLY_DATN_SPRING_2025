@@ -28,7 +28,7 @@ public class KichCoRestController {
                 : null;
         existingKichCo.setTen(trimmedTenKichCo);
         kichCoRepository.save(existingKichCo);
-        return ResponseEntity.ok("redirect:/listKichCo");
+        return ResponseEntity.ok("redirect:/admin/kich-co");
     }
 
     @GetMapping("/checkTenKichCo")
