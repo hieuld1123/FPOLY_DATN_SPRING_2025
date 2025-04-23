@@ -98,7 +98,7 @@ public class HoaDonServiceImp implements HoaDonService {
                 .summary(InvoiceInformation.Summary.builder()
                         .subtotal(hd.getTongTien())
                         .shipping_fee(hd.getPhiVanChuyen())
-                        .discount(hd.getGiamGia())
+                        .discount(hd.getGiamGia() == null ? 0f : hd.getGiamGia())
                         .total(hd.getThanhTien())
                         .build())
                 .build();
