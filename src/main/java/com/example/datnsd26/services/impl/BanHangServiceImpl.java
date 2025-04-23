@@ -246,7 +246,7 @@ public class BanHangServiceImpl implements BanHangService {
         if (hoaDon.getHinhThucMuaHang().equalsIgnoreCase("Có giao hàng")) {
             lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Đã xác nhận").hoaDon(hoaDon).build());
         }
-        hoaDon.setThanhTien(hoaDon.getTongTien() + hoaDon.getPhiVanChuyen() - hoaDon.getGiamGia());
+        hoaDon.setThanhTien(hoaDon.getTongTien() + hoaDon.getPhiVanChuyen() - (hoaDon.getGiamGia() == null ? 0 : hoaDon.getGiamGia()));
         this.hoaDonRepository.save(hoaDon);
     }
 
