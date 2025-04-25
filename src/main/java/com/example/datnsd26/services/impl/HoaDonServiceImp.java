@@ -1,6 +1,7 @@
 package com.example.datnsd26.services.impl;
 
 import com.example.datnsd26.controller.request.InvoiceParamRequest;
+import com.example.datnsd26.controller.request.InvoiceRecipientInfoRequest;
 import com.example.datnsd26.controller.response.HoaDonChiTietResponse;
 import com.example.datnsd26.controller.response.InvoiceInformation;
 import com.example.datnsd26.controller.response.InvoicePageResponse;
@@ -213,6 +214,27 @@ public class HoaDonServiceImp implements HoaDonService {
             return;
         }
         lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai(STATUS_EDIT).hoaDon(hoaDon).build());
+    }
+
+    @Override
+    public void updateRecipient(String orderId, InvoiceRecipientInfoRequest request) {
+        HoaDon hoaDon = getHoaDonByCode(orderId);
+        hoaDon.setTenNguoiNhan(request.getName());
+        hoaDon.setSdtNguoiNhan(request.getPhone());
+        hoaDon.setTinh(request.getProvince());
+        hoaDon.setQuan(request.getDistrict());
+        hoaDon.setXa(request.getWard());
+        hoaDon.setDiaChiNguoiNhan(request.getSpecificAddress());
+        Optional<LichSuHoaDon> history = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_EDIT, hoaDon.getId());
+        if(history.isPresent()) {
+            LichSuHoaDon lichSuHoaDon = history.get();
+            lichSuHoaDon.setThoiGian(new Date());
+            lichSuHoaDon.setTrangThai(STATUS_EDIT);
+            this.lichSuHoaDonRepository.save(lichSuHoaDon);
+            return;
+        }
+        lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai(STATUS_EDIT).hoaDon(hoaDon).build());
+        this.hoaDonRepository.save(hoaDon);
     }
 
     private HoaDon getHoaDonByCode(String code) {

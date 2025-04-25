@@ -1,153 +1,306 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<div th:replace="components/head :: head"></div>
-<meta charset="UTF-8"/>
-<title>Bán hàng</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<link rel="stylesheet" href="/css/HoaDonChiTiet.css">
-<body>
-<div class="admin-layout">
-    <div th:replace="~{components/admin-sidebar :: admin-sidebar}" class="sidebar"></div>
-    <div class="right-content">
-        <nav class="navbar-custom"
-             th:replace="~{components/admin-navbar :: admin-navbar}">
-        </nav>
+  <div th:replace="components/head :: head"></div>
+  <meta charset="UTF-8" />
+  <title>Bán hàng</title>
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"
+  />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="stylesheet" href="/css/HoaDonChiTiet.css" />
+  <body>
+    <div class="admin-layout">
+      <div
+        th:replace="~{components/admin-sidebar :: admin-sidebar}"
+        class="sidebar"
+      ></div>
+      <div class="right-content">
+        <nav
+          class="navbar-custom"
+          th:replace="~{components/admin-navbar :: admin-navbar}"
+        ></nav>
         <div class="main-content">
-            <div class="row mt-2 align-items-center">
-                <div class="col-6">
-                    <a th:href="@{/quan-ly/hoa-don}" class="back-link">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                             class="bi bi-arrow-left" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd"
-                                  d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 1 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
-                        </svg>
-                        Quay lại danh sách đơn hàng
-                    </a>
-                </div>
-                <div class="col-6 text-end">
-                    <button id="btn-cancel-invoice" class="btn cancel-btn" disabled>Hủy đơn hàng</button>
-                    <button id="btn-modify-invoice" class="btn edit-btn" disabled>Sửa đơn hàng</button>
-                    <button id="confirm-invoice" class="btn btn-primary" disabled>Xác nhận</button>
-                    <button id="confirm-delivery" class="btn btn-primary" disabled>Giao cho đơn vị vận chuyển</button>
-                    <button id="btn-completed" class="btn btn-primary" disabled>Hoàn thành</button>
-                </div>
+          <div class="row mt-2 align-items-center">
+            <div class="col-6">
+              <a th:href="@{/quan-ly/hoa-don}" class="back-link">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  class="bi bi-arrow-left"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 1 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"
+                  />
+                </svg>
+                Quay lại danh sách đơn hàng
+              </a>
             </div>
-
-            <div class="row mt-3">
-                <div class="col-6 align-items-center">
-                    <h2 id="order-id"></h2>
-                    <div>
-                        <button class="btn" id="printButton">In đơn hàng</button>
-                    </div>
-                </div>
-                <div class="col-6 align-items-center justify-content-end">
-                    <div class="timeline" id="timeline"></div>
-                </div>
+            <div class="col-6 text-end">
+              <button id="btn-cancel-invoice" class="btn cancel-btn" disabled>
+                Hủy đơn hàng
+              </button>
+              <button id="btn-modify-invoice" class="btn edit-btn" disabled>
+                Sửa đơn hàng
+              </button>
+              <button id="confirm-invoice" class="btn btn-primary" disabled>
+                Xác nhận
+              </button>
+              <button id="confirm-delivery" class="btn btn-primary" disabled>
+                Giao cho đơn vị vận chuyển
+              </button>
+              <button id="btn-completed" class="btn btn-primary" disabled>
+                Hoàn thành
+              </button>
             </div>
+          </div>
 
-            <div class="row row-equal-height">
-                <div class="col-9">
-                    <div class="card equal-height mt-3">
-                        <div class="card-header">
-                            <div>
-                                <h3 class="card-title">Thông tin khách hàng</h3>
-                                <div class="mt-2" id="customer-header"></div>
-                            </div>
-                        </div>
-                        <div class="card-body border-bottom py-3">
-                            <div id="customer-information"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-3">
-                    <div class="card equal-height mt-3">
-                        <div class="card-header">
-                            <h3 class="card-title">Thông tin đơn hàng</h3>
-                        </div>
-                        <div class="card-body border-bottom py-3" id="order-info"></div>
-                    </div>
-
-                    <div class="card equal-height mt-3">
-                        <div class="card-header">
-                            <h3 class="card-title">Ghi chú</h3>
-                        </div>
-                        <div class="card-body border-bottom py-3" id="order-note"></div>
-                    </div>
-                </div>
+          <div class="row mt-3">
+            <div class="col-6 align-items-center">
+              <h2 id="order-id"></h2>
+              <div>
+                <button class="btn" id="printButton">In đơn hàng</button>
+              </div>
             </div>
-            <div class="row mt-3">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Thông tin sản phẩm</h3>
+            <div class="col-6 align-items-center justify-content-end">
+              <div class="timeline" id="timeline"></div>
+            </div>
+          </div>
+
+          <div class="row row-equal-height">
+            <div class="col-9">
+              <div class="card equal-height mt-3">
+                <div class="card-header">
+                  <div>
+                    <h3 class="card-title">Thông tin khách hàng</h3>
+                    <div class="mt-2" id="customer-header"></div>
+                  </div>
+                </div>
+                <div class="card-body border-bottom py-3">
+                  <div id="customer-information"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-3">
+              <div class="card equal-height mt-3">
+                <div class="card-header">
+                  <h3 class="card-title">Thông tin đơn hàng</h3>
+                </div>
+                <div class="card-body border-bottom py-3" id="order-info"></div>
+              </div>
+
+              <div class="card equal-height mt-3">
+                <div class="card-header">
+                  <h3 class="card-title">Ghi chú</h3>
+                </div>
+                <div class="card-body border-bottom py-3" id="order-note"></div>
+              </div>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-12">
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">Thông tin sản phẩm</h3>
+                </div>
+                <div class="card-body border-bottom py-3">
+                  <div class="table-responsive">
+                    <table class="product-table">
+                      <thead>
+                        <tr>
+                          <th>STT</th>
+                          <th>Ảnh</th>
+                          <th>Tên sản phẩm</th>
+                          <th>Số lượng</th>
+                          <th>Đơn giá</th>
+                          <th>Thành tiền</th>
+                        </tr>
+                      </thead>
+                      <tbody id="product-list"></tbody>
+                    </table>
+                  </div>
+                  <div class="row justify-content-end">
+                    <div class="col-3">
+                      <div
+                        class="card-body border-bottom py-3"
+                        id="summary"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Chỉnh sửa thông tin người nhận -->
+        <!-- Modal Chỉnh sửa thông tin người nhận -->
+        <div
+                class="modal modal-blur fade"
+                id="editRecipientModal"
+                tabindex="-1"
+                role="dialog"
+                aria-hidden="true"
+        >
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Chỉnh sửa thông tin người nhận</h5>
+                        <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                        ></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Tên người nhận</label>
+                            <input
+                                    type="text"
+                                    class="form-control"
+                                    id="recipientName"
+                                    placeholder="Nhập tên người nhận"
+                            />
+                            <!-- Vùng hiển thị lỗi -->
+                            <div class="error-message text-danger"></div>
                         </div>
-                        <div class="card-body border-bottom py-3">
-                            <div class="table-responsive">
-                                <table class="product-table">
-                                    <thead>
-                                    <tr>
-                                        <th>STT</th>
-                                        <th>Ảnh</th>
-                                        <th>Tên sản phẩm</th>
-                                        <th>Số lượng</th>
-                                        <th>Đơn giá</th>
-                                        <th>Thành tiền</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody id="product-list"></tbody>
-                                </table>
-                            </div>
-                            <div class="row justify-content-end">
-                                <div class="col-3">
-                                    <div class="card-body border-bottom py-3" id="summary"></div>
-                                </div>
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label">Số điện thoại</label>
+                            <input
+                                    type="text"
+                                    class="form-control"
+                                    id="recipientPhone"
+                                    placeholder="Nhập số điện thoại"
+                            />
+                            <!-- Vùng hiển thị lỗi -->
+                            <div class="error-message text-danger"></div>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tỉnh/Thành phố</label>
+                            <select class="form-select" id="province">
+                                <option value="">Chọn tỉnh/thành</option>
+                            </select>
+                            <!-- Vùng hiển thị lỗi -->
+                            <div class="error-message text-danger"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Quận/Huyện</label>
+                            <select class="form-select" id="district">
+                                <option value="">Chọn quận/huyện</option>
+                            </select>
+                            <!-- Vùng hiển thị lỗi -->
+                            <div class="error-message text-danger"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Xã/Phường</label>
+                            <select class="form-select" id="ward">
+                                <option value="">Chọn xã/phường</option>
+                            </select>
+                            <!-- Vùng hiển thị lỗi -->
+                            <div class="error-message text-danger"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Địa chỉ cụ thể</label>
+                            <input
+                                    type="text"
+                                    class="form-control"
+                                    id="specificAddress"
+                                    placeholder="Nhập địa chỉ cụ thể"
+                            />
+                            <!-- Vùng hiển thị lỗi -->
+                            <div class="error-message text-danger"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn me-auto" data-bs-dismiss="modal">
+                            Hủy
+                        </button>
+                        <button
+                                type="button"
+                                class="btn btn-primary"
+                                id="saveRecipientInfo"
+                        >
+                            Lưu thay đổi
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Modal Xác nhận thanh toán -->
-    <div class="modal modal-blur fade" id="paymentModal" tabindex="-1" role="dialog" aria-hidden="true">
+      <!-- Modal Xác nhận thanh toán -->
+      <div
+        class="modal modal-blur fade"
+        id="paymentModal"
+        tabindex="-1"
+        role="dialog"
+        aria-hidden="true"
+      >
         <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Xác nhận thanh toán</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Phương thức thanh toán</label>
-                        <select class="form-select" id="paymentMethod">
-                            <option value="Chuyển khoản">Chuyển khoản</option>
-                            <option value="Tiền mặt">Tiền mặt</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Số tiền</label>
-                        <input type="text" class="form-control" id="paymentAmount" readonly>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Ngày thanh toán</label>
-                        <input type="text" class="form-control" id="paymentDate" readonly>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Tham chiếu</label>
-                        <input type="text" class="form-control" id="paymentReference" placeholder="Tham chiếu">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn me-auto" data-bs-dismiss="modal">Thoát</button>
-                    <button type="button" class="btn btn-primary" id="confirmPayment">Thanh toán đơn hàng</button>
-                </div>
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Xác nhận thanh toán</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
             </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label class="form-label">Phương thức thanh toán</label>
+                <select class="form-select" id="paymentMethod">
+                  <option value="Chuyển khoản">Chuyển khoản</option>
+                  <option value="Tiền mặt">Tiền mặt</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Số tiền</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="paymentAmount"
+                  readonly
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Ngày thanh toán</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="paymentDate"
+                  readonly
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Tham chiếu</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="paymentReference"
+                  placeholder="Tham chiếu"
+                />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn me-auto" data-bs-dismiss="modal">
+                Thoát
+              </button>
+              <button type="button" class="btn btn-primary" id="confirmPayment">
+                Thanh toán đơn hàng
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
-<script src="/js/hoa-don-chi-tiet.js"></script>
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
+    <script src="/js/hoa-don-chi-tiet.js"></script>
+  </body>
 </html>
