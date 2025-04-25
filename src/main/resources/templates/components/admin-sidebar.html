@@ -48,8 +48,10 @@
                     aria-controls="sidebar-menu" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="navbar-brand navbar-brand-autodark navbar-brand-custom">
-                <a th:href="@{/homepage}">NINE SHOES</a>
+            <div class="navbar-brand navbar-brand-autodark navbar-brand-custom my-5">
+                <a th:href="@{/homepage}">
+                    <img src="https://res.cloudinary.com/dj7pcl4ah/image/upload/v1745595331/xuqzapa8fr8qrwzu02rc.svg"/>
+                </a>
             </div>
             <div class="collapse navbar-collapse" id="sidebar-menu">
                 <ul class="navbar-nav pt-lg-3">
@@ -91,6 +93,26 @@
                             </span>
                             <span class="nav-link-title" style="color: white;font-size: 1.1rem">
                                 Bán hàng
+                            </span>
+                        </a>
+                    </li>
+                    <li class="nav-item pt-2">
+                        <a class="nav-link" th:href="@{/quan-ly/hoa-don}">
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                <!-- Download SVG icon from http://tabler.io/icons/icon/home -->
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                     stroke-linejoin="round" class="icon icon-1" style="color: white">
+                                    <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path>
+                                    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+                                    <path d="M15 15l3.35 3.35"></path>
+                                    <path d="M9 15l-3.35 3.35"></path>
+                                    <path d="M5.65 5.65l3.35 3.35"></path>
+                                    <path d="M18.35 5.65l-3.35 3.35"></path>
+                                </svg>
+                            </span>
+                            <span class="nav-link-title" style="color: white;font-size: 1.1rem">
+                                Quản lý hóa đơn
                             </span>
                         </a>
                     </li>
@@ -137,26 +159,7 @@
                             </a>
                         </div>
                     </li>
-                    <li class="nav-item pt-2">
-                        <a class="nav-link" th:href="@{/quan-ly/hoa-don}">
-                            <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                <!-- Download SVG icon from http://tabler.io/icons/icon/home -->
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                     stroke-linejoin="round" class="icon icon-1" style="color: white">
-                                    <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path>
-                                    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
-                                    <path d="M15 15l3.35 3.35"></path>
-                                    <path d="M9 15l-3.35 3.35"></path>
-                                    <path d="M5.65 5.65l3.35 3.35"></path>
-                                    <path d="M18.35 5.65l-3.35 3.35"></path>
-                                </svg>
-                            </span>
-                            <span class="nav-link-title" style="color: white;font-size: 1.1rem">
-                                Quản lý hóa đơn
-                            </span>
-                        </a>
-                    </li>
+
 
                     <li class="nav-item dropdown pt-2">
                         <a class="nav-link dropdown-toggle" href="#navbar-help" data-bs-toggle="dropdown"
