@@ -225,6 +225,15 @@ public class HoaDonServiceImp implements HoaDonService {
         hoaDon.setQuan(request.getDistrict());
         hoaDon.setXa(request.getWard());
         hoaDon.setDiaChiNguoiNhan(request.getSpecificAddress());
+        Optional<LichSuHoaDon> history = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_EDIT, hoaDon.getId());
+        if(history.isPresent()) {
+            LichSuHoaDon lichSuHoaDon = history.get();
+            lichSuHoaDon.setThoiGian(new Date());
+            lichSuHoaDon.setTrangThai(STATUS_EDIT);
+            this.lichSuHoaDonRepository.save(lichSuHoaDon);
+            return;
+        }
+        lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai(STATUS_EDIT).hoaDon(hoaDon).build());
         this.hoaDonRepository.save(hoaDon);
     }
 
