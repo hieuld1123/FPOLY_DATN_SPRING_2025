@@ -1,6 +1,7 @@
 package com.example.datnsd26.services;
 
 import com.example.datnsd26.controller.request.InvoiceParamRequest;
+import com.example.datnsd26.controller.request.InvoiceRecipientInfoRequest;
 import com.example.datnsd26.controller.response.HoaDonChiTietResponse;
 import com.example.datnsd26.controller.response.InvoiceInformation;
 import com.example.datnsd26.controller.response.InvoicePageResponse;
@@ -26,4 +27,5 @@ public interface HoaDonService {
 
     void createHistoryModify(String invoiceCode);
 
+    void updateRecipient(String orderId, InvoiceRecipientInfoRequest request);
 }
