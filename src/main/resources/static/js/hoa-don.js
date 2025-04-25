@@ -184,6 +184,14 @@ function updatePagination(totalPages, currentPage) {
 
 // The function applies the filter
 function applyFilters() {
+    const startDate = $("#filter-start-date").val();
+    const endDate = $("#filter-end-date").val();
+
+    // Validate that startDate is less than or equal to endDate
+    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+        alert("Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc.");
+        return;
+    }
     filterParams.invoiceCode = $("#filter-id").val();
     filterParams.startDate = $("#filter-start-date").val();
     filterParams.endDate = $("#filter-end-date").val();
