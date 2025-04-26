@@ -135,7 +135,7 @@ public class OrderTrackingController {
     }
 
     @PostMapping("/huy-don")
-    public String huyDon(@RequestParam("idHoaDon") Integer idHoaDon, RedirectAttributes redirectAttributes) {
+    public String huyDon(@RequestParam("idHoaDon") Integer idHoaDon, @RequestParam("reason") String reason, RedirectAttributes redirectAttributes) {
         Optional<HoaDon> optionalHoaDon = hoaDonRepository.findById(idHoaDon);
 
         if (optionalHoaDon.isEmpty()) {
@@ -160,6 +160,7 @@ public class OrderTrackingController {
 
         // Hủy đơn
         hoaDon.setTrangThai("Đã hủy");
+        hoaDon.setGhiChu("KH: " + reason);
         hoaDon.setNgayCapNhat(new Date());
         hoaDonRepository.save(hoaDon);
 

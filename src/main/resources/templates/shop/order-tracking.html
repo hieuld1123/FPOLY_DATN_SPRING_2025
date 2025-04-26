@@ -221,24 +221,59 @@
                                         th:text="${#numbers.formatDecimal(hoaDon.giamGia, 0, 'COMMA', 0, 'POINT')}"></span>VNĐ
                                 </p>
                             </div>
-                            <p class="fw-bold text-orange"><strong>Thành tiền:</strong>
+                            <h3 class="fw-bold text-orange"><strong>Thành tiền:</strong>
                                 <span
                                     th:text="${#numbers.formatDecimal(hoaDon.thanhTien, 0, 'COMMA', 0, 'POINT')}"></span>
                                 VNĐ
-                            </p>
-                            <h2 class="fw-bold text-orange"><strong>Trạng thái:</strong> <span
-                                    th:text="${hoaDon.trangThai}"></span></h2>
-                            <form th:action="@{/shop/order-tracking/huy-don}" method="post" id="huyDonForm">
-                                <input type="hidden" name="idHoaDon" th:value="${hoaDon.id}" />
-                                <button
-                                        type="button"
-                                        class="btn btn-danger"
-                                        onclick="confirmHuyDon()"
-                                        th:disabled="${!(currentStatus == 'Đặt hàng' or currentStatus == 'Chờ xác nhận' or currentStatus == 'Đã xác nhận')}">
-                                    Hủy đơn hàng
-                                </button>
-                            </form>
+                            </h3>
+                            <h3 class="fw-bold text-orange"><strong>Trạng thái:</strong> <span
+                                    th:text="${hoaDon.trangThai}"></span></h3>
+<!--                            <form th:action="@{/shop/order-tracking/huy-don}" method="post" id="huyDonForm">-->
+<!--                                <input type="hidden" name="idHoaDon" th:value="${hoaDon.id}" />-->
+<!--                                <button-->
+<!--                                        type="button"-->
+<!--                                        class="btn btn-danger"-->
+<!--                                        onclick="confirmHuyDon()"-->
+<!--                                        th:disabled="${!(currentStatus == 'Đặt hàng' or currentStatus == 'Chờ xác nhận' or currentStatus == 'Đã xác nhận')}">-->
+<!--                                    Hủy đơn hàng-->
+<!--                                </button>-->
+<!--                            </form>-->
+                            <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">Hủy đơn</button>
+                            <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form id="cancelOrderForm" method="post" th:action="@{/shop/order-tracking/huy-don}">
+                                            <input type="hidden" name="idHoaDon" th:value="${hoaDon.id}"/>
 
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="cancelOrderModalLabel">Lý Do Hủy</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                            </div>
+
+                                            <div class="modal-body">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="reason" id="reason1" value="Tôi muốn cập nhật địa chỉ/sđt nhận hàng." checked>
+                                                    <label class="form-check-label" for="reason1">Tôi muốn cập nhật địa chỉ/sđt nhận hàng.</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="reason" id="reason2" value="Tôi muốn thêm/thay đổi Mã giảm giá">
+                                                    <label class="form-check-label" for="reason2">Tôi muốn thêm/thay đổi Mã giảm giá</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="reason" id="reason3" value="Tôi muốn thay đổi sản phẩm (kích thước, màu sắc, số lượng...)">
+                                                    <label class="form-check-label" for="reason3">Tôi muốn thay đổi sản phẩm (kích thước, màu sắc, số lượng...)</label>
+                                                </div>
+                                                <!-- Các radio còn lại tương tự -->
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                                <button type="submit" class="btn btn-primary">Xác nhận</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <!-- Danh sách sản phẩm -->
@@ -294,6 +329,7 @@
             </div>
         </div>
     </div>
+
     <div th:replace="~{components/footer :: footer}"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
