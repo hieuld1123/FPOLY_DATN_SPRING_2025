@@ -391,6 +391,7 @@ $(document).ready(function () {
     const orderId = window.location.pathname.split("/").pop();
       $("#recipientName").val(globalData.customer.name || "");
       $("#recipientPhone").val(globalData.customer.phone || "");
+      $("#shippingFee").val(globalData.summary.shipping_fee || 0);
       $("#editRecipientModal").modal("show");
     loadProvinces($("#province"), $("#district"), $("#ward"), "recipient_");
   });
@@ -497,6 +498,7 @@ $(document).ready(function () {
       const district = $("#district").val();
       const ward = $("#ward").val();
       const specificAddress = $("#specificAddress").val().trim();
+      const shippingFee = $("#shippingFee").val().trim();
 
       let isValid = true;
 
@@ -564,6 +566,19 @@ $(document).ready(function () {
               .text("Địa chỉ cụ thể không được vượt quá 100 ký tự.");
       }
 
+      // Kiểm tra Phí vận chuyển
+      if (shippingFee === "") {
+        isValid = false;
+        $("#shippingFee")
+            .next(".error-message")
+            .text("Phí vận chuyển không được để trống.");
+      } else if (isNaN(shippingFee) || shippingFee < 0 || shippingFee > 1000000) {
+        isValid = false;
+        $("#shippingFee")
+            .next(".error-message")
+            .text("Phí vận chuyển phải nằm trong khoảng từ 0 đến 1,000,000.");
+      }
+
       // Nếu không hợp lệ, dừng việc gửi dữ liệu
       if (!isValid) {
           return;
@@ -576,6 +591,7 @@ $(document).ready(function () {
       district: $("#district option:selected").text(),
       ward: $("#ward option:selected").text(),
       specificAddress: $("#specificAddress").val(),
+      shippingFee: parseInt(shippingFee),
     };
     console.log(recipientData);
     
