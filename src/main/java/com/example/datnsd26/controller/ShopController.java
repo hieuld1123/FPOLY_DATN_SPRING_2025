@@ -210,5 +210,4 @@ public class ShopController {
         return "shop/product-details";
     }
 
-
 }

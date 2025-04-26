@@ -1,6 +1,10 @@
 package com.example.datnsd26.controller;
 
+import com.example.datnsd26.models.HoaDon;
+import com.example.datnsd26.models.LichSuHoaDon;
 import com.example.datnsd26.models.TaiKhoan;
+import com.example.datnsd26.repository.HoaDonRepository;
+import com.example.datnsd26.repository.LichSuHoaDonRepository;
 import com.example.datnsd26.repository.SanPhamChiTietRepository;
 import com.example.datnsd26.repository.TaiKhoanRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,15 +12,22 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Controller
 public class LoginController {
     private final SanPhamChiTietRepository sanPhamChiTietRepository;
     private final TaiKhoanRepository taiKhoanRepository;
+    private final HoaDonRepository hoaDonRepository;
+    private final LichSuHoaDonRepository lichSuHoaDonRepository;
 
 //    @GetMapping("/shop")
 //    public String shopPage(Model model) {
@@ -54,8 +65,6 @@ public class LoginController {
         return "login";
     }
 
-
-
     @GetMapping("/debug-password")
     @ResponseBody
     public String debugPassword() {
@@ -63,4 +72,5 @@ public class LoginController {
                 .map(user -> "Stored Hashed Password: " + user.getMatKhau())
                 .orElse("User not found");
     }
+
 }
