@@ -12,4 +12,5 @@ public class InvoiceRecipientInfoRequest {
     private String district;
     private String ward;
     private String specificAddress;
+    private float shippingFee;
 }

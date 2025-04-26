@@ -16,6 +16,7 @@ import com.example.datnsd26.repository.LichSuHoaDonRepository;
 import com.example.datnsd26.repository.SanPhamChiTietRepository;
 import com.example.datnsd26.repository.customizeQuery.InvoiceCustomizeQuery;
 import com.example.datnsd26.services.HoaDonService;
+import com.example.datnsd26.utilities.AuthUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,8 @@ public class HoaDonServiceImp implements HoaDonService {
     private final LichSuHoaDonRepository lichSuHoaDonRepository;
 
     private final SanPhamChiTietRepository sanPhamChiTietRepository;
+
+    private final AuthUtil authUtil;
 
     private static final String STATUS_CONFIRMED = "Đã xác nhận";
     private static final String STATUS_DELIVERED = "Đã giao cho đơn vị vận chuyển";
@@ -170,7 +173,7 @@ public class HoaDonServiceImp implements HoaDonService {
                         .gia(sp.getSanPhamChiTiet().getGiaBanSauGiam())
                         .soLuong(sp.getSoLuong())
                         .soLuongTonKho(sp.getSanPhamChiTiet().getSoLuong())
-                        .hinhAnh("https://th.bing.com/th/id/OIP.8tQmmY_ccVpcxBxu0Z0mzwHaE8?rs=1&pid=ImgDetMain") // TODO
+                        .hinhAnh(sp.getSanPhamChiTiet().getHinhAnh().get(0).getTenAnh())
                         .build()
         ).toList();
         KhachHang kh = hoaDon.getKhachHang();
@@ -225,15 +228,9 @@ public class HoaDonServiceImp implements HoaDonService {
         hoaDon.setQuan(request.getDistrict());
         hoaDon.setXa(request.getWard());
         hoaDon.setDiaChiNguoiNhan(request.getSpecificAddress());
-        Optional<LichSuHoaDon> history = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_EDIT, hoaDon.getId());
-        if(history.isPresent()) {
-            LichSuHoaDon lichSuHoaDon = history.get();
-            lichSuHoaDon.setThoiGian(new Date());
-            lichSuHoaDon.setTrangThai(STATUS_EDIT);
-            this.lichSuHoaDonRepository.save(lichSuHoaDon);
-            return;
-        }
-        lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai(STATUS_EDIT).hoaDon(hoaDon).build());
+        hoaDon.setPhiVanChuyen(request.getShippingFee());
+        hoaDon.setThanhTien(hoaDon.getTongTien() + hoaDon.getPhiVanChuyen() - (hoaDon.getGiamGia() == null ? 0 : hoaDon.getGiamGia()));
+        lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai(String.format("Đã chỉnh sửa bởi %s", this.authUtil.getNhanVien().getTenNhanVien())).hoaDon(hoaDon).build());
         this.hoaDonRepository.save(hoaDon);
     }
 
