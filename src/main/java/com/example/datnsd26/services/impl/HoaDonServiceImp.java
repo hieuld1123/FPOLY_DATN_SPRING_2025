@@ -7,6 +7,7 @@ import com.example.datnsd26.controller.response.InvoiceInformation;
 import com.example.datnsd26.controller.response.InvoicePageResponse;
 import com.example.datnsd26.controller.response.SanPhamResponse;
 import com.example.datnsd26.exception.EntityNotFound;
+import com.example.datnsd26.exception.InvalidDataException;
 import com.example.datnsd26.models.*;
 import com.example.datnsd26.repository.HoaDonRepository;
 import com.example.datnsd26.repository.LichSuHoaDonRepository;
@@ -112,6 +113,19 @@ public class HoaDonServiceImp implements HoaDonService {
     @Transactional(rollbackOn = Exception.class)
     public void confirmInvoice(String code) {
         HoaDon hd = getHoaDonByCode(code);
+        if(hd.getHinhThucMuaHang().equals("Online")) {
+            hd.getDanhSachSanPham().forEach(sp -> {
+                SanPhamChiTiet ct = this.sanPhamChiTietRepository.findById(sp.getSanPhamChiTiet().getId()).orElseThrow(() -> new EntityNotFound(String.format("Không tìm thấy sản phẩm %s", sp.getSanPhamChiTiet().getMaSanPhamChiTiet())));
+                if(Boolean.FALSE.equals(ct.getTrangThai())){
+                    throw new InvalidDataException(String.format("Sản phẩm %s đã ngừng kinh doanh", ct.getSanPham().getMaSanPham()));
+                }
+                if(ct.getSoLuong() - sp.getSoLuong() < 0) {
+                    throw new InvalidDataException(String.format("Sản phẩm %s không đủ số lượng", ct.getSanPham().getMaSanPham()));
+                }
+                ct.setSoLuong(ct.getSoLuong() - sp.getSoLuong());
+                this.sanPhamChiTietRepository.save(ct);
+            });
+        }
         hd.setTrangThai(STATUS_CONFIRMED);
         hd.setNgayCapNhat(new Date());
         lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai(STATUS_CONFIRMED).hoaDon(hd).build());
