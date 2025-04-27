@@ -2,7 +2,19 @@ use DEMO_SECURITY
 GO
 
 INSERT INTO san_pham (ten_san_pham, ma_san_pham, ngay_cap_nhat, ngay_tao, trang_thai)
-VALUES ('Vintas Denim', 'SP01', GETDATE(), GETDATE(), 1);
+VALUES (N'Vintas Denim', 'SP01', GETDATE(), GETDATE(), 1),
+		(N'Giày Jeep Lifestyle Shoes', 'SP02', GETDATE(), GETDATE(), 1),
+		(N'Adilette Shower', 'SP03', GETDATE(), GETDATE(), 1),
+		(N'Air Jordan 1 Mid Hyper Royal', 'SP04', GETDATE(), GETDATE(), 1),
+		(N'Reebok Zig Kinetica Concep', 'SP05', GETDATE(), GETDATE(), 1),
+        (N'Nike Lebron Witness IV', 'SP06', GETDATE(), GETDATE(), 1),
+        (N'Nike React Vision', 'SP07', GETDATE(), GETDATE(), 1),
+        (N'Fila Ray Tracer', 'SP08', GETDATE(), GETDATE(), 1),
+        (N'Supercourt', 'SP09', GETDATE(), GETDATE(), 1),
+        (N'MLB Big Ball Chunky', 'SP10', GETDATE(), GETDATE(), 1),
+        (N'Reebok Club C', 'SP11', GETDATE(), GETDATE(), 1),
+        (N'Vans Style 36', 'SP12', GETDATE(), GETDATE(), 1),
+        (N'Puma RS IRI 2020', 'SP13', GETDATE(), GETDATE(), 1)
 
 --
 INSERT INTO kich_co (ten)
@@ -24,40 +36,41 @@ VALUES
 VALUES
     (N'Nike'),
     (N'Adidas'),
-    (N'Asics'),
-    (N'Clarks'),
-    (N'Gucci'),
-    (N'Puma'),
-    (N'Birkenstock'),
-    (N'Salvatore Ferragamo'),
-    (N'Timberland'),
-    (N'New Balance')
-
+    (N'Jeep'),
+    (N'Reebok'),--4
+    (N'Puma'), --5
+    (N'Fila'), --6
+    (N'Vans'), --7
+    (N'MLB') --8
 
 --
 INSERT INTO mau_sac (ten, ten_mau_sac)
 VALUES
-    (N'#2e53c2', N'xanh dương đậm'),
+    (N'#f4ece3', N'Be trắng'), --1
+    (N'#f7f5fa', N'Trắng'), --2
+    (N'#2e53c2', N'xanh dương đậm'), --3
     (N'#f76808', N'cam cháy'),
-    (N'#f50505', N'đỏ tươi'),
+    (N'#f50505', N'đỏ tươi'), --5
     (N'#030303', N'đen'),
     (N'#77e92b', N'xanh lá non'),
-    (N'#288a6a', N'xanh ngọc lục bảo'),
+    (N'#288a6a', N'xanh ngọc lục bảo'), --8
     (N'#0eccfb', N'xanh cyan'),
-    (N'#654206', N'nâu đất'),
+    (N'#654206', N'nâu đất'), --10
     (N'#d1236f', N'hồng đậm'),
-    (N'#003b99', N'xanh dương')
+    (N'#003b99', N'xanh dương'),
+    (N'#443b6f', N'xanh tím'), --13
+    (N'#e0c7bf', N'hồng be') --14
+
+
 
 --
 INSERT INTO chat_lieu (ten)
 VALUES
-    (N'Nylon'),
-    (N'Nhựa'),
+    (N'Canvas'),
     (N'Lụa'),
     (N'Vải'),
     (N'Da tổng hợp'),
     (N'Da bò'),
-    (N'Canvas'),
     (N'Suede'),
     (N'Vải dù'),
     (N'Nỉ')
@@ -86,12 +99,51 @@ VALUES
     ('SP01-CT1-37', NULL, N'Biến thể của Vintas Denim', 1, 100, 500000, 500000, GETDATE(), GETDATE(), 1, 1, 3, 1, 1, 1, 1),
     ('SP01-CT1-38', NULL, N'Biến thể của Vintas Denim', 1, 100, 500000, 500000, GETDATE(), GETDATE(), 1, 1, 4, 1, 1, 1, 1),
 
-    ('SP01-CT2-35', NULL, N'Biến thể của Vintas Denim', 1, 100, 100000, 100000, GETDATE(), GETDATE(), 1, 1, 1, 2, 1, 1, 1),
-    ('SP01-CT2-36', NULL, N'Biến thể của Vintas Denim', 1, 100, 100000, 100000, GETDATE(), GETDATE(), 1, 1, 2, 2, 1, 1, 1),
-    ('SP01-CT2-37', NULL, N'Biến thể của Vintas Denim', 1, 100, 100000, 100000, GETDATE(), GETDATE(), 1, 1, 3, 2, 1, 1, 1),
+    ('SP01-CT2-35', NULL, N'Biến thể của Vintas Denim', 1, 100, 1000000, 1000000, GETDATE(), GETDATE(), 1, 1, 1, 2, 1, 1, 1),
+    ('SP01-CT2-36', NULL, N'Biến thể của Vintas Denim', 1, 100, 1000000, 1000000, GETDATE(), GETDATE(), 1, 1, 2, 2, 1, 1, 1),
+    ('SP01-CT2-37', NULL, N'Biến thể của Vintas Denim', 1, 100, 1000000, 1000000, GETDATE(), GETDATE(), 1, 1, 3, 2, 1, 1, 1),
 
-    ('SP01-CT3-35', NULL, N'Biến thể của Vintas Denim', 1, 100, 100000, 100000, GETDATE(), GETDATE(), 1, 1, 1, 3, 1, 1, 1),
-    ('SP01-CT3-36', NULL, N'Biến thể của Vintas Denim', 1, 100, 100000, 100000, GETDATE(), GETDATE(), 1, 1, 2, 3, 1, 1, 1);
+    ('SP01-CT3-35', NULL, N'Biến thể của Vintas Denim', 1, 100, 1000000, 1000000, GETDATE(), GETDATE(), 1, 1, 1, 3, 1, 1, 1),
+    ('SP01-CT3-36', NULL, N'Biến thể của Vintas Denim', 1, 100, 1000000, 1000000, GETDATE(), GETDATE(), 1, 1, 2, 3, 1, 1, 1),
+
+    --spct nhom2
+    ('SP02-CT1-40', NULL, N'Chưa có mô tả', 1, 100, 1000000, 1000000, GETDATE(), GETDATE(), 1, 2, 6, 1, 3, 3, 3),
+
+    --spct nhom3
+    ('SP03-CT1-40', NULL, N'Chưa có mô tả', 1, 100, 1000000, 1000000, GETDATE(), GETDATE(), 1, 3, 6, 2, 2, 2, 2),
+    ('SP03-CT1-41', NULL, N'Chưa có mô tả', 1, 100, 1000000, 1000000, GETDATE(), GETDATE(), 1, 3, 7, 2, 2, 2, 2),
+
+    --spct nhom4                                                                              _SP   _M       _TH
+    ('SP04-CT1-40', NULL, N'Chưa có mô tả', 1, 100, 2000000, 2000000, GETDATE(), GETDATE(), 1, 4, 6, 3, 3, 3, 1),
+    ('SP04-CT2-40', NULL, N'Chưa có mô tả', 1, 100, 2000000, 2000000, GETDATE(), GETDATE(), 1, 4, 6, 10, 3, 3, 1),
+
+    --spct nhom5                                                                              _SP   _M       _TH
+    ('SP05-CT1-40', NULL, N'Chưa có mô tả', 1, 100, 2000000, 2000000, GETDATE(), GETDATE(), 1, 5, 6, 5, 4, 4, 4),
+    ('SP05-CT2-40', NULL, N'Chưa có mô tả', 1, 100, 2000000, 2000000, GETDATE(), GETDATE(), 1, 5, 6, 8, 4, 4, 4),
+
+    --spct nhom6                                                                              _SP   _M       _TH
+    ('SP06-CT1-40', NULL, N'Chưa có mô tả', 1, 100, 2000000, 2000000, GETDATE(), GETDATE(), 1, 6, 6, 13, 5, 5, 1),
+
+    --spct nhom7                                                                              _SP   _M       _TH
+    ('SP07-CT1-40', NULL, N'Chưa có mô tả', 1, 100, 1499000, 1499000, GETDATE(), GETDATE(), 1, 7, 6, 6, 6, 6, 1),
+
+    --spct nhom8                                                                              _SP   _M       _TH
+    ('SP08-CT1-41', NULL, N'Chưa có mô tả', 1, 100, 1499000, 1499000, GETDATE(), GETDATE(), 1, 8, 7, 1, 7, 7, 6),
+
+    --spct nhom9                                                                              _SP   _M        _TH
+    ('SP09-CT1-41', NULL, N'Chưa có mô tả', 1, 100, 1499000, 1499000, GETDATE(), GETDATE(), 1, 9, 7, 14, 7, 7, 2),
+
+    --spct nhom10                                                                              _SP   _M        _TH
+    ('SP10-CT1-41', NULL, N'Chưa có mô tả', 1, 100, 1699000, 1699000, GETDATE(), GETDATE(), 1, 10, 7, 1, 7, 7, 8),
+
+    --spct nhom11                                                                              _SP   _M        _TH
+    ('SP11-CT1-41', NULL, N'Chưa có mô tả', 1, 100, 1699000, 1699000, GETDATE(), GETDATE(), 1, 11, 7, 3, 2, 2, 4),
+
+    --spct nhom12                                                                              _SP   _M        _TH
+    ('SP12-CT1-41', NULL, N'Chưa có mô tả', 1, 100, 1699000, 1699000, GETDATE(), GETDATE(), 1, 12, 7, 5, 2, 2, 7),
+
+    --spct nhom13                                                                            _SP   _M        _TH
+    ('SP13-CT1-41', NULL, N'Chưa có mô tả', 1, 100, 250000, 250000, GETDATE(), GETDATE(), 1, 13, 7, 6, 2, 2, 5)
 
 -- Ảnh cho nhóm SP01-CT1 (màu sắc 1, kích cỡ 1, 2, 3, 4)
 INSERT INTO hinh_anh (ten_anh, ngay_tao, ngay_cap_nhat, trang_thai, id_san_pham_chi_tiet)
@@ -112,9 +164,100 @@ SELECT '/upload/pro_AV00211_2-1-500x500.jpg',
 FROM san_pham_chi_tiet
 WHERE id_san_pham = 1 AND id_mau_sac = 3;
 
-select * from mau_sac
+--SP02
+INSERT INTO hinh_anh (ten_anh, ngay_tao, ngay_cap_nhat, trang_thai, id_san_pham_chi_tiet)
+SELECT '/upload/Jeep.jpg',
+       GETDATE(), GETDATE(), 1, id
+FROM san_pham_chi_tiet
+WHERE id_san_pham = 2 AND id_mau_sac = 1;
 
-select * from hinh_anh
+--SP03
+INSERT INTO hinh_anh (ten_anh, ngay_tao, ngay_cap_nhat, trang_thai, id_san_pham_chi_tiet)
+SELECT '/upload/AdiletteShower.jpg',
+       GETDATE(), GETDATE(), 1, id
+FROM san_pham_chi_tiet
+WHERE id_san_pham = 3 AND id_mau_sac = 2;
+
+--SP04
+INSERT INTO hinh_anh (ten_anh, ngay_tao, ngay_cap_nhat, trang_thai, id_san_pham_chi_tiet)
+SELECT '/upload/sp04_1.jpg',
+       GETDATE(), GETDATE(), 1, id
+FROM san_pham_chi_tiet
+WHERE id_san_pham = 4 AND id_mau_sac = 10;
+INSERT INTO hinh_anh (ten_anh, ngay_tao, ngay_cap_nhat, trang_thai, id_san_pham_chi_tiet)
+SELECT '/upload/sp04_2.jpg',
+       GETDATE(), GETDATE(), 1, id
+FROM san_pham_chi_tiet
+WHERE id_san_pham = 4 AND id_mau_sac = 3;
+
+--SP05
+INSERT INTO hinh_anh (ten_anh, ngay_tao, ngay_cap_nhat, trang_thai, id_san_pham_chi_tiet)
+SELECT '/upload/sp05_1.jpg',
+       GETDATE(), GETDATE(), 1, id
+FROM san_pham_chi_tiet
+WHERE id_san_pham = 5 AND id_mau_sac = 5;
+INSERT INTO hinh_anh (ten_anh, ngay_tao, ngay_cap_nhat, trang_thai, id_san_pham_chi_tiet)
+SELECT '/upload/sp05_2.jpg',
+       GETDATE(), GETDATE(), 1, id
+FROM san_pham_chi_tiet
+WHERE id_san_pham = 5 AND id_mau_sac = 8;
+
+--SP06
+INSERT INTO hinh_anh (ten_anh, ngay_tao, ngay_cap_nhat, trang_thai, id_san_pham_chi_tiet)
+SELECT '/upload/sp06_13.jpg',
+       GETDATE(), GETDATE(), 1, id
+FROM san_pham_chi_tiet
+WHERE id_san_pham = 6 AND id_mau_sac = 13;
+
+--SP07
+INSERT INTO hinh_anh (ten_anh, ngay_tao, ngay_cap_nhat, trang_thai, id_san_pham_chi_tiet)
+SELECT '/upload/sp07_6.jpg',
+       GETDATE(), GETDATE(), 1, id
+FROM san_pham_chi_tiet
+WHERE id_san_pham = 7 AND id_mau_sac = 6;
+
+--SP08
+INSERT INTO hinh_anh (ten_anh, ngay_tao, ngay_cap_nhat, trang_thai, id_san_pham_chi_tiet)
+SELECT '/upload/sp08_1.jpg',
+       GETDATE(), GETDATE(), 1, id
+FROM san_pham_chi_tiet
+WHERE id_san_pham = 8 AND id_mau_sac = 1;
+
+--SP09
+INSERT INTO hinh_anh (ten_anh, ngay_tao, ngay_cap_nhat, trang_thai, id_san_pham_chi_tiet)
+SELECT '/upload/sp09_14.jpg',
+       GETDATE(), GETDATE(), 1, id
+FROM san_pham_chi_tiet
+WHERE id_san_pham = 9 AND id_mau_sac = 14;
+
+--SP10
+INSERT INTO hinh_anh (ten_anh, ngay_tao, ngay_cap_nhat, trang_thai, id_san_pham_chi_tiet)
+SELECT '/upload/sp10_1.jpg',
+       GETDATE(), GETDATE(), 1, id
+FROM san_pham_chi_tiet
+WHERE id_san_pham = 10 AND id_mau_sac = 1;
+
+--SP11
+INSERT INTO hinh_anh (ten_anh, ngay_tao, ngay_cap_nhat, trang_thai, id_san_pham_chi_tiet)
+SELECT '/upload/sp11_3.jpg',
+       GETDATE(), GETDATE(), 1, id
+FROM san_pham_chi_tiet
+WHERE id_san_pham = 11 AND id_mau_sac = 3;
+
+--SP12
+INSERT INTO hinh_anh (ten_anh, ngay_tao, ngay_cap_nhat, trang_thai, id_san_pham_chi_tiet)
+SELECT '/upload/sp12_5.jpg',
+       GETDATE(), GETDATE(), 1, id
+FROM san_pham_chi_tiet
+WHERE id_san_pham = 12 AND id_mau_sac = 5;
+
+--SP13
+INSERT INTO hinh_anh (ten_anh, ngay_tao, ngay_cap_nhat, trang_thai, id_san_pham_chi_tiet)
+SELECT '/upload/sp13_6.jpg',
+       GETDATE(), GETDATE(), 1, id
+FROM san_pham_chi_tiet
+WHERE id_san_pham = 13 AND id_mau_sac = 6;
+
 
 INSERT INTO tai_khoan (email, sdt, matKhau, vaiTro, trangThai, reset_token)
 VALUES ('admin@gmail.com', '0123456789', '$2a$10$c/0f56WsPLRCLd7L0REp5uzShMtGqLFC/qpc/iMISdEypxiy7fntW', 'ADMIN', 1, NULL);
@@ -124,7 +267,7 @@ VALUES ('employee@gmail.com', '0123456789', '$2a$10$c/0f56WsPLRCLd7L0REp5uzShMtG
 select * from tai_khoan
 select * from nhan_vien
 
-INSERT INTO nhan_vien (id_tai_khoan, ma_nhan_vien, ho_ten, dia_chi_cu_the, tinh_thanh_pho, quan_huyen, xa_phuong, gioi_tinh, hinh_anh, ngay_sinh, trang_thai, ngay_tao, ngay_cap_nhat)
+    INSERT INTO nhan_vien (id_tai_khoan, ma_nhan_vien, ho_ten, dia_chi_cu_the, tinh_thanh_pho, quan_huyen, xa_phuong, gioi_tinh, hinh_anh, ngay_sinh, trang_thai, ngay_tao, ngay_cap_nhat)
 VALUES (1, 'NVADMIN01', N'Nguyễn Văn An', N'123 Đường ABC, Phường XYZ', N'Hà Nội', N'Ba Đình', N'Phúc Xá', 1, null, '1990-01-01', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO nhan_vien (id_tai_khoan, ma_nhan_vien, ho_ten, dia_chi_cu_the, tinh_thanh_pho, quan_huyen, xa_phuong, gioi_tinh, hinh_anh, ngay_sinh, trang_thai, ngay_tao, ngay_cap_nhat)
