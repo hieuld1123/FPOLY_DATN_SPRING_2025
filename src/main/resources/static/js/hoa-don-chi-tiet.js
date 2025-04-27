@@ -393,6 +393,7 @@ $(document).ready(function () {
       $("#recipientPhone").val(globalData.customer.phone || "");
       $("#shippingFee").val(globalData.summary.shipping_fee || 0);
       $("#editRecipientModal").modal("show");
+      $("#orderNote").val(globalData.note === "Không có ghi chú nào" ? "" : (globalData.note || ""));
     loadProvinces($("#province"), $("#district"), $("#ward"), "recipient_");
   });
   // Hàm tải danh sách tỉnh/thành phố, quận/huyện, xã/phường
@@ -499,6 +500,7 @@ $(document).ready(function () {
       const ward = $("#ward").val();
       const specificAddress = $("#specificAddress").val().trim();
       const shippingFee = $("#shippingFee").val().trim();
+      const orderNote = $("#orderNote").val().trim();
 
       let isValid = true;
 
@@ -592,6 +594,7 @@ $(document).ready(function () {
       ward: $("#ward option:selected").text(),
       specificAddress: $("#specificAddress").val(),
       shippingFee: parseInt(shippingFee),
+      orderNote: orderNote,
     };
     console.log(recipientData);
     
