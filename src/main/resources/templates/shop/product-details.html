@@ -68,9 +68,8 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                            <span th:text="${#numbers.formatDecimal(spct.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')} + ' VND'"
+                            <span th:text="${#numbers.formatDecimal(spct.giaBan, 0, 'POINT', 0, 'POINT')} + ' đ'"
                                   class="text-orange fs-1 fw-bold"></span>
-                        <del th:text="${#numbers.formatDecimal(spct.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VND'"></del>
                     </div>
                     <hr/>
 

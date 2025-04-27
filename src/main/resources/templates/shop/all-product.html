@@ -89,6 +89,7 @@
         opacity: 1;
         transform: translateY(0);
     }
+
     .pagination-container {
         margin: 20px 0;
     }
@@ -103,15 +104,15 @@
     }
 
     .pagination .page-link {
-        padding: 8px 15px;  /* Tăng padding để nút phân trang lớn hơn */
-        font-size: 14px;  /* Tăng kích thước chữ */
+        padding: 8px 15px; /* Tăng padding để nút phân trang lớn hơn */
+        font-size: 14px; /* Tăng kích thước chữ */
         border-radius: 5px;
-        color: #FF7F00;  /* Màu chữ cam */
+        color: #FF7F00; /* Màu chữ cam */
         text-decoration: none;
-        background-color: white;  /* Màu nền trắng cho ô chưa được chọn */
-        border: 1px solid #FF7F00;  /* Viền cam cho ô chưa được chọn */
-        width: 40px;  /* Tăng chiều rộng của ô */
-        height: 35px;  /* Tăng chiều cao của ô */
+        background-color: white; /* Màu nền trắng cho ô chưa được chọn */
+        border: 1px solid #FF7F00; /* Viền cam cho ô chưa được chọn */
+        width: 40px; /* Tăng chiều rộng của ô */
+        height: 35px; /* Tăng chiều cao của ô */
         display: flex;
         justify-content: center;
         align-items: center;
@@ -119,12 +120,12 @@
 
 
     .pagination .page-item.active .page-link {
-        background-color: #FF7F00;  /* Màu nền cam khi trang hiện tại */
-        color: white;  /* Màu chữ trắng khi trang hiện tại */
+        background-color: #FF7F00; /* Màu nền cam khi trang hiện tại */
+        color: white; /* Màu chữ trắng khi trang hiện tại */
     }
 
     .pagination .page-item.disabled .page-link {
-        color: #ccc;  /* Màu chữ xám cho ô vô hiệu hóa */
+        color: #ccc; /* Màu chữ xám cho ô vô hiệu hóa */
         background-color: #f2f2f2; /* Màu nền nhạt cho ô vô hiệu hóa */
         border: 1px solid #ccc; /* Viền xám cho ô vô hiệu hóa */
     }
@@ -432,13 +433,8 @@
                                         phẩm</h5>
                                     <div class="card-price mt-2">
                             <span class="discounted fs-6 d-block text-danger fw-bold"
-                                  th:if="${product.giaBanSauGiam != null}"
-                                  th:text="${#numbers.formatDecimal(product.giaBanSauGiam, 0, 'POINT', 0, 'COMMA')} + ' VND'">
+                                  th:text="${#numbers.formatDecimal(product.giaBan, 0, 'POINT', 0, 'COMMA')} + ' đ'">
                             </span>
-                                        <span class="original d-block text-decoration-line-through text-muted"
-                                              th:if="${product.giaBan != null and product.giaBanSauGiam < product.giaBan}"
-                                              th:text="${#numbers.formatDecimal(product.giaBan, 0, 'POINT', 0, 'COMMA')} + ' VND'">
-                             </span>
                                     </div>
                                 </div>
                             </div>
@@ -464,12 +460,14 @@
                 <nav>
                     <ul class="pagination justify-content-center">
                         <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                            <a class="page-link" th:href="@{/shop/product/all-product(page=${currentPage - 1})}" tabindex="-1">Trước</a>
+                            <a class="page-link" th:href="@{/shop/product/all-product(page=${currentPage - 1})}"
+                               tabindex="-1">Trước</a>
                         </li>
 
                         <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
                             th:classappend="${pageNum == currentPage} ? 'active'">
-                            <a class="page-link" th:href="@{/shop/product/all-product(page=${pageNum})}" th:text="${pageNum + 1}"></a>
+                            <a class="page-link" th:href="@{/shop/product/all-product(page=${pageNum})}"
+                               th:text="${pageNum + 1}"></a>
                         </li>
 
                         <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
@@ -479,7 +477,7 @@
 
                 </nav>
             </div>
-<!--            -->
+            <!--            -->
         </div>
     </div>
 </div>

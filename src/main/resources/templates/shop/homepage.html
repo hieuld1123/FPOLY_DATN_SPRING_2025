@@ -163,8 +163,8 @@
                        th:text="${product.tenSanPham}"></a>
 
                     <!-- Giá -->
-                    <p class="card-text text-danger fw-bold mt-2"
-                       th:text="${#numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT')} + ' đ'"></p>
+                    <p class="card-text text-danger fw-bold mt-2" style="color: red"
+                       th:text="${#numbers.formatDecimal(product.giaBan, 0, 'POINT', 0, 'COMMA')} + ' đ'">></p>
                     <!-- Hiển thị màu sắc -->
                     <div class="product-colors mt-2">
                         <div class="d-flex flex-wrap justify-content-center">
