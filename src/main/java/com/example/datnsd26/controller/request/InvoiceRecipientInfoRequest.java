@@ -13,4 +13,5 @@ public class InvoiceRecipientInfoRequest {
     private String ward;
     private String specificAddress;
     private float shippingFee;
+    private String orderNote;
 }

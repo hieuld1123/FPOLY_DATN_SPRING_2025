@@ -91,7 +91,7 @@ public class HoaDonApiController {
 
     @PutMapping("/update-recipient/{orderId}")
     public ApiResponse updateRecipient(@RequestBody InvoiceRecipientInfoRequest request, @PathVariable String orderId) {
-        log.info("shipping fee: {}", request.getShippingFee());
+        log.info("orderNote: {}", request.getOrderNote());
         this.hoaDonService.updateRecipient(orderId, request);
         return ApiResponse.builder()
                 .status(HttpStatus.ACCEPTED.value())

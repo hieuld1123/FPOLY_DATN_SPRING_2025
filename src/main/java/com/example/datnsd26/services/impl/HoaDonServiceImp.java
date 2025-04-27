@@ -229,6 +229,7 @@ public class HoaDonServiceImp implements HoaDonService {
         hoaDon.setXa(request.getWard());
         hoaDon.setDiaChiNguoiNhan(request.getSpecificAddress());
         hoaDon.setPhiVanChuyen(request.getShippingFee());
+        hoaDon.setGhiChu(request.getOrderNote().isBlank() ? null : request.getOrderNote());
         hoaDon.setThanhTien(hoaDon.getTongTien() + hoaDon.getPhiVanChuyen() - (hoaDon.getGiamGia() == null ? 0 : hoaDon.getGiamGia()));
         lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai(String.format("Đã chỉnh sửa bởi %s", this.authUtil.getNhanVien().getTenNhanVien())).hoaDon(hoaDon).build());
         this.hoaDonRepository.save(hoaDon);
