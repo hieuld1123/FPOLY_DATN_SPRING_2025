@@ -86,7 +86,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
 """, nativeQuery = true)
     Long countDonHuyTheoNam(@Param("nam") int nam);
 
-    @Query(value = "SELECT COALESCE(SUM(hdct.so_luong * spct.gia_ban), 0) " +
+    @Query(value = "SELECT COALESCE(SUM(hdct.so_luong * spct.gia_ban - COALESCE(hd.giam_gia, 0)), 0) " +
             "FROM hoa_don hd " +
             "JOIN hoa_don_chi_tiet hdct ON hd.id = hdct.id_hoa_don " +
             "JOIN san_pham_chi_tiet spct ON spct.id = hdct.id_san_pham_chi_tiet " +
@@ -97,7 +97,8 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
                                 @Param("ketThuc") LocalDateTime ketThuc);
 
     @Query(value = """
-    SELECT DATEPART(HOUR, hd.ngay_cap_nhat) AS gio, SUM(hd.tong_tien) AS doanh_thu
+    SELECT DATEPART(HOUR, hd.ngay_cap_nhat) AS gio, 
+           SUM(hd.tong_tien - COALESCE(hd.giam_gia, 0)) AS doanh_thu
     FROM hoa_don hd
     WHERE CAST(hd.ngay_cap_nhat AS DATE) = :ngay
       AND hd.trang_thai = 'Hoàn thành'
@@ -105,6 +106,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
     ORDER BY gio
     """, nativeQuery = true)
     List<Object[]> tongDoanhThuTheoGioTrongNgay(@Param("ngay") LocalDate ngay);
+
 
 
 

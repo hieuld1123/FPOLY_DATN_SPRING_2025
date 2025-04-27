@@ -7,20 +7,15 @@ import com.example.datnsd26.models.SanPhamChiTiet;
 import com.example.datnsd26.repository.KhuyenMaiRepository;
 import com.example.datnsd26.repository.SanPhamChiTietRepository;
 import com.example.datnsd26.repository.KhuyenMaiChiTietRepository;
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @AllArgsConstructor
@@ -130,6 +125,42 @@ public class KhuyenMaiService {
             throw e;
         }
     }
+
+    // Service method trong SanPhamChiTietService.java
+    public List<Map<String, Object>> locTheoThuocTinh(Integer sanPhamId, String keyword, String mau, String chatlieu) {
+        List<SanPhamChiTiet> all = sanPhamChiTietRepository.findBySanPham_Id(sanPhamId);
+
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        for (SanPhamChiTiet sp : all) {
+            boolean match = true;
+
+            if (keyword != null && !sp.getSanPham().getTenSanPham().toLowerCase().contains(keyword.toLowerCase())) {
+                match = false;
+            }
+
+            if (mau != null && !mau.isEmpty() && !sp.getMauSac().getTen().equalsIgnoreCase(mau)) {
+                match = false;
+            }
+
+            if (chatlieu != null && !chatlieu.isEmpty() && !sp.getChatLieu().getTen().equalsIgnoreCase(chatlieu)) {
+                match = false;
+            }
+
+            if (match) {
+                Map<String, Object> item = new HashMap<>();
+                item.put("id", sp.getId());
+                item.put("tenSanPham", sp.getSanPham().getTenSanPham());
+                item.put("mauSac", sp.getMauSac().getTen());
+                item.put("chatLieu", sp.getChatLieu().getTen());
+                item.put("giaBan", sp.getGiaBan());
+                result.add(item);
+            }
+        }
+
+        return result;
+    }
+
 
 
     private Float tinhMucGiamThucTe(SanPhamChiTiet sp, String hinhThucGiam, Float soTienGiam) {
@@ -354,7 +385,7 @@ public class KhuyenMaiService {
     }
 
     public Page<SanPhamChiTiet> finAllPage(Pageable pageable) {
-        return sanPhamChiTietRepository.findAll(pageable);
+        return sanPhamChiTietRepository.findAllByTrangThaiTrue(pageable);
     }
 
     public void restoreKhuyenMai(Long id) {

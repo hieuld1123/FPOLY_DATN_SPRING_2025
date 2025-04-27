@@ -3,14 +3,14 @@ package com.example.datnsd26.controller;
 import com.example.datnsd26.info.SanPhamCTinfo;
 import com.example.datnsd26.info.SanPhamChiTietInfo;
 import com.example.datnsd26.models.KhuyenMai;
+import com.example.datnsd26.models.SanPham;
 import com.example.datnsd26.models.SanPhamChiTiet;
-import com.example.datnsd26.repository.KhuyenMaiChiTietRepository;
-import com.example.datnsd26.repository.KichCoRepository;
-import com.example.datnsd26.repository.MauSacRepository;
-import com.example.datnsd26.repository.SanPhamChiTietRepository;
+import com.example.datnsd26.repository.*;
 import com.example.datnsd26.services.KhuyenMaiSchedulerService;
 import com.example.datnsd26.services.KhuyenMaiService;
 import com.example.datnsd26.services.SanPhamChiTietService;
+import com.example.datnsd26.services.SanPhamService;
+import com.example.datnsd26.services.impl.SanPhamChiTietImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -59,6 +59,14 @@ public class KhuyenMaiController {
     @Autowired
     private KhuyenMaiSchedulerService khuyenMaiSchedulerService;
 
+    @Autowired
+    private SanPhamRepositoty sanPhamRepositoty;
+
+    @Autowired
+    private SanPhamService sanPhamService;
+
+    @Autowired
+    private SanPhamChiTietImp sanPhamChiTietImp;
 
     /**
      * Hiển thị danh sách khuyến mãi
@@ -87,10 +95,10 @@ public class KhuyenMaiController {
     @GetMapping("/create")
     public String viewCreate(Model model,
                              @RequestParam(defaultValue = "0") int page,
-                             @RequestParam(defaultValue = "5") int size,
+                             @RequestParam(defaultValue = "10") int size,
                              @RequestParam(required = false) Boolean selectAll) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
-        Page<SanPhamChiTiet> sanPhamPage = sanPhamChiTietRepository.findAll(pageable);
+        Page<SanPhamChiTiet> sanPhamPage = sanPhamChiTietRepository.findAllByTrangThaiTrue(pageable);
 
         // Thêm tổng số sản phẩm vào model
         long totalProducts = sanPhamChiTietRepository.count();
@@ -184,7 +192,7 @@ public class KhuyenMaiController {
     @GetMapping("/edit/{id}")
     public String viewEdit(@PathVariable Long id,
                            @RequestParam(defaultValue = "0") int page,
-                           @RequestParam(defaultValue = "5") int size,
+                           @RequestParam(defaultValue = "10") int size,
                            Model model) {
         try {
             KhuyenMai khuyenMai = khuyenMaiService.findById(id);
@@ -211,12 +219,10 @@ public class KhuyenMaiController {
     }
 
 
-
     @PostMapping("/edit/{id}")
     public String update(@PathVariable Long id,
                          @ModelAttribute KhuyenMai khuyenMaiMoi,
                          @RequestParam Map<String, String> allParams,
-//                         @RequestParam("sanPhamIds") List<Long> sanPhamIds,
                          RedirectAttributes redirectAttributes,
                          Model model) {
         try {
@@ -269,6 +275,7 @@ public class KhuyenMaiController {
             return "khuyenmai/user/khuyenmai-edit";
         }
     }
+
     /**
      * Xử lý xóa khuyến mãi
      */
@@ -307,30 +314,37 @@ public class KhuyenMaiController {
         return ResponseEntity.ok(danhSachSanPham);
     }
 
-//    @GetMapping("/search-products")
-//    @ResponseBody
-//    public Page<SanPhamChiTiet> searchProducts(
-//            @RequestParam(required = false) String keyword,
+    @GetMapping("/product-page")
+    public String getProductPage(@RequestParam int page, Model model) {
+        Page<SanPhamChiTiet> productPage = sanPhamChiTietImp.getProducts(page);
+        model.addAttribute("products", productPage.getContent());
+        return "admin/khuyen-mai/product-table :: product-table";
+    }
+
+    //    @GetMapping("/product-search")
+//    public ResponseEntity<Page<SanPham>> searchProducts(
+//            @RequestParam String keyword,
 //            @RequestParam(defaultValue = "0") int page,
 //            @RequestParam(defaultValue = "10") int size) {
 //
-//        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
+//        Pageable pageable = PageRequest.of(page, size, Sort.by("tenSanPham").ascending());
+//        Page<SanPham> result;
 //
-//        Specification<SanPhamChiTiet> spec = (root, query, cb) -> {
-//            List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
+//        // Kiểm tra nếu keyword là số (tìm theo mã sản phẩm)
+//        if (keyword.matches("\\d+")) {
+//            result = sanPhamService.findByMaSanPhamContaining(keyword, pageable);
+//        } else {
+//            // Tìm theo tên sản phẩm
+//            result = sanPhamService.findByTenSanPhamContaining(keyword, pageable);
+//        }
 //
-//            if (keyword != null && !keyword.isEmpty()) {
-//                predicates.add(cb.or(
-//                        cb.like(cb.lower(root.get("sanPham").get("tenSanPham")), "%" + keyword.toLowerCase() + "%"),
-//                        cb.like(cb.lower(root.get("maSanPham")), "%" + keyword.toLowerCase() + "%")
-//                ));
-//            }
-//
-//            return cb.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
-//        };
-//
-//        return sanPhamChiTietRepository.findAll(spec, pageable);
+//        return ResponseEntity.ok(result);
 //    }
+    @GetMapping("/searchProduct")
+    @ResponseBody
+    public List<SanPhamChiTiet> searchProducts(@RequestParam String keyword) {
+        return sanPhamChiTietImp.searchByKeyword(keyword);
+    }
 
     @GetMapping("/search")
     public String searchKhuyenMai(
@@ -374,6 +388,18 @@ public class KhuyenMaiController {
                 "id", (Serializable) v.getId(),
                 "trangThai", v.getTrangThai()
         )).toList();
+    }
+
+    // Controller method trong KhuyenMaiController.java hoặc SanPhamChiTietController.java
+    @GetMapping("/san-pham-chi-tiet")
+    @ResponseBody
+    public List<Map<String, Object>> getSanPhamChiTietFilter(
+            @RequestParam(required = false) Long sanPhamId,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String mau,
+            @RequestParam(required = false) String chatlieu
+    ) {
+        return khuyenMaiService.locTheoThuocTinh(Math.toIntExact(sanPhamId), keyword, mau, chatlieu);
     }
 
 
