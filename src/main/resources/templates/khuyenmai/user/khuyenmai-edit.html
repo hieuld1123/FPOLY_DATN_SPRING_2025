@@ -146,11 +146,11 @@
                                     <label class="form-label">Hình thức giảm</label>
                                     <select class="form-select" name="hinhThucGiam" id="hinhThucGiam">
                                         <option value="Phần Trăm"
-                                                th:selected="${khuyenMai.hinhThucGiam == 'Phần Trăm'}">
-                                            Phần Trăm
+                                                th:selected="${khuyenMai.hinhThucGiam == 'Phần trăm'}">
+                                            Phần trăm
                                         </option>
                                         <option value="Theo Giá Tiền"
-                                                th:selected="${khuyenMai.hinhThucGiam == 'Theo Giá Tiền'}">Theo Giá Tiền
+                                                th:selected="${khuyenMai.hinhThucGiam == 'Theo giá tiền'}">Theo giá tiền
                                         </option>
                                     </select>
                                 </div>
@@ -216,9 +216,12 @@
                                                             <div th:classappend="${index.index == 0} ? 'carousel-item active' : 'carousel-item'">
                                                                 <!-- Hình ảnh carousel -->
                                                                 <img th:if="${anhs.tenAnh != null}"
-                                                                     th:src="@{'/upload' + ${anhs.tenAnh.substring(anhs.tenAnh.lastIndexOf('upload') + 6)}}"
-                                                                     style="width: 60px; height: 60px; object-fit: contain;"
-                                                                     class="rounded-3" alt="Ảnh sản phẩm">
+                                                                     th:src="${anhs.tenAnh}"
+                                                                     class="d-block mx-auto rounded"
+                                                                     alt="Ảnh"
+                                                                     style="width: 90px; height: 90px; object-fit: cover;
+                                                                     filter: brightness(1.2) contrast(1.2); background-color: white;" />
+
                                                             </div>
                                                         </th:block>
                                                     </div>

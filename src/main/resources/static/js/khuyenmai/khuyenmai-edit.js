@@ -332,7 +332,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         // Lấy dữ liệu từ storageKey thay vì selectedProductsForKhuyenMai
-        const selected = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        // const selected = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        const selected = selectedProducts;
         console.log("Các sản phẩm được chọn:", selected);
 
         // Xóa input cũ (nếu có)

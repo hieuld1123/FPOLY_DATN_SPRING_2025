@@ -341,7 +341,14 @@ public class CartController {
             // Nếu voucher hợp lệ, tiếp tục áp dụng giảm giá và cập nhật số lượng
             giamGia = voucherService.tinhGiamGia(tongTamTinh, voucher);
             voucher.setSoLuong(voucher.getSoLuong() - 1);
+
+            if(voucher.getSoLuong() <= 0){
+                voucher.setTrangThai(2);
+            }
+
             voucherRepository.save(voucher);
+
+
         }
 
 
