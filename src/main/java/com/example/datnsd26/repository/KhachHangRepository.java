@@ -35,4 +35,7 @@ public interface KhachHangRepository extends JpaRepository<KhachHang, Integer> {
     @Query("FROM KhachHang kh WHERE kh.taiKhoan.email LIKE :email")
     Optional<KhachHang> findByEmail(String email);
     KhachHang findByTaiKhoan(TaiKhoan taiKhoan);
+
+    @Query("FROM KhachHang kh WHERE kh.taiKhoan.sdt LIKE :sdt")
+    Optional<KhachHang> findBySdt(String sdt);
 }
