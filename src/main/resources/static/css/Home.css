@@ -268,3 +268,49 @@
     background-color: #e9ecef; /* Đổi màu nền khi hover */
     box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* Tăng bóng khi hover */
 }
+.color-circle2 {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.color-circle2:hover {
+    transform: scale(1.1);  /* Tăng kích thước khi hover */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);  /* Thêm bóng mờ khi hover */
+}
+.pagination-container {
+    margin: 20px 0;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+}
+
+.pagination .page-item {
+    margin: 0 5px;
+}
+
+.pagination .page-link {
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: #FF7F00;
+    text-decoration: none;
+    width: 30px;  /* Đặt chiều rộng cho từng trang */
+    height: 30px;
+    align-items: center;  /* Căn giữa nội dung theo chiều dọc */
+    font-size: 15px;  /* Giảm kích thước chữ */
+    line-height: 1;  /* Đảm bảo chiều cao chữ đúng */
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #FF7F00;
+    color: white;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #ccc;
+}
