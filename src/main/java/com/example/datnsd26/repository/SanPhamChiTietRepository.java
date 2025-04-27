@@ -207,6 +207,7 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
             @Param("kichCoIds") List<Long> kichCoIds,
             @Param("mauSacIds") List<Long> mauSacIds,
             @Param("trangThai") Boolean trangThai
+
     );
 
 

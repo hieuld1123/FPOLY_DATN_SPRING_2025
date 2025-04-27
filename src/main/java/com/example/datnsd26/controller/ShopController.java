@@ -3,20 +3,15 @@ package com.example.datnsd26.controller;
 import com.example.datnsd26.controller.response.PublicSanPhamResponse;
 import com.example.datnsd26.models.*;
 import com.example.datnsd26.repository.*;
-import com.example.datnsd26.services.KhachHangService;
-import com.example.datnsd26.services.TaiKhoanService;
 import com.example.datnsd26.services.binhsanpham.PublicSanPhamService;
 import com.example.datnsd26.services.cart.GioHangService;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,8 +30,11 @@ public class ShopController {
     private final ChatLieuRepository chatLieuRepository;
 
     @GetMapping("/shop/homepage")
-    public String homepage(Model model) {
-        List<PublicSanPhamResponse> products = publicSanPhamService.getAllProducts();
+    public String homepage(Model model,
+                           @RequestParam(defaultValue = "0") int page,
+                           @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<PublicSanPhamResponse> products = publicSanPhamService.getAllProducts(pageable);
         model.addAttribute("products", products);
         return "shop/homepage";
     }
@@ -60,7 +58,6 @@ public class ShopController {
     public String lienHe() {
         return "shop/lien-he";
     }
-
     @GetMapping("/shop/product/all-product")
     public String allProduct(
             @RequestParam(required = false) List<Long> filterBrand,
@@ -70,6 +67,8 @@ public class ShopController {
             @RequestParam(required = false) String filterColor, // màu là chuỗi CSV "1,2,3"
             @RequestParam(required = false) String sortOrder,
             @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "9") int size,
             Model model) {
 
         List<Long> colorIds = new ArrayList<>();
@@ -81,13 +80,16 @@ public class ShopController {
 
 
         // ✅ Nếu có từ khóa tìm kiếm, ưu tiên lọc theo tên/mã
+        Page<PublicSanPhamResponse> productPage;
+        Pageable pageable = PageRequest.of(page, size);
+
         List<PublicSanPhamResponse> products;
         if (keyword != null && !keyword.trim().isEmpty()) {
             String formattedKeyword = "%" + keyword.trim().toLowerCase() + "%";
-            products = publicSanPhamService.searchProducts(formattedKeyword);
+            productPage = publicSanPhamService.searchProducts(formattedKeyword,pageable);
         } else {
-            products = publicSanPhamService.filterProducts(
-                    filterBrand, filterMaterial, filterSole, filterSize, colorIds, sortOrder
+            productPage = publicSanPhamService.filterProducts(
+                    filterBrand, filterMaterial, filterSole, filterSize, colorIds, sortOrder,pageable
             );
         }
 
@@ -98,8 +100,11 @@ public class ShopController {
         List<DeGiay> listDeGiay = deGiayRepository.getAll();
         List<ChatLieu> listChatLieu = chatLieuRepository.getAll();
 
+
         model.addAttribute("keyword", keyword);
-        model.addAttribute("products", products);
+        model.addAttribute("products",  productPage.getContent());
+        model.addAttribute("totalPages", productPage.getTotalPages());
+        model.addAttribute("currentPage", page);
         model.addAttribute("sortOrder", sortOrder);
         model.addAttribute("mauSac", listMauSac);
         model.addAttribute("thuongHieu", listThuongHieu);

@@ -12,15 +12,6 @@
 
 </head>
 <style>
-    .color-circle {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        display: inline-block;
-        cursor: pointer;
-        border: 2px solid transparent;
-        transition: 0.3s;
-    }
 
     .color-circle {
         width: 24px;
@@ -28,6 +19,20 @@
         border-radius: 50%;
         border: 1px solid #ccc;
         display: inline-block;
+    }
+
+    .color-circle2 {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid #ccc;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+    }
+
+    .color-circle2:hover {
+        transform: scale(1.1); /* Tăng kích thước khi hover */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Thêm bóng mờ khi hover */
     }
 
 
@@ -79,10 +84,51 @@
         transform: translateY(20px);
         transition: all 0.6s ease;
     }
+
     .lazy-product.visible {
         opacity: 1;
         transform: translateY(0);
     }
+    .pagination-container {
+        margin: 20px 0;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+    }
+
+    .pagination .page-item {
+        margin: 0 5px;
+    }
+
+    .pagination .page-link {
+        padding: 8px 15px;  /* Tăng padding để nút phân trang lớn hơn */
+        font-size: 14px;  /* Tăng kích thước chữ */
+        border-radius: 5px;
+        color: #FF7F00;  /* Màu chữ cam */
+        text-decoration: none;
+        background-color: white;  /* Màu nền trắng cho ô chưa được chọn */
+        border: 1px solid #FF7F00;  /* Viền cam cho ô chưa được chọn */
+        width: 40px;  /* Tăng chiều rộng của ô */
+        height: 35px;  /* Tăng chiều cao của ô */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+
+    .pagination .page-item.active .page-link {
+        background-color: #FF7F00;  /* Màu nền cam khi trang hiện tại */
+        color: white;  /* Màu chữ trắng khi trang hiện tại */
+    }
+
+    .pagination .page-item.disabled .page-link {
+        color: #ccc;  /* Màu chữ xám cho ô vô hiệu hóa */
+        background-color: #f2f2f2; /* Màu nền nhạt cho ô vô hiệu hóa */
+        border: 1px solid #ccc; /* Viền xám cho ô vô hiệu hóa */
+    }
+
 
 </style>
 
@@ -347,7 +393,7 @@
                     </div>
                 </div>
                 <div class="text-end mt-3">
-                    <button type="submit" class="btn btn-primary w-100">Lọc sản phẩm</button>
+                    <button type="submit" class="btn w-100" style="background-color: #FF7F00">Lọc sản phẩm</button>
                 </div>
 
             </form>
@@ -369,7 +415,8 @@
             <div class="row" id="product-list">
                 <div class="col-md-4 mb-4 lazy-product" th:each="product : ${products}">
                     <div class="card product-card shadow-sm border-0 h-100 d-flex flex-column justify-content-between">
-                        <a th:href="@{/shop/product/details/{id}(id=${product.idSanPhamChiTiet})}" class="text-decoration-none text-dark">
+                        <a th:href="@{/shop/product/details/{id}(id=${product.idSanPhamChiTiet})}"
+                           class="text-decoration-none text-dark">
                             <div class="overflow-hidden" style="height: 220px;">
                                 <img th:src="@{${product.hinhAnh}}"
                                      class="card-img-top"
@@ -378,28 +425,61 @@
                                      style="object-fit: cover; height: 100%; width: 100%;">
                             </div>
                             <div class="card-body text-center">
-                                <span class="mb-1 text-muted small text-uppercase fw-semibold" th:text="${product.thuongHieu}">Nike</span>
+                                <span class="mb-1 text-muted small text-uppercase fw-semibold"
+                                      th:text="${product.thuongHieu}">Nike</span>
                                 <div class="product-info px-2">
-                                    <h5 class="fw-semibold mb-1 text-truncate" th:text="${product.tenSanPham}">Tên sản phẩm</h5>
+                                    <h5 class="fw-semibold mb-1 text-truncate" th:text="${product.tenSanPham}">Tên sản
+                                        phẩm</h5>
                                     <div class="card-price mt-2">
-                        <span class="discounted fs-6 d-block text-danger fw-bold"
-                              th:if="${product.giaBanSauGiam != null}"
-                              th:text="${#numbers.formatDecimal(product.giaBanSauGiam, 0, 'POINT', 0, 'COMMA')} + ' VND'">
-                        </span>
+                            <span class="discounted fs-6 d-block text-danger fw-bold"
+                                  th:if="${product.giaBanSauGiam != null}"
+                                  th:text="${#numbers.formatDecimal(product.giaBanSauGiam, 0, 'POINT', 0, 'COMMA')} + ' VND'">
+                            </span>
                                         <span class="original d-block text-decoration-line-through text-muted"
                                               th:if="${product.giaBan != null and product.giaBanSauGiam < product.giaBan}"
                                               th:text="${#numbers.formatDecimal(product.giaBan, 0, 'POINT', 0, 'COMMA')} + ' VND'">
-                        </span>
+                             </span>
                                     </div>
                                 </div>
+                            </div>
+
+                            <!-- Hiển thị màu sắc -->
+                            <div class="product-colors mt-2">
+                                <div class="d-flex flex-wrap justify-content-center">
+                        <span th:each="mauSac : ${product.mauSac}"
+                              th:style="'background-color: ' + ${mauSac}"
+                              class="color-circle2 mx-1 mb-1">
+                        </span>
+                                </div>
+
+
                             </div>
                         </a>
                     </div>
                 </div>
-
-
-
             </div>
+
+            <!-- Phần phân trang -->
+            <div class="pagination-container">
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                            <a class="page-link" th:href="@{/shop/product/all-product(page=${currentPage - 1})}" tabindex="-1">Trước</a>
+                        </li>
+
+                        <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
+                            th:classappend="${pageNum == currentPage} ? 'active'">
+                            <a class="page-link" th:href="@{/shop/product/all-product(page=${pageNum})}" th:text="${pageNum + 1}"></a>
+                        </li>
+
+                        <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                            <a class="page-link" th:href="@{/shop/product/all-product(page=${currentPage + 1})}">Sau</a>
+                        </li>
+                    </ul>
+
+                </nav>
+            </div>
+<!--            -->
         </div>
     </div>
 </div>
@@ -497,7 +577,7 @@
     }
 </script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         const lazyProducts = document.querySelectorAll('.lazy-product');
 
         const observer = new IntersectionObserver(entries => {
