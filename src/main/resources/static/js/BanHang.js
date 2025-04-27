@@ -101,7 +101,10 @@ const createInvoice = async () => {
             }
         );
         const result = await response.json();
-        if (result.status === 200) window.location.reload();
+        if (result.status === 200) {
+            alert("Tạo hóa đơn thành công")
+            window.location.reload();
+        }
     } catch (error) {
         console.error("Error creating invoice:", error);
     }

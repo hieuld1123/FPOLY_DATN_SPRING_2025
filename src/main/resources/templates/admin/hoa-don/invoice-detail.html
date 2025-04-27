@@ -45,7 +45,7 @@
                 Hủy đơn hàng
               </button>
               <button id="btn-modify-invoice" class="btn edit-btn" disabled>
-                Sửa đơn hàng
+                Sửa thông tin
               </button>
               <button id="confirm-invoice" class="btn btn-primary" disabled>
                 Xác nhận
@@ -138,7 +138,6 @@
         </div>
       </div>
 
-      <!-- Modal Chỉnh sửa thông tin người nhận -->
         <!-- Modal Chỉnh sửa thông tin người nhận -->
         <div
                 class="modal modal-blur fade"
@@ -213,7 +212,6 @@
                                     id="specificAddress"
                                     placeholder="Nhập địa chỉ cụ thể"
                             />
-                            <!-- Vùng hiển thị lỗi -->
                             <div class="error-message text-danger"></div>
                         </div>
                         <div class="mb-3">
@@ -226,7 +224,18 @@
                                     min="0"
                                     max="1000000"
                             />
-                            <!-- Vùng hiển thị lỗi -->
+                            <div class="error-message text-danger"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Ghi chú</label>
+                            <textarea
+                                    class="form-control"
+                                    id="orderNote"
+                                    placeholder="Nhập ghi chú"
+                                    rows="3"
+                                    minlength="0"
+                                    maxlength="200"
+                            ></textarea>
                             <div class="error-message text-danger"></div>
                         </div>
                     </div>

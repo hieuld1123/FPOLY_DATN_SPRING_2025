@@ -7,13 +7,12 @@ import com.example.datnsd26.controller.response.InvoiceInformation;
 import com.example.datnsd26.controller.response.InvoicePageResponse;
 import com.example.datnsd26.controller.response.SanPhamResponse;
 import com.example.datnsd26.exception.EntityNotFound;
-import com.example.datnsd26.models.HoaDon;
-import com.example.datnsd26.models.KhachHang;
-import com.example.datnsd26.models.LichSuHoaDon;
-import com.example.datnsd26.models.SanPhamChiTiet;
+import com.example.datnsd26.exception.InvalidDataException;
+import com.example.datnsd26.models.*;
 import com.example.datnsd26.repository.HoaDonRepository;
 import com.example.datnsd26.repository.LichSuHoaDonRepository;
 import com.example.datnsd26.repository.SanPhamChiTietRepository;
+import com.example.datnsd26.repository.VoucherRepository;
 import com.example.datnsd26.repository.customizeQuery.InvoiceCustomizeQuery;
 import com.example.datnsd26.services.HoaDonService;
 import com.example.datnsd26.utilities.AuthUtil;
@@ -38,6 +37,8 @@ public class HoaDonServiceImp implements HoaDonService {
     private final LichSuHoaDonRepository lichSuHoaDonRepository;
 
     private final SanPhamChiTietRepository sanPhamChiTietRepository;
+
+    private final VoucherRepository voucherRepository;
 
     private final AuthUtil authUtil;
 
@@ -112,6 +113,19 @@ public class HoaDonServiceImp implements HoaDonService {
     @Transactional(rollbackOn = Exception.class)
     public void confirmInvoice(String code) {
         HoaDon hd = getHoaDonByCode(code);
+        if(hd.getHinhThucMuaHang().equals("Online")) {
+            hd.getDanhSachSanPham().forEach(sp -> {
+                SanPhamChiTiet ct = this.sanPhamChiTietRepository.findById(sp.getSanPhamChiTiet().getId()).orElseThrow(() -> new EntityNotFound(String.format("Không tìm thấy sản phẩm %s", sp.getSanPhamChiTiet().getMaSanPhamChiTiet())));
+                if(Boolean.FALSE.equals(ct.getTrangThai())){
+                    throw new InvalidDataException(String.format("Sản phẩm %s đã ngừng kinh doanh", ct.getSanPham().getMaSanPham()));
+                }
+                if(ct.getSoLuong() - sp.getSoLuong() < 0) {
+                    throw new InvalidDataException(String.format("Sản phẩm %s không đủ số lượng", ct.getSanPham().getMaSanPham()));
+                }
+                ct.setSoLuong(ct.getSoLuong() - sp.getSoLuong());
+                this.sanPhamChiTietRepository.save(ct);
+            });
+        }
         hd.setTrangThai(STATUS_CONFIRMED);
         hd.setNgayCapNhat(new Date());
         lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai(STATUS_CONFIRMED).hoaDon(hd).build());
@@ -142,6 +156,11 @@ public class HoaDonServiceImp implements HoaDonService {
     @Transactional(rollbackOn = Exception.class)
     public void cancel(String code) {
         HoaDon hd = getHoaDonByCode(code);
+        if(hd.getVoucher() != null) {
+            Voucher voucher = hd.getVoucher();
+            voucher.setSoLuong(voucher.getSoLuong() + 1);
+            this.voucherRepository.save(voucher);
+        }
         hd.setTrangThai(STATUS_CANCELED);
         hd.getDanhSachSanPham().forEach(sp -> {
             SanPhamChiTiet ct = this.sanPhamChiTietRepository.findById(sp.getSanPhamChiTiet().getId()).orElseThrow(() -> new EntityNotFound("Product not found!"));
@@ -229,6 +248,7 @@ public class HoaDonServiceImp implements HoaDonService {
         hoaDon.setXa(request.getWard());
         hoaDon.setDiaChiNguoiNhan(request.getSpecificAddress());
         hoaDon.setPhiVanChuyen(request.getShippingFee());
+        hoaDon.setGhiChu(request.getOrderNote().isBlank() ? null : request.getOrderNote());
         hoaDon.setThanhTien(hoaDon.getTongTien() + hoaDon.getPhiVanChuyen() - (hoaDon.getGiamGia() == null ? 0 : hoaDon.getGiamGia()));
         lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai(String.format("Đã chỉnh sửa bởi %s", this.authUtil.getNhanVien().getTenNhanVien())).hoaDon(hoaDon).build());
         this.hoaDonRepository.save(hoaDon);
