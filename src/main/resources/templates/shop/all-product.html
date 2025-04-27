@@ -73,6 +73,17 @@
         display: block;
         margin-top: 2px;
     }
+
+    .lazy-product {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.6s ease;
+    }
+    .lazy-product.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
 </style>
 
 <body>
@@ -356,43 +367,36 @@
             </div>
 
             <div class="row" id="product-list">
-                <div class="col-md-4 mb-4" th:each="product : ${products}">
+                <div class="col-md-4 mb-4 lazy-product" th:each="product : ${products}">
                     <div class="card product-card shadow-sm border-0 h-100 d-flex flex-column justify-content-between">
-                        <a th:href="@{/shop/product/details/{id}(id=${product.idSanPhamChiTiet})}"
-                           class="text-decoration-none text-dark">
+                        <a th:href="@{/shop/product/details/{id}(id=${product.idSanPhamChiTiet})}" class="text-decoration-none text-dark">
                             <div class="overflow-hidden" style="height: 220px;">
-                                <img th:src="@{${product.hinhAnh}}" class="card-img-top" alt="Hình ảnh sản phẩm"
+                                <img th:src="@{${product.hinhAnh}}"
+                                     class="card-img-top"
+                                     alt="Hình ảnh sản phẩm"
+                                     loading="lazy"
                                      style="object-fit: cover; height: 100%; width: 100%;">
                             </div>
                             <div class="card-body text-center">
-                                <!-- Thương hiệu -->
-                                <span class="mb-1 text-muted small text-uppercase fw-semibold"
-                                      th:text="${product.thuongHieu}">Nike</span>
+                                <span class="mb-1 text-muted small text-uppercase fw-semibold" th:text="${product.thuongHieu}">Nike</span>
                                 <div class="product-info px-2">
-                                    <!-- Tên sản phẩm -->
-                                    <h5 class="fw-semibold mb-1 text-truncate" th:text="${product.tenSanPham}">Tên sản
-                                        phẩm</h5>
-
-                                    <!-- Giá -->
+                                    <h5 class="fw-semibold mb-1 text-truncate" th:text="${product.tenSanPham}">Tên sản phẩm</h5>
                                     <div class="card-price mt-2">
-    <span class="discounted fs-6 d-block text-danger fw-bold"
-          th:if="${product.giaBanSauGiam != null}"
-          th:text="${#numbers.formatDecimal(product.giaBanSauGiam, 0, 'POINT', 0, 'COMMA')} + ' VND'">
-    </span>
-
+                        <span class="discounted fs-6 d-block text-danger fw-bold"
+                              th:if="${product.giaBanSauGiam != null}"
+                              th:text="${#numbers.formatDecimal(product.giaBanSauGiam, 0, 'POINT', 0, 'COMMA')} + ' VND'">
+                        </span>
                                         <span class="original d-block text-decoration-line-through text-muted"
                                               th:if="${product.giaBan != null and product.giaBanSauGiam < product.giaBan}"
                                               th:text="${#numbers.formatDecimal(product.giaBan, 0, 'POINT', 0, 'COMMA')} + ' VND'">
-    </span>
+                        </span>
                                     </div>
-
                                 </div>
                             </div>
-
-
                         </a>
                     </div>
                 </div>
+
 
 
             </div>
@@ -492,9 +496,27 @@
         }
     }
 </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const lazyProducts = document.querySelectorAll('.lazy-product');
+
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target); // Không cần theo dõi nữa sau khi đã hiện
+                }
+            });
+        }, {
+            threshold: 0.1 // chỉ cần 10% div vào viewport là load
+        });
+
+        lazyProducts.forEach(product => {
+            observer.observe(product);
+        });
+    });
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         crossorigin="anonymous"></script>
-
 </body>
-
 </html>
