@@ -163,14 +163,51 @@
                        th:text="${product.tenSanPham}"></a>
 
                     <!-- Giá -->
-                    <p class="card-text text-danger fw-bold mt-2"
-                       th:text="${#numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT')} + ' đ'"></p>
-                </div>
+                    <p class="card-text text-danger fw-bold mt-2" style="color: red"
+                       th:text="${#numbers.formatDecimal(product.giaBan, 0, 'POINT', 0, 'COMMA')} + ' đ'">></p>
+                    <!-- Hiển thị màu sắc -->
+                    <div class="product-colors mt-2">
+                        <div class="d-flex flex-wrap justify-content-center">
+                        <span th:each="mauSac : ${product.mauSac}"
+                              th:style="'background-color: ' + ${mauSac}"
+                              class="color-circle2 mx-1 mb-1">
+                        </span>
+                        </div>
+
+                    </div>
             </div>
         </div>
-
     </div>
 </div>
+    <!-- Phân trang -->
+    <div class="pagination-container">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <!-- Trang trước -->
+                <li class="page-item" th:classappend="${!products.hasPrevious() ? 'disabled' : ''}">
+                    <a class="page-link" href="#" th:if="${products.hasPrevious()}"
+                       th:href="@{/shop/homepage(page=${products.number - 1}, size=${products.size})}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                <!-- Các trang -->
+                <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, products.totalPages - 1)}"
+                    th:classappend="${pageNum == products.number ? 'active' : ''}">
+                    <a class="page-link" th:href="@{/shop/homepage(page=${pageNum}, size=${products.size})}"
+                       th:text="${pageNum + 1}">1</a>
+                </li>
+
+                <!-- Trang sau -->
+                <li class="page-item" th:classappend="${!products.hasNext() ? 'disabled' : ''}">
+                    <a class="page-link" href="#" th:if="${products.hasNext()}"
+                       th:href="@{/shop/homepage(page=${products.number + 1}, size=${products.size})}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 
 <!--Giảm giá-->
 <div class="container">

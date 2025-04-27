@@ -238,7 +238,7 @@
 <!--                                    Hủy đơn hàng-->
 <!--                                </button>-->
 <!--                            </form>-->
-                            <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">Hủy đơn</button>
+                            <button th:disabled="${!(currentStatus == 'Đặt hàng' or currentStatus == 'Chờ xác nhận' or currentStatus == 'Đã xác nhận')}" class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">Hủy đơn</button>
                             <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">

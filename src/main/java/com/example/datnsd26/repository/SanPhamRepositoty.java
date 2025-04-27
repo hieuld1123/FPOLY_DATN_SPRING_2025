@@ -1,6 +1,8 @@
 package com.example.datnsd26.repository;
 
 import com.example.datnsd26.models.SanPham;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -84,6 +86,6 @@ public interface SanPhamRepositoty extends JpaRepository<SanPham, Integer> {
     List<Object[]> findByIdUpdatTenSP(@Param("id") Integer id);
 
     @Query("SELECT sp FROM SanPham sp WHERE LOWER(sp.tenSanPham) LIKE %:keyword% OR LOWER(sp.maSanPham) LIKE %:keyword%")
-    List<SanPham> searchByTenOrMa(@Param("keyword") String keyword);
+    Page<SanPham> searchByTenOrMa(@Param("keyword") String keyword, Pageable pageable);
 
 }

@@ -2,6 +2,8 @@ package com.example.datnsd26.controller.response;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -23,5 +25,6 @@ public class PublicSanPhamResponse {
     private String tenAnh;
 
     private String thuongHieu;
+    private List<String> mauSac;
 
 }
