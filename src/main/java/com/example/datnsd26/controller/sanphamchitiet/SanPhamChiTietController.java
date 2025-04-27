@@ -310,7 +310,7 @@ public class SanPhamChiTietController {
         }
         Integer firstProductId = sanPhamChiTiet.getSanPham().getId();
         redirectAttributes.addFlashAttribute("success", true);
-        return "redirect:/detailsanpham/" + firstProductId;
+        return "redirect:/quan-ly/chi-tiet-san-pham/" + firstProductId;
     }
 
 
@@ -369,7 +369,7 @@ public class SanPhamChiTietController {
             }
         }
         redirectAttributes.addFlashAttribute("success", true);
-        return "redirect:/allSPCT";
+        return "redirect:/quan-ly/san-pham-chi-tiet";
     }
 
     //    private String saveImage(MultipartFile file) {
@@ -437,6 +437,6 @@ public class SanPhamChiTietController {
             sanPhamChiTietRepository.updateSoLuongVaGiaTienById(id, soluong, giatien);
 
         }
-        return "redirect:/detailsanpham/" + firstProductId;
+        return "redirect:/quan-ly/chi-tiet-san-pham/" + firstProductId;
     }
 }

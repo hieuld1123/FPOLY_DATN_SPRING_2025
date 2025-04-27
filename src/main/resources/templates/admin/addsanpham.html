@@ -684,7 +684,7 @@
                                 </div>
                                 <div class="modal-body">
                                     <form id="addFormDeGiay" name="addDeGiay" th:method="post" th:object="${degiay}"
-                                          th:action="@{/addDeGiayModal}" onsubmit="return validateTrungDeGiay()">
+                                          th:action="@{/admin/addDeGiayModal}" onsubmit="return validateTrungDeGiay()">
                                         <p>
                                             <span style="color: red">* </span>
                                             Tên đế giày:
@@ -721,7 +721,7 @@
                                 </div>
                                 <div class="modal-body">
                                     <form id="addFormMauSac" th:method="post" name="addMauSac" th:object="${mausac}"
-                                          th:action="@{/addMauSacModal}" onsubmit="return validateTrungMauSac()">
+                                          th:action="@{/admin/addMauSacModal}" onsubmit="return validateTrungMauSac()">
                                         <p style="font-weight: bold">
                                             <span style="color: red">* </span>
                                             Mã màu sắc:
@@ -767,7 +767,7 @@
                                 <div class="modal-body">
                                     <form id="addFormKichCo" name="addKichCo"
                                           onsubmit="return validateTrungKichCo()"
-                                          method="post" th:action="@{/addKichCoModal}" th:object="${kichco}">
+                                          method="post" th:action="@{/admin/addKichCoModal}" th:object="${kichco}">
                                         <p style="font-weight: bold">
                                             <span style="color: red">* </span>
                                             Tên kích cỡ:
