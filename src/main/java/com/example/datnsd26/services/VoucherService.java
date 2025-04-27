@@ -414,11 +414,14 @@ public class VoucherService {
 
         if (loai.equals("phần trăm")) {
             giamGia = tongTamTinh * voucher.getGiaTriGiam() / 100f;
+            if(giamGia >= voucher.getGiaTriGiamToiDa()) {
+                giamGia = voucher.getGiaTriGiamToiDa();
+            }
         } else if (loai.equals("theo giá tiền")) {
             giamGia = voucher.getGiaTriGiam();
         }
 
-        return Math.min(giamGia, tongTamTinh);
+        return giamGia;
     }
 
 
