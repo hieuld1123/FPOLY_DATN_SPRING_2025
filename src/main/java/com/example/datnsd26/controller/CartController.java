@@ -377,10 +377,9 @@ public class CartController {
         // Lưu chi tiết hóa đơn và cập nhật tồn kho
         List<HoaDonChiTiet> chiTietList = new ArrayList<>();
         for (GioHangChiTiet item : danhSachThanhToan) {
-            SanPhamChiTiet sanPham = sanPhamChiTietRepository.findById(item.getSanPhamChiTiet().getId()).orElseThrow();
-
-            sanPham.setSoLuong(sanPham.getSoLuong() - item.getSoLuong());
-            sanPhamChiTietRepository.save(sanPham);
+//            SanPhamChiTiet sanPham = sanPhamChiTietRepository.findById(item.getSanPhamChiTiet().getId()).orElseThrow();
+//            sanPham.setSoLuong(sanPham.getSoLuong() - item.getSoLuong());
+//            sanPhamChiTietRepository.save(sanPham);
 
             HoaDonChiTiet chiTiet = new HoaDonChiTiet();
             chiTiet.setHoaDon(hoaDon);
