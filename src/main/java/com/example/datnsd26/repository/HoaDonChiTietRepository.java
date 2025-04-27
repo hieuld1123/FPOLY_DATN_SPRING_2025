@@ -34,7 +34,7 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet, In
 
 
     @Query("""
-    SELECT SUM(hdct.soLuong * hdct.giaTienSauGiam)
+    SELECT SUM(hdct.soLuong * hdct.giaTienSauGiam - COALESCE(hdct.hoaDon.giamGia, 0))
     FROM HoaDonChiTiet hdct
     WHERE hdct.hoaDon.trangThai = 'Hoàn thành'
       AND hdct.hoaDon.ngayCapNhat BETWEEN :startDate AND :endDate
@@ -42,7 +42,7 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet, In
     Float getDoanhThuTrongKhoang(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
     @Query(value = """
-    SELECT SUM(hdct.so_luong * hdct.gia_tien_sau_giam)
+    SELECT SUM(hdct.so_luong * hdct.gia_tien_sau_giam  - COALESCE(hd.giam_gia, 0))
     FROM hoa_don_chi_tiet hdct
     JOIN hoa_don hd ON hdct.id_hoa_don = hd.id
     WHERE hd.trang_thai = 'Hoàn thành'
@@ -51,16 +51,17 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet, In
     Float getDoanhThuHomNay(@Param("today") Date today);
 
     @Query("""
-    SELECT SUM(hdct.soLuong * hdct.giaTienSauGiam)
+    SELECT SUM(hdct.soLuong * hdct.giaTienSauGiam - COALESCE(hdct.hoaDon.giamGia, 0))
     FROM HoaDonChiTiet hdct
     WHERE hdct.hoaDon.trangThai = 'Hoàn thành'
-      AND MONTH(hdct.hoaDon.ngayCapNhat) = :thang
-      AND YEAR(hdct.hoaDon.ngayCapNhat) = :nam
+      AND FUNCTION('MONTH', hdct.hoaDon.ngayCapNhat) = :thang
+      AND FUNCTION('YEAR', hdct.hoaDon.ngayCapNhat) = :nam
 """)
     Float getDoanhThuTheoThang(@Param("thang") int thang, @Param("nam") int nam);
 
+
     @Query("""
-    SELECT SUM(hdct.soLuong * hdct.giaTienSauGiam)
+    SELECT SUM(hdct.soLuong * hdct.giaTienSauGiam - COALESCE(hdct.hoaDon.giamGia, 0))
     FROM HoaDonChiTiet hdct
     WHERE hdct.hoaDon.trangThai = 'Hoàn thành'
       AND FUNCTION('YEAR', hdct.hoaDon.ngayCapNhat) = :nam
