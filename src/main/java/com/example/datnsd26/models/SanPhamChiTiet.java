@@ -1,5 +1,6 @@
 package com.example.datnsd26.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
@@ -61,11 +62,14 @@ public class SanPhamChiTiet {
     @Column(name = "trang_thai", columnDefinition = "BIT DEFAULT 1")
     private Boolean trangThai;
 
+
+//    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "id_san_pham")
     private SanPham sanPham;
 
     @ManyToOne
+
     @JoinColumn(name = "id_kich_co")
     private KichCo kichCo;
 

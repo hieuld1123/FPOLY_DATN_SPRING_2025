@@ -5,10 +5,13 @@ import com.example.datnsd26.repository.SanPhamChiTietRepository;
 import com.example.datnsd26.services.SanPhamChiTietService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -78,6 +81,24 @@ public class SanPhamChiTietImp implements SanPhamChiTietService {
     @Override
     public List<SanPhamChiTiet> findByIdSanPhamAndIdMauSac(Integer idSanPham, Integer idMauSac) {
         return sanPhamChiTietRepository.findByIdSanPhamAndIdMauSac(idSanPham, idMauSac);
+    }
+
+    public List<SanPhamChiTiet> searchByKeyword(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+
+
+        return sanPhamChiTietRepository.findBySanPhamTenSanPhamContainingIgnoreCase(keyword);
+    }
+
+    public Page<SanPhamChiTiet> getProducts(int page) {
+        // Cấu hình số item mỗi trang
+        int pageSize = 10;
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("name").ascending());
+
+        // Lấy sản phẩm chưa có trong khuyến mãi hiện tại
+        return sanPhamChiTietRepository.findAll(pageable);
     }
 
 }

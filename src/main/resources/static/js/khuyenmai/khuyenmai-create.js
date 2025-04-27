@@ -14,47 +14,186 @@ document.addEventListener('DOMContentLoaded', async function () {
     const mucGiamUnits = document.querySelectorAll('.mucGiamUnit');
     let currentPage = 0;
 
-    function fetchSanPham(keyword, page = 0) {
-        fetch(`/admin/khuyen-mai/product-search?keyword=${keyword}&page=${page}`)
-            .then(response => response.json())
-            .then(data => {
-                let suggestions = document.getElementById("suggestions");
-                let pagination = document.getElementById("pagination");
-                suggestions.innerHTML = "";
-                pagination.innerHTML = "";
+    // Lấy ID khuyến mãi từ URL (nếu có)
+    // Sửa phần khởi tạo storageKey
+    const khuyenMaiId = window.location.pathname.split('/').pop();
+    const storageKey = khuyenMaiId && khuyenMaiId !== 'new'
+        ? `promotion_${khuyenMaiId}_selected`
+        : 'promotion_new_selected';
 
-                if (!data || !data.content || data.content.length === 0) {
-                    suggestions.innerHTML = "<div class='list-group-item'>Không tìm thấy sản phẩm</div>";
+    // Danh sách sản phẩm đã chọn
+    let selectedProducts = new Map();
+    let sanPhamDangKhuyenMai = [];
+    let formSubmitted = false;
+
+
+    // 1. Hàm quản lý trạng thái
+    function saveCurrentState() {
+        // Lưu cả trang hiện tại
+        const state = {
+            currentPage: currentPage,
+            selectedProducts: Array.from(selectedProducts.entries())
+        };
+        sessionStorage.setItem(storageKey, JSON.stringify(state));
+    }
+
+    function loadProductPage(page) {
+        fetch(`/admin/khuyen-mai/product-page?page=${page}`)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('product-table-body').innerHTML = html;
+                bindCheckboxEvents();
+                restoreState();
+            });
+    }
+
+
+    function restoreState() {
+        const savedData = sessionStorage.getItem(storageKey);
+        if (savedData) {
+            try {
+                const state = JSON.parse(savedData);
+                currentPage = state.currentPage || 0;
+                selectedProducts = new Map(state.selectedProducts);
+
+                // Đánh dấu checkbox và cập nhật giá trị
+                document.querySelectorAll('.chonSanPham').forEach(checkbox => {
+                    const productId = checkbox.getAttribute('data-product-id');
+                    if (selectedProducts.has(productId)) {
+                        checkbox.checked = true;
+                        const mucGiamInput = checkbox.closest('tr').querySelector('.mucGiam');
+                        if (mucGiamInput) {
+                            mucGiamInput.disabled = false;
+                            mucGiamInput.value = selectedProducts.get(productId);
+                        }
+                    }
+                });
+
+                updateGiaSauGiam();
+                updateSelectAllState();
+            } catch (e) {
+                console.error('Lỗi khôi phục trạng thái:', e);
+            }
+        }
+    }
+
+    function updateUIAfterPageLoad() {
+        updateGiaTriGiamUnit();
+        updateGiaSauGiam();
+        updateSelectAllState();
+        bindCheckboxEvents();
+        bindDiscountInputEvents();
+
+        // Cập nhật URL mà không tải lại trang
+        window.history.pushState({}, '', `?page=${currentPage}`);
+    }
+
+    // Xử lý sự kiện popstate khi người dùng dùng nút back/forward
+    window.addEventListener('popstate', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        currentPage = parseInt(urlParams.get('page')) || 0;
+        loadProductPage(currentPage);
+    });
+
+    // Kiểm tra nếu là trang mới và có dữ liệu cũ, hỏi người dùng có muốn tiếp tục không
+    window.addEventListener('load', function() {
+        if (khuyenMaiId === 'new' && sessionStorage.getItem('promotion_new_selected')) {
+            Swal.fire({
+                title: 'Tiếp tục phiên làm việc trước?',
+                text: 'Chúng tôi tìm thấy dữ liệu khuyến mãi chưa hoàn thành. Bạn có muốn tiếp tục?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Tiếp tục',
+                cancelButtonText: 'Bắt đầu mới'
+            }).then((result) => {
+                if (!result.isConfirmed) {
+                    clearSavedState();
+                }
+            });
+        }
+    });
+
+    function clearSavedState() {
+        sessionStorage.removeItem(storageKey);
+    }
+
+    function bindCheckboxEvents() {
+        document.querySelectorAll('.chonSanPham').forEach(checkbox => {
+            // Xóa tất cả sự kiện change hiện có
+            checkbox.onchange = null;
+
+            // Thêm sự kiện mới
+            checkbox.addEventListener('change', function() {
+                const productId = this.getAttribute('data-product-id');
+                const row = this.closest('tr');
+                const mucGiamInput = row.querySelector('.mucGiam');
+
+                // Kiểm tra sản phẩm đang khuyến mãi
+                if (this.checked && sanPhamDangKhuyenMai.includes(productId.toString())) {
+                    showToastError('Sản phẩm này đã có khuyến mãi!');
+                    this.checked = false;
                     return;
                 }
 
-                data.content.forEach(sp => {
-                    let item = document.createElement("button");
-                    item.classList.add("list-group-item", "list-group-item-action");
-                    item.textContent = sp.tenSanPham;
-                    item.onclick = function () {
-                        document.getElementById("searchSanPham").value = sp.tenSanPham;
-                        suggestions.innerHTML = "";
-                    };
-                    suggestions.appendChild(item);
-                });
-
-                if (data.totalPages > 1) {
-                    for (let i = 0; i < data.totalPages; i++) {
-                        let btn = document.createElement("button");
-                        btn.classList.add("btn", "btn-sm", "btn-primary", "mx-1");
-                        btn.textContent = i + 1;
-                        btn.onclick = function () {
-                            currentPage = i;
-                            fetchSanPham(keyword, i);
-                        };
-                        pagination.appendChild(btn);
-                    }
+                if (this.checked) {
+                    mucGiamInput.disabled = false;
+                    mucGiamInput.value = giaTriGiam.value || 0;
+                    selectedProducts.set(productId, mucGiamInput.value);
+                } else {
+                    mucGiamInput.disabled = true;
+                    mucGiamInput.value = '';
+                    selectedProducts.delete(productId);
                 }
-            })
-            .catch(error => {
-                console.error("Lỗi khi gọi API: ", error);
-                document.getElementById("suggestions").innerHTML = "<div class='list-group-item text-danger'>Lỗi hệ thống</div>";
+
+                saveCurrentState();
+                updateGiaSauGiam();
+                updateSelectAllState();
+            });
+        });
+    }
+
+    function bindDiscountInputEvents() {
+        document.querySelectorAll('.mucGiam').forEach(input => {
+            input.addEventListener('input', function() {
+                const productId = this.getAttribute('data-product-id');
+                if (selectedProducts.has(productId)) {
+                    selectedProducts.set(productId, this.value);
+                    saveCurrentState();
+                    updateGiaSauGiam();
+                }
+            });
+        });
+    }
+
+    // Sửa lại sự kiện phân trang
+    function bindPaginationEvents() {
+        document.querySelectorAll('.pagination a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const page = this.getAttribute('data-page');
+                loadProductPage(page);
+            });
+        });
+    }
+
+    // 3. Hàm hỗ trợ
+    function updateSelectAllState() {
+        const allCheckboxes = document.querySelectorAll('.chonSanPham');
+        const checkedCount = Array.from(allCheckboxes).filter(cb => cb.checked).length;
+
+        if (selectAll) {
+            selectAll.checked = checkedCount === allCheckboxes.length;
+            selectAll.indeterminate = checkedCount > 0 && checkedCount < allCheckboxes.length;
+        }
+    }
+
+
+    function fetchSanPham(keyword) {
+        fetch(`/admin/khuyen-mai/product-search?keyword=${keyword}&page=${currentPage}`)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('product-table-body').innerHTML = html;
+                updateUIAfterPageLoad();
             });
     }
 
@@ -87,7 +226,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         toast.show();
     }
 
-    let sanPhamDangKhuyenMai = [];
 
     async function fetchSanPhamKhuyenMai() {
         try {
@@ -220,6 +358,34 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
         updateGiaSauGiam();
     });
+    if (selectAll) {
+        selectAll.addEventListener('change', function() {
+            const isChecked = this.checked;
+            document.querySelectorAll('.chonSanPham').forEach(checkbox => {
+                const productId = checkbox.getAttribute('data-product-id');
+                if (!sanPhamDangKhuyenMai.includes(productId)) {
+                    checkbox.checked = isChecked;
+                    const row = checkbox.closest('tr');
+                    if (row) {
+                        const mucGiamInput = row.querySelector('.mucGiam');
+                        if (mucGiamInput) {
+                            mucGiamInput.disabled = !isChecked;
+                            mucGiamInput.value = isChecked ? giaTriGiam.value : '';
+
+                            if (isChecked) {
+                                selectedProducts.set(productId, mucGiamInput.value);
+                            } else {
+                                selectedProducts.delete(productId);
+                            }
+                        }
+                    }
+                }
+            });
+
+            saveCurrentState();
+            updateGiaSauGiam();
+        });
+    }
 
     // Sự kiện cho từng checkbox sản phẩm (đã có ở trên)
 
@@ -259,6 +425,14 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         let isValid = true;
         let errorMessage = '';
+
+        selectedProducts.forEach((mucGiam, productId) => {
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'selectedProducts';
+            hiddenInput.value = JSON.stringify({id: productId, mucGiam: mucGiam});
+            form.appendChild(hiddenInput);
+        });
 
         // Kiểm tra tên chiến dịch
         if (!tenChienDich.value.trim()) {
@@ -368,11 +542,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             return;
         }
 
-        if (action === 'search') {
-            // Xử lý tìm kiếm (nếu bạn muốn xử lý tìm kiếm riêng biệt)
-            console.log('Tìm kiếm với giá trị:', key.value);
-            form.submit(); // Hoặc xử lý AJAX nếu muốn tìm kiếm mà không reload trang
-        } else if (action === 'save') {
+
             // Xử lý lưu (đồng ý thêm khuyến mãi)
             Swal.fire({
                 title: 'Bạn có muốn thêm không?',
@@ -389,27 +559,45 @@ document.addEventListener('DOMContentLoaded', async function () {
                         showConfirmButton: false,
                         timer: 1500
                     }).then(() => {
+                        formSubmitted = true;
+                        clearSavedState(); // Quan trọng: Xóa dữ liệu đã lưu
                         form.classList.add('was-validated');
-                        form.submit(); // Gửi form sau khi xác nhận
+                        form.submit();
                     });
                 }
             });
-        }
+
     });
 
     function validate(event) {
         // Nếu cần thêm xử lý validate riêng
     }
 
+
     // Set min datetime for inputs
     const now = new Date();
     const nowString = now.toISOString().slice(0, 16);
     thoiGianBatDau.min = nowString;
     thoiGianKetThuc.min = nowString;
+    // 6. Khởi tạo
+    async function initialize() {
+        // Lấy trang hiện tại từ URL
+        const urlParams = new URLSearchParams(window.location.search);
+        currentPage = parseInt(urlParams.get('page')) || 0;
 
-    // Initialize
-    updateGiaTriGiamUnit();
+        await fetchSanPhamKhuyenMai();
+        loadProductPage(currentPage);
 
-    // Gọi API khi tải trang
-    await fetchSanPhamKhuyenMai();
+        // Các sự kiện khác
+        hinhThucGiam.addEventListener('change', updateGiaTriGiamUnit);
+        giaTriGiam.addEventListener('input', updateDiscountValues);
+        selectAll.addEventListener('change', handleSelectAll);
+        form.addEventListener('submit', handleFormSubmit);
+    }
+
+    // Chạy khởi tạo
+    initialize();
+
+
+
 });

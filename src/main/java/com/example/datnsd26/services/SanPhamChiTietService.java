@@ -31,4 +31,6 @@ public interface SanPhamChiTietService {
     Boolean checkSPQR(String ma);
 
     List<SanPhamChiTiet> findByIdSanPhamAndIdMauSac(Integer idSanPham, Integer idMauSac);
+
+
 }

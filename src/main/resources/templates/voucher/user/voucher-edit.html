@@ -73,6 +73,11 @@
             width: calc(100% - 80px);
         }
     }
+    .faded-input {
+        background-color: #e9ecef; /* màu xám nhạt giống disabled */
+        opacity: 0.8;
+        pointer-events: none; /* chặn tương tác chuột */
+    }
 </style>
 <body>
 <div class="admin-layout">
@@ -88,7 +93,7 @@
 
         <!-- Main content -->
         <div class="main-content">
-            <div class="container mt-4">
+<!--            <div class="container mt-4">-->
                 <div class="card">
                     <div class="card-header bg-primary text-white">
                         <h5 class="mb-0">Chỉnh Sửa Voucher</h5>
@@ -100,7 +105,7 @@
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Mã Voucher</label>
-                                    <input type="text" class="form-control" name="maVoucher" th:value="${voucher.maVoucher}" readonly>
+                                    <input type="text" class="form-control faded-input" name="maVoucher" th:value="${voucher.maVoucher}" readonly>
                                     <span class="text-danger" th:if="${errors != null and errors.containsKey('maVoucher')}" th:text="${errors.get('maVoucher')}"></span>
                                 </div>
                                 <div class="col-md-6">
@@ -168,7 +173,7 @@
                         </form>
                     </div>
                 </div>
-            </div>
+<!--            </div>-->
         </div>
     </div>
 

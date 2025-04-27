@@ -1,5 +1,7 @@
 package com.example.datnsd26.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -38,6 +40,9 @@ public class SanPham {
     @Column(name = "trang_thai", columnDefinition = "BIT DEFAULT 1")
     private Boolean trangThai;
 
+
+
     @OneToMany(mappedBy = "sanPham")
+    @JsonIgnoreProperties("sanPham")
     private List<SanPhamChiTiet> spct;
 }

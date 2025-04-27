@@ -73,6 +73,12 @@
             width: calc(100% - 80px);
         }
     }
+
+    .faded-input {
+        background-color: #e9ecef; /* màu xám nhạt giống disabled */
+        opacity: 0.8;
+        pointer-events: none; /* chặn tương tác chuột */
+    }
 </style>
 <body>
 <div class="admin-layout">
@@ -95,7 +101,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <label class="form-label">Mã code</label>
-                        <input type="text" class="form-control" th:field="*{maVoucher}" readonly>
+                        <input type="text" class="form-control faded-input" th:field="*{maVoucher}" readonly>
                         <span class="text-danger" th:if="${errors != null and errors.containsKey('maVoucher')}"
                               th:text="${errors.get('maVoucher')}"></span>
                     </div>

@@ -143,7 +143,7 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
     Page<SanPhamChiTiet> findByTenSanPham(@Param("keyword") String keyword, Pageable pageable);
 
 
-    Page<SanPhamChiTiet> findAll(Pageable pageable);
+    Page<SanPhamChiTiet> findAllByTrangThaiTrue(Pageable pageable);
 
 //    @Query("SELECT sp FROM SanPhamChiTiet sp " +
 //            "WHERE (:keyword IS NULL OR sp.sanPham.tenSanPham LIKE %:keyword% OR sp.maSanPhamChiTiet LIKE %:keyword%) " +
@@ -208,7 +208,13 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
             @Param("mauSacIds") List<Long> mauSacIds,
             @Param("trangThai") Boolean trangThai
     );
+    // Repository method trong SanPhamChiTietRepository.java
+    List<SanPhamChiTiet> findBySanPham_Id(Integer sanPhamId);
 
+    @Query("SELECT spct FROM SanPhamChiTiet spct " +
+            "JOIN FETCH spct.sanPham sp " +
+            "WHERE LOWER(sp.tenSanPham) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    List<SanPhamChiTiet> findBySanPhamTenSanPhamContainingIgnoreCase(@Param("keyword") String keyword);
 
 
 }
