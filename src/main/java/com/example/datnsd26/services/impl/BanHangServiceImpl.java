@@ -316,6 +316,10 @@ public class BanHangServiceImpl implements BanHangService {
                 .trangThai(true)
                 .vaiTro(TaiKhoan.Role.CUSTOMER)
                 .build();
+        Optional<KhachHang> bySdt = this.khachHangRepository.findBySdt(request.getPhone_number());
+        if (bySdt.isPresent()) {
+            throw new InvalidDataException("Số điện thoại đã tồn tại");
+        }
 
         // NOTE: If the email is null, the password can't be viewed. You must forget your password to be able to login.
         if (StringUtils.hasLength(request.getEmail())) {
