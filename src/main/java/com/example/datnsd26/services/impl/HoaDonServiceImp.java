@@ -7,13 +7,11 @@ import com.example.datnsd26.controller.response.InvoiceInformation;
 import com.example.datnsd26.controller.response.InvoicePageResponse;
 import com.example.datnsd26.controller.response.SanPhamResponse;
 import com.example.datnsd26.exception.EntityNotFound;
-import com.example.datnsd26.models.HoaDon;
-import com.example.datnsd26.models.KhachHang;
-import com.example.datnsd26.models.LichSuHoaDon;
-import com.example.datnsd26.models.SanPhamChiTiet;
+import com.example.datnsd26.models.*;
 import com.example.datnsd26.repository.HoaDonRepository;
 import com.example.datnsd26.repository.LichSuHoaDonRepository;
 import com.example.datnsd26.repository.SanPhamChiTietRepository;
+import com.example.datnsd26.repository.VoucherRepository;
 import com.example.datnsd26.repository.customizeQuery.InvoiceCustomizeQuery;
 import com.example.datnsd26.services.HoaDonService;
 import com.example.datnsd26.utilities.AuthUtil;
@@ -38,6 +36,8 @@ public class HoaDonServiceImp implements HoaDonService {
     private final LichSuHoaDonRepository lichSuHoaDonRepository;
 
     private final SanPhamChiTietRepository sanPhamChiTietRepository;
+
+    private final VoucherRepository voucherRepository;
 
     private final AuthUtil authUtil;
 
@@ -142,6 +142,11 @@ public class HoaDonServiceImp implements HoaDonService {
     @Transactional(rollbackOn = Exception.class)
     public void cancel(String code) {
         HoaDon hd = getHoaDonByCode(code);
+        if(hd.getVoucher() != null) {
+            Voucher voucher = hd.getVoucher();
+            voucher.setSoLuong(voucher.getSoLuong() + 1);
+            this.voucherRepository.save(voucher);
+        }
         hd.setTrangThai(STATUS_CANCELED);
         hd.getDanhSachSanPham().forEach(sp -> {
             SanPhamChiTiet ct = this.sanPhamChiTietRepository.findById(sp.getSanPhamChiTiet().getId()).orElseThrow(() -> new EntityNotFound("Product not found!"));
