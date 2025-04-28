@@ -412,49 +412,54 @@
 
                 <!--                </select>-->
             </div>
+            <div th:if="${#lists.isEmpty(products)}">
+                <p class="text-center">Không tìm thấy sản phẩm nào phù hợp.</p>
+            </div>
 
-            <div class="row" id="product-list">
-                <div class="col-md-4 mb-4 lazy-product" th:each="product : ${products}">
-                    <div class="card product-card shadow-sm border-0 h-100 d-flex flex-column justify-content-between">
-                        <a th:href="@{/shop/product/details/{id}(id=${product.idSanPhamChiTiet})}"
-                           class="text-decoration-none text-dark">
-                            <div class="overflow-hidden" style="height: 220px;">
-                                <img th:src="@{${product.hinhAnh}}"
-                                     class="card-img-top"
-                                     alt="Hình ảnh sản phẩm"
-                                     loading="lazy"
-                                     style="object-fit: cover; height: 100%; width: 100%;">
-                            </div>
-                            <div class="card-body text-center">
+            <div th:unless="${#lists.isEmpty(products)}">
+                <div class="row" id="product-list">
+                    <div class="col-md-4 mb-4 lazy-product" th:each="product : ${products}">
+                        <div class="card product-card shadow-sm border-0 h-100 d-flex flex-column justify-content-between">
+                            <a th:href="@{/shop/product/details/{id}(id=${product.idSanPhamChiTiet})}"
+                               class="text-decoration-none text-dark">
+                                <div class="overflow-hidden" style="height: 220px;">
+                                    <img th:src="@{${product.hinhAnh}}"
+                                         class="card-img-top"
+                                         alt="Hình ảnh sản phẩm"
+                                         loading="lazy"
+                                         style="object-fit: cover; height: 100%; width: 100%;">
+                                </div>
+                                <div class="card-body text-center">
                                 <span class="mb-1 text-muted small text-uppercase fw-semibold"
                                       th:text="${product.thuongHieu}">Nike</span>
-                                <div class="product-info px-2">
-                                    <h5 class="fw-semibold mb-1 text-truncate" th:text="${product.tenSanPham}">Tên sản
-                                        phẩm</h5>
-                                    <div class="card-price mt-2">
+                                    <div class="product-info px-2">
+                                        <h5 class="fw-semibold mb-1 text-truncate" th:text="${product.tenSanPham}">Tên
+                                            sản
+                                            phẩm</h5>
+                                        <div class="card-price mt-2">
                             <span class="discounted fs-6 d-block text-danger fw-bold"
                                   th:text="${#numbers.formatDecimal(product.giaBan, 0, 'POINT', 0, 'COMMA')} + ' đ'">
                             </span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- Hiển thị màu sắc -->
-                            <div class="product-colors mt-2">
-                                <div class="d-flex flex-wrap justify-content-center">
+                                <!-- Hiển thị màu sắc -->
+                                <div class="product-colors mt-2">
+                                    <div class="d-flex flex-wrap justify-content-center">
                         <span th:each="mauSac : ${product.mauSac}"
                               th:style="'background-color: ' + ${mauSac}"
                               class="color-circle2 mx-1 mb-1">
                         </span>
+                                    </div>
+
+
                                 </div>
-
-
-                            </div>
-                        </a>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-
             <!-- Phần phân trang -->
             <div class="pagination-container">
                 <nav>
