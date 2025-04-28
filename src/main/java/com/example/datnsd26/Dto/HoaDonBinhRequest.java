@@ -11,7 +11,8 @@ import lombok.Setter;
 @Setter
 public class HoaDonBinhRequest {
     @NotBlank(message = "Họ và tên không được để trống")
-    @Size(max = 100, message = "Họ và tên không được vượt quá 100 ký tự")
+    @Size(min = 2, max = 100, message = "Họ và tên từ 2 đến 100 ký tự")
+    @Pattern(regexp = "^[a-zA-Z\\u00C0-\\u1FFF\\s]+$", message = "Họ và tên không được chứa ký tự đặc biệt")
     private String tenNguoiNhan;
 
     @NotBlank(message = "Số điện thoại không được để trống")
