@@ -68,17 +68,26 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                            <span th:text="${#numbers.formatDecimal(spct.giaBan, 0, 'POINT', 0, 'POINT')} + ' đ'"
+                        <span th:if="${spct.giaBanSauGiam < spct.giaBan}">
+                            <span th:text="${#numbers.formatDecimal(spct.giaBanSauGiam, 0, 'POINT', 0, 'POINT')} + ' đ'"
                                   class="text-orange fs-1 fw-bold"></span>
+                            <span class="original fs-3 text-muted" style="text-decoration: line-through;"
+                                  th:text="${#numbers.formatDecimal(spct.giaBan, 0, 'POINT', 0, 'POINT')} + ' đ'">
+                            </span>
+                        </span>
+                        <span th:unless="${spct.giaBanSauGiam < spct.giaBan}"
+                              th:text="${#numbers.formatDecimal(spct.giaBanSauGiam, 0, 'POINT', 0, 'POINT')} + ' đ'"
+                              class="text-orange fs-1 fw-bold">
+                        </span>
                     </div>
                     <hr/>
 
                     <!-- Chọn màu sắc -->
                     <div class="mb-3">
-                        <label class="form-label">Màu sắc:</label>
+                        <label class="form-label">Màu sắc: </label>
                         <div id="colorOptions" class="row g-2">
                             <div class="col-auto" th:each="mau : ${danhSachMauSac}">
-                                <label class="form-colorinput">
+                                <label class="form-colorinput" data-bs-toggle="tooltip" data-bs-placement="top" th:title="${mau.tenMauSac}">
                                     <input type="radio" name="mauSac" th:value="${mau.id}"
                                            class="form-colorinput-input" th:checked="${spct.mauSac.id == mau.id}"
                                            onchange="this.form.submit()"/>

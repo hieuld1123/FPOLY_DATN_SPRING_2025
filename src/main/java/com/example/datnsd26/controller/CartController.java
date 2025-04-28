@@ -202,11 +202,16 @@ public class CartController {
         }
 
         // Sau khi xử lý danhSachHopLe thành công trong controller /checkout:
+        float phiShip = 0f;
+        if (tongTamTinh < 1000000) {
+            phiShip = 30000.0f;
+        }
 
         model.addAttribute("isAuthenticated", isAuthenticated);
         model.addAttribute("isCustomer", isCustomer);
         session.setAttribute("selectedIds", selectedIds);
         model.addAttribute("tongTamTinh", tongTamTinh);
+        model.addAttribute("phiShip", phiShip);
         model.addAttribute("cart", danhSachHopLe);
         model.addAttribute("khachHang", khachHang); // null nếu là khách vãng lai
         model.addAttribute("diaChiMacDinh", diaChiMacDinh);
@@ -261,6 +266,7 @@ public class CartController {
             model.addAttribute("cart", new ArrayList<>());  // hiển thị sản phẩm da chon
             model.addAttribute("tongTamTinh", 0);
             model.addAttribute("khachHang", khachHang);
+            model.addAttribute("phiShip", 0);
             model.addAttribute("hoaDonBinhRequest", hoaDonBinhRequest);
             return "shop/checkout"; // quay lại trang giỏ hàng
         }
@@ -289,6 +295,11 @@ public class CartController {
                 .mapToDouble(item -> item.getSoLuong() * item.getSanPhamChiTiet().getGiaBanSauGiam())
                 .sum();
 
+        float phiShip = 0f;
+        if (tongTamTinh < 1000000) {
+            phiShip = 30000.0f;
+        }
+
         if (!danhSachLoi.isEmpty()) {
             System.out.println("VaoDay roiiii");
             model.addAttribute("isAuthenticated", isAuthenticated);
@@ -298,7 +309,9 @@ public class CartController {
             model.addAttribute("cart", danhSachThanhToan);  // hiển thị sản phẩm da chon
             model.addAttribute("tongTamTinh", tongTamTinh);
             model.addAttribute("khachHang", khachHang);
+            model.addAttribute("phiShip", phiShip);
             model.addAttribute("hoaDonBinhRequest", hoaDonBinhRequest);
+            model.addAttribute("vouchers", voucherRepository.findValidVouchers(LocalDateTime.now(), tongTamTinh)); // Load lại danh sách voucher hợp lệ
             return "shop/checkout";
         }
 
@@ -310,18 +323,15 @@ public class CartController {
 //            model.addAttribute("errors", danhSachLoi);
             model.addAttribute("cart", danhSachThanhToan);  // hiển thị sản phẩm da chon
             model.addAttribute("tongTamTinh", tongTamTinh);
+            model.addAttribute("phiShip", phiShip);
             model.addAttribute("khachHang", khachHang);
             model.addAttribute("hoaDonBinhRequest", hoaDonBinhRequest);
+            model.addAttribute("vouchers", voucherRepository.findValidVouchers(LocalDateTime.now(), tongTamTinh)); // Load lại danh sách voucher hợp lệ
             return "shop/checkout";
         }
 
         Voucher voucher = null;
         float giamGia = 0f;
-
-        float phiShip = 0f;
-        if (tongTamTinh <= 1000000) {
-            phiShip = 30000.0f;
-        }
 
         if (hoaDonBinhRequest.getIdVoucher() != null) {
             voucher = voucherRepository.findById(hoaDonBinhRequest.getIdVoucher()).orElse(null);
@@ -333,6 +343,7 @@ public class CartController {
                 model.addAttribute("errorMessage", "Voucher bạn chọn không hợp lệ hoặc đã hết lượt sử dụng.");
                 model.addAttribute("cart", danhSachThanhToan);
                 model.addAttribute("tongTamTinh", tongTamTinh);
+                model.addAttribute("phiShip", phiShip);
                 model.addAttribute("khachHang", khachHang);
                 model.addAttribute("hoaDonBinhRequest", hoaDonBinhRequest);
                 model.addAttribute("vouchers", voucherRepository.findValidVouchers(LocalDateTime.now(), tongTamTinh)); // Load lại danh sách voucher hợp lệ
@@ -420,6 +431,7 @@ public class CartController {
         model.addAttribute("successMessage", "Đặt hàng thành công. Vui lòng kiểm tra email. Chúng tôi sẽ liên hệ với bạn qua số điện thoại để xác nhận đơn hàng.");
         model.addAttribute("cart", new ArrayList<>());
         model.addAttribute("tongTamTinh", 0);
+        model.addAttribute("phiShip", 0);
         model.addAttribute("hoaDonBinhRequest", new HoaDonBinhRequest());
         model.addAttribute("khachHang", khachHang);
         return "shop/checkout";
