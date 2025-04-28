@@ -432,23 +432,22 @@
                                 <div class="card-body text-center">
                                 <span class="mb-1 text-muted small text-uppercase fw-semibold"
                                       th:text="${product.thuongHieu}">Nike</span>
-                                <div class="product-info px-2">
-                                    <h5 class="fw-semibold mb-1 text-truncate" th:text="${product.tenSanPham}">Tên sản
-                                        phẩm</h5>
-                                    <div class="card-price mt-2">
-                                        <!--                            <span class="discounted fs-6 d-block text-danger fw-bold"-->
-                                        <!--                                  th:text="${#numbers.formatDecimal(product.giaBan, 0, 'POINT', 0, 'COMMA')} + ' đ'">-->
-                                        <!--                            </span>-->
-                                        <span th:if="${product.giaBanSauGiam < product.giaBan}" class="discounted fs-6 d-block text-danger fw-bold">
-                                            <span th:text="${#numbers.formatDecimal(product.giaBanSauGiam, 0, 'POINT', 0, 'COMMA')} + ' đ'"></span>
-                                            <span class="original fs-6 text-muted" style="text-decoration: line-through;"
-                                                  th:text="${#numbers.formatDecimal(product.giaBan, 0, 'POINT', 0, 'COMMA')} + ' đ'">
+                                    <div class="product-info px-2">
+                                        <h5 class="fw-semibold mb-1 text-truncate" th:text="${product.tenSanPham}">Tên
+                                            sản
+                                            phẩm</h5>
+                                        <div class="card-price mt-2">
+                                            <span th:if="${product.giaBanSauGiam < product.giaBan}" class="discounted fs-6 d-block text-danger fw-bold">
+                                                <span th:text="${#numbers.formatDecimal(product.giaBanSauGiam, 0, 'POINT', 0, 'COMMA')} + ' đ'"></span>
+                                                <span class="original fs-6 text-muted" style="text-decoration: line-through;"
+                                                      th:text="${#numbers.formatDecimal(product.giaBan, 0, 'POINT', 0, 'COMMA')} + ' đ'">
+                                                </span>
                                             </span>
-                                        </span>
-                                        <span th:unless="${product.giaBanSauGiam < product.giaBan}"
-                                              class="discounted fs-6 d-block text-danger fw-bold"
-                                              th:text="${#numbers.formatDecimal(product.giaBanSauGiam, 0, 'POINT', 0, 'COMMA')} + ' đ'">
-                                        </span>
+                                            <span th:unless="${product.giaBanSauGiam < product.giaBan}"
+                                                  class="discounted fs-6 d-block text-danger fw-bold"
+                                                  th:text="${#numbers.formatDecimal(product.giaBanSauGiam, 0, 'POINT', 0, 'COMMA')} + ' đ'">
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
 
