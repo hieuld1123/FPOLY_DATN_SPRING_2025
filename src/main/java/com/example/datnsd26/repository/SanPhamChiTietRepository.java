@@ -217,5 +217,5 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
             "WHERE LOWER(sp.tenSanPham) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<SanPhamChiTiet> findBySanPhamTenSanPhamContainingIgnoreCase(@Param("keyword") String keyword);
 
-
+    List<SanPhamChiTiet> findBySanPham_TenSanPhamContaining(String tenSanPham);
 }

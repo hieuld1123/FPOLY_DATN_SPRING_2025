@@ -243,7 +243,7 @@
                                 <select class="form-control select2 select2-primary flex-grow-1"
                                         data-dropdown-css-class="select2-primary"
                                         name="tensp" data-placeholder="Nhập tên sản phẩm"
-                                        onchange="clearErrorMessageTenSP()">
+                                        onchange="handleSelectProduct(this); clearErrorMessageTenSP()">
                                     <option></option>
                                     <option th:each="sanPham : ${sp}" th:value="${sanPham.id}"
                                             th:text="${sanPham.tenSanPham}"
@@ -261,6 +261,7 @@
                             <!-- Hiển thị lỗi -->
                             <span id="tenspError" style="color: red; font-weight: bold;"></span>
                         </div>
+
 
                         <!-- Giới tính -->
                         <div class="mb-3 d-flex align-items-center">
@@ -308,7 +309,8 @@
                                     <label class="fw-bold"><span style="color: red;">* </span>Thương hiệu:</label>
                                 </div>
                                 <div class="d-flex">
-                                    <select id="idThuongHieu" class="form-control me-2" name="idThuongHieu">
+                                    <select id="idThuongHieu" class="form-control me-2" name="idThuongHieu"
+                                            th:data-locked-id="${selectedThuongHieu}">
                                         <option th:each="th : ${th}" th:value="${th.id}"
                                                 th:text="${th.ten}"
                                                 th:selected="${th.id == selectedThuongHieu}"></option>
@@ -327,7 +329,8 @@
                                     <label class="fw-bold"><span style="color: red;">* </span>Chất liệu:</label>
                                 </div>
                                 <div class="d-flex">
-                                    <select id="idChatLieu" class="form-control me-2" name="idChatLieu">
+                                    <select id="idChatLieu" class="form-control me-2" name="idChatLieu"
+                                            th:data-locked-id="${selectedChatLieu}">>
                                         <option th:each="cl : ${cl}" th:value="${cl.id}"
                                                 th:text="${cl.ten}"
                                                 th:selected="${cl.id == selectedChatLieu}"></option>
@@ -346,7 +349,8 @@
                                     <label class="fw-bold"><span style="color: red;">* </span>Đế giày:</label>
                                 </div>
                                 <div class="d-flex">
-                                    <select id="idDeGiay" class="form-control me-2" name="idDeGiay">
+                                    <select id="idDeGiay" class="form-control me-2" name="idDeGiay"
+                                            th:data-locked-id="${selectedDeGiay}">
                                         <option th:each="dg : ${dg}" th:value="${dg.id}"
                                                 th:text="${dg.ten}"
                                                 th:selected="${dg.id == selectedDeGiay}"></option>
@@ -408,24 +412,30 @@
                             <!-- Chọn kích cỡ -->
                             <div class="mb-3">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <a href="#" class="text-decoration-underline text-primary fw-bold" data-bs-toggle="modal"
+                                    <a href="#" class="text-decoration-underline text-primary fw-bold"
+                                       data-bs-toggle="modal"
                                        data-bs-target="#modal-size">
                                         <i class="ti ti-ruler me-1"></i>Hướng dẫn chọn size
                                     </a>
                                     <!-- Modal -->
-                                    <div class="modal modal-blur fade" id="modal-size" tabindex="-1" role="dialog" aria-hidden="true">
+                                    <div class="modal modal-blur fade" id="modal-size" tabindex="-1" role="dialog"
+                                         aria-hidden="true">
                                         <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title"><i class="ti ti-ruler-measure me-2"></i>Tra cứu & chọn size giày</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                                    <h5 class="modal-title"><i class="ti ti-ruler-measure me-2"></i>Tra
+                                                        cứu & chọn size giày</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Đóng"></button>
                                                 </div>
                                                 <div class="modal-body">
                                                     <!-- Nhập chiều dài chân -->
                                                     <div class="row mb-3">
                                                         <div class="col-md-6">
                                                             <label class="form-label">Chiều dài chân (cm):</label>
-                                                            <input type="number" id="input-cm" class="form-control" placeholder="Ví dụ: 24.8" min="20" max="30" step="0.1">
+                                                            <input type="number" id="input-cm" class="form-control"
+                                                                   placeholder="Ví dụ: 24.8" min="20" max="30"
+                                                                   step="0.1">
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label class="form-label">Giới tính:</label>
@@ -435,7 +445,8 @@
                                                             </select>
                                                         </div>
                                                         <div class="col-12 mt-3 text-end">
-                                                            <button type="button" class="btn btn-primary" onclick="traCuuSize()">
+                                                            <button type="button" class="btn btn-primary"
+                                                                    onclick="traCuuSize()">
                                                                 <i class="ti ti-search me-1"></i>Tra cứu size
                                                             </button>
                                                         </div>
@@ -444,26 +455,56 @@
                                                     <!-- Kết quả -->
                                                     <div id="result" class="mb-4" style="display: none;">
                                                         <h4><i class="ti ti-check me-2"></i>Kết quả tra cứu:</h4>
-                                                        <p>Chiều dài chân: <strong><span id="cm-result"></span> cm</strong></p>
-                                                        <p>Size giày phù hợp: <strong class="text-blue" id="size-result"></strong></p>
+                                                        <p>Chiều dài chân: <strong><span id="cm-result"></span>
+                                                            cm</strong></p>
+                                                        <p>Size giày phù hợp: <strong class="text-blue"
+                                                                                      id="size-result"></strong></p>
                                                     </div>
 
                                                     <!-- Bảng size -->
-                                                    <h4 class="mt-4"><i class="ti ti-table me-2"></i>Bảng size giày Nam</h4>
+                                                    <h4 class="mt-4"><i class="ti ti-table me-2"></i>Bảng size giày Nam
+                                                    </h4>
                                                     <div class="table-responsive mb-4">
                                                         <table class="table table-bordered text-center">
                                                             <thead class="table-primary">
-                                                            <tr><th>Chiều dài chân (cm)</th><th>Size Nam (VN)</th></tr>
+                                                            <tr>
+                                                                <th>Chiều dài chân (cm)</th>
+                                                                <th>Size Nam (VN)</th>
+                                                            </tr>
                                                             </thead>
                                                             <tbody>
-                                                            <tr><td>23.7 – 24.1</td><td>38</td></tr>
-                                                            <tr><td>24.2 – 24.6</td><td>39</td></tr>
-                                                            <tr><td>24.7 – 25.1</td><td>40</td></tr>
-                                                            <tr><td>25.2 – 25.6</td><td>41</td></tr>
-                                                            <tr><td>25.7 – 26.1</td><td>42</td></tr>
-                                                            <tr><td>26.2 – 26.6</td><td>43</td></tr>
-                                                            <tr><td>26.7 – 27.1</td><td>44</td></tr>
-                                                            <tr><td>27.2 – 27.6</td><td>45</td></tr>
+                                                            <tr>
+                                                                <td>23.7 – 24.1</td>
+                                                                <td>38</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>24.2 – 24.6</td>
+                                                                <td>39</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>24.7 – 25.1</td>
+                                                                <td>40</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>25.2 – 25.6</td>
+                                                                <td>41</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>25.7 – 26.1</td>
+                                                                <td>42</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>26.2 – 26.6</td>
+                                                                <td>43</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>26.7 – 27.1</td>
+                                                                <td>44</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>27.2 – 27.6</td>
+                                                                <td>45</td>
+                                                            </tr>
                                                             </tbody>
                                                         </table>
                                                     </div>
@@ -472,16 +513,40 @@
                                                     <div class="table-responsive mb-4">
                                                         <table class="table table-bordered text-center">
                                                             <thead class="table-pink">
-                                                            <tr><th>Chiều dài chân (cm)</th><th>Size Nữ (VN)</th></tr>
+                                                            <tr>
+                                                                <th>Chiều dài chân (cm)</th>
+                                                                <th>Size Nữ (VN)</th>
+                                                            </tr>
                                                             </thead>
                                                             <tbody>
-                                                            <tr><td>22.1 – 22.5</td><td>35</td></tr>
-                                                            <tr><td>22.6 – 23.0</td><td>36</td></tr>
-                                                            <tr><td>23.1 – 23.5</td><td>37</td></tr>
-                                                            <tr><td>23.6 – 24.0</td><td>38</td></tr>
-                                                            <tr><td>24.1 – 24.5</td><td>39</td></tr>
-                                                            <tr><td>24.6 – 25.0</td><td>40</td></tr>
-                                                            <tr><td>25.1 – 25.5</td><td>41</td></tr>
+                                                            <tr>
+                                                                <td>22.1 – 22.5</td>
+                                                                <td>35</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>22.6 – 23.0</td>
+                                                                <td>36</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>23.1 – 23.5</td>
+                                                                <td>37</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>23.6 – 24.0</td>
+                                                                <td>38</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>24.1 – 24.5</td>
+                                                                <td>39</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>24.6 – 25.0</td>
+                                                                <td>40</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>25.1 – 25.5</td>
+                                                                <td>41</td>
+                                                            </tr>
                                                             </tbody>
                                                         </table>
                                                     </div>
@@ -497,7 +562,9 @@
                                                     </ol>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <button type="button" class="btn btn-link" data-bs-dismiss="modal">Đóng</button>
+                                                    <button type="button" class="btn btn-link" data-bs-dismiss="modal">
+                                                        Đóng
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -507,9 +574,11 @@
                                 <div class="form-selectgroup">
                                     <label th:each="kc : ${danhSachKichCo}" class="form-selectgroup-item"
                                            th:classappend="${!kichCoTonTai.contains(kc.id)} ? 'text-decoration-line-through text-secondary'">
-                                        <input type="radio" name="kichCo" th:value="${kc.id}" class="form-selectgroup-input"
+                                        <input type="radio" name="kichCo" th:value="${kc.id}"
+                                               class="form-selectgroup-input"
                                                th:checked="${spct.kichCo.id == kc.id}"
-                                               th:disabled="${!kichCoTonTai.contains(kc.id)}" onchange="this.form.submit()"/>
+                                               th:disabled="${!kichCoTonTai.contains(kc.id)}"
+                                               onchange="this.form.submit()"/>
                                         <span class="form-selectgroup-label" th:text="${kc.ten}"></span>
                                     </label>
                                 </div>
@@ -1030,27 +1099,50 @@
 </body>
 </html>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        lockSelectOptionsExceptSelected("idThuongHieu");
+        lockSelectOptionsExceptSelected("idChatLieu");
+        lockSelectOptionsExceptSelected("idDeGiay");
+    });
+
+    function lockSelectOptionsExceptSelected(selectId) {
+        const select = document.getElementById(selectId);
+        const lockedId = select.dataset.lockedId;
+
+        if (lockedId) {
+            Array.from(select.options).forEach(option => {
+                if (option.value !== lockedId) {
+                    option.disabled = true; // Chỉ disable các option khác
+                }
+            });
+        }
+    }
+</script>
+
+
+
 <!-- Script tra size -->
 <script>
     const sizeNam = [
-        { size: 38, min: 23.7, max: 24.1 },
-        { size: 39, min: 24.2, max: 24.6 },
-        { size: 40, min: 24.7, max: 25.1 },
-        { size: 41, min: 25.2, max: 25.6 },
-        { size: 42, min: 25.7, max: 26.1 },
-        { size: 43, min: 26.2, max: 26.6 },
-        { size: 44, min: 26.7, max: 27.1 },
-        { size: 45, min: 27.2, max: 27.6 },
+        {size: 38, min: 23.7, max: 24.1},
+        {size: 39, min: 24.2, max: 24.6},
+        {size: 40, min: 24.7, max: 25.1},
+        {size: 41, min: 25.2, max: 25.6},
+        {size: 42, min: 25.7, max: 26.1},
+        {size: 43, min: 26.2, max: 26.6},
+        {size: 44, min: 26.7, max: 27.1},
+        {size: 45, min: 27.2, max: 27.6},
     ];
 
     const sizeNu = [
-        { size: 35, min: 22.1, max: 22.5 },
-        { size: 36, min: 22.6, max: 23.0 },
-        { size: 37, min: 23.1, max: 23.5 },
-        { size: 38, min: 23.6, max: 24.0 },
-        { size: 39, min: 24.1, max: 24.5 },
-        { size: 40, min: 24.6, max: 25.0 },
-        { size: 41, min: 25.1, max: 25.5 },
+        {size: 35, min: 22.1, max: 22.5},
+        {size: 36, min: 22.6, max: 23.0},
+        {size: 37, min: 23.1, max: 23.5},
+        {size: 38, min: 23.6, max: 24.0},
+        {size: 39, min: 24.1, max: 24.5},
+        {size: 40, min: 24.6, max: 25.0},
+        {size: 41, min: 25.1, max: 25.5},
     ];
 
     function traCuuSize() {
@@ -1270,7 +1362,9 @@
         } else {
             document.getElementById("mausacError").innerText = "";
         }
-// Kiểm tra xem có ít nhất một checkbox đã được chọn hay không
+
+        // Kiểm tra xem có ít nhất một checkbox đã được chọn hay không
+
         if (checkboxes.length === 0) {
             document.getElementById("kichcoError").innerText = "Vui lòng chọn ít nhất một kích cỡ.";
             return false;
@@ -2585,4 +2679,129 @@
         }
     });
 </script>
+
+<script>
+    function autoSelectFirstIfMultiple(selectElement) {
+        const options = Array.from(selectElement.options).filter(opt => opt.value.trim() !== '');
+        if (options.length > 1) {
+            selectElement.value = options[0].value;
+        }
+    }
+
+    function lockSelectOptions(selectElement, lockedValue) {
+        Array.from(selectElement.options).forEach(option => {
+            if (option.value !== lockedValue.toString()) {
+                option.disabled = true;
+            } else {
+                option.disabled = false;
+            }
+        });
+    }
+
+    function unlockSelectOptions(selectElement) {
+        Array.from(selectElement.options).forEach(option => {
+            option.disabled = false;
+        });
+    }
+
+    let lockedThuongHieuId = null;
+    let lockedChatLieuId = null;
+    let lockedDeGiayId = null;
+
+    function handleSelectProduct(selectElement) {
+        const selectedOption = selectElement.options[selectElement.selectedIndex];
+        const tenSanPham = selectedOption.text;
+
+        if (!tenSanPham) return;
+
+        fetch(`/getCTSPByTenSP?tenSanPham=${encodeURIComponent(tenSanPham)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Không tìm thấy sản phẩm chi tiết.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Data sản phẩm chi tiết:', data);
+
+                document.getElementById('gioitinhNam').checked = false;
+                document.getElementById('gioitinhNu').checked = false;
+                document.querySelector('textarea[name="mota"]').value = '';
+
+                const thuongHieuSelect = document.getElementById('idThuongHieu');
+                const chatLieuSelect = document.getElementById('idChatLieu');
+                const deGiaySelect = document.getElementById('idDeGiay');
+
+                // Unlock all options trước khi fill mới
+                unlockSelectOptions(thuongHieuSelect);
+                unlockSelectOptions(chatLieuSelect);
+                unlockSelectOptions(deGiaySelect);
+
+                thuongHieuSelect.value = '';
+                chatLieuSelect.value = '';
+                deGiaySelect.value = '';
+
+                lockedThuongHieuId = null;
+                lockedChatLieuId = null;
+                lockedDeGiayId = null;
+
+                if (data.gioiTinh !== undefined) {
+                    document.getElementById('gioitinhNam').checked = data.gioiTinh === true;
+                    document.getElementById('gioitinhNu').checked = data.gioiTinh === false;
+                }
+
+                if (data.moTa !== undefined) {
+                    document.querySelector('textarea[name="mota"]').value = data.moTa;
+                }
+
+                if (data.thuongHieuId !== undefined && data.thuongHieuId !== null) {
+                    thuongHieuSelect.value = data.thuongHieuId;
+                    lockedThuongHieuId = data.thuongHieuId;
+                    lockSelectOptions(thuongHieuSelect, lockedThuongHieuId);
+                }
+
+                if (data.chatLieuId !== undefined && data.chatLieuId !== null) {
+                    chatLieuSelect.value = data.chatLieuId;
+                    lockedChatLieuId = data.chatLieuId;
+                    lockSelectOptions(chatLieuSelect, lockedChatLieuId);
+                }
+
+                if (data.deGiayId !== undefined && data.deGiayId !== null) {
+                    deGiaySelect.value = data.deGiayId;
+                    lockedDeGiayId = data.deGiayId;
+                    lockSelectOptions(deGiaySelect, lockedDeGiayId);
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi:', error);
+
+                document.getElementById('gioitinhNam').checked = false;
+                document.getElementById('gioitinhNu').checked = false;
+                document.querySelector('textarea[name="mota"]').value = '';
+
+                const thuongHieuSelect = document.getElementById('idThuongHieu');
+                const chatLieuSelect = document.getElementById('idChatLieu');
+                const deGiaySelect = document.getElementById('idDeGiay');
+
+                unlockSelectOptions(thuongHieuSelect);
+                unlockSelectOptions(chatLieuSelect);
+                unlockSelectOptions(deGiaySelect);
+
+                // Tự động chọn option đầu tiên nếu có nhiều hơn 1 option khác rỗng
+                autoSelectFirstIfMultiple(thuongHieuSelect);
+                autoSelectFirstIfMultiple(chatLieuSelect);
+                autoSelectFirstIfMultiple(deGiaySelect);
+
+                lockedThuongHieuId = null;
+                lockedChatLieuId = null;
+                lockedDeGiayId = null;
+            });
+
+    }
+</script>
+
+
+
+
+
 
