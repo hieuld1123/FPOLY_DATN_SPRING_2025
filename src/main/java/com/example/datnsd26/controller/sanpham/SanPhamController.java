@@ -101,7 +101,7 @@ public class SanPhamController {
             }
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái thành công!");
         }
-        return "redirect:/listsanpham";
+        return "redirect:/quan-ly/san-pham";
     }
 
     @PostMapping("/addTenSPModal")
@@ -224,7 +224,7 @@ public class SanPhamController {
         model.addAttribute("selectedThuongHieu", idThuongHieu.getId());
         model.addAttribute("selectedDeGiay", idDeGiay.getId());
         model.addAttribute("selectedChatLieu", idChatLieu.getId());
-//        model.addAttribute("gioitinh", gioitinh);
+        model.addAttribute("gioitinh", gioitinh);
         model.addAttribute("kichCoNames", kichCoNames);
 
         //Hiển thị sau khi sửa đồng gía và số lượng
@@ -234,7 +234,6 @@ public class SanPhamController {
         session.setAttribute("selectedThuongHieu", idThuongHieu.getId());
         session.setAttribute("selectedChatLieu", idChatLieu.getId());
         session.setAttribute("selectedDeGiay", idDeGiay.getId());
-
 
         SanPham sanPham = sanPhamRepositoty.findById(tensp).orElse(null);
         if (sanPham == null) {
@@ -280,7 +279,8 @@ public class SanPhamController {
                 }
             }
 
-        } else {
+        }
+        else {
             for (MauSac colorId : idMauSac) {
                 for (String sizeName : kichCoNames) {
                     KichCo kichCo = kichCoRepository.findByTen(sizeName);
@@ -453,35 +453,79 @@ public class SanPhamController {
             @RequestParam(name = "anh1") List<MultipartFile> anhFiles1,
             @RequestParam(name = "anh2") List<MultipartFile> anhFiles2,
             @RequestParam(name = "anh3") List<MultipartFile> anhFiles3,
-            RedirectAttributes redirectAttributes,
-            Model model
+            RedirectAttributes redirectAttributes
     ) throws IOException {
-        SanPham sanPham = sanPhamChiTietList.get(0).getSanPham();
-        List<SanPhamChiTiet> listsanPhamChiTietDB = sanPhamChiTietRepository.findBySanPham(sanPham);
 
-        if (listsanPhamChiTietDB.isEmpty()) {
-            for (SanPhamChiTiet spct : sanPhamChiTietList) {
-                sanPhamChiTietRepository.save(spct);
-            }
-        } else {
-            for (SanPhamChiTiet spctList : sanPhamChiTietList) {
-                SanPhamChiTiet spctTim = sanPhamChiTietRepository.findSPCT(
-                        spctList.getMauSac(), spctList.getKichCo(), spctList.getThuongHieu(),
-                        spctList.getChatLieu(), spctList.getDeGiay(), spctList.getSanPham());
-                if (spctTim != null) {
-                    spctTim.setSoLuong(spctTim.getSoLuong() + spctList.getSoLuong());
-                    if (spctList.getHinhAnh() != null) {
-                        for (HinhAnh anh : spctList.getHinhAnh()) {
-                            anh.setSanPhamChiTiet(spctTim);
-                            anhRepository.save(anh);
+        List<SanPham> listDistinctSanPham = sanPhamChiTietList.stream()
+                .map(SanPhamChiTiet::getSanPham)   // Lấy SanPham từ mỗi SanPhamChiTiet
+                .distinct()                         // Loại bỏ trùng lặp (dựa trên equals & hashCode của SanPham)
+                .collect(Collectors.toList());
+
+        System.out.println(listDistinctSanPham.size());
+
+        for (SanPham sanPham : listDistinctSanPham) {
+            List<SanPhamChiTiet> existingSPCTs = sanPhamChiTietRepository.findBySanPham(sanPham);
+
+            // Lọc ra các SPCT trong sanPhamChiTietList có liên quan đến sanPham hiện tại
+            List<SanPhamChiTiet> spctForThisSanPham = sanPhamChiTietList.stream()
+                    .filter(spct -> spct.getSanPham().getId().equals(sanPham.getId()))
+                    .collect(Collectors.toList());
+
+            if (existingSPCTs.isEmpty()) {
+                for (SanPhamChiTiet spct : spctForThisSanPham) {
+                    sanPhamChiTietRepository.save(spct);
+                }
+            } else {
+                for (SanPhamChiTiet spctList : spctForThisSanPham) {
+                    SanPhamChiTiet spctTim = sanPhamChiTietRepository.findSPCT(
+                            spctList.getMauSac(), spctList.getKichCo(), spctList.getThuongHieu(),
+                            spctList.getChatLieu(), spctList.getDeGiay(), spctList.getSanPham());
+                    if (spctTim != null) {
+                        spctTim.setSoLuong(spctTim.getSoLuong() + spctList.getSoLuong());
+                        if (spctList.getHinhAnh() != null) {
+                            for (HinhAnh anh : spctList.getHinhAnh()) {
+                                anh.setSanPhamChiTiet(spctTim);
+                                anhRepository.save(anh);
+                            }
                         }
+                        sanPhamChiTietRepository.save(spctTim);
+                    } else {
+                        sanPhamChiTietRepository.save(spctList);
                     }
-                    sanPhamChiTietRepository.save(spctTim);
-                } else {
-                    sanPhamChiTietRepository.save(spctList);
                 }
             }
         }
+
+
+        // backup
+//        SanPham sanPham = sanPhamChiTietList.get(0).getSanPham();
+//        List<SanPhamChiTiet> listsanPhamChiTietDB = sanPhamChiTietRepository.findBySanPham(sanPham);
+//
+//        if (listsanPhamChiTietDB.isEmpty()) {
+//            for (SanPhamChiTiet spct : sanPhamChiTietList) {
+//                sanPhamChiTietRepository.save(spct);
+//            }
+//        } else {
+//            for (SanPhamChiTiet spctList : sanPhamChiTietList) {
+//                SanPhamChiTiet spctTim = sanPhamChiTietRepository.findSPCT(
+//                        spctList.getMauSac(), spctList.getKichCo(), spctList.getThuongHieu(),
+//                        spctList.getChatLieu(), spctList.getDeGiay(), spctList.getSanPham());
+//                if (spctTim != null) {
+//                    spctTim.setSoLuong(spctTim.getSoLuong() + spctList.getSoLuong());
+//                    if (spctList.getHinhAnh() != null) {
+//                        for (HinhAnh anh : spctList.getHinhAnh()) {
+//                            anh.setSanPhamChiTiet(spctTim);
+//                            anhRepository.save(anh);
+//                        }
+//                    }
+//                    sanPhamChiTietRepository.save(spctTim);
+//                } else {
+//                    sanPhamChiTietRepository.save(spctList);
+//                }
+//            }
+//        }
+
+
         sanPhamChiTietList.clear();
 
         for (int i = 0; i < uniqueList.size(); i++) {
@@ -704,6 +748,7 @@ public class SanPhamController {
         Integer selectedChatLieu = (Integer) session.getAttribute("selectedChatLieu");
         Integer selectedDeGiay = (Integer) session.getAttribute("selectedDeGiay");
 
+        // Selected các thuộc tính của sản phẩm
         model.addAttribute("selectedTensp", selectedTensp);
         model.addAttribute("motas", motas);
         model.addAttribute("gioitinh", gioitinh);
@@ -740,5 +785,38 @@ public class SanPhamController {
         System.out.println("KKKKKKKKKKKKKK" + list.size());
         sanPhamChiTietList.get(Integer.valueOf(listData.get(0)) - 1).setHinhAnh(list);
         return ResponseEntity.ok(true);
+    }
+
+    SanPhamChiTiet first = new SanPhamChiTiet();
+
+    @GetMapping("/getCTSPByTenSP")
+    @ResponseBody
+    public ResponseEntity<?> searchByTenSanPham(@RequestParam("tenSanPham") String tenSanPham) {
+        List<SanPhamChiTiet> chiTietList = sanPhamChiTietRepository.findBySanPham_TenSanPhamContaining(tenSanPham);
+
+        if (chiTietList.isEmpty()) {
+            int count = 0;
+            for (SanPhamChiTiet spct : sanPhamChiTietList) {
+                if (spct.getSanPham().getTenSanPham().equals(tenSanPham)) {
+                    first = spct;
+                    count++;
+                    break;
+                }
+            }
+            if (count == 0) {
+                return ResponseEntity.notFound().build();
+            }
+        } else {
+            first = chiTietList.get(0);
+        }
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("gioiTinh", first.getGioiTinh());
+        data.put("moTa", first.getMoTa());
+        data.put("thuongHieuId", first.getThuongHieu() != null ? first.getThuongHieu().getId() : null);
+        data.put("chatLieuId", first.getChatLieu() != null ? first.getChatLieu().getId() : null);
+        data.put("deGiayId", first.getDeGiay() != null ? first.getDeGiay().getId() : null);
+
+        return ResponseEntity.ok(data);
     }
 }
