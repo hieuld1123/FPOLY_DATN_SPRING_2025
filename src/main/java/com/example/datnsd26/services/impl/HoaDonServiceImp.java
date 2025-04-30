@@ -156,17 +156,20 @@ public class HoaDonServiceImp implements HoaDonService {
     @Transactional(rollbackOn = Exception.class)
     public void cancel(String code) {
         HoaDon hd = getHoaDonByCode(code);
+        Optional<LichSuHoaDon> byStatusAndInvoice = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_CONFIRMED, hd.getId());
         if(hd.getVoucher() != null) {
             Voucher voucher = hd.getVoucher();
             voucher.setSoLuong(voucher.getSoLuong() + 1);
             this.voucherRepository.save(voucher);
         }
         hd.setTrangThai(STATUS_CANCELED);
-        hd.getDanhSachSanPham().forEach(sp -> {
-            SanPhamChiTiet ct = this.sanPhamChiTietRepository.findById(sp.getSanPhamChiTiet().getId()).orElseThrow(() -> new EntityNotFound("Product not found!"));
-            ct.setSoLuong(ct.getSoLuong() + sp.getSoLuong());
-            this.sanPhamChiTietRepository.save(ct);
-        });
+        if(byStatusAndInvoice.isPresent()) {
+            hd.getDanhSachSanPham().forEach(sp -> {
+                SanPhamChiTiet ct = this.sanPhamChiTietRepository.findById(sp.getSanPhamChiTiet().getId()).orElseThrow(() -> new EntityNotFound("Product not found!"));
+                ct.setSoLuong(ct.getSoLuong() + sp.getSoLuong());
+                this.sanPhamChiTietRepository.save(ct);
+            });
+        }
         lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai(STATUS_CANCELED).hoaDon(hd).build());
         this.hoaDonRepository.save(hd);
     }
