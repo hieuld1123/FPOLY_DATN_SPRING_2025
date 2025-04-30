@@ -201,6 +201,9 @@ public class BanHangServiceImpl implements BanHangService {
             if(Boolean.FALSE.equals(sp.getSanPhamChiTiet().getTrangThai())){
                 throw new InvalidDataException(String.format("Sản phẩm %s đã ngừng kinh doanh", sp.getSanPhamChiTiet().getMaSanPhamChiTiet()));
             }
+            if(sp.getSanPhamChiTiet().getSoLuong() < sp.getSoLuong()){
+                throw new InvalidDataException(String.format("Sản phẩm %s chỉ còn %d sản phẩm", sp.getSanPhamChiTiet().getMaSanPhamChiTiet(), sp.getSanPhamChiTiet().getSoLuong()));
+            }
         });
         if(paymentRequest.getVoucherId() != null){
             Voucher voucher = this.voucherRepository.findById(paymentRequest.getVoucherId()).orElseThrow(() -> new EntityNotFound("Không tìm thấy voucher"));

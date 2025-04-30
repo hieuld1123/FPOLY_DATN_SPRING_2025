@@ -1,69 +1,75 @@
 var globalData = null;
 $(document).ready(function () {
-  function fetchOrderData(orderId) {
-    $.ajax({
-      url: `http://localhost:8080/api/v1/hoa-don/${orderId}`,
-      method: "GET",
-      dataType: "json",
-      success: function (response) {
-        if (response.status === 200) {
-          const data = response.data;
-          globalData = data;
-          renderOrderDetails(data);
-        } else {
-          alert("Không thể tải dữ liệu hóa đơn: " + response.message);
+    function fetchOrderData(orderId) {
+        $.ajax({
+            url: `http://localhost:8080/api/v1/hoa-don/${orderId}`,
+            method: "GET",
+            dataType: "json",
+            success: function (response) {
+                if (response.status === 200) {
+                    const data = response.data;
+                    globalData = data;
+                    renderOrderDetails(data);
+                } else {
+                    Swal.fire({
+                        title: "Không thể tải dữ liệu hóa đơn: " + response.message,
+                        icon: "error"
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Lỗi khi gọi API:", error);
+                Swal.fire({
+                    title: "Đã xảy ra lỗi khi tải dữ liệu hóa đơn.",
+                    icon: "error"
+                });
+            },
+        });
+    }
+
+    function renderOrderDetails(data) {
+        const confirmInvoice = document.getElementById("confirm-invoice");
+        confirmInvoice.disabled = !data.confirm;
+        if (!data.confirm) {
+            confirmInvoice.style.display = "none";
         }
-      },
-      error: function (xhr, status, error) {
-        console.error("Lỗi khi gọi API:", error);
-        alert("Đã xảy ra lỗi khi tải dữ liệu hóa đơn.");
-      },
-    });
-  }
 
-  function renderOrderDetails(data) {
-    const confirmInvoice = document.getElementById("confirm-invoice");
-    confirmInvoice.disabled = !data.confirm;
-    if (!data.confirm) {
-      confirmInvoice.style.display = "none";
-    }
+        const confirmDelivery = document.getElementById("confirm-delivery");
+        confirmDelivery.disabled = !data.delivery;
+        if (!data.delivery) {
+            confirmDelivery.style.display = "none";
+        }
 
-    const confirmDelivery = document.getElementById("confirm-delivery");
-    confirmDelivery.disabled = !data.delivery;
-    if (!data.delivery) {
-      confirmDelivery.style.display = "none";
-    }
+        const btnCancelInvoice = document.getElementById("btn-cancel-invoice");
+        btnCancelInvoice.disabled = !data.allowCancel;
 
-    const btnCancelInvoice = document.getElementById("btn-cancel-invoice");
-    btnCancelInvoice.disabled = !data.allowCancel;
+        const btnModifyInvoice = document.getElementById("btn-modify-invoice");
+        btnModifyInvoice.disabled = !data.allowCancel;
 
-    const btnModifyInvoice = document.getElementById("btn-modify-invoice");
-    btnModifyInvoice.disabled = !data.allowCancel;
+        const btnCompleted = document.getElementById("btn-completed");
+        btnCompleted.disabled = !data.completed;
+        if (!data.completed) {
+            btnCompleted.style.display = "none";
+        }
 
-    const btnCompleted = document.getElementById("btn-completed");
-    btnCompleted.disabled = !data.completed;
-    if (!data.completed) {
-      btnCompleted.style.display = "none";
-    }
+        $("#order-id").text(data.order_id);
 
-    $("#order-id").text(data.order_id);
+        // Xử lý thông tin khách hàng
+        const customer = data.customer || {};
+        const customerName = customer.name || "Khách lẻ";
+        const customerPhone = customer.phone || "Chưa có số điện thoại";
+        const customerAddress =
+            customer.delivery_address &&
+            customer.delivery_address !== "null, null, null, null"
+                ? customer.delivery_address
+                : "Chưa có địa chỉ";
 
-    // Xử lý thông tin khách hàng
-    const customer = data.customer || {};
-    const customerName = customer.name || "Khách lẻ";
-    const customerPhone = customer.phone || "Chưa có số điện thoại";
-    const customerAddress =
-      customer.delivery_address &&
-      customer.delivery_address !== "null, null, null, null"
-        ? customer.delivery_address
-        : "Chưa có địa chỉ";
-
-    $("#customer-header").html(`
+        $("#customer-header").html(`
         <span class="text-primary fs-3 fw-bold">${customerName}</span>
         <span class="ms-2 me-2">-</span>
         <span class="fs-3 fw-bold">${customerPhone}</span>
     `);
-    $("#customer-information").html(`
+        $("#customer-information").html(`
         <h4 class="text-uppercase">Địa chỉ giao hàng</h4>
         <div class="mt-2">
             <span>${customerName}</span>
@@ -75,27 +81,27 @@ $(document).ready(function () {
         </div>
     `);
 
-    let timelineHtml = "";
-    data.status_timeline.forEach((item) => {
-      timelineHtml += `
+        let timelineHtml = "";
+        data.status_timeline.forEach((item) => {
+            timelineHtml += `
                     <div class="timeline-item ${
-                      item.completed ? "completed" : ""
-                    }">
+                item.completed ? "completed" : ""
+            }">
                         <div class="timeline-icon">${
-                          item.completed ? "✓" : ""
-                        }</div>
+                item.completed ? "✓" : ""
+            }</div>
                         <div class="timeline-label">${item.status}</div>
                         <div class="timeline-time">${
-                          item.time
-                            ? new Date(item.time).toLocaleString()
-                            : "Chưa có"
-                        }</div>
+                item.time
+                    ? new Date(item.time).toLocaleString()
+                    : "Chưa có"
+            }</div>
                     </div>
                 `;
-    });
-    $("#timeline").html(timelineHtml);
+        });
+        $("#timeline").html(timelineHtml);
 
-    $("#payment-info").html(`
+        $("#payment-info").html(`
                 <div class="payment-item">
                     <span class="label">Khách phải trả:</span>
                     <span class="value">${data.payment.total_amount.toLocaleString()}</span>
@@ -110,11 +116,11 @@ $(document).ready(function () {
                 </div>
             `);
 
-    if (data.payment.paid_amount >= data.payment.total_amount) {
-      $("#paymentButton").hide();
-    }
+        if (data.payment.paid_amount >= data.payment.total_amount) {
+            $("#paymentButton").hide();
+        }
 
-    $("#order-info").html(`
+        $("#order-info").html(`
                 <div class="row mb-2">
                     <div class="col-4 text-muted">Bán bởi</div>
                     <div class="col-8">${data.seller}</div>
@@ -122,37 +128,37 @@ $(document).ready(function () {
                 <div class="row mb-2">
                     <div class="col-4 text-muted">Ngày bán</div>
                     <div class="col-8">${new Date(
-                      data.order_date
-                    ).toLocaleString()}</div>
+            data.order_date
+        ).toLocaleString()}</div>
                 </div>
             `);
 
-    $("#order-note").html(`<span>${data.note}</span>`);
+        $("#order-note").html(`<span>${data.note}</span>`);
 
-    let productHtml = "";
-    data.products.forEach((product, index) => {
-      productHtml += `
+        let productHtml = "";
+        data.products.forEach((product, index) => {
+            productHtml += `
                     <tr>
                         <td>${index + 1}</td>
                         <td><img src="${
-                          product.image
-                        }" alt="Product Image" width="50"></td>
+                product.image
+            }" alt="Product Image" width="50"></td>
                         <td>${product.name}<br><small>${
-        product.code
-      }</small></td>
+                product.code
+            }</small></td>
                         <td>${product.quantity}</td>
                         <td class="text-start">${product.unit_price.toLocaleString()}VND</td>
                         <td class="text-start">${product.total_price.toLocaleString()}VND</td>
                     </tr>
                 `;
-    });
-    $("#product-list").html(productHtml);
+        });
+        $("#product-list").html(productHtml);
 
-    $("#summary").html(`
+        $("#summary").html(`
                 <div class="row mb-2">
                     <div class="col-8">Tổng tiền (${
-                      data.products.length
-                    } sản phẩm)</div>
+            data.products.length
+        } sản phẩm)</div>
                     <div class="col-4 text-end">${data.summary.subtotal.toLocaleString()}</div>
                 </div>
                 <div class="row mb-2">
@@ -162,8 +168,8 @@ $(document).ready(function () {
                 <div class="row mb-2">
                     <div class="col-8">Mã giảm giá</div>
                     <div class="col-4 text-end">${
-                      data.summary.discount > 0 ? "-" : ""
-                    } ${data.summary.discount.toLocaleString()}</div>
+            data.summary.discount > 0 ? "-" : ""
+        } ${data.summary.discount.toLocaleString()}</div>
                 </div>
                 <div class="row mb-2">
                     <div class="col-8 fw-semibold">Thành tiền</div>
@@ -171,23 +177,23 @@ $(document).ready(function () {
                 </div>
             `);
 
-    $("#paymentModal").on("show.bs.modal", function () {
-      $("#paymentAmount").val(data.payment.total_amount.toLocaleString());
-      $("#paymentDate").val(new Date().toLocaleString());
-      $("#paymentMethod").val("Chuyển khoản");
-      $("#paymentReference").val("");
-    });
+        $("#paymentModal").on("show.bs.modal", function () {
+            $("#paymentAmount").val(data.payment.total_amount.toLocaleString());
+            $("#paymentDate").val(new Date().toLocaleString());
+            $("#paymentMethod").val("Chuyển khoản");
+            $("#paymentReference").val("");
+        });
 
-    // Khi nhấn "Thanh toán đơn hàng" trong modal
-    $("#confirmPayment").on("click", function () {
-      $("#paymentModal").modal("hide");
-    });
+        // Khi nhấn "Thanh toán đơn hàng" trong modal
+        $("#confirmPayment").on("click", function () {
+            $("#paymentModal").modal("hide");
+        });
 
-    // "In đơn hàng"
-    $("#printButton").on("click", function () {
-      const originalContent = document.body.innerHTML;
+        // "In đơn hàng"
+        $("#printButton").on("click", function () {
+            const originalContent = document.body.innerHTML;
 
-      let printContent = `
+            let printContent = `
         <style>
             body { font-family: Arial, sans-serif; margin: 20px; }
             h1 { text-align: center; }
@@ -206,14 +212,16 @@ $(document).ready(function () {
             }
         </style>
         <h1>HÓA ĐƠN BÁN HÀNG</h1>
-        <div class="section">
-            <h3>Shop: NineShoes</h3>
-            <p><strong>Hotline:</strong> 0123-456-789</p>
+        <div class="text-center">
+            <h3>NineShoe</h3>
+            <p><strong>Hotline:</strong> 1900 6680</p>
         </div>
         <div class="section">
+        <div class="text-center">
             <h3>Mã hóa đơn: ${data.order_id}</h3>
+        </div>
             <p><strong>Ngày bán:</strong> ${new Date(
-              data.order_date
+                data.order_date
             ).toLocaleString()}</p>
             <p><strong>Người bán:</strong> ${data.seller}</p>
         </div>
@@ -221,16 +229,16 @@ $(document).ready(function () {
             <h3>Thông tin khách hàng</h3>
             <p><strong>Tên:</strong> ${data.customer.name}</p>
             <p><strong>Số điện thoại:</strong> ${
-              data.customer.phone || "Chưa có số điện thoại"
+                data.customer.phone || "Chưa có số điện thoại"
             }</p>
             <p><strong>Địa chỉ giao hàng:</strong>
                     ${
-                      data.customer.delivery_address &&
-                      data.customer.delivery_address !==
-                        "null, null, null, null"
-                        ? data.customer.delivery_address
-                        : "Chưa có địa chỉ"
-                    }
+                data.customer.delivery_address &&
+                data.customer.delivery_address !==
+                "null, null, null, null"
+                    ? data.customer.delivery_address
+                    : "Chưa có địa chỉ"
+            }
             </p>
         </div>
         <div class="section">
@@ -248,8 +256,8 @@ $(document).ready(function () {
                 <tbody>
     `;
 
-      data.products.forEach((product, index) => {
-        printContent += `
+            data.products.forEach((product, index) => {
+                printContent += `
             <tr>
                 <td>${index + 1}</td>
                 <td>${product.name} (${product.code})</td>
@@ -258,20 +266,20 @@ $(document).ready(function () {
                 <td class="text-right">${product.total_price.toLocaleString()} VND</td>
             </tr>
         `;
-      });
+            });
 
-      printContent += `
+            printContent += `
                 </tbody>
             </table>
         </div>
         <div class="section summary">
             <h3>Tổng kết</h3>
             <div><span>Tổng tiền (${
-              data.products.length
+                data.products.length
             } sản phẩm):</span><span>${data.summary.subtotal.toLocaleString()} VND</span></div>
             <div><span>Phí giao hàng:</span><span>${data.summary.shipping_fee.toLocaleString()} VND</span></div>
             <div><span>Mã giảm giá:</span><span>${
-              data.summary.discount > 0 ? "-" : ""
+                data.summary.discount > 0 ? "-" : ""
             } ${data.summary.discount.toLocaleString()} VND</span></div>
             <div><strong>Thành tiền:</strong><strong>${data.summary.total.toLocaleString()} VND</strong></div>
         </div>
@@ -280,373 +288,466 @@ $(document).ready(function () {
         </div>
     `;
 
-      document.body.innerHTML = printContent;
+            document.body.innerHTML = printContent;
 
-      window.print();
+            window.print();
 
-      window.onafterprint = function () {
-        document.body.innerHTML = originalContent;
-        location.reload();
-      };
+            window.onafterprint = function () {
+                document.body.innerHTML = originalContent;
+                location.reload();
+            };
+        });
+    }
+
+    $("#confirm-invoice").on("click", function () {
+        const orderId = window.location.pathname.split("/").pop();
+        Swal.fire({
+            title: "Bạn có chắc chắn muốn xác nhận hóa đơn này?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Có',
+            cancelButtonText: 'Không'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `http://localhost:8080/api/v1/hoa-don/confirm/${orderId}`,
+                    method: "PATCH",
+                    contentType: "application/json",
+                    data: JSON.stringify({}),
+                    success: function (response) {
+                        if (response.status === 200) {
+                            Swal.fire({
+                                title: "Xác nhận hóa đơn thành công!",
+                                icon: "success"
+                            }).then(() => {
+                                window.location.reload();
+                            })
+                        } else {
+                            Swal.fire({
+                                title: "Xác nhận hóa đơn thất bại: " + response.message,
+                                icon: "error"
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Lỗi khi xác nhận hóa đơn:", error);
+                        Swal.fire({
+                            title: "Đã xảy ra lỗi khi xác nhận hóa đơn.",
+                            icon: "error"
+                        });
+                    },
+                });
+            }
+        });
     });
-  }
 
-  $("#confirm-invoice").on("click", function () {
-    const orderId = window.location.pathname.split("/").pop();
-    if (confirm("Bạn có chắc chắn muốn xác nhận hóa đơn này?")) {
-      $.ajax({
-        url: `http://localhost:8080/api/v1/hoa-don/confirm/${orderId}`,
-        method: "PATCH",
-        contentType: "application/json",
-        data: JSON.stringify({}),
-        success: function (response) {
-          if (response.status === 200) {
-            alert("Xác nhận hóa đơn thành công!");
-            window.location.reload();
-          } else {
-            alert("Xác nhận hóa đơn thất bại: " + response.message);
-          }
-        },
-        error: function (xhr, status, error) {
-          console.error("Lỗi khi xác nhận hóa đơn:", error);
-          alert("Đã xảy ra lỗi khi xác nhận hóa đơn.");
-        },
-      });
-    }
-  });
+    $("#confirm-delivery").on("click", function () {
+        const orderId = window.location.pathname.split("/").pop();
+        Swal.fire({
+            title: "Bạn có chắc chắn muốn vận chuyển hóa đơn này?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Có',
+            cancelButtonText: 'Không'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `http://localhost:8080/api/v1/hoa-don/delivery/${orderId}`,
+                    method: "PATCH",
+                    contentType: "application/json",
+                    data: JSON.stringify({}),
+                    success: function (response) {
+                        if (response.status === 200) {
+                            Swal.fire({
+                                title: "Vận chuyển hóa đơn thành công!",
+                                icon: "success"
+                            }).then(() => {
+                                window.location.reload();
+                            })
+                        } else {
+                            Swal.fire({
+                                title: "Vận chuyển hóa đơn thất bại: " + response.message,
+                                icon: "error"
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Lỗi khi vận chuyển hóa đơn:", error);
+                        Swal.fire({
+                            title: "Đã xảy ra lỗi khi vận chuyển hóa đơn.",
+                            icon: "error"
+                        });
+                    },
+                });
+            }
+        });
+    });
 
-  $("#confirm-delivery").on("click", function () {
-    const orderId = window.location.pathname.split("/").pop();
-    if (confirm("Bạn có chắc chắn muốn vận chuyển hóa đơn này?")) {
-      $.ajax({
-        url: `http://localhost:8080/api/v1/hoa-don/delivery/${orderId}`,
-        method: "PATCH",
-        contentType: "application/json",
-        data: JSON.stringify({}),
-        success: function (response) {
-          if (response.status === 200) {
-            alert("Vận chuyển hóa đơn thành công!");
-            window.location.reload();
-          } else {
-            alert("Vận chuyển hóa đơn thất bại: " + response.message);
-          }
-        },
-        error: function (xhr, status, error) {
-          console.error("Lỗi khi vận chuyển hóa đơn:", error);
-          alert("Đã xảy ra lỗi khi vận chuyển hóa đơn.");
-        },
-      });
-    }
-  });
-
-  $("#confirmPayment").on("click", function () {
-    const orderId = window.location.pathname.split("/").pop();
-    if (confirm("Bạn có chắc chắn thanh toán hóa đơn này?")) {
-      $.ajax({
-        url: `http://localhost:8080/api/v1/hoa-don/payment/${orderId}`,
-        method: "PATCH",
-        contentType: "application/json",
-        data: JSON.stringify({}),
-        success: function (response) {
-          if (response.status === 200) {
-            alert("Thanh toán hóa đơn thành công!");
-            window.location.reload();
-          } else {
-            alert("Thanh toán hóa đơn thất bại: " + response.message);
-          }
-        },
-        error: function (xhr, status, error) {
-          console.error("Lỗi khi thanh toán hóa đơn:", error);
-          alert("Đã xảy ra lỗi khi thanh toán hóa đơn.");
-        },
-      });
-    }
-  });
-
-  $("#btn-cancel-invoice").on("click", function () {
-    const orderId = window.location.pathname.split("/").pop();
-    if (confirm("Bạn có chắc chắn hủy hóa đơn này?")) {
-      $.ajax({
-        url: `http://localhost:8080/api/v1/hoa-don/cancel/${orderId}`,
-        method: "PATCH",
-        contentType: "application/json",
-        data: JSON.stringify({}),
-        success: function (response) {
-          if (response.status === 200) {
-            alert("Hủy hóa đơn thành công!");
-            window.location.reload();
-          } else {
-            alert("Hủy hóa đơn thất bại: " + response.message);
-          }
-        },
-        error: function (xhr, status, error) {
-          console.error("Lỗi khi hủy hóa đơn:", error);
-          alert("Đã xảy ra lỗi khi hủy hóa đơn.");
-        },
-      });
-    }
-  });
-
-  $("#btn-modify-invoice").on("click", function () {
-    const orderId = window.location.pathname.split("/").pop();
-      $("#recipientName").val(globalData.customer.name || "");
-      $("#recipientPhone").val(globalData.customer.phone || "");
-      $("#shippingFee").val(globalData.summary.shipping_fee || 0);
-      $("#editRecipientModal").modal("show");
-      $("#orderNote").val(globalData.note === "Không có ghi chú nào" ? "" : (globalData.note || ""));
-    loadProvinces($("#province"), $("#district"), $("#ward"), "recipient_");
-  });
-  // Hàm tải danh sách tỉnh/thành phố, quận/huyện, xã/phường
-  const loadProvinces = async (
-    provinceSelect,
-    districtSelect,
-    wardSelect,
-    formDataKey
-  ) => {
-    try {
-      const response = await fetch(
-        "https://provinces.open-api.vn/api/?depth=3",
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-          },
+    $("#confirmPayment").on("click", function () {
+        const orderId = window.location.pathname.split("/").pop();
+        if (confirm("Bạn có chắc chắn thanh toán hóa đơn này?")) {
+            $.ajax({
+                url: `http://localhost:8080/api/v1/hoa-don/payment/${orderId}`,
+                method: "PATCH",
+                contentType: "application/json",
+                data: JSON.stringify({}),
+                success: function (response) {
+                    if (response.status === 200) {
+                        Swal.fire({
+                            title: "Thanh toán hóa đơn thành công!",
+                            icon: "success"
+                        }).then(() => {
+                            window.location.reload();
+                        })
+                    } else {
+                        Swal.fire({
+                            title: "Thanh toán hóa đơn thất bại: " + response.message,
+                            icon: "error"
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Lỗi khi thanh toán hóa đơn:", error);
+                    Swal.fire({
+                        title: "Đã xảy ra lỗi khi thanh toán hóa đơn.",
+                        icon: "error"
+                    });
+                },
+            });
         }
-      );
+    });
 
-      if (!response.ok) {
-        throw new Error("Không thể tải danh sách tỉnh/thành phố");
-      }
+    $("#btn-cancel-invoice").on("click", function () {
+        const orderId = window.location.pathname.split("/").pop();
+        Swal.fire({
+            title: 'Bạn có chắc chắn hủy hóa đơn này?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Có',
+            cancelButtonText: 'Không'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `http://localhost:8080/api/v1/hoa-don/cancel/${orderId}`,
+                    method: "PATCH",
+                    contentType: "application/json",
+                    data: JSON.stringify({}),
+                    success: function (response) {
+                        if (response.status === 200) {
+                            Swal.fire({
+                                title: "Hủy hóa đơn thành công!",
+                                icon: "success"
+                            }).then(() => {
+                                window.location.reload();
+                            })
+                        } else {
+                            Swal.fire({
+                                title: "Hủy hóa đơn thất bại: " + response.message,
+                                icon: "error"
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Lỗi khi hủy hóa đơn:", error);
+                        Swal.fire({
+                            title: "Đã xảy ra lỗi khi hủy hóa đơn.",
+                            icon: "error"
+                        });
+                    },
+                });
+            }
+        });
+    });
 
-      const data = await response.json();
-      provinceSelect.html(
-        '<option value="">Chọn tỉnh/thành</option>' +
-          data
-            .map((p) => `<option value="${p.code}">${p.name}</option>`)
-            .join("")
-      );
-      localStorage.setItem("provinceData", JSON.stringify(data));
+    $("#btn-modify-invoice").on("click", function () {
+        const orderId = window.location.pathname.split("/").pop();
+        $("#recipientName").val(globalData.customer.name || "");
+        $("#recipientPhone").val(globalData.customer.phone || "");
+        $("#shippingFee").val(globalData.summary.shipping_fee || 0);
+        $("#editRecipientModal").modal("show");
+        $("#orderNote").val(globalData.note === "Không có ghi chú nào" ? "" : (globalData.note || ""));
+        loadProvinces($("#province"), $("#district"), $("#ward"), "recipient_");
+    });
+    // Hàm tải danh sách tỉnh/thành phố, quận/huyện, xã/phường
+    const loadProvinces = async (
+        provinceSelect,
+        districtSelect,
+        wardSelect,
+        formDataKey
+    ) => {
+        try {
+            const response = await fetch(
+                "https://provinces.open-api.vn/api/?depth=3",
+                {
+                    method: "GET",
+                    headers: {
+                        Accept: "application/json",
+                    },
+                }
+            );
 
-      provinceSelect.on("change", function () {
-        const code = this.value;
-        districtSelect
-          .html('<option value="">Chọn quận/huyện</option>')
-          .prop("disabled", true);
-        wardSelect
-          .html('<option value="">Chọn xã/phường</option>')
-          .prop("disabled", true);
+            if (!response.ok) {
+                throw new Error("Không thể tải danh sách tỉnh/thành phố");
+            }
 
-        if (code) {
-          const provinces = JSON.parse(localStorage.getItem("provinceData"));
-          const province = provinces.find((p) => p.code == code);
+            const data = await response.json();
+            provinceSelect.html(
+                '<option value="">Chọn tỉnh/thành</option>' +
+                data
+                    .map((p) => `<option value="${p.code}">${p.name}</option>`)
+                    .join("")
+            );
+            localStorage.setItem("provinceData", JSON.stringify(data));
 
-          districtSelect
-            .html(
-              '<option value="">Chọn quận/huyện</option>' +
-                province.districts
-                  .map((d) => `<option value="${d.code}">${d.name}</option>`)
-                  .join("")
-            )
-            .prop("disabled", false);
+            provinceSelect.on("change", function () {
+                const code = this.value;
+                districtSelect
+                    .html('<option value="">Chọn quận/huyện</option>')
+                    .prop("disabled", true);
+                wardSelect
+                    .html('<option value="">Chọn xã/phường</option>')
+                    .prop("disabled", true);
+
+                if (code) {
+                    const provinces = JSON.parse(localStorage.getItem("provinceData"));
+                    const province = provinces.find((p) => p.code == code);
+
+                    districtSelect
+                        .html(
+                            '<option value="">Chọn quận/huyện</option>' +
+                            province.districts
+                                .map((d) => `<option value="${d.code}">${d.name}</option>`)
+                                .join("")
+                        )
+                        .prop("disabled", false);
+                }
+            });
+
+            districtSelect.on("change", function () {
+                const code = this.value;
+                wardSelect
+                    .html('<option value="">Chọn xã/phường</option>')
+                    .prop("disabled", true);
+
+                if (code) {
+                    const provinces = JSON.parse(localStorage.getItem("provinceData"));
+                    const district = provinces
+                        .flatMap((p) => p.districts)
+                        .find((d) => d.code == code);
+
+                    wardSelect
+                        .html(
+                            '<option value="">Chọn xã/phường</option>' +
+                            district.wards
+                                .map((w) => `<option value="${w.name}">${w.name}</option>`)
+                                .join("")
+                        )
+                        .prop("disabled", false);
+                }
+            });
+
+            wardSelect.on("change", function (e) {
+                console.log(`Selected ward: ${e.target.value}`);
+            });
+        } catch (error) {
+            console.error("Error loading provinces:", error);
+            provinceSelect.html('<option value="">Không thể tải tỉnh/thành</option>');
+            Swal.fire({
+                title: "Không thể tải danh sách tỉnh/thành phố. Vui lòng kiểm tra kết nối mạng hoặc thử lại sau!",
+                icon: "error"
+            });
         }
-      });
-
-      districtSelect.on("change", function () {
-        const code = this.value;
-        wardSelect
-          .html('<option value="">Chọn xã/phường</option>')
-          .prop("disabled", true);
-
-        if (code) {
-          const provinces = JSON.parse(localStorage.getItem("provinceData"));
-          const district = provinces
-            .flatMap((p) => p.districts)
-            .find((d) => d.code == code);
-
-          wardSelect
-            .html(
-              '<option value="">Chọn xã/phường</option>' +
-                district.wards
-                  .map((w) => `<option value="${w.name}">${w.name}</option>`)
-                  .join("")
-            )
-            .prop("disabled", false);
-        }
-      });
-
-      wardSelect.on("change", function (e) {
-        console.log(`Selected ward: ${e.target.value}`);
-      });
-    } catch (error) {
-      console.error("Error loading provinces:", error);
-      provinceSelect.html('<option value="">Không thể tải tỉnh/thành</option>');
-      alert(
-        "Không thể tải danh sách tỉnh/thành phố. Vui lòng kiểm tra kết nối mạng hoặc thử lại sau!"
-      );
-    }
-  };
-
-  // Lưu thông tin người nhận
-  $("#saveRecipientInfo").on("click", async function () {
-    const orderId = window.location.pathname.split("/").pop();
-      // Xóa thông báo lỗi cũ
-      $(".error-message").text("");
-
-      // Lấy dữ liệu từ form
-      const recipientName = $("#recipientName").val().trim();
-      const recipientPhone = $("#recipientPhone").val().trim();
-      const province = $("#province").val();
-      const district = $("#district").val();
-      const ward = $("#ward").val();
-      const specificAddress = $("#specificAddress").val().trim();
-      const shippingFee = $("#shippingFee").val().trim();
-      const orderNote = $("#orderNote").val().trim();
-
-      let isValid = true;
-
-      // Kiểm tra độ dài tên
-      if (recipientName.length === 0) {
-          isValid = false;
-          $("#recipientName")
-              .next(".error-message")
-              .text("Tên người nhận không được để trống.");
-      } else if (recipientName.length > 50) {
-          isValid = false;
-          $("#recipientName")
-              .next(".error-message")
-              .text("Tên không được vượt quá 50 ký tự.");
-      }
-
-      // Kiểm tra định dạng số điện thoại
-      const phoneRegex = /^[0-9]{10,11}$/;
-      if (recipientPhone.length === 0) {
-          isValid = false;
-          $("#recipientPhone")
-              .next(".error-message")
-              .text("Số điện thoại không được để trống.");
-      } else if (!phoneRegex.test(recipientPhone)) {
-          isValid = false;
-          $("#recipientPhone")
-              .next(".error-message")
-              .text("Số điện thoại không hợp lệ. Vui lòng nhập 10-11 chữ số.");
-      }
-
-      // Kiểm tra Tỉnh/Thành phố
-      if (!province) {
-          isValid = false;
-          $("#province")
-              .next(".error-message")
-              .text("Vui lòng chọn Tỉnh/Thành phố.");
-      }
-
-      // Kiểm tra Quận/Huyện
-      if (!district) {
-          isValid = false;
-          $("#district")
-              .next(".error-message")
-              .text("Vui lòng chọn Quận/Huyện.");
-      }
-
-      // Kiểm tra Xã/Phường
-      if (!ward) {
-          isValid = false;
-          $("#ward")
-              .next(".error-message")
-              .text("Vui lòng chọn Xã/Phường.");
-      }
-
-      // Kiểm tra Địa chỉ cụ thể
-      if (specificAddress.length === 0) {
-          isValid = false;
-          $("#specificAddress")
-              .next(".error-message")
-              .text("Địa chỉ cụ thể không được để trống.");
-      } else if (specificAddress.length > 100) {
-          isValid = false;
-          $("#specificAddress")
-              .next(".error-message")
-              .text("Địa chỉ cụ thể không được vượt quá 100 ký tự.");
-      }
-
-      // Kiểm tra Phí vận chuyển
-      if (shippingFee === "") {
-        isValid = false;
-        $("#shippingFee")
-            .next(".error-message")
-            .text("Phí vận chuyển không được để trống.");
-      } else if (isNaN(shippingFee) || shippingFee < 0 || shippingFee > 1000000) {
-        isValid = false;
-        $("#shippingFee")
-            .next(".error-message")
-            .text("Phí vận chuyển phải nằm trong khoảng từ 0 đến 1,000,000.");
-      }
-
-      // Nếu không hợp lệ, dừng việc gửi dữ liệu
-      if (!isValid) {
-          return;
-      }
-
-    const recipientData = {
-      name: $("#recipientName").val(),
-      phone: $("#recipientPhone").val(),
-      province: $("#province option:selected").text(),
-      district: $("#district option:selected").text(),
-      ward: $("#ward option:selected").text(),
-      specificAddress: $("#specificAddress").val(),
-      shippingFee: parseInt(shippingFee),
-      orderNote: orderNote,
     };
-    console.log(recipientData);
-    
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/v1/hoa-don/update-recipient/${orderId}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(recipientData),
+
+    // Lưu thông tin người nhận
+    $("#saveRecipientInfo").on("click", async function () {
+        const orderId = window.location.pathname.split("/").pop();
+        // Xóa thông báo lỗi cũ
+        $(".error-message").text("");
+
+        // Lấy dữ liệu từ form
+        const recipientName = $("#recipientName").val().trim();
+        const recipientPhone = $("#recipientPhone").val().trim();
+        const province = $("#province").val();
+        const district = $("#district").val();
+        const ward = $("#ward").val();
+        const specificAddress = $("#specificAddress").val().trim();
+        const shippingFee = $("#shippingFee").val().trim();
+        const orderNote = $("#orderNote").val().trim();
+
+        let isValid = true;
+
+        // Kiểm tra độ dài tên
+        if (recipientName.length === 0) {
+            isValid = false;
+            $("#recipientName")
+                .next(".error-message")
+                .text("Tên người nhận không được để trống.");
+        } else if (recipientName.length > 50) {
+            isValid = false;
+            $("#recipientName")
+                .next(".error-message")
+                .text("Tên không được vượt quá 50 ký tự.");
         }
-      );
 
-      const result = await response.json();
-      if (result.status === 202) {
-        alert("Cập nhật thông tin người nhận thành công!");
-        $("#editRecipientModal").modal("hide");
-        window.location.reload();
-      } else {
-        alert("Cập nhật thất bại: " + result.message);
-      }
-    } catch (error) {
-      console.error("Error updating recipient info:", error);
-      alert("Đã xảy ra lỗi khi cập nhật thông tin người nhận.");
-    }
-  });
+        // Kiểm tra định dạng số điện thoại
+        const phoneRegex = /^[0-9]{10,11}$/;
+        if (recipientPhone.length === 0) {
+            isValid = false;
+            $("#recipientPhone")
+                .next(".error-message")
+                .text("Số điện thoại không được để trống.");
+        } else if (!phoneRegex.test(recipientPhone)) {
+            isValid = false;
+            $("#recipientPhone")
+                .next(".error-message")
+                .text("Số điện thoại không hợp lệ. Vui lòng nhập 10-11 chữ số.");
+        }
 
-  $("#btn-completed").on("click", function () {
-    const orderId = window.location.pathname.split("/").pop();
-    if (confirm("Xác nhận hoàn thành?")) {
-      $.ajax({
-        url: `http://localhost:8080/api/v1/hoa-don/completed/${orderId}`,
-        method: "PATCH",
-        contentType: "application/json",
-        data: JSON.stringify({}),
-        success: function (response) {
-          if (response.status === 200) {
-            alert("Đơn hàng hoàn tất!");
-            window.location.reload();
-          } else {
-            alert("Thất bại: " + response.message);
-          }
-        },
-        error: function (xhr, status, error) {
-          console.error("Lỗi khi xác nhận hóa đơn:", error);
-          alert("Đã xảy ra lỗi khi xác nhận hóa đơn.");
-        },
-      });
-    }
-  });
+        // Kiểm tra Tỉnh/Thành phố
+        if (!province) {
+            isValid = false;
+            $("#province")
+                .next(".error-message")
+                .text("Vui lòng chọn Tỉnh/Thành phố.");
+        }
 
-  const urlPath = window.location.pathname;
-  const orderId = urlPath.split("/").pop();
-  fetchOrderData(orderId);
+        // Kiểm tra Quận/Huyện
+        if (!district) {
+            isValid = false;
+            $("#district")
+                .next(".error-message")
+                .text("Vui lòng chọn Quận/Huyện.");
+        }
+
+        // Kiểm tra Xã/Phường
+        if (!ward) {
+            isValid = false;
+            $("#ward")
+                .next(".error-message")
+                .text("Vui lòng chọn Xã/Phường.");
+        }
+
+        // Kiểm tra Địa chỉ cụ thể
+        if (specificAddress.length === 0) {
+            isValid = false;
+            $("#specificAddress")
+                .next(".error-message")
+                .text("Địa chỉ cụ thể không được để trống.");
+        } else if (specificAddress.length > 100) {
+            isValid = false;
+            $("#specificAddress")
+                .next(".error-message")
+                .text("Địa chỉ cụ thể không được vượt quá 100 ký tự.");
+        }
+
+        // Kiểm tra Phí vận chuyển
+        if (shippingFee === "") {
+            isValid = false;
+            $("#shippingFee")
+                .next(".error-message")
+                .text("Phí vận chuyển không được để trống.");
+        } else if (isNaN(shippingFee) || shippingFee < 0 || shippingFee > 1000000) {
+            isValid = false;
+            $("#shippingFee")
+                .next(".error-message")
+                .text("Phí vận chuyển phải nằm trong khoảng từ 0 đến 1,000,000.");
+        }
+
+        // Nếu không hợp lệ, dừng việc gửi dữ liệu
+        if (!isValid) {
+            return;
+        }
+
+        const recipientData = {
+            name: $("#recipientName").val(),
+            phone: $("#recipientPhone").val(),
+            province: $("#province option:selected").text(),
+            district: $("#district option:selected").text(),
+            ward: $("#ward option:selected").text(),
+            specificAddress: $("#specificAddress").val(),
+            shippingFee: parseInt(shippingFee),
+            orderNote: orderNote,
+        };
+        console.log(recipientData);
+
+        try {
+            const response = await fetch(
+                `http://localhost:8080/api/v1/hoa-don/update-recipient/${orderId}`,
+                {
+                    method: "PUT",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify(recipientData),
+                }
+            );
+
+            const result = await response.json();
+            if (result.status === 202) {
+                Swal.fire({
+                    title: "Cập nhật thông tin người nhận thành công!",
+                    icon: "success"
+                }).then(() => {
+                    $("#editRecipientModal").modal("hide");
+                    window.location.reload();
+                })
+            } else {
+                Swal.fire({
+                    title: "Cập nhật thất bại: " + result.message,
+                    icon: "error"
+                });
+            }
+        } catch (error) {
+            console.error("Error updating recipient info:", error);
+            Swal.fire({
+                title: "Đã xảy ra lỗi khi cập nhật thông tin người nhận.",
+                icon: "error"
+            });
+        }
+    });
+
+    $("#btn-completed").on("click", function () {
+        const orderId = window.location.pathname.split("/").pop();
+        Swal.fire({
+            title: "Xác nhận hoàn thành?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Có',
+            cancelButtonText: 'Không'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `http://localhost:8080/api/v1/hoa-don/completed/${orderId}`,
+                    method: "PATCH",
+                    contentType: "application/json",
+                    data: JSON.stringify({}),
+                    success: function (response) {
+                        if (response.status === 200) {
+                            Swal.fire({
+                                title: "Đơn hàng hoàn tất!",
+                                icon: "success"
+                            }).then(() => {
+                                window.location.reload();
+                            })
+                        } else {
+                            Swal.fire({
+                                title: "Thất bại: " + response.message,
+                                icon: "error"
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Lỗi khi xác nhận hóa đơn:", error);
+                        Swal.fire({
+                            title: "Đã xảy ra lỗi khi xác nhận hóa đơn.",
+                            icon: "error"
+                        });
+                    },
+                });
+            }
+        });
+    });
+
+    const urlPath = window.location.pathname;
+    const orderId = urlPath.split("/").pop();
+    fetchOrderData(orderId);
 });

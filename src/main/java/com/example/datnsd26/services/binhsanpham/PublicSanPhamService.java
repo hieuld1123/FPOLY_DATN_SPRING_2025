@@ -160,24 +160,21 @@ public class PublicSanPhamService {
         int start = pageable.getPageNumber() * pageable.getPageSize();
         int end = Math.min(start + pageable.getPageSize(), responseList.size());
 
-        // Đảm bảo start và end nằm trong phạm vi hợp lệ
-        if (start >= responseList.size()) {
-            start = responseList.size() - pageable.getPageSize(); // Điều chỉnh khi start vượt quá số lượng mục
-            end = responseList.size();
+// Nếu không có sản phẩm, trả về Page rỗng luôn
+        if (responseList.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
 
+// Nếu start > end (có thể xảy ra nếu page vượt size list) thì cũng trả list rỗng
+        if (start >= responseList.size()) {
+            return new PageImpl<>(Collections.emptyList(), pageable, responseList.size());
+        }
+
+// Nếu bình thường, subList như cũ
         List<PublicSanPhamResponse> pagedList = responseList.subList(start, end);
 
-        // Tạo PageImpl cho phân trang
-        Page<PublicSanPhamResponse> pagedResult = new PageImpl<>(pagedList, pageable, responseList.size());
-
-        // In ra danh sách sau khi phân trang
-        System.out.println("Danh sách sản phẩm sau khi phân trang:");
-        pagedList.forEach(product -> {
-            System.out.println("Tên sản phẩm: " + product.getTenSanPham() + ", Giá bán: " + product.getGiaBan());
-        });
-
-        return pagedResult;
+// Tạo PageImpl cho phân trang
+        return new PageImpl<>(pagedList, pageable, responseList.size());
 
     }
 

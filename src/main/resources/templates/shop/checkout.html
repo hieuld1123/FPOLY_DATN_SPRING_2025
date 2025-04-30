@@ -175,8 +175,11 @@
                             <!-- Phí vận chuyển -->
                             <div class="d-flex justify-content-between mb-3">
                                 <span>Phí vận chuyển</span>
+<!--                                <span><span id="phiShip"-->
+<!--                                            th:text="${tongTamTinh > 1000000 ? 0 : 30000}">0</span> VND</span>-->
+
                                 <span><span id="phiShip"
-                                            th:text="${tongTamTinh > 1000000 ? 0 : 30000}">0</span> VND</span>
+                                            th:text="${#numbers.formatDecimal(phiShip, 0, 'COMMA', 0, 'POINT')}"></span> VND</span>
                             </div>
 
                             <!-- Thành tiền -->
@@ -184,7 +187,7 @@
                                 <strong>Thành tiền</strong>
                                 <strong>
                                 <span id="thanhTien"
-                                      th:text="${tongTamTinh + (tongTamTinh > 1000000 ? 0 : 30000)}">0</span> VND
+                                      th:text="${tongTamTinh + (tongTamTinh >= 1000000 ? 0 : 30000)}">0</span> VND
                                 </strong>
                             </div>
                         </div>
@@ -202,7 +205,7 @@
                                 <th>Tên sản phẩm</th>
                                 <th>Đơn giá</th>
                                 <th class="w-1">Số lượng</th>
-                                <th>Thành tiền</th>
+                                <th>Tổng</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -275,8 +278,8 @@
         const voucherSelect = document.getElementById("voucherSelect");
         const tongTamTinhEl = document.querySelector(".cart-total-price");
         const giamGiaEl = document.getElementById("giamGia");
-        const phiShipEl = document.getElementById("phiShip");
         const thanhTienEl = document.getElementById("thanhTien");
+        const phiShipEl = document.getElementById("phiShip"); // Vẫn cần lấy phần tử phí ship
 
         function formatCurrency(number) {
             return number.toLocaleString("vi-VN");
@@ -284,7 +287,7 @@
 
         function calculate() {
             const tongTamTinh = parseFloat(tongTamTinhEl.dataset.totalPrice);
-            const phiShip = parseInt(phiShipEl.textContent.replace(/\D/g, '')) || 0;
+            const phiShip = parseInt(phiShipEl.textContent.replace(/\D/g, '')) || 0; // Lấy phí ship từ HTML
             const voucherOption = voucherSelect.options[voucherSelect.selectedIndex];
 
             const hinhThucGiam = voucherOption.getAttribute("data-hinh-thuc-giam");

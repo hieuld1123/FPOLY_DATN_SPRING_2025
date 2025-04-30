@@ -51,11 +51,17 @@ const enableElement = () => {
 
 const handlePayment = async () => {
     if (formData.totalItem < 1) {
-        alert("Chưa có sản phẩm để thanh toán!");
+        Swal.fire({
+            title: "Chưa có sản phẩm để thanh toán!",
+            icon: "error"
+        });
         return;
     }
     if (formData.type === "Có giao hàng" && formData.customer === null) {
-        alert("Bạn hãy thêm thông tin khách hàng để sử dụng dịch vụ giao hàng.");
+        Swal.fire({
+            title: "Bạn hãy thêm thông tin khách hàng để sử dụng dịch vụ giao hàng.",
+            icon: "error"
+        });
         return;
     }
 
@@ -65,30 +71,50 @@ const handlePayment = async () => {
         type: formData.type || "Offline",
         ...Object.fromEntries(Object.entries(formData).slice(5)),
     };
-    if (!confirm("Xác nhận thanh toán")) return;
-    try {
-        const response = await fetch(
-            "http://localhost:8080/api/v1/ban-hang/payment",
-            {
-                method: "PUT",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(payload),
+    Swal.fire({
+        title: 'Xác nhận thanh toán?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Có',
+        cancelButtonText: 'Không'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch(
+                    "http://localhost:8080/api/v1/ban-hang/payment",
+                    {
+                        method: "PUT",
+                        headers: {"Content-Type": "application/json"},
+                        body: JSON.stringify(payload),
+                    }
+                );
+                const result = await response.json();
+                if (result.status === 202) {
+                    Swal.fire({
+                        title: "Thanh toán thành công!",
+                        icon: "success"
+                    }).then(() => {
+                        window.location.reload();
+                    })
+                } else {
+                    Swal.fire({
+                        title: result.message,
+                        icon: "error"
+                    });
+                }
+            } catch (error) {
+                console.error("Payment error:", error);
             }
-        );
-        const result = await response.json();
-        if (result.status === 202) {
-            window.location.reload();
-        } else {
-            alert(result.message);
         }
-    } catch (error) {
-        console.error("Payment error:", error);
-    }
+    });
 };
 
 const createInvoice = async () => {
     if (formData.totalInvoice > 5) {
-        alert("Chỉ có thể tạo tối đa 6 hóa đơn!");
+        Swal.fire({
+            title: "Chỉ có thể tạo tối đa 6 hóa đơn!",
+            icon: "error"
+        });
         return;
     }
     try {
@@ -102,8 +128,12 @@ const createInvoice = async () => {
         );
         const result = await response.json();
         if (result.status === 200) {
-            alert("Tạo hóa đơn thành công")
-            window.location.reload();
+            Swal.fire({
+                title: "Tạo hóa đơn thành công!",
+                icon: "success"
+            }).then(() => {
+                window.location.reload();
+            })
         }
     } catch (error) {
         console.error("Error creating invoice:", error);
@@ -299,18 +329,25 @@ const handleInvoiceChange = async (id) => {
 
                     const result = await response.json();
                     if (result.status === 202) {
-                        // Đóng modal và hiển thị thông báo
                         $("#changePhoneModal").modal("hide");
-                        alert("Cập nhật số điện thoại thành công!");
-
-                        // Cập nhật lại giao diện khách hàng
-                        await handleInvoiceChange(formData.invoiceId);
+                        Swal.fire({
+                            title: "Cập nhật số điện thoại thành công!",
+                            icon: "success"
+                        }).then(async () => {
+                            await handleInvoiceChange(formData.invoiceId);
+                        })
                     } else {
-                        alert("Cập nhật số điện thoại thất bại: " + result.message);
+                        Swal.fire({
+                            title: "Cập nhật số điện thoại thất bại: " + result.message,
+                            icon: "error"
+                        });
                     }
                 } catch (error) {
                     console.error("Error updating phone number:", error);
-                    alert("Đã có lỗi xảy ra khi cập nhật số điện thoại!");
+                    Swal.fire({
+                        title: "Đã có lỗi xảy ra khi cập nhật số điện thoại!",
+                        icon: "error"
+                    });
                 }
             });
 
@@ -319,48 +356,60 @@ const handleInvoiceChange = async (id) => {
                 .on("click", ".remove-customer-btn", async function () {
                     const customerId = $(this).data("customer-id");
                     const invoiceId = formData.invoiceId;
-                    if (
-                        !confirm("Bạn có chắc chắn muốn xóa khách hàng khỏi hóa đơn này?")
-                    ) {
-                        return;
-                    }
-                    try {
-                        const response = await $.ajax({
-                            url: `http://localhost:8080/api/v1/ban-hang/hoa-don/${invoiceId}/remove-customer`,
-                            type: "DELETE",
-                            contentType: "application/json",
-                            dataType: "json",
-                        });
-                        if (response.status === 204) {
-                            const $customerInfo = $(".customer-info");
-                            $customerInfo
-                                .html(
-                                    `
+                    Swal.fire({
+                        title: 'Bạn có chắc chắn muốn xóa khách hàng khỏi hóa đơn này?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Có',
+                        cancelButtonText: 'Không'
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            try {
+                                const response = await $.ajax({
+                                    url: `http://localhost:8080/api/v1/ban-hang/hoa-don/${invoiceId}/remove-customer`,
+                                    type: "DELETE",
+                                    contentType: "application/json",
+                                    dataType: "json",
+                                });
+                                if (response.status === 204) {
+                                    const $customerInfo = $(".customer-info");
+                                    $customerInfo
+                                        .html(
+                                            `
                                 <img style="width: 50px" class="mt-3" src="/icon/id_card_icon.png" alt="Id Card Icon">
                                 <div class="mt-3">Chưa có thông tin khách hàng</div>
                             `
-                                )
-                                .removeClass("text-center text-start")
-                                .addClass("text-center");
-                            formData.customer = null;
-                            formData.customerId = null;
-                            formData.currentCustomerId = null;
-                            formData.province = null;
-                            formData.district = null;
-                            formData.ward = null;
-                            formData.addressDetail = null;
-                            if (formData.type === "Có giao hàng") {
-                                $("#updateInfoCustomer").css("display", "block");
-                            } else {
-                                $("#updateInfoCustomer").css("display", "none");
+                                        )
+                                        .removeClass("text-center text-start")
+                                        .addClass("text-center");
+                                    formData.customer = null;
+                                    formData.customerId = null;
+                                    formData.currentCustomerId = null;
+                                    formData.province = null;
+                                    formData.district = null;
+                                    formData.ward = null;
+                                    formData.addressDetail = null;
+                                    if (formData.type === "Có giao hàng") {
+                                        $("#updateInfoCustomer").css("display", "block");
+                                    } else {
+                                        $("#updateInfoCustomer").css("display", "none");
+                                    }
+                                } else {
+                                    Swal.fire({
+                                        title: "Xóa khách hàng thất bại!",
+                                        icon: "error"
+                                    });
+                                }
+                            } catch (error) {
+                                console.error("Error removing customer:", error);
+                                Swal.fire({
+                                    title: "Đã có lỗi xảy ra khi xóa khách hàng!",
+                                    icon: "error"
+                                });
                             }
-                        } else {
-                            alert("Xóa khách hàng thất bại!");
                         }
-                    } catch (error) {
-                        console.error("Error removing customer:", error);
-                        alert("Đã có lỗi xảy ra khi xóa khách hàng!");
-                    }
+                    });
+
                 });
         } else {
             const $customerInfo = $(".customer-info");
@@ -471,20 +520,29 @@ const handleQuantityChange = async (invoiceDetailId, quantity) => {
 };
 
 const removeProduct = async (itemId) => {
-    if (!confirm("Xác nhận xóa?")) return;
-    try {
-        const response = await fetch(
-            `http://localhost:8080/api/v1/ban-hang/delete-item/${itemId}`,
-            {
-                method: "DELETE",
-                headers: {"Content-Type": "application/json"},
+    Swal.fire({
+        title: 'Xóa sản phẩm khỏi đơn hàng?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Có',
+        cancelButtonText: 'Không'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch(
+                    `http://localhost:8080/api/v1/ban-hang/delete-item/${itemId}`,
+                    {
+                        method: "DELETE",
+                        headers: {"Content-Type": "application/json"},
+                    }
+                );
+                const res = await response.json();
+                if (res.status === 202) await handleInvoiceChange(formData.invoiceId);
+            } catch (error) {
+                console.error("Error removing product:", error);
             }
-        );
-        const res = await response.json();
-        if (res.status === 202) await handleInvoiceChange(formData.invoiceId);
-    } catch (error) {
-        console.error("Error removing product:", error);
-    }
+        }
+    });
 };
 
 // Hàm load danh sách tỉnh/thành
@@ -568,9 +626,10 @@ const loadProvinces = async (
     } catch (error) {
         console.error("Error loading provinces:", error);
         provinceSelect.html('<option value="">Không thể tải tỉnh/thành</option>');
-        alert(
-            "Không thể tải danh sách tỉnh/thành phố. Vui lòng kiểm tra kết nối mạng hoặc thử lại sau!"
-        );
+        Swal.fire({
+            title: "Không thể tải danh sách tỉnh/thành phố. Vui lòng kiểm tra kết nối mạng hoặc thử lại sau!",
+            icon: "error"
+        });
     }
 };
 
@@ -704,22 +763,31 @@ $(document).ready(() => {
     $("#createInvoiceBtn").on("click", createInvoice);
 
     $("#btnCancel").on("click", async () => {
-        if (!confirm("Xác nhận hủy hóa đơn?")) return;
-        try {
-            const response = await fetch(
-                `http://localhost:8080/api/v1/ban-hang/cancel-invoice/${formData.invoiceId}`,
-                {
-                    method: "DELETE",
-                    headers: {"Content-Type": "application/json"},
+        Swal.fire({
+            title: 'Xác nhận hủy hóa đơn?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Có',
+            cancelButtonText: 'Không'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(
+                        `http://localhost:8080/api/v1/ban-hang/cancel-invoice/${formData.invoiceId}`,
+                        {
+                            method: "DELETE",
+                            headers: {"Content-Type": "application/json"},
+                        }
+                    );
+                    if (response.status === 200) {
+                        await clearData();
+                        window.location.reload();
+                    }
+                } catch (error) {
+                    console.error("Cancel invoice error:", error);
                 }
-            );
-            if (response.status === 200) {
-                await clearData();
-                window.location.reload();
             }
-        } catch (error) {
-            console.error("Cancel invoice error:", error);
-        }
+        });
     });
 
     // Load tỉnh/thành cho #deliveryInfoModal
@@ -948,13 +1016,23 @@ $(document).ready(() => {
                 $("#ward").val("").prop("disabled", true);
                 $("#address-detail").val("");
                 $("#deliveryInfoModal").modal("hide");
-                alert("Tạo khách hàng thành công!");
-                await handleInvoiceChange(formData.invoiceId);
+                Swal.fire({
+                    title: "Tạo khách hàng thành công!",
+                    icon: "success"
+                }).then(async () => {
+                    await handleInvoiceChange(formData.invoiceId);
+                })
             } else {
-                alert("Tạo khách hàng thất bại: " + result.message);
+                Swal.fire({
+                    title: "Tạo khách hàng thất bại: " + result.message,
+                    icon: "error"
+                });
             }
         } catch (error) {
-            alert(error);
+            Swal.fire({
+                title: error,
+                icon: "error"
+            });
         }
     });
 
@@ -1038,7 +1116,10 @@ $(document).ready(() => {
             const selectedAddress = $("#existing-addresses option:selected");
             const addressIndex = selectedAddress.val();
             if (!addressIndex) {
-                alert("Vui lòng chọn một địa chỉ!");
+                Swal.fire({
+                    title: "Vui lòng chọn một địa chỉ!",
+                    icon: "error"
+                });
                 return;
             }
 
@@ -1119,15 +1200,24 @@ $(document).ready(() => {
                 $("#addAddressModal .text-danger").text("");
 
                 $("#addAddressModal").modal("hide");
-                alert("Cập nhật địa chỉ thành công!");
-
-                await handleInvoiceChange(formData.invoiceId);
+                Swal.fire({
+                    title: "Cập nhật địa chỉ thành công!",
+                    icon: "success"
+                }).then(async () => {
+                    await handleInvoiceChange(formData.invoiceId);
+                })
             } else {
-                alert("Cập nhật địa chỉ thất bại: " + result.message);
+                Swal.fire({
+                    title: "Cập nhật địa chỉ thất bại: " + result.message,
+                    icon: "error"
+                });
             }
         } catch (error) {
             console.error("Error updating address:", error);
-            alert("Đã có lỗi xảy ra khi cập nhật địa chỉ!");
+            Swal.fire({
+                title: "Đã có lỗi xảy ra khi cập nhật địa chỉ!",
+                icon: "error"
+            });
         }
     });
 
@@ -1254,7 +1344,10 @@ $(document).ready(() => {
             } catch (error) {
                 console.error("Error loading provinces:", error);
                 provinceSelect.html('<option value="">Không thể tải tỉnh/thành</option>');
-                alert("Không thể tải danh sách tỉnh/thành phố. Vui lòng thử lại sau!");
+                Swal.fire({
+                    title: "Không thể tải danh sách tỉnh/thành phố. Vui lòng thử lại sau!",
+                    icon: "error"
+                });
             }
         };
         loadProvinces($province, $district, $ward, "invoice_");
@@ -1362,10 +1455,16 @@ $(document).ready(() => {
                 $("#updateInfoCustomer").css("display", "none");
                 await handleInvoiceChange(formData.invoiceId);
             } else {
-                alert("Thêm khách hàng thất bại: " + result.message);
+                Swal.fire({
+                    title: "Thêm khách hàng thất bại: " + result.message,
+                    icon: "error"
+                });
             }
         } catch (error) {
-            alert(error);
+            Swal.fire({
+                title: error,
+                icon: "error"
+            });
         }
     });
     $("#voucher-select").on("change", function () {
