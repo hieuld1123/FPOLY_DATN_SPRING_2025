@@ -122,7 +122,7 @@ function updatePagination(totalPages, currentPage) {
     // Button Previous
     pagination.append(`
         <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-            <a class="page-link" href="#" data-page="${currentPage - 1}">Previous</a>
+            <a class="page-link" href="#" data-page="${currentPage - 1}">Trước</a>
         </li>
     `);
 
@@ -177,7 +177,7 @@ function updatePagination(totalPages, currentPage) {
     // Button Next
     pagination.append(`
         <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-            <a class="page-link" href="#" data-page="${currentPage + 1}">Next</a>
+            <a class="page-link" href="#" data-page="${currentPage + 1}">Sau</a>
         </li>
     `);
 }
