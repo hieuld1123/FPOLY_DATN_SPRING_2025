@@ -1,11 +1,7 @@
 package com.example.datnsd26.controller;
 
-import com.example.datnsd26.models.HoaDon;
-import com.example.datnsd26.models.HoaDonChiTiet;
-import com.example.datnsd26.models.LichSuHoaDon;
-import com.example.datnsd26.repository.HoaDonChiTietRepository;
-import com.example.datnsd26.repository.HoaDonRepository;
-import com.example.datnsd26.repository.LichSuHoaDonRepository;
+import com.example.datnsd26.models.*;
+import com.example.datnsd26.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,6 +27,10 @@ public class OrderTrackingController {
 
     @Autowired
     private HoaDonChiTietRepository hoaDonChiTietRepository;
+    @Autowired
+    private VoucherRepository voucherRepository;
+    @Autowired
+    private SanPhamChiTietRepository sanPhamChiTietRepository;
 
     @GetMapping
     public String showTrackingPage() {
@@ -156,6 +156,25 @@ public class OrderTrackingController {
                 !trangThaiHienTai.equals("Đã xác nhận")) {
             redirectAttributes.addFlashAttribute("errorMessage", "Không thể hủy đơn ở trạng thái hiện tại.");
             return "redirect:/shop/order-tracking/get-order-tracking?maHoaDon=" + maHoaDon + "&sdtNguoiNhan=" + sdtNguoiNhan;
+        }
+
+        // 1. Cộng lại voucher (nếu có)
+        if (hoaDon.getVoucher() != null) {
+            Voucher voucher = hoaDon.getVoucher();
+            voucher.setSoLuong(voucher.getSoLuong() + 1);
+            if (voucher.getTrangThai() == 2) {
+                voucher.setTrangThai(1); // Chuyển voucher về trạng thái hoạt động nếu trước đó đã hết lượt
+            }
+            voucherRepository.save(voucher);
+        }
+
+        // 2. Trả lại sản phẩm vào kho (tùy theo trạng thái đơn hàng)
+        if (trangThaiHienTai.equals("Đã xác nhận")) {
+            for (HoaDonChiTiet chiTiet : hoaDon.getDanhSachSanPham()) {
+                SanPhamChiTiet sanPhamChiTiet = chiTiet.getSanPhamChiTiet();
+                sanPhamChiTiet.setSoLuong(sanPhamChiTiet.getSoLuong() + chiTiet.getSoLuong());
+                sanPhamChiTietRepository.save(sanPhamChiTiet);
+            }
         }
 
         // Hủy đơn
