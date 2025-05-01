@@ -80,11 +80,9 @@
 
                                 <!-- Ảnh đại diện -->
                                 <img class="avatar avatar-sm rounded-circle me-2"
-                                     th:src="@{${currentKhachHang != null} ? '/uploads/' + ${currentKhachHang.hinhAnh}
-              : (${currentNhanVien != null} ? '/uploads/' + ${currentNhanVien.hinhAnh}
-              : 'https://res.cloudinary.com/djukvrgjm/image/upload/v1744982346/vsqiguenpso7cq08prsr.jpg')}"
-                                     alt="avatar" />
-
+                                     th:src="${currentKhachHang != null} ? @{/uploads/{img}(img=${currentKhachHang.hinhAnh})}
+             : (currentNhanVien != null ? @{/uploads/{img}(img=${currentNhanVien.hinhAnh})}
+             : 'https://res.cloudinary.com/djukvrgjm/image/upload/v1744982346/vsqiguenpso7cq08prsr.jpg')" />
 
 
                                 <!-- Tên người dùng -->

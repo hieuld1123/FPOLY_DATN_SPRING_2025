@@ -8,6 +8,7 @@ import com.example.datnsd26.services.CapNhatGiaKMServie;
 import com.example.datnsd26.services.impl.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 
 @Controller
@@ -98,7 +97,7 @@ public class SanPhamChiTietController {
                 sanPhamRepositoty.save(sanPham);
             }
         }
-        return "redirect:/detailsanpham/" + spct.getSanPham().getId();
+        return "redirect:/quan-ly/chi-tiet-san-pham/" + spct.getSanPham().getId();
     }
 
 
