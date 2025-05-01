@@ -68,6 +68,7 @@
                                 <div class="mb-3">
                                     <label class="form-label">Ghi chu</label>
                                     <textarea th:field="*{ghiChu}" class="form-control" rows="3"></textarea>
+                                    <small th:errors="*{ghiChu}" class="text-danger"></small>
                                 </div>
                                 <div class="mb-2">
                                     <a th:href="@{/thong-tin-ca-nhan/sua/{id}(id=${khachHang.id})}">Thay đổi thông tin nhận hàng</a>
@@ -127,6 +128,7 @@
                                 <div class="mb-3">
                                     <label class="form-label">Ghi chu</label>
                                     <textarea th:field="*{ghiChu}" class="form-control" rows="3"></textarea>
+                                    <small th:errors="*{ghiChu}" class="text-danger"></small>
                                 </div>
                                 <div class="mb-3 form-selectgroup">
                                     Thanh toán khi nhận hàng
