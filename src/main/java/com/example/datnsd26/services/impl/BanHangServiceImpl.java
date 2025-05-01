@@ -240,6 +240,7 @@ public class BanHangServiceImpl implements BanHangService {
             hoaDon.setPhuongThucThanhToan(paymentRequest.getPaymentMethod());
         }
         hoaDon.setThanhToan(true);
+        hoaDon.setNgayTao(new Date());
         hoaDon.setNgayCapNhat(new Date());
         lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Đặt hàng").hoaDon(hoaDon).build());
 

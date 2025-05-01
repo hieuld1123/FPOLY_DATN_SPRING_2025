@@ -928,6 +928,11 @@ $(document).ready(() => {
                 .siblings(".text-danger")
                 .text("Tên người nhận không được để trống!");
             isValid = false;
+        } else if (/[^a-zA-Z0-9\s\u00C0-\u017F]/.test(recipientName) || /[@#$%^&*()_]/.test(recipientName)) {
+            $("#recipient_name")
+                .siblings(".text-danger")
+                .text("Tên người nhận không được chứa ký tự đặc biệt");
+            isValid = false;
         }
 
         if (!phoneNumber) {
