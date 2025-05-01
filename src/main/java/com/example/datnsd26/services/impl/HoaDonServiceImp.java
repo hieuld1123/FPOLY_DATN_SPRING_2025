@@ -170,6 +170,7 @@ public class HoaDonServiceImp implements HoaDonService {
                 this.sanPhamChiTietRepository.save(ct);
             });
         }
+        hd.setNgayCapNhat(new Date());
         lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai(STATUS_CANCELED).hoaDon(hd).build());
         this.hoaDonRepository.save(hd);
     }
@@ -199,6 +200,7 @@ public class HoaDonServiceImp implements HoaDonService {
                         .build()
         ).toList();
         KhachHang kh = hoaDon.getKhachHang();
+        hoaDon.setNgayCapNhat(new Date());
         return HoaDonChiTietResponse.builder()
                 .id(hoaDon.getId())
                 .tongTien(hoaDon.getTongTien())

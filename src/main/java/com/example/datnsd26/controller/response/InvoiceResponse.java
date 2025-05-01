@@ -15,6 +15,7 @@ public class InvoiceResponse implements Serializable {
     private String customer;
     private String purchaseMethod;
     private Date creationDate;
+    private Date updateDate;
     private String status;
     private double value;
     private String recipientName;

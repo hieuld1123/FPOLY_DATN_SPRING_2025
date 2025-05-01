@@ -56,7 +56,7 @@ public class InvoiceCustomizeQuery {
             sql.append(" AND (i.tenNguoiNhan LIKE :customer OR i.sdtNguoiNhan LIKE :customer)");
         }
 
-        sql.append(String.format(" ORDER BY i.ngayCapNhat %s", request.getSortDirection().equalsIgnoreCase("desc") ? "desc" : "asc"));
+        sql.append(String.format(" ORDER BY i.ngayTao %s", request.getSortDirection().equalsIgnoreCase("desc") ? "desc" : "asc"));
 
         TypedQuery<HoaDon> query = entityManager.createQuery(sql.toString(), HoaDon.class);
         if (StringUtils.hasLength(request.getStatus())) {
@@ -89,7 +89,8 @@ public class InvoiceCustomizeQuery {
                 .id(i.getMaHoaDon())
                 .customer((i.getKhachHang() == null) ? (i.getTenNguoiNhan() == null ? "Khách lẻ" : i.getTenNguoiNhan()) : i.getKhachHang().getTenKhachHang())
                 .purchaseMethod(i.getHinhThucMuaHang())
-                .creationDate(i.getNgayCapNhat())
+                .creationDate(i.getNgayTao())
+                .updateDate(i.getNgayCapNhat())
                 .status(i.getTrangThai())
                 .value(i.getThanhTien())
                 .recipientName(i.getTenNguoiNhan())
