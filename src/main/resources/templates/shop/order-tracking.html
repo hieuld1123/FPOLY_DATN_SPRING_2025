@@ -27,7 +27,7 @@
         }
 
         .timeline-line-bg {
-            background-color: #dee2e6;
+            background-color: #28a745;
             z-index: 0;
         }
 
@@ -132,51 +132,32 @@
                     <div th:if="${successMessage}" class="alert alert-success mb-3" role="alert">
                         <span th:text="${successMessage}"></span>
                     </div>
-                    <div class="timeline-wrapper position-relative"
-                        th:with="currentIndex=${allTrangThai.indexOf(currentStatus)}">
-
-                        <!-- Đường line nền và tiến độ -->
+                    <div class="timeline-wrapper position-relative">
                         <div class="timeline-line-bg"></div>
-                        <div class="timeline-line-progress" th:with="stepWidth=${100.0 / (allTrangThai.size() - 1)},
-              startLeft=${stepWidth * 0} + '%',
-              progressWidth=${stepWidth * currentIndex} + '%'"
-                            th:style="'--start: ' + ${startLeft} + '; --progress: ' + ${progressWidth}">
-                        </div>
-
-
+                        <div class="timeline-line-progress"></div>
                         <ul
                             class="timeline list-unstyled d-flex justify-content-between align-items-start m-0 position-relative">
 
-                            <li class="timeline-step text-center position-relative flex-fill"
-                                th:each="statusName, iterStat : ${allTrangThai}"
-                                th:classappend="|${iterStat.index == currentIndex ? 'active' : (iterStat.index < currentIndex ? 'completed' : '')}|">
+                        <li class="timeline-step text-center position-relative flex-fill"
+                            th:each="statusName, iterStat : ${allTrangThai}"
+                            th:classappend="|${statusName.toLowerCase() == currentStatus.toLowerCase() ? 'active' : (allTrangThai.indexOf(currentStatus) > iterStat.index ? 'completed' : '')}|">
 
-                                <!-- Đường line nối giữa các bước (ẩn bước cuối) -->
-                                <div class="timeline-line" th:if="${iterStat.index > 0 and !iterStat.last}"></div>
+                            <div class="timeline-line" th:if="${iterStat.index > 0 and !iterStat.last}"></div>
 
-                                <!-- Icon trạng thái -->
-                                <div
+                            <div
                                     class="timeline-icon rounded-circle mx-auto mb-1 d-flex justify-content-center align-items-center">
-                                    <i class="ti" style="color: white" th:classappend="
-                        ${statusName.toLowerCase() == 'chờ xác nhận'} ? ' ti-clock' :
-                        (${statusName.toLowerCase() == 'đã xác nhận'} ? ' ti-circle-check' :
-                        (${statusName.toLowerCase() == 'đang chuẩn bị'} ? ' ti-package' :
-                        (${statusName.toLowerCase() == 'đã giao cho đơn vị vận chuyển'} ? ' ti-truck' :
-                        (${statusName.toLowerCase() == 'hoàn thành'} ? ' ti-checkup-list' :
-                        (${statusName.toLowerCase() == 'đã hủy'} ? ' ti-x' : ' ti-alert-triangle')))))
-                   "></i>
-                                </div>
+                                <i class="ti ti-check" style="color: white"></i>
+                            </div>
 
-                                <!-- Tên trạng thái -->
-                                <p class="timeline-label fw-semibold mb-1" th:text="${statusName}">Trạng thái</p>
+                            <p class="timeline-label fw-semibold mb-1" th:text="${statusName}">Trạng thái</p>
 
-                                <!-- Thời gian hoặc chữ "Chưa cập nhật" -->
-                                <small class="text-muted"
-                                    th:text="${thoiGianFormattedMap[statusName.toLowerCase()]} ?: 'Chưa cập nhật'">
-                                    Thời gian
-                                </small>
-                            </li>
-                        </ul>
+                            <small class="text-muted"
+                                   th:if="${lichSuList.size() > iterStat.index}"
+                                   th:text="${#dates.format(lichSuList[iterStat.index].thoiGian, 'dd/MM/yyyy HH:mm')}">
+                                Thời gian
+                            </small>
+                        </li>
+                    </ul>
                     </div>
                 </div>
                 <div class="m-5">
