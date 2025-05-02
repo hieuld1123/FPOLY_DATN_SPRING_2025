@@ -7,6 +7,7 @@ import com.example.datnsd26.services.BinhMailService;
 import com.example.datnsd26.services.VoucherService;
 import com.example.datnsd26.services.cart.GioHangService;
 import com.example.datnsd26.services.cart.HoaDonService;
+import com.example.datnsd26.utilities.CommonUtils;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -41,6 +42,7 @@ public class CartController {
     private final DiaChiRepository diaChiRepository;
     private final VoucherRepository voucherRepository;
     private final VoucherService voucherService;
+    private final NhanVienRepository nhanVienRepository;
 
     @GetMapping("/shop")
     public String shopPage(Model model) {
@@ -228,25 +230,28 @@ public class CartController {
             Authentication auth,
             HttpSession session) {
 
-        // Lấy thông tin người dùng nếu đã đăng nhập
+        // 1, Lấy thông tin người dùng nếu đã đăng nhập
         TaiKhoan taiKhoan = null;
         KhachHang khachHang = null;
+        NhanVien nhanVien = null;
         DiaChi diaChiMacDinh = null;
 
         if (auth != null && auth.isAuthenticated()) {
             String email = auth.getName();
             taiKhoan = taiKhoanRepository.findByEmail(email).orElse(null);
             if (taiKhoan != null) {
-                khachHang = khachHangRepository.findByTaiKhoan(taiKhoan);
-                if (khachHang != null) {
-                    diaChiMacDinh = khachHang.getDiaChi()
-                            .stream()
-                            .filter(DiaChi::getTrangThai) // hoặc .getTrangThai() nếu không dùng lombok getter
-                            .findFirst()
-                            .orElse(null);
+                if (taiKhoan.getVaiTro() == TaiKhoan.Role.CUSTOMER) {
+                    khachHang = khachHangRepository.findByTaiKhoan(taiKhoan);
+                    if (khachHang != null) {
+                        diaChiMacDinh = khachHang.getDiaChi()
+                                .stream()
+                                .filter(DiaChi::getTrangThai)
+                                .findFirst()
+                                .orElse(null);
+                    }
+                } else if (taiKhoan.getVaiTro() == TaiKhoan.Role.EMPLOYEE || taiKhoan.getVaiTro() == TaiKhoan.Role.ADMIN) {
+                    nhanVien = nhanVienRepository.findByTaiKhoan(taiKhoan);
                 }
-
-
             }
         }
 
@@ -258,18 +263,21 @@ public class CartController {
                     .anyMatch(a -> a.getAuthority().equals("ROLE_CUSTOMER"));
         }
 
+        // 2, Lấy danh sách sản phẩm đã chọn từ session, nếu không có thì thông báo lỗi
         List<Integer> selectedIds = (List<Integer>) session.getAttribute("selectedIds");
         if (selectedIds == null || selectedIds.isEmpty()) {
             model.addAttribute("isAuthenticated", isAuthenticated);
             model.addAttribute("isCustomer", isCustomer);
             model.addAttribute("errorMessage", "Bạn chưa chọn sản phẩm nào để thanh toán. Vui lòng quay lại giỏ hàng.");
-            model.addAttribute("cart", new ArrayList<>());  // hiển thị sản phẩm da chon
+            model.addAttribute("cart", new ArrayList<>()); // hiển thị sản phẩm da chon
             model.addAttribute("tongTamTinh", 0);
             model.addAttribute("khachHang", khachHang);
             model.addAttribute("phiShip", 0);
             model.addAttribute("hoaDonBinhRequest", hoaDonBinhRequest);
             return "shop/checkout"; // quay lại trang giỏ hàng
         }
+
+        // 3, Validate sản phẩm người dùng đã chọn, check xem có còn đủ hàng hay có sản phẩm nào đã ngừng kinh doanh không
         List<GioHangChiTiet> danhSachThanhToan = gioHangChiTietRepository.findAllById(selectedIds);
         List<String> danhSachLoi = new ArrayList<>();
 
@@ -300,13 +308,13 @@ public class CartController {
             phiShip = 30000.0f;
         }
 
+        // 4, Nếu có lỗi trong danh sách sản phẩm từ bước (3), hiển thị thông báo lỗi
         if (!danhSachLoi.isEmpty()) {
-            System.out.println("VaoDay roiiii");
             model.addAttribute("isAuthenticated", isAuthenticated);
             model.addAttribute("isCustomer", isCustomer);
             model.addAttribute("errorMessage", "Một số sản phẩm không hợp lệ:");
             model.addAttribute("errors", danhSachLoi);
-            model.addAttribute("cart", danhSachThanhToan);  // hiển thị sản phẩm da chon
+            model.addAttribute("cart", danhSachThanhToan); // hiển thị sản phẩm da chon
             model.addAttribute("tongTamTinh", tongTamTinh);
             model.addAttribute("khachHang", khachHang);
             model.addAttribute("phiShip", phiShip);
@@ -315,21 +323,23 @@ public class CartController {
             return "shop/checkout";
         }
 
-        // Validate thông tin giao hàng
-        if (auth == null && bindingResult.hasErrors()) {
-            model.addAttribute("isAuthenticated", isAuthenticated);
-            model.addAttribute("isCustomer", isCustomer);
-            model.addAttribute("errorMessage", "Vui lòng điền đầy đủ thông tin");
-//            model.addAttribute("errors", danhSachLoi);
-            model.addAttribute("cart", danhSachThanhToan);  // hiển thị sản phẩm da chon
-            model.addAttribute("tongTamTinh", tongTamTinh);
-            model.addAttribute("phiShip", phiShip);
-            model.addAttribute("khachHang", khachHang);
-            model.addAttribute("hoaDonBinhRequest", hoaDonBinhRequest);
-            model.addAttribute("vouchers", voucherRepository.findValidVouchers(LocalDateTime.now(), tongTamTinh)); // Load lại danh sách voucher hợp lệ
-            return "shop/checkout";
+        // 5, Validate thông tin giao hàng
+        // Nếu là khách vãng lai (auth == null) HOẶC là nhân viên/admin (nhanVien != null), thì validate form
+        if (auth == null || nhanVien != null) {
+            if (bindingResult.hasErrors()) {
+                model.addAttribute("isAuthenticated", isAuthenticated);
+                model.addAttribute("isCustomer", isCustomer);
+                model.addAttribute("errorMessage", "Vui lòng điền đầy đủ thông tin");
+                model.addAttribute("cart", danhSachThanhToan); // hiển thị sản phẩm da chon
+                model.addAttribute("tongTamTinh", tongTamTinh);
+                model.addAttribute("phiShip", phiShip);
+                model.addAttribute("hoaDonBinhRequest", hoaDonBinhRequest);
+                model.addAttribute("vouchers", voucherRepository.findValidVouchers(LocalDateTime.now(), tongTamTinh)); // Load lại danh sách voucher hợp lệ
+                return "shop/checkout";
+            }
         }
 
+        // 6, Validate voucher được sửa dụng (tính giá được giảm, cập nhật số lượng voucher)
         Voucher voucher = null;
         float giamGia = 0f;
 
@@ -344,7 +354,6 @@ public class CartController {
                 model.addAttribute("cart", danhSachThanhToan);
                 model.addAttribute("tongTamTinh", tongTamTinh);
                 model.addAttribute("phiShip", phiShip);
-                model.addAttribute("khachHang", khachHang);
                 model.addAttribute("hoaDonBinhRequest", hoaDonBinhRequest);
                 model.addAttribute("vouchers", voucherRepository.findValidVouchers(LocalDateTime.now(), tongTamTinh)); // Load lại danh sách voucher hợp lệ
                 return "shop/checkout";
@@ -352,26 +361,15 @@ public class CartController {
             // Nếu voucher hợp lệ, tiếp tục áp dụng giảm giá và cập nhật số lượng
             giamGia = voucherService.tinhGiamGia(tongTamTinh, voucher);
             voucher.setSoLuong(voucher.getSoLuong() - 1);
-
-            if(voucher.getSoLuong() <= 0){
+            if (voucher.getSoLuong() <= 0) {
                 voucher.setTrangThai(2);
             }
-
             voucherRepository.save(voucher);
-
-
         }
 
-
-        // Tạo Hóa Đơn
-        HoaDon hoaDon = HoaDon.builder()
-                .tenNguoiNhan(khachHang != null ? khachHang.getTenKhachHang() : hoaDonBinhRequest.getTenNguoiNhan())
-                .sdtNguoiNhan(khachHang != null ? khachHang.getTaiKhoan().getSdt() : hoaDonBinhRequest.getSdtNguoiNhan())
-                .email(khachHang != null ? khachHang.getTaiKhoan().getEmail() : hoaDonBinhRequest.getEmail())
-                .tinh(khachHang != null && diaChiMacDinh != null ? diaChiMacDinh.getTinh() : hoaDonBinhRequest.getTinh())
-                .quan(khachHang != null && diaChiMacDinh != null ? diaChiMacDinh.getHuyen() : hoaDonBinhRequest.getQuan())
-                .xa(khachHang != null && diaChiMacDinh != null ? diaChiMacDinh.getXa() : hoaDonBinhRequest.getXa())
-                .diaChiNguoiNhan(khachHang != null && diaChiMacDinh != null ? diaChiMacDinh.getDiaChiCuThe() : hoaDonBinhRequest.getDiaChiNguoiNhan())
+        // 7, Tạo Hóa Đơn mới
+        HoaDon.HoaDonBuilder hoaDonBuilder = HoaDon.builder()
+                .maHoaDon(CommonUtils.generateInvoiceCode())
                 .hinhThucMuaHang("Online")
                 .ngayTao(new Date())
                 .ngayCapNhat(new Date())
@@ -382,37 +380,58 @@ public class CartController {
                 .thanhToan(true)
                 .ghiChu(hoaDonBinhRequest.getGhiChu())
                 .khachHang(khachHang)
-                .nhanVien(null)
+                .nhanVien(nhanVien)
                 .giamGia(giamGia)
                 .thanhTien(tongTamTinh - giamGia + phiShip)
-                .voucher(voucher) // nếu entity HoaDon có quan hệ @ManyToOne với Voucher
-                .build();
+                .voucher(voucher);
 
+        // Thiết lập thông tin người nhận và địa chỉ
+        if (khachHang != null && diaChiMacDinh != null) {
+            hoaDonBuilder.tenNguoiNhan(khachHang.getTenKhachHang())
+                    .sdtNguoiNhan(khachHang.getTaiKhoan().getSdt())
+                    .email(khachHang.getTaiKhoan().getEmail())
+                    .tinh(diaChiMacDinh.getTinh())
+                    .quan(diaChiMacDinh.getHuyen())
+                    .xa(diaChiMacDinh.getXa())
+                    .diaChiNguoiNhan(diaChiMacDinh.getDiaChiCuThe());
+        } else if (nhanVien != null) {
+            hoaDonBuilder.tenNguoiNhan(hoaDonBinhRequest.getTenNguoiNhan())
+                    .sdtNguoiNhan(hoaDonBinhRequest.getSdtNguoiNhan())
+                    .email(hoaDonBinhRequest.getEmail())
+                    .tinh(hoaDonBinhRequest.getTinh())
+                    .quan(hoaDonBinhRequest.getQuan())
+                    .xa(hoaDonBinhRequest.getXa())
+                    .diaChiNguoiNhan(hoaDonBinhRequest.getDiaChiNguoiNhan());
+        } else { // Khách vãng lai
+            hoaDonBuilder.tenNguoiNhan(hoaDonBinhRequest.getTenNguoiNhan())
+                    .sdtNguoiNhan(hoaDonBinhRequest.getSdtNguoiNhan())
+                    .email(hoaDonBinhRequest.getEmail())
+                    .tinh(hoaDonBinhRequest.getTinh())
+                    .quan(hoaDonBinhRequest.getQuan())
+                    .xa(hoaDonBinhRequest.getXa())
+                    .diaChiNguoiNhan(hoaDonBinhRequest.getDiaChiNguoiNhan());
+        }
+
+        HoaDon hoaDon = hoaDonBuilder.build();
         hoaDonService.saveHoaDon(hoaDon);
         lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Đặt hàng").hoaDon(hoaDon).build());
         lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai("Chờ xác nhận").hoaDon(hoaDon).build());
 
-        // Lưu chi tiết hóa đơn và cập nhật tồn kho
+        // 8, Lưu chi tiết hóa đơn tương ứng với những gì KH đặt hàng
         List<HoaDonChiTiet> chiTietList = new ArrayList<>();
         for (GioHangChiTiet item : danhSachThanhToan) {
-//            SanPhamChiTiet sanPham = sanPhamChiTietRepository.findById(item.getSanPhamChiTiet().getId()).orElseThrow();
-//            sanPham.setSoLuong(sanPham.getSoLuong() - item.getSoLuong());
-//            sanPhamChiTietRepository.save(sanPham);
-
             HoaDonChiTiet chiTiet = new HoaDonChiTiet();
             chiTiet.setHoaDon(hoaDon);
             chiTiet.setSanPhamChiTiet(item.getSanPhamChiTiet());
             chiTiet.setSoLuong(item.getSoLuong());
             chiTiet.setGiaTienSauGiam(item.getSanPhamChiTiet().getGiaBanSauGiam());
             hoaDonChiTietRepository.save(chiTiet);
-
             chiTietList.add(chiTiet);
         }
-
         hoaDon.setDanhSachSanPham(chiTietList);
         hoaDonService.saveHoaDon(hoaDon);
 
-        // Gửi email
+        // 9, Gửi email cho KH
         try {
             mailService.sendOrderConfirmation(hoaDon);
         } catch (MessagingException e) {
@@ -423,9 +442,8 @@ public class CartController {
             gioHangService.xoaSanPhamKhoiGioHang(id);
         }
 
-        // Xóa session selectedIds sau khi đặt hàng xong
+        // 10, Xóa session selectedIds, mọi giá hiển thị về 0 sau khi đặt hàng xong
         session.removeAttribute("selectedIds");
-
         model.addAttribute("isAuthenticated", isAuthenticated);
         model.addAttribute("isCustomer", isCustomer);
         model.addAttribute("successMessage", "Đặt hàng thành công. Vui lòng kiểm tra email. Chúng tôi sẽ liên hệ với bạn qua số điện thoại để xác nhận đơn hàng.");

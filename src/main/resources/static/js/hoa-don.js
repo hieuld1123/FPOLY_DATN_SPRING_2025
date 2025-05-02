@@ -77,12 +77,21 @@ function loadInvoices(data, page, total) {
                 `${creationDate.getHours().toString().padStart(2, '0')}:` +
                 `${creationDate.getMinutes().toString().padStart(2, '0')}:` +
                 `${creationDate.getSeconds().toString().padStart(2, '0')}`;
+
+            const updateDate = new Date(invoice.updateDate);
+            const formattedUpdateDate = `${updateDate.getDate().toString().padStart(2, '0')}/` +
+                `${(updateDate.getMonth() + 1).toString().padStart(2, '0')}/` +
+                `${updateDate.getFullYear()} ` +
+                `${updateDate.getHours().toString().padStart(2, '0')}:` +
+                `${updateDate.getMinutes().toString().padStart(2, '0')}:` +
+                `${updateDate.getSeconds().toString().padStart(2, '0')}`;
             const row = `
                 <tr>
                     <td><a href="/quan-ly/hoa-don/${invoice.id}">${invoice.id}</a></td>
                     <td>${customerName}</td>
                     <td>${invoice.purchaseMethod}</td>
                     <td>${formattedDate}</td>
+                    <td>${formattedUpdateDate}</td>
                     <td>${invoice.status}</td>
                     <td>${formattedValue}</td>
                 </tr>

@@ -68,12 +68,13 @@
                                 <div class="mb-3">
                                     <label class="form-label">Ghi chu</label>
                                     <textarea th:field="*{ghiChu}" class="form-control" rows="3"></textarea>
+                                    <small th:errors="*{ghiChu}" class="text-danger"></small>
                                 </div>
                                 <div class="mb-2">
                                     <a th:href="@{/thong-tin-ca-nhan/sua/{id}(id=${khachHang.id})}">Thay đổi thông tin nhận hàng</a>
                                 </div>
                                 <div class="my-3">
-                                    <button type="submit" class="btn btn-primary">Đặt hàng</button>
+                                    <button type="submit" class="btn btn-primary" id="btnSubmit">Đặt hàng</button>
                                 </div>
                             </div>
                             <div th:if="${khachHang == null}">
@@ -127,6 +128,7 @@
                                 <div class="mb-3">
                                     <label class="form-label">Ghi chu</label>
                                     <textarea th:field="*{ghiChu}" class="form-control" rows="3"></textarea>
+                                    <small th:errors="*{ghiChu}" class="text-danger"></small>
                                 </div>
                                 <div class="mb-3 form-selectgroup">
                                     Thanh toán khi nhận hàng
@@ -279,7 +281,7 @@
         const tongTamTinhEl = document.querySelector(".cart-total-price");
         const giamGiaEl = document.getElementById("giamGia");
         const thanhTienEl = document.getElementById("thanhTien");
-        const phiShipEl = document.getElementById("phiShip"); // Vẫn cần lấy phần tử phí ship
+        const phiShipEl = document.getElementById("phiShip");
 
         function formatCurrency(number) {
             return number.toLocaleString("vi-VN");
@@ -287,7 +289,7 @@
 
         function calculate() {
             const tongTamTinh = parseFloat(tongTamTinhEl.dataset.totalPrice);
-            const phiShip = parseInt(phiShipEl.textContent.replace(/\D/g, '')) || 0; // Lấy phí ship từ HTML
+            const phiShip = parseInt(phiShipEl.textContent.replace(/\D/g, '')) || 0;
             const voucherOption = voucherSelect.options[voucherSelect.selectedIndex];
 
             const hinhThucGiam = voucherOption.getAttribute("data-hinh-thuc-giam");
@@ -311,22 +313,44 @@
             thanhTienEl.textContent = formatCurrency(thanhTien);
         }
 
-        // Gọi lại khi chọn voucher
         voucherSelect.addEventListener("change", calculate);
-
-        // Gọi lại ban đầu nếu đã có sẵn voucher được chọn
         calculate();
 
-        // Loading overlay khi submit form
         form.addEventListener("submit", function (event) {
-            overlay.classList.remove("d-none");
-            submitButton.disabled = true;
+            event.preventDefault(); // Ngăn chặn submit form mặc định
 
-            const buttons = form.querySelectorAll("button");
-            buttons.forEach(btn => btn.disabled = true);
+            Swal.fire({
+                title: 'Xác nhận đặt hàng',
+                text: 'Bạn có chắc chắn muốn đặt các sản phẩm này?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Có, đặt hàng!',
+                cancelButtonText: 'Không, xem lại',
+                preConfirm: () => {
+                    // Hiển thị overlay NGAY TRƯỚC KHI SUBMIT
+                    overlay.classList.remove("d-none");
+                    submitButton.disabled = true;
+                    const buttons = form.querySelectorAll("button");
+                    buttons.forEach(btn => btn.disabled = true);
+                    return true; // Bắt buộc trả về true để đóng modal (nếu không có logic bất đồng bộ)
+                },
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // SUBMIT FORM SAU KHI ĐÃ HIỂN THỊ OVERLAY TRONG preConfirm
+                    form.submit();
+                } else {
+                    // Ẩn overlay và kích hoạt lại nút nếu người dùng hủy
+                    overlay.classList.add("d-none");
+                    submitButton.disabled = false;
+                    const buttons = form.querySelectorAll("button");
+                    buttons.forEach(btn => btn.disabled = false);
+                }
+            });
         });
     });
 </script>
-
 </body>
 </html>

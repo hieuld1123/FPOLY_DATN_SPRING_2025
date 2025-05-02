@@ -52,10 +52,10 @@
                             </div>
                             <div class="col-5">
                                 <h5 class="card-title" th:text="${item.sanPhamChiTiet.sanPham.tenSanPham}"></h5>
-                                <p class="text-muted">
+                                <p class="">
                                     Giá:
-                                    <span class="text-decoration-line-through"
-                                          th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+<!--                                    <span class="text-decoration-line-through"-->
+<!--                                          th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>-->
                                     <span th:text="${#numbers.formatDecimal(item.sanPhamChiTiet.giaBanSauGiam, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
                                 </p>
                                 <div class="row">

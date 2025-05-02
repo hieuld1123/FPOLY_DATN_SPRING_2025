@@ -170,6 +170,7 @@ public class HoaDonServiceImp implements HoaDonService {
                 this.sanPhamChiTietRepository.save(ct);
             });
         }
+        hd.setNgayCapNhat(new Date());
         lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai(STATUS_CANCELED).hoaDon(hd).build());
         this.hoaDonRepository.save(hd);
     }
@@ -199,6 +200,7 @@ public class HoaDonServiceImp implements HoaDonService {
                         .build()
         ).toList();
         KhachHang kh = hoaDon.getKhachHang();
+        hoaDon.setNgayCapNhat(new Date());
         return HoaDonChiTietResponse.builder()
                 .id(hoaDon.getId())
                 .tongTien(hoaDon.getTongTien())
@@ -253,6 +255,7 @@ public class HoaDonServiceImp implements HoaDonService {
         hoaDon.setPhiVanChuyen(request.getShippingFee());
         hoaDon.setGhiChu(request.getOrderNote().isBlank() ? null : request.getOrderNote());
         hoaDon.setThanhTien(hoaDon.getTongTien() + hoaDon.getPhiVanChuyen() - (hoaDon.getGiamGia() == null ? 0 : hoaDon.getGiamGia()));
+        hoaDon.setNgayCapNhat(new Date());
         lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai(String.format("Đã chỉnh sửa bởi %s", this.authUtil.getNhanVien().getTenNhanVien())).hoaDon(hoaDon).build());
         this.hoaDonRepository.save(hoaDon);
     }
