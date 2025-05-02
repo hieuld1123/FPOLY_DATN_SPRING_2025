@@ -7,6 +7,7 @@ import com.example.datnsd26.services.BinhMailService;
 import com.example.datnsd26.services.VoucherService;
 import com.example.datnsd26.services.cart.GioHangService;
 import com.example.datnsd26.services.cart.HoaDonService;
+import com.example.datnsd26.utilities.CommonUtils;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -368,6 +369,7 @@ public class CartController {
 
         // 7, Tạo Hóa Đơn mới
         HoaDon.HoaDonBuilder hoaDonBuilder = HoaDon.builder()
+                .maHoaDon(CommonUtils.generateInvoiceCode())
                 .hinhThucMuaHang("Online")
                 .ngayTao(new Date())
                 .ngayCapNhat(new Date())

@@ -30,7 +30,6 @@ public class HoaDonService {
 
     public HoaDon saveHoaDon(HoaDon hoaDon) {
         // Gán mã hóa đơn trước khi lưu
-        hoaDon.setMaHoaDon(generateMaHoaDon());
         return hoaDonRepository.save(hoaDon);
     }
 }
