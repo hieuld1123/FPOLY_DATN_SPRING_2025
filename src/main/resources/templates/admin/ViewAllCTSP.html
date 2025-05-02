@@ -191,6 +191,44 @@
         line-height: 85px;
     }
 
+    .custom-upload.has-file::before {
+        content: attr(data-file-name);
+    }
+
+    .image-container {
+        position: relative;
+        display: inline-block;
+        margin-left: 20px;
+    }
+
+    .cloud-image {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        filter: brightness(1.2) contrast(1.2);
+        background-color: white;
+        border-radius: 5px;
+    }
+
+    .remove-button {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background-color: white;
+        color: red;
+        border: none;
+        border-radius: 50%;
+        padding: 5px;
+        cursor: pointer;
+        font-size: 12px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        text-decoration: none; /* xóa gạch dưới thẻ a */
+    }
+
+    .remove-button:hover {
+        background-color: #f8d7da;
+    }
+
     .container {
         display: flex;
         align-items: center;
@@ -252,7 +290,7 @@
                         <!-- /.card-header -->
                         <div class="card-body">
                             <form method="post" enctype="multipart/form-data" th:object="${hehe}"
-                                  th:action="@{/updateAllCTSP/{id}(id=${hehe.id})}"
+                                  th:action="@{/admin/updateAllCTSP/{id}(id=${hehe.id})}"
                                   name="updateProduct" onsubmit="return validateForm()">
                                 <div class="d-flex">
                                     <p style="font-weight: bold">
@@ -345,7 +383,7 @@
                                     <p style="margin-left:92px; font-weight: bold">
                                         Màu sắc:
                                         <select id="mausac-select" th:field="*{mauSac.id}" class="form-control"
-                                                style="width:500px" >
+                                                style="width:500px">
                                             <option th:each="ms : ${ms}" th:value="${ms.id}"
                                                     th:text="${ms.tenMauSac}" th:data-color="${ms.ten}"></option>
                                         </select>
@@ -357,22 +395,75 @@
 
                                 <div class="d-flex">
                                     <th:block th:each="hinhAnh, iterStat : *{hinhAnh}">
-                                        <img th:if="${hinhAnh.tenAnh != null}"
-                                             th:src="${hinhAnh.tenAnh}"
-                                             width="100" height="100" alt="Ảnh"
-                                             style="margin-left: 20px; filter: brightness(1.2) contrast(1.2); background-color: white;"
-                                             th:classappend="${iterStat.index > 0} ? 'additional-margin' : ''">
+                                        <div class="image-container">
+                                            <img th:if="${hinhAnh.tenAnh != null}"
+                                                 th:src="${hinhAnh.tenAnh}"
+                                                 class="cloud-image"
+                                                 width="100" height="100" alt="Ảnh"
+                                                 style="margin-left: 20px; filter: brightness(1.2) contrast(1.2); background-color: white;"
+                                                 th:classappend="${iterStat.index > 0} ? 'additional-margin' : ''">
+                                            <a href="javascript:void(0)"
+                                               class="remove-button"
+                                               th:attr="data-url=@{/admin/updateAllCTSP/deleteImage/{idCTSP}/{idImage}(idCTSP=${hehe.id}, idImage=${hinhAnh.id})}"
+                                               onclick="return confirmDeleteImage(this.getAttribute('data-url'));">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </a>
+                                        </div>
                                     </th:block>
-                                    <div class="image-preview">
-                                    </div>
+
                                     <div style="margin-left: 20px">
-                                        <label class="custom-upload" id="uploadButton"
-                                               style="background-color: white;">
-                                            <input type="file" name="anhs" multiple style="display: none;">
-                                            <td>
-                                                <input type="hidden" id="spctIds" name="spctIds" th:value="*{id}">
-                                            </td>
-                                        </label>
+                                        <!-- Điều kiện để tạo input file tùy thuộc vào soAnhConLai -->
+                                        <th:block th:if="${soAnhConLai == 3}">
+                                            <!-- Tạo 2 input file khi soAnhConLai = 1 -->
+                                            <label class="custom-upload" style="background-color: white;"
+                                                   th:for="'anhsInput1'">
+                                                <input type="file" name="anhs" th:id="'anhsInput1'"
+                                                       style="display: none;" accept="image/*"
+                                                       onchange="showFileInfo(event)">
+                                            </label>
+                                            <label class="custom-upload" style="background-color: white;"
+                                                   th:for="'anhsInput2'">
+                                                <input type="file" name="anhs" th:id="'anhsInput2'"
+                                                       style="display: none;" accept="image/*"
+                                                       onchange="showFileInfo(event)">
+                                            </label>
+                                            <label class="custom-upload" style="background-color: white;"
+                                                   th:for="'anhsInput3'">
+                                                <input type="file" name="anhs" th:id="'anhsInput3'"
+                                                       style="display: none;" accept="image/*"
+                                                       onchange="showFileInfo(event)">
+                                            </label>
+                                        </th:block>
+
+                                        <!-- Điều kiện để tạo input file tùy thuộc vào soAnhConLai -->
+                                        <th:block th:if="${soAnhConLai == 2}">
+                                            <!-- Tạo 2 input file khi soAnhConLai = 1 -->
+                                            <label class="custom-upload" style="background-color: white;"
+                                                   th:for="'anhsInput1'">
+                                                <input type="file" name="anhs" th:id="'anhsInput1'"
+                                                       style="display: none;" accept="image/*"
+                                                       onchange="showFileInfo(event)">
+                                            </label>
+                                            <label class="custom-upload" style="background-color: white;"
+                                                   th:for="'anhsInput2'">
+                                                <input type="file" name="anhs" th:id="'anhsInput2'"
+                                                       style="display: none;" accept="image/*"
+                                                       onchange="showFileInfo(event)">
+                                            </label>
+                                        </th:block>
+
+                                        <th:block th:if="${soAnhConLai == 1}">
+                                            <!-- Tạo 1 input file khi soAnhConLai = 2 -->
+                                            <label class="custom-upload" style="background-color: white;"
+                                                   th:for="'anhsInput'">
+                                                <input type="file" name="anhs" th:id="'anhsInput'"
+                                                       style="display: none;" accept="image/*"
+                                                       onchange="showFileInfo(event)">
+                                            </label>
+                                        </th:block>
+
+                                        <!-- Hidden input cho id sản phẩm -->
+                                        <input type="hidden" id="spctIds" name="spctIds" th:value="*{id}">
                                     </div>
                                 </div>
                                 </p>
@@ -385,6 +476,7 @@
                         <!-- /.card-body -->
                     </div>
                     <!-- /.card -->
+                </section>
             </div>
             <!-- /.col -->
         </div>
@@ -396,6 +488,12 @@
 </div>
 
 </div>
+
+<script th:if="${success}" th:inline="javascript">
+    /*<![CDATA[*/
+    const deleteSuccess = /*[[${success}]]*/ false;
+    /*]]>*/
+</script>
 
 </body>
 
@@ -456,54 +554,11 @@
 </html>
 
 
-<!--Ảnh-->
+<!--validate ảnh -->
 <script>
-    window.addEventListener('DOMContentLoaded', (event) => {
-        const input = document.querySelector('input[type="file"]');
-        const preview = document.querySelector('.image-preview');
-        const uploadButton = document.getElementById('uploadButton');
 
-        input.addEventListener('change', function () {
-            const currentImages = document.querySelectorAll('.d-flex img').length;
-            const totalFiles = this.files.length;
-
-            if (currentImages + totalFiles > 3) {
-                showToast('error', 'Bạn chỉ có thể tải lên tối đa 3 ảnh.');
-                return;
-            }
-
-            [...this.files].forEach(file => {
-                if (!file.type.match('image/jpeg') && !file.type.match('image/png')) {
-                    showToast('error', 'Chỉ được tải ảnh định dạng JPG và PNG.');
-                    return;
-                }
-
-                if (file.size > 1024 * 1024) {
-                    showToast('error', 'Dung lượng mỗi ảnh không được vượt quá 1MB.');
-                    return;
-                }
-
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const img = new Image();
-                    img.src = e.target.result;
-                    img.style.width = '100px';
-                    img.style.height = '100px';
-                    img.style.objectFit = 'cover';
-                    preview.appendChild(img);
-
-                    // Ẩn hoặc hiển thị nút tải lên dựa trên số lượng ảnh đã hiển thị
-                    if (currentImages + preview.querySelectorAll('img').length >= 3) {
-                        uploadButton.style.display = 'none';
-                    } else {
-                        uploadButton.style.display = 'inline-block';
-                    }
-                }
-                reader.readAsDataURL(file);
-            });
-        });
-
-        function showToast(icon, title) {
+    window.addEventListener('DOMContentLoaded', () => {
+        if (typeof deleteSuccess !== 'undefined' && deleteSuccess) {
             const Toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',
@@ -515,13 +570,129 @@
                     toast.onmouseleave = Swal.resumeTimer;
                 }
             });
+
             Toast.fire({
-                icon: icon,
-                title: title
+                icon: 'success',
+                title: 'Xóa ảnh thành công!'
             });
         }
     });
+
+    // Hàm kiểm tra nếu còn ít nhất 1 ảnh
+    function hasAtLeastOneImage() {
+        const imageCount = document.querySelectorAll('.cloud-image').length; // Lấy số lượng ảnh đã tải lên
+        return imageCount > 1;  // Nếu còn ít nhất 1 ảnh, trả về true
+    }
+
+    // Hàm xác nhận xóa ảnh
+    function confirmDeleteImage(url) {
+        if (!hasAtLeastOneImage()) {
+            // Nếu chỉ còn một ảnh, hiển thị thông báo toast
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+
+            Toast.fire({
+                icon: 'warning',
+                title: 'Sản phẩm phải có ít nhất một ảnh!'
+            });
+            return false;  // Ngừng xóa ảnh
+        }
+
+        // Nếu còn hơn một ảnh, hiển thị thông báo xác nhận xóa
+        Swal.fire({
+            title: 'Bạn có chắc chắn muốn xóa ảnh này?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Có',
+            cancelButtonText: 'Không'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = url;  // Chuyển hướng đến URL để xóa ảnh
+            }
+        });
+        return false;
+    }
+
+    function showFileInfo(event) {
+        // Lấy thẻ <input> từ event
+        var input = event.target;
+        var label = input.parentNode;
+
+        // Hiển thị tên tệp với màu đỏ
+        if (input.files && input.files[0]) {
+            var fileName = input.files[0].name;
+            label.setAttribute('data-file-name', fileName); // Gắn tên file vào thuộc tính data-file-name
+            label.classList.add('has-file'); // Thêm class để CSS biết thay đổi text
+            input.parentNode.style.color = 'red';
+        }
+
+        // validate ảnh
+        if (input.files && input.files[0]) {
+            var file = input.files[0];
+            var fileName = file.name;
+            var fileExtension = fileName.split('.').pop().toLowerCase();
+            var fileSizeMB = file.size / (1024 * 1024); // Kích thước tệp tính bằng MB
+
+            // Kiểm tra định dạng file
+            if (fileExtension !== 'jpg' && fileExtension !== 'png') {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Sai định dạng ảnh. Vui lòng tải ảnh định dạng jpg hoặc png.'
+                });
+                input.value = ''; // Xóa giá trị của input để không lưu ảnh sai định dạng
+                label.removeAttribute('data-file-name');
+                label.classList.remove('has-file');
+                input.parentNode.style.color = ''; // Xóa màu chữ
+                return;
+            }
+
+            // Kiểm tra kích thước tệp
+            if (fileSizeMB > 1) {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Kích thước ảnh không được lớn hơn 1MB.'
+                });
+                input.value = ''; // Xóa giá trị của input để không lưu ảnh quá lớn
+                label.removeAttribute('data-file-name');
+                label.classList.remove('has-file');
+                input.parentNode.style.color = ''; // Xóa màu chữ
+                return;
+            }
+        }
+    }
 </script>
+
 <!--validate form-->
 <script>
     function validateForm() {

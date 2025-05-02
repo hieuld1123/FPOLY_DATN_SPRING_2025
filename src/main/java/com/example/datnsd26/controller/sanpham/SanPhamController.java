@@ -88,7 +88,7 @@ public class SanPhamController {
         return chuoiNgauNhien.toString();
     }
 
-    @PostMapping("/san-pham/updateTrangThai/{id}")
+    @PostMapping("/admin/san-pham/updateTrangThai/{id}")
     public String updateTrangThaiCTSP(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         SanPham sp = sanPhamRepositoty.findById(id).orElse(null);
         if (sp != null) {
@@ -99,7 +99,7 @@ public class SanPhamController {
                 s.setTrangThai(!s.getTrangThai());
                 sanPhamChiTietRepository.save(s);
             }
-            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái thành công!");
+            redirectAttributes.addFlashAttribute("success", true);
         }
         return "redirect:/quan-ly/san-pham";
     }
@@ -119,11 +119,11 @@ public class SanPhamController {
         sanPham.setNgayTao(currentTime);
         sanPham.setNgayCapNhat(currentTime);
         sanPhamRepositoty.save(sanPham);
-        return "redirect:/viewaddSPGET";
+        return "redirect:/admin/viewaddSPGET";
     }
 
 
-    @RequestMapping(value = {"/viewaddSPGET", "/viewaddSPPOST"}, method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = {"/admin/viewaddSPGET", "/admin/viewaddSPPOST"}, method = {RequestMethod.GET, RequestMethod.POST})
     public String viewaddSP(Model model, @RequestParam(defaultValue = "0") int p,
                             @ModelAttribute("thuonghieu") ThuongHieu thuongHieu,
                             @ModelAttribute("chatlieu") ChatLieu chatLieu,
@@ -205,7 +205,7 @@ public class SanPhamController {
         return "admin/qlsanpham";
     }
 
-    @PostMapping("/addProduct")
+    @PostMapping("/admin/addProduct")
     public String addProduct(@RequestParam(defaultValue = "0") int p, Model model,
                              @RequestParam Integer tensp,
                              @RequestParam String mota,
@@ -247,7 +247,8 @@ public class SanPhamController {
             for (MauSac colorId : idMauSac) {
                 for (String sizeName : kichCoNames) {
                     KichCo kichCo = kichCoRepository.findByTen(sizeName);
-                    if (kichCo != null) {
+                    if (kichCo != null &&
+                            sanPhamChiTietRepository.findSPCT(colorId, kichCo, idThuongHieu, idChatLieu, idDeGiay, sanPham) == null) {
                         String chuoiNgauNhien = taoChuoiNgauNhien(7, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
                         String maSanPhamCT = "SPCT" + chuoiNgauNhien;
                         nextId2++;
@@ -279,12 +280,12 @@ public class SanPhamController {
                 }
             }
 
-        }
-        else {
+        } else {
             for (MauSac colorId : idMauSac) {
                 for (String sizeName : kichCoNames) {
                     KichCo kichCo = kichCoRepository.findByTen(sizeName);
-                    if (kichCo != null) {
+                    if (kichCo != null &&
+                            sanPhamChiTietRepository.findSPCT(colorId, kichCo, idThuongHieu, idChatLieu, idDeGiay, sanPham) == null) {
                         boolean found = false;
                         if (sanPhamChiTietList != null) {
                             for (SanPhamChiTiet spct2 : sanPhamChiTietList) {
@@ -340,7 +341,7 @@ public class SanPhamController {
 
         model.addAttribute("sanPhamChiTietList", uniqueList);
         model.addAttribute("sanphamchitiet", sanPhamChiTietList);
-        return "forward:/viewaddSPPOST";
+        return "forward:/admin/viewaddSPPOST";
     }
 
 
@@ -422,7 +423,7 @@ public class SanPhamController {
     }
 
 
-    @GetMapping("/deleteCTSP/{id}")
+    @GetMapping("/admin/deleteCTSP/{id}")
     public String deleteCTSP(@PathVariable Integer id, Model model) {
         for (Iterator<SanPhamChiTiet> iterator = sanPhamChiTietList.iterator(); iterator.hasNext(); ) {
             SanPhamChiTiet spct = iterator.next();
@@ -445,10 +446,10 @@ public class SanPhamController {
 
         model.addAttribute("sanPhamChiTietList", uniqueList);
         model.addAttribute("sanphamchitiet", sanPhamChiTietList);
-        return "forward:/viewaddSPPOST";
+        return "forward:/admin/viewaddSPPOST";
     }
 
-    @PostMapping("/addImage")
+    @PostMapping("/admin/addImage")
     public String addImage(
             @RequestParam(name = "anh1") List<MultipartFile> anhFiles1,
             @RequestParam(name = "anh2") List<MultipartFile> anhFiles2,
@@ -471,60 +472,11 @@ public class SanPhamController {
                     .filter(spct -> spct.getSanPham().getId().equals(sanPham.getId()))
                     .collect(Collectors.toList());
 
-            if (existingSPCTs.isEmpty()) {
-                for (SanPhamChiTiet spct : spctForThisSanPham) {
-                    sanPhamChiTietRepository.save(spct);
-                }
-            } else {
-                for (SanPhamChiTiet spctList : spctForThisSanPham) {
-                    SanPhamChiTiet spctTim = sanPhamChiTietRepository.findSPCT(
-                            spctList.getMauSac(), spctList.getKichCo(), spctList.getThuongHieu(),
-                            spctList.getChatLieu(), spctList.getDeGiay(), spctList.getSanPham());
-                    if (spctTim != null) {
-                        spctTim.setSoLuong(spctTim.getSoLuong() + spctList.getSoLuong());
-                        if (spctList.getHinhAnh() != null) {
-                            for (HinhAnh anh : spctList.getHinhAnh()) {
-                                anh.setSanPhamChiTiet(spctTim);
-                                anhRepository.save(anh);
-                            }
-                        }
-                        sanPhamChiTietRepository.save(spctTim);
-                    } else {
-                        sanPhamChiTietRepository.save(spctList);
-                    }
-                }
+            // New
+            for (SanPhamChiTiet spct : spctForThisSanPham) {
+                sanPhamChiTietRepository.save(spct);
             }
         }
-
-
-        // backup
-//        SanPham sanPham = sanPhamChiTietList.get(0).getSanPham();
-//        List<SanPhamChiTiet> listsanPhamChiTietDB = sanPhamChiTietRepository.findBySanPham(sanPham);
-//
-//        if (listsanPhamChiTietDB.isEmpty()) {
-//            for (SanPhamChiTiet spct : sanPhamChiTietList) {
-//                sanPhamChiTietRepository.save(spct);
-//            }
-//        } else {
-//            for (SanPhamChiTiet spctList : sanPhamChiTietList) {
-//                SanPhamChiTiet spctTim = sanPhamChiTietRepository.findSPCT(
-//                        spctList.getMauSac(), spctList.getKichCo(), spctList.getThuongHieu(),
-//                        spctList.getChatLieu(), spctList.getDeGiay(), spctList.getSanPham());
-//                if (spctTim != null) {
-//                    spctTim.setSoLuong(spctTim.getSoLuong() + spctList.getSoLuong());
-//                    if (spctList.getHinhAnh() != null) {
-//                        for (HinhAnh anh : spctList.getHinhAnh()) {
-//                            anh.setSanPhamChiTiet(spctTim);
-//                            anhRepository.save(anh);
-//                        }
-//                    }
-//                    sanPhamChiTietRepository.save(spctTim);
-//                } else {
-//                    sanPhamChiTietRepository.save(spctList);
-//                }
-//            }
-//        }
-
 
         sanPhamChiTietList.clear();
 
@@ -554,27 +506,30 @@ public class SanPhamController {
 
             // Save image URLs in the database for each product detail
             for (SanPhamChiTiet spctInList : spctSameImage) {
-                if (url1 != null) {
+                if (url1 != null && spctInList.getHinhAnh() == null) {
                     HinhAnh anh1 = new HinhAnh();
                     anh1.setTenAnh(url1); // Save the URL from Cloudinary
                     anh1.setNgayTao(now);
                     anh1.setNgayCapNhat(now);
+                    anh1.setTrangThai(true);
                     anh1.setSanPhamChiTiet(spctInList);
                     anhRepository.save(anh1);
                 }
-                if (url2 != null) {
+                if (url2 != null && spctInList.getHinhAnh() == null) {
                     HinhAnh anh2 = new HinhAnh();
                     anh2.setTenAnh(url2); // Save the URL from Cloudinary
                     anh2.setNgayTao(now);
                     anh2.setNgayCapNhat(now);
+                    anh2.setTrangThai(true);
                     anh2.setSanPhamChiTiet(spctInList);
                     anhRepository.save(anh2);
                 }
-                if (url3 != null) {
+                if (url3 != null && spctInList.getHinhAnh() == null) {
                     HinhAnh anh3 = new HinhAnh();
                     anh3.setTenAnh(url3); // Save the URL from Cloudinary
                     anh3.setNgayTao(now);
                     anh3.setNgayCapNhat(now);
+                    anh3.setTrangThai(true);
                     anh3.setSanPhamChiTiet(spctInList);
                     anhRepository.save(anh3);
                 }
@@ -585,75 +540,6 @@ public class SanPhamController {
         redirectAttributes.addFlashAttribute("success", true);
         return "redirect:/quan-ly/san-pham";
     }
-
-
-
-//    @PostMapping("/addImage")
-//    public String addImage(
-//            @RequestParam(name = "anh1") List<MultipartFile> anhFiles1,
-//            @RequestParam(name = "anh2") List<MultipartFile> anhFiles2,
-//            @RequestParam(name = "anh3") List<MultipartFile> anhFiles3,
-//            RedirectAttributes redirectAttributes,
-//            Model model
-//    ) throws IOException {
-//        SanPham sanPham = sanPhamChiTietList.get(0).getSanPham();
-//        List<SanPhamChiTiet> listsanPhamChiTietDB = sanPhamChiTietRepository.findBySanPham(sanPham);
-//
-//        if (listsanPhamChiTietDB.isEmpty()) {
-//            for (SanPhamChiTiet spct : sanPhamChiTietList) {
-//                sanPhamChiTietRepository.save(spct);
-//            }
-//        } else {
-//            for (SanPhamChiTiet spctList : sanPhamChiTietList) {
-//                SanPhamChiTiet spctTim = sanPhamChiTietRepository.findSPCT(
-//                        spctList.getMauSac(), spctList.getKichCo(), spctList.getThuongHieu(),
-//                        spctList.getChatLieu(), spctList.getDeGiay(), spctList.getSanPham());
-//                if (spctTim != null) {
-//                    spctTim.setSoLuong(spctTim.getSoLuong() + spctList.getSoLuong());
-//                    if (spctList.getHinhAnh() != null) {
-//                        for (HinhAnh anh : spctList.getHinhAnh()) {
-//                            anh.setSanPhamChiTiet(spctTim);
-//                            anhRepository.save(anh);
-//                        }
-//                    }
-//                    sanPhamChiTietRepository.save(spctTim);
-//                } else {
-//                    sanPhamChiTietRepository.save(spctList);
-//                }
-//            }
-//        }
-//        sanPhamChiTietList.clear();
-//
-//        for (int i = 0; i < uniqueList.size(); i++) {
-//            SanPhamChiTiet spct = uniqueList.get(i);
-//            List<SanPhamChiTiet> spctSameImage = sanPhamChiTietImp.findByIdSanPhamAndIdMauSac(spct.getSanPham().getId(), spct.getMauSac().getId());
-//
-//
-//            byte[] file1Bytes = anhFiles1.get(i).getBytes();
-//            byte[] file2Bytes = anhFiles2.get(i).getBytes();
-//            byte[] file3Bytes = anhFiles3.get(i).getBytes();
-//            String name1 = anhFiles1.get(i).getOriginalFilename();
-//            String name2 = anhFiles2.get(i).getOriginalFilename();
-//            String name3 = anhFiles3.get(i).getOriginalFilename();
-//
-//
-//            for (SanPhamChiTiet spctInList : spctSameImage) {
-//                if (file1Bytes.length > 0) {
-//                    addAnhFromBytes(spctInList, file1Bytes, name1);
-//                }
-//                if (file2Bytes.length > 0) {
-//                    addAnhFromBytes(spctInList, file2Bytes, name2);
-//                }
-//                if (file3Bytes.length > 0) {
-//                    addAnhFromBytes(spctInList, file3Bytes, name3);
-//                }
-//            }
-//        }
-//
-//        uniqueList.clear();
-//        redirectAttributes.addFlashAttribute("success", true);
-//        return "redirect:/listsanpham";
-//    }
 
     private void addAnhFromBytes(SanPhamChiTiet spct, byte[] fileData, String originalFilename) {
         try {
@@ -719,7 +605,7 @@ public class SanPhamController {
     }
 
 
-    @PostMapping("/updateGiaAndSoLuong")
+    @PostMapping("/admin/updateGiaAndSoLuong")
     public String updateGiaAndSoLuong(
             Model model,
             @RequestParam("soluong") Integer soluong,
@@ -769,7 +655,7 @@ public class SanPhamController {
 
         model.addAttribute("sanPhamChiTietList", uniqueList);
         model.addAttribute("sanphamchitiet", sanPhamChiTietList);
-        return "forward:/viewaddSPPOST";
+        return "forward:/admin/viewaddSPPOST";
     }
 
 

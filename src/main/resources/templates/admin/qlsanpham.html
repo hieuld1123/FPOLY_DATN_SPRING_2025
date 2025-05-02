@@ -216,7 +216,7 @@
                                     </div>
                                 </form>
                                 <div class="ms-3">
-                                    <a href="/viewaddSPGET" class="ms-auto">
+                                    <a href="/admin/viewaddSPGET" class="ms-auto">
                                         <button class="btn btn-primary">
                                             + Thêm mới
                                         </button>
@@ -265,26 +265,16 @@
                             </td>
                             <td>
                                 <form name="updateTrangThaiForm"
-                                      th:action="@{/san-pham/updateTrangThai/{id}(id=${sp[0]})}"
+                                      th:action="@{/admin/san-pham/updateTrangThai/{id}(id=${sp[0]})}"
                                       method="post"
                                       onsubmit="return confirmUpdateKichCo(this);">
-                                    <button id="statusBtn_[[${sp[0]}]]" style=" border: none;"
-                                            class="btn-xs"
+                                    <button id="statusBtn_[[${sp[0]}]]" style="border: none; display: inline-block; width: 150px; height: 35px; color: white; text-align: center; line-height: 35px; border-radius: 4px;"
                                             th:classappend="${sp[4] == true ? 'bg-success' : 'bg-danger'}"
                                             th:text="${sp[4] == true ? 'Đang kinh doanh' : 'Ngừng kinh doanh'}">
 
                                     </button>
                                 </form>
-
                             </td>
-                            <!--                                        trạng thái mới-->
-                            <!--                                        <td>-->
-                            <!--                                            <a>-->
-                            <!--                                                <div th:if="${sp[4] == 0}">-->
-                            <!--                                                    <p style=" font-family: 'Times New Roman'; font-size: 12px; border-radius: 14px; background-color: orange; padding: 2px 5px 2px 5px; color: white;">Ngừng kích hoạt</p>-->
-                            <!--                                                </div>-->
-                            <!--                                            </a>-->
-                            <!--                                        </td>-->
                             <td>
                                 <a style="font-size: 18px;" th:data-id="${sp[0]}"
                                    data-bs-toggle="modal" data-bs-target="#capnhatsanpham"
@@ -305,8 +295,7 @@
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="capnhatsanphamLabel">Cập nhật sản
-                                        phẩm</h5>
+                                    <h5 class="modal-title" id="capnhatsanphamLabel">Cập nhật sản phẩm</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                 </div>
@@ -314,8 +303,7 @@
                                     <input type="hidden" id="sanPhamId">
                                     <div class="mb-3">
                                         <label for="tenSanPham" class="form-label"><span
-                                                style="color: red">* </span>Tên
-                                            sản phẩm</label>
+                                                style="color: red">* </span>Tên sản phẩm</label>
                                         <input type="text" class="form-control" id="tenSanPham">
                                         <div id="error-message" class="text-danger"
                                              style="display: none;">
@@ -528,7 +516,7 @@
                             tensanpham: ten // Sửa đổi tên trường cho phù hợp
                         };
 
-                        fetch(`/updateSanPham/${id}`, {
+                        fetch(`/san-pham/updateSanPham/${id}`, {
                             method: 'PUT',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -540,7 +528,7 @@
                                     // Lưu thông báo vào sessionStorage
                                     sessionStorage.setItem('successMessage', 'Cập nhật thành công!');
                                     // Chuyển hướng
-                                    window.location.href = '/listsanpham';
+                                    window.location.href = '/quan-ly/san-pham';
                                 } else {
                                     throw new Error('Cập nhật thất bại');
                                 }
@@ -606,7 +594,7 @@
 
         Toast.fire({
             icon: "success",
-            title: "Xác nhận thành công!"
+            title: "Cập nhật thành công!"
         });
     }
 
@@ -639,8 +627,6 @@
                     }
                 });
                 setTimeout(function () {
-                    // Lưu thông báo vào sessionStorage
-                    sessionStorage.setItem('successMessage', 'Cập nhật trạng thái thành công!');
                     // Submit form cụ thể
                     form.submit();
                 }, 500); // Điều chỉnh thời gian delay nếu cần

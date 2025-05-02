@@ -6,6 +6,7 @@ import com.example.datnsd26.info.ThuocTinhInfo;
 import com.example.datnsd26.repository.*;
 import com.example.datnsd26.services.CapNhatGiaKMServie;
 import com.example.datnsd26.services.impl.*;
+import com.example.datnsd26.utilities.CloudinaryUtil;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -63,11 +64,17 @@ public class SanPhamChiTietController {
     @Autowired
     HinhAnhRepository hinhAnhRepository;
 
+    @Autowired
+    CloudinaryUtil cloudinaryUtil;
+
+    @Autowired
+    HinhAnhRepository anhRepository;
+
 
     //Cập nhật trạng thái sản phẩm chi tiết
 
-    @PostMapping("/chi-tiet-san-pham/updateTrangThai/{id}")
-    public String updateTrangThaiCTSP(@PathVariable Integer id) {
+    @PostMapping("/admin/chi-tiet-san-pham/updateTrangThai/{id}")
+    public String updateTrangThaiCTSP(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         SanPhamChiTiet spct = sanPhamChiTietRepository.findById(id).orElse(null);
         if (spct != null) {
             spct.setTrangThai(!spct.getTrangThai());
@@ -97,6 +104,7 @@ public class SanPhamChiTietController {
                 sanPhamRepositoty.save(sanPham);
             }
         }
+        redirectAttributes.addFlashAttribute("success", true);
         return "redirect:/quan-ly/chi-tiet-san-pham/" + spct.getSanPham().getId();
     }
 
@@ -158,7 +166,7 @@ public class SanPhamChiTietController {
     }
 
 
-    @GetMapping("/updateCTSP/{id}")
+    @GetMapping("/admin/updateCTSP/{id}")
     public String viewupdateCTSP(@PathVariable Integer id, Model model,
                                  @ModelAttribute("thuonghieu") ThuongHieu thuongHieu,
                                  @ModelAttribute("chatlieu") ChatLieu chatLieu,
@@ -197,6 +205,8 @@ public class SanPhamChiTietController {
         model.addAttribute("cl", listChatLieu);
         model.addAttribute("a", listHinhAnh);
         model.addAttribute("hehe", sanPhamChiTietImp.findById(id));
+        int soAnhConLai = 3 - sanPhamChiTietImp.findById(id).getHinhAnh().size();
+        model.addAttribute("soAnhConLai", soAnhConLai);
 
         SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietImp.findById(id);
 
@@ -206,7 +216,7 @@ public class SanPhamChiTietController {
     }
 
 
-    @GetMapping("/updateAllCTSP/{id}")
+    @GetMapping("/admin/updateAllCTSP/{id}")
     public String viewupdateAllCTSP(@PathVariable Integer id, Model model,
                                     @ModelAttribute("thuonghieu") ThuongHieu thuongHieu,
                                     @ModelAttribute("chatlieu") ChatLieu chatLieu,
@@ -245,6 +255,8 @@ public class SanPhamChiTietController {
         model.addAttribute("cl", listChatLieu);
         model.addAttribute("a", listHinhAnh);
         model.addAttribute("AllCTSP", sanPhamChiTietImp.findById(id));
+        int soAnhConLai = 3 - sanPhamChiTietImp.findById(id).getHinhAnh().size();
+        model.addAttribute("soAnhConLai", soAnhConLai);
 
         SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietImp.findById(id);
         Float giagoc = sanPhamChiTiet.getGiaBan();
@@ -253,11 +265,11 @@ public class SanPhamChiTietController {
     }
 
 
-    @PostMapping("/updateCTSP/{id}")
+    @PostMapping("/admin/updateCTSP/{id}")
     public String updateCTSP(@PathVariable Integer id, @ModelAttribute("hehe") SanPhamChiTiet sanPhamChiTiet,
                              @RequestParam(name = "anhs", required = false) List<MultipartFile> anhFiles,
                              @RequestParam(name = "spctIds") Integer spctId,
-                             RedirectAttributes redirectAttributes, HttpSession session) {
+                             RedirectAttributes redirectAttributes, HttpSession session) throws IOException {
 
         LocalDateTime currentTime = LocalDateTime.now();
         SanPham sanPham = sanPhamRepositoty.findById(sanPhamChiTiet.getSanPham().getId())
@@ -290,34 +302,57 @@ public class SanPhamChiTietController {
         existingSanPhamChiTiet.setGioiTinh(sanPhamChiTiet.getGioiTinh());
 
         sanPhamChiTietRepository.save(existingSanPhamChiTiet);
+
+        SanPhamChiTiet spct = sanPhamChiTietRepository.findById(spctId).orElse(null);
+
+        System.out.println("Size list ảnh: " + anhFiles.size());
+
         if (anhFiles != null && !anhFiles.isEmpty()) {
-            SanPhamChiTiet spct = sanPhamChiTietRepository.findById(spctId).orElse(null);
-            if (spct != null) {
-                for (MultipartFile anhFile : anhFiles) {
-                    if (!anhFile.isEmpty()) {
-                        String anhUrl = saveImage(anhFile);
-                        HinhAnh hinhAnh = new HinhAnh();
-                        hinhAnh.setTenAnh(anhUrl);
-                        hinhAnh.setTrangThai(true);
-                        hinhAnh.setNgayTao(currentTime);
-                        hinhAnh.setNgayCapNhat(currentTime);
-                        hinhAnh.setSanPhamChiTiet(spct);
-                        hinhAnhRepository.save(hinhAnh);
-                    }
+            for (MultipartFile file : anhFiles) {
+                System.out.println("File name: " + file.getOriginalFilename());
+                System.out.println("File size: " + file.getSize());
+                byte[] fileBytes = file.getBytes();
+                LocalDateTime now = LocalDateTime.now();
+                String url = null;
+                if (fileBytes.length > 0) {
+                    Map<String, String> uploadResult = cloudinaryUtil.upload(file);
+                    url = uploadResult.get("url");
+                }
+                System.out.println("URL trên Cloudinary:" + url);
+
+                if (url != null) {
+                    HinhAnh anh = new HinhAnh();
+                    anh.setTenAnh(url); // Save the URL from Cloudinary
+                    anh.setNgayTao(now);
+                    anh.setTrangThai(true);
+                    anh.setNgayCapNhat(now);
+                    anh.setSanPhamChiTiet(spct);
+                    anhRepository.save(anh);
                 }
             }
         }
+
         Integer firstProductId = sanPhamChiTiet.getSanPham().getId();
         redirectAttributes.addFlashAttribute("success", true);
         return "redirect:/quan-ly/chi-tiet-san-pham/" + firstProductId;
     }
 
+    @GetMapping("/admin/updateCTSP/deleteImage/{idCTSP}/{idImage}")
+    public String deleteImageInCTSPOfProduct(@PathVariable Integer idCTSP,
+                              @PathVariable Integer idImage,
+                              RedirectAttributes redirectAttributes) {
 
-    @PostMapping("/updateAllCTSP/{id}")
+        hinhAnhRepository.deleteByIdAndSanPhamChiTietId(idImage, idCTSP);
+        redirectAttributes.addFlashAttribute("success", true);
+        return "redirect:/admin/updateCTSP/" + idCTSP;
+    }
+
+
+    @PostMapping("/admin/updateAllCTSP/{id}")
     public String updateAllCTSP(@PathVariable Integer id, @ModelAttribute("AllCTSP") SanPhamChiTiet sanPhamChiTiet,
                                 @RequestParam(name = "anhs", required = false) List<MultipartFile> anhFiles,
                                 @RequestParam(name = "spctIds") Integer spctId,
-                                RedirectAttributes redirectAttributes, HttpSession session) {
+                                RedirectAttributes redirectAttributes, HttpSession session) throws IOException {
 
         LocalDateTime currentTime = LocalDateTime.now();
         SanPham sanPham = sanPhamRepositoty.findById(sanPhamChiTiet.getSanPham().getId())
@@ -350,25 +385,45 @@ public class SanPhamChiTietController {
         existingSanPhamChiTiet.setGioiTinh(sanPhamChiTiet.getGioiTinh());
 
         sanPhamChiTietRepository.save(existingSanPhamChiTiet);
+
+        SanPhamChiTiet spct = sanPhamChiTietRepository.findById(spctId).orElse(null);
+
         if (anhFiles != null && !anhFiles.isEmpty()) {
-            SanPhamChiTiet spct = sanPhamChiTietRepository.findById(spctId).orElse(null);
-            if (spct != null) {
-                for (MultipartFile anhFile : anhFiles) {
-                    if (!anhFile.isEmpty()) {
-                        String anhUrl = saveImage(anhFile);
-                        HinhAnh hinhAnh = new HinhAnh();
-                        hinhAnh.setTenAnh(anhUrl);
-                        hinhAnh.setTrangThai(true);
-                        hinhAnh.setNgayTao(currentTime);
-                        hinhAnh.setNgayCapNhat(currentTime);
-                        hinhAnh.setSanPhamChiTiet(spct);
-                        hinhAnhRepository.save(hinhAnh);
-                    }
+            for (MultipartFile file : anhFiles) {
+                System.out.println("File name: " + file.getOriginalFilename());
+                System.out.println("File size: " + file.getSize());
+                byte[] fileBytes = file.getBytes();
+                LocalDateTime now = LocalDateTime.now();
+                String url = null;
+                if (fileBytes.length > 0) {
+                    Map<String, String> uploadResult = cloudinaryUtil.upload(file);
+                    url = uploadResult.get("url");
+                }
+                System.out.println("URL trên Cloudinary:" + url);
+
+                if (url != null) {
+                    HinhAnh anh = new HinhAnh();
+                    anh.setTenAnh(url); // Save the URL from Cloudinary
+                    anh.setNgayTao(now);
+                    anh.setTrangThai(true);
+                    anh.setNgayCapNhat(now);
+                    anh.setSanPhamChiTiet(spct);
+                    anhRepository.save(anh);
                 }
             }
         }
         redirectAttributes.addFlashAttribute("success", true);
         return "redirect:/quan-ly/san-pham-chi-tiet";
+    }
+
+    @GetMapping("/admin/updateAllCTSP/deleteImage/{idCTSP}/{idImage}")
+    public String deleteImageInCTSPOfAllCTSP(@PathVariable Integer idCTSP,
+                                             @PathVariable Integer idImage,
+                                             RedirectAttributes redirectAttributes) {
+
+        hinhAnhRepository.deleteByIdAndSanPhamChiTietId(idImage, idCTSP);
+        redirectAttributes.addFlashAttribute("success", true);
+        return "redirect:/admin/updateAllCTSP/" + idCTSP;
     }
 
     //    private String saveImage(MultipartFile file) {
@@ -409,12 +464,13 @@ public class SanPhamChiTietController {
         }
     }
 
-    @PostMapping("/updateGiaAndSoLuongCTSP")
+    @PostMapping("/admin/updateGiaAndSoLuongCTSP")
     public String updateGiaAndSoLuong(
             Model model,
             @RequestParam("soluong") Integer soluong,
             @RequestParam("giatien") BigDecimal giatien,
-            @RequestParam("choncheckbox") String[] choncheckbox
+            @RequestParam("choncheckbox") String[] choncheckbox,
+            RedirectAttributes redirectAttributes
     ) {
         List<String> listString = Arrays.asList(choncheckbox);
         List<Integer> listInt = new ArrayList<>();
@@ -436,6 +492,8 @@ public class SanPhamChiTietController {
             sanPhamChiTietRepository.updateSoLuongVaGiaTienById(id, soluong, giatien);
 
         }
+
+        redirectAttributes.addFlashAttribute("success", true);
         return "redirect:/quan-ly/chi-tiet-san-pham/" + firstProductId;
     }
 }

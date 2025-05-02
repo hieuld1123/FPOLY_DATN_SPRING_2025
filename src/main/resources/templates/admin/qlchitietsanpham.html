@@ -335,7 +335,7 @@
 
             <!-- Main content -->
             <div class="content">
-                <form th:method="post" th:action="@{/updateGiaAndSoLuongCTSP}" id="submitid"
+                <form th:method="post" th:action="@{/admin/updateGiaAndSoLuongCTSP}" id="submitid"
                       onsubmit="return validateForm()" name="updateSLGT">
                     <div class="d-flex justify-content-end align-items-center mb-4 mt-4">
                         <button id="editButton" class="btn btn-primary disabled me-2" type="button"
@@ -474,23 +474,23 @@
                             <!--                                        <td th:text="${spct.mausac.ten}"></td>-->
 
                             <td>
-                                <input type="color" th:value="${spct.mauSac.ten}" class="form-control"
-                                       disabled>
-                                <!--                                            <p th:text="${spct.mausac.ten}" style="color: red">-->
+                                <span th:style="'display: inline-block; width: 100px; height: 35px; background:' + ${spct.mauSac.ten} + '; color: white; text-align: center; line-height: 35px; border-radius: 4px;'"
+                                      th:text="${spct.mauSac.tenMauSac}">
+                                </span>
                             </td>
                             <td>
                                 <form name="updateTrangThaiForm"
-                                      th:action="@{/chi-tiet-san-pham/updateTrangThai/{id}(id=${spct.id})}"
+                                      th:action="@{/admin/chi-tiet-san-pham/updateTrangThai/{id}(id=${spct.id})}"
                                       method="post"
                                       onsubmit="return confirmUpdateKichCo(this);">
-                                    <button type="submit" style=" border: none;"
+                                    <button type="submit" style="border: none; display: inline-block; width: 150px; height: 35px; color: white; text-align: center; line-height: 35px; border-radius: 4px;"
                                             th:classappend="${spct.trangThai == true ? 'bg-success' : 'bg-danger'}">
                                         <span th:text="${spct.trangThai == true ? 'Đang kinh doanh' : 'Ngừng kinh doanh'}"></span>
                                     </button>
                                 </form>
                             </td>
                             <td>
-                                <a th:href="@{/updateCTSP/{id}(id=${spct.id})}"
+                                <a th:href="@{/admin/updateCTSP/{id}(id=${spct.id})}"
                                    style="color:#0054a6">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25"
                                          fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
@@ -672,8 +672,6 @@
                     }
                 });
                 setTimeout(function () {
-                    // Lưu thông báo vào sessionStorage
-                    sessionStorage.setItem('successMessageSuaGia', 'Cập nhật thành công!');
                     document.updateSLGT.submit();
                 });
             }
@@ -853,9 +851,6 @@
                     }
                 });
                 setTimeout(function () {
-                    // Lưu thông báo vào sessionStorage
-                    sessionStorage.setItem('successMessage', 'Cập nhật trạng thái thành công!');
-                    // Submit form cụ thể
                     form.submit();
                 }, 500); // Điều chỉnh thời gian delay nếu cần
             }

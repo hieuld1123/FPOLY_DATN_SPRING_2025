@@ -79,7 +79,7 @@ public class SanPhamRestcontroller {
     }
 
 
-    @PutMapping("/updateSanPham/{id}")
+    @PutMapping("/san-pham/updateSanPham/{id}")
     public ResponseEntity<String> updateSanPham(@PathVariable Integer id, @RequestBody SanPham updatedSanPham) {
         SanPham existingSanPham = sanPhamRepositoty.findById(id).orElse(null);
         if (existingSanPham == null || updatedSanPham == null) {
