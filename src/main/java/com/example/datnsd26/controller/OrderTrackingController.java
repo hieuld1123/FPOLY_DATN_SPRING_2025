@@ -57,31 +57,44 @@ public class OrderTrackingController {
 
         HoaDon hoaDon = optionalHoaDon.get();
         List<HoaDonChiTiet> chiTietList = hoaDonChiTietRepository.findByHoaDon(hoaDon);
-        List<LichSuHoaDon> lichSuList = lichSuHoaDonRepository.findByHoaDonOrderByThoiGianDesc(hoaDon);
+        List<LichSuHoaDon> lichSuList = lichSuHoaDonRepository.findByHoaDonOrderByThoiGianAsc(hoaDon);
 
 
-        List<String> allTrangThai = List.of(
-                "Đặt hàng",
-                "Chờ xác nhận",
-                "Đã xác nhận",
-                "Đã giao cho đơn vị vận chuyển",
-                "Hoàn thành"
+//        List<String> allTrangThai = List.of(
+//                "Đặt hàng",
+//                "Chờ xác nhận",
+//                "Đã xác nhận",
+//                "Đã giao cho đơn vị vận chuyển",
+//                "Hoàn thành"
+//
+//        );
+//        model.addAttribute("allTrangThai", allTrangThai);
+//        String currentStatus = hoaDon.getTrangThai();
+//        model.addAttribute("currentStatus", currentStatus);
+//
+//        // Thời gian của các trạng thái đã qua
+//        Map<String, String> thoiGianFormattedMap = new LinkedHashMap<>();
+//        for (LichSuHoaDon lichSu : lichSuList) {
+//            String key = lichSu.getTrangThai().trim().toLowerCase();
+//            thoiGianFormattedMap.putIfAbsent(key, new SimpleDateFormat("dd/MM/yyyy HH:mm").format(lichSu.getThoiGian()));
+//        }
+//
+//        model.addAttribute("thoiGianFormattedMap", thoiGianFormattedMap);
+//        model.addAttribute("hoaDon", hoaDon);
+//        model.addAttribute("allTrangThai", allTrangThai);
+//        model.addAttribute("lichSuList", lichSuList);
+//        model.addAttribute("chiTietList", chiTietList);
 
-        );
+
+        // Lấy tất cả trạng thái, bao gồm cả trùng lặp
+        List<String> allTrangThai = lichSuList.stream()
+                .map(LichSuHoaDon::getTrangThai)
+                .collect(Collectors.toList());
         model.addAttribute("allTrangThai", allTrangThai);
         String currentStatus = hoaDon.getTrangThai();
         model.addAttribute("currentStatus", currentStatus);
 
-        // Thời gian của các trạng thái đã qua
-        Map<String, String> thoiGianFormattedMap = new LinkedHashMap<>();
-        for (LichSuHoaDon lichSu : lichSuList) {
-            String key = lichSu.getTrangThai().trim().toLowerCase();
-            thoiGianFormattedMap.putIfAbsent(key, new SimpleDateFormat("dd/MM/yyyy HH:mm").format(lichSu.getThoiGian()));
-        }
-
-        model.addAttribute("thoiGianFormattedMap", thoiGianFormattedMap);
         model.addAttribute("hoaDon", hoaDon);
-        model.addAttribute("allTrangThai", allTrangThai);
         model.addAttribute("lichSuList", lichSuList);
         model.addAttribute("chiTietList", chiTietList);
 
@@ -107,26 +120,43 @@ public class OrderTrackingController {
 
         HoaDon hoaDon = optionalHoaDon.get();
         List<HoaDonChiTiet> chiTietList = hoaDonChiTietRepository.findByHoaDon(hoaDon);
-        List<LichSuHoaDon> lichSuList = lichSuHoaDonRepository.findByHoaDonOrderByThoiGianDesc(hoaDon);
+        List<LichSuHoaDon> lichSuList = lichSuHoaDonRepository.findByHoaDonOrderByThoiGianAsc(hoaDon);
 
-        List<String> allTrangThai = List.of(
-                "Đặt hàng",
-                "Chờ xác nhận",
-                "Đã xác nhận",
-                "Đã giao cho đơn vị vận chuyển",
-                "Hoàn thành"
-        );
+
+//        List<String> allTrangThai = List.of(
+//                "Đặt hàng",
+//                "Chờ xác nhận",
+//                "Đã xác nhận",
+//                "Đã giao cho đơn vị vận chuyển",
+//                "Hoàn thành"
+//
+//        );
+//        model.addAttribute("allTrangThai", allTrangThai);
+//        String currentStatus = hoaDon.getTrangThai();
+//        model.addAttribute("currentStatus", currentStatus);
+//
+//        // Thời gian của các trạng thái đã qua
+//        Map<String, String> thoiGianFormattedMap = new LinkedHashMap<>();
+//        for (LichSuHoaDon lichSu : lichSuList) {
+//            String key = lichSu.getTrangThai().trim().toLowerCase();
+//            thoiGianFormattedMap.putIfAbsent(key, new SimpleDateFormat("dd/MM/yyyy HH:mm").format(lichSu.getThoiGian()));
+//        }
+//
+//        model.addAttribute("thoiGianFormattedMap", thoiGianFormattedMap);
+//        model.addAttribute("hoaDon", hoaDon);
+//        model.addAttribute("allTrangThai", allTrangThai);
+//        model.addAttribute("lichSuList", lichSuList);
+//        model.addAttribute("chiTietList", chiTietList);
+
+
+        // Lấy tất cả trạng thái, bao gồm cả trùng lặp
+        List<String> allTrangThai = lichSuList.stream()
+                .map(LichSuHoaDon::getTrangThai)
+                .collect(Collectors.toList());
         model.addAttribute("allTrangThai", allTrangThai);
         String currentStatus = hoaDon.getTrangThai();
         model.addAttribute("currentStatus", currentStatus);
 
-        Map<String, String> thoiGianFormattedMap = new LinkedHashMap<>();
-        for (LichSuHoaDon lichSu : lichSuList) {
-            String key = lichSu.getTrangThai().trim().toLowerCase();
-            thoiGianFormattedMap.putIfAbsent(key, new SimpleDateFormat("dd/MM/yyyy HH:mm").format(lichSu.getThoiGian()));
-        }
-
-        model.addAttribute("thoiGianFormattedMap", thoiGianFormattedMap);
         model.addAttribute("hoaDon", hoaDon);
         model.addAttribute("lichSuList", lichSuList);
         model.addAttribute("chiTietList", chiTietList);

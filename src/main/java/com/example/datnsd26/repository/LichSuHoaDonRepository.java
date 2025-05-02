@@ -17,6 +17,8 @@ public interface LichSuHoaDonRepository extends JpaRepository<LichSuHoaDon, Inte
     @Modifying
     @Query("DELETE FROM LichSuHoaDon ls WHERE ls.hoaDon.maHoaDon = :code")
     void deleteByInvoiceCode(String code);
+
     List<LichSuHoaDon> findByHoaDonOrderByThoiGianDesc(HoaDon hoaDon);
+    List<LichSuHoaDon> findByHoaDonOrderByThoiGianAsc(HoaDon hoaDon);
 
 }
