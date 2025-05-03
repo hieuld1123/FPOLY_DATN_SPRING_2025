@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
-<div th:replace="~{components/head :: head}" ></div>
+<div th:replace="~{components/head :: head}"></div>
 <meta charset="UTF-8"/>
 <title>NineShoes</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css"/>
@@ -24,7 +24,8 @@
 
 <!-- Select2 (Dropdown multiple) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css">
 
 <!-- Bootstrap Color Picker -->
 <link rel="stylesheet"
@@ -275,7 +276,7 @@
                                         <option th:each="mausac : ${ms}"
                                                 th:value="${mausac.id}"
                                                 th:selected="${mausac.id == fillMauSac}"
-                                                th:text="${mausac.ten}"
+                                                th:text="${mausac.tenMauSac}"
                                                 th:data-color="${mausac.ten}"></option>
                                     </select>
                                 </div>
@@ -313,11 +314,13 @@
                                             onchange="submitForm()">
                                         <option value="" th:selected="${fillTrangThai == null}">Tất cả</option>
                                         <option value="true"
-                                                th:selected="${fillTrangThai != null && fillTrangThai == 'true'}">Đang kinh
+                                                th:selected="${fillTrangThai != null && fillTrangThai == 'true'}">Đang
+                                            kinh
                                             doanh
                                         </option>
                                         <option value="false"
-                                                th:selected="${fillTrangThai != null && fillTrangThai == 'false'}">Ngừng kinh
+                                                th:selected="${fillTrangThai != null && fillTrangThai == 'false'}">Ngừng
+                                            kinh
                                             doanh
                                         </option>
                                     </select>
@@ -342,7 +345,8 @@
                     <table id="example2" style="width: 100%" class="table-bordered table-hover text-center">
                         <thead style="height: 50px;color: black">
                         <tr>
-                            <th STT</th>
+                            <th STT
+                            </th>
                             <th>Mã</th>
                             <th>Ảnh</th>
                             <th>Số lượng</th>
@@ -398,20 +402,17 @@
                                 <br/>
                             </td>
                             <td th:text="${spct.thuongHieu.ten}"></td>
+                            <td th:text="${spct.kichCo.ten}"></td>
                             <td th:text="${spct.chatLieu.ten}"></td>
                             <td th:text="${spct.deGiay.ten}"></td>
-                            <!--                                        <td th:text="${spct.chatlieu.ten}"></td>-->
-                            <!--                                        <td th:text="${spct.degiay.ten}"></td>-->
-                            <td th:text="${spct.kichCo.ten}"></td>
-                            <!--                                        <td th:text="${spct.mausac.ten}"></td>-->
+                            <td>
+                                <span th:style="'display: inline-block; width: 100px; height: 35px; background:' + ${spct.mauSac.ten} + '; color: white; text-align: center; line-height: 35px; border-radius: 4px;'"
+                                        th:text="${spct.mauSac.tenMauSac}">
+                                </span>
+                            </td>
 
                             <td>
-                                <input type="color" th:value="${spct.mauSac.ten}" class="form-control"
-                                       disabled>
-                                <!--                                            <p th:text="${spct.mausac.ten}" style="color: red">-->
-                            </td>
-                            <td>
-                                <a th:href="@{/updateAllCTSP/{id}(id=${spct.id})}"
+                                <a th:href="@{/admin/updateAllCTSP/{id}(id=${spct.id})}"
                                    style="color:#0054a6">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25"
                                          fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
@@ -466,7 +467,6 @@
         });
     });
 </script>
-
 
 
 <script>
@@ -787,7 +787,6 @@
         return false;
     }
 </script>
-
 
 
 </html>

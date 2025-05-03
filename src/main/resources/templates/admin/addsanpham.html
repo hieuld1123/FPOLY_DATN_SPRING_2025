@@ -231,7 +231,7 @@
             <div class="card">
                 <div class="card-body">
                     <h1 class="text-center">Thêm sản phẩm</h1>
-                    <form action="/addProduct" method="post" name="addProduct" onsubmit="return validateForm()">
+                    <form action="/admin/addProduct" method="post" name="addProduct" onsubmit="return validateForm()">
                         <!-- Tên sản phẩm -->
                         <div class="mb-3">
                             <!-- Hàng của label, select và button cùng 1 hàng -->
@@ -869,7 +869,7 @@
                     <!-- Modal chỉnh sửa giá số lượng -->
                     <div class="modal fade" id="chinhsuasoluongvagia" tabindex="-1" aria-labelledby="exampleModalLabel"
                          aria-hidden="true">
-                        <form method="post" th:action="@{/updateGiaAndSoLuong}" id="submitid">
+                        <form method="post" th:action="@{/admin/updateGiaAndSoLuong}" id="submitid">
                             <input type="hidden" name="choncheckbox" value="-1">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -909,7 +909,7 @@
                             </div>
                         </form>
                     </div>
-                    <form th:action="@{/addImage}" name="addImage" method="post" enctype="multipart/form-data"
+                    <form th:action="@{/admin/addImage}" name="addImage" method="post" enctype="multipart/form-data"
                           onsubmit="return validateForm2()">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
@@ -991,7 +991,7 @@
                                                   th:text="${#numbers.formatDecimal(spctt.giaBan, 0, 'COMMA', 0, 'POINT')} + '&#x20ab;'"></span>
                                     </td>
                                     <td>
-                                        <a th:href="@{/deleteCTSP/{id}(id=${spctt.id})}"
+                                        <a th:href="@{/admin/deleteCTSP/{id}(id=${spctt.id})}"
                                            style="color: rgb(249,72,42)" onclick="return xoa(event)">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="25"
                                                  height="25"
@@ -1378,7 +1378,7 @@
     function them() {
         // Sử dụng SweetAlert2 thay vì hộp thoại confirm
         Swal.fire({
-            title: 'Bạn có muốn thêm không?',
+            title: 'Những biến thể đã tồn tại của sản phẩm sẽ không được thêm. Bạn có muốn thêm không?',
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Có',

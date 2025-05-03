@@ -21,7 +21,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/shop/**", "/api/**", "/san-pham/**", "/addProduct")) // Disable CSRF cho REST/API
+                        .ignoringRequestMatchers("/shop/**", "/api/**", "/san-pham/**", "/admin/addProduct")) // Disable CSRF cho REST/API
                 .authorizeHttpRequests(auth -> auth
                         // ✅ Public access (ai cũng xem được)
                         .requestMatchers("/login", "/user/dang-ky", "/quen-mat-khau","/dat-lai-mat-khau","/doi-mat-khau","/trangchu/**", "/css/**","/uploads/**","/upload/**", "/js/**").permitAll()
