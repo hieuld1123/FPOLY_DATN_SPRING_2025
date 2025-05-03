@@ -80,7 +80,7 @@
                                        id="inputEmail" th:errorclass="is-invalid"
                                        th:attr="data-original=${khachHang.email},
                                                             data-id=${khachHang.id}"
-                                       placeholder="Nhập email">
+                                       placeholder="Nhập email" disabled>
                                 <p style="color: red; font-weight: initial;" id="errorEmail"></p>
                             </div>
                         </div>
@@ -98,7 +98,7 @@
 
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Trạng thái</label>
-                                <select class="form-select" th:field="*{trangThai}">
+                                <select class="form-select" th:field="*{trangThai}" disabled>
                                     <option th:selected="*{trangThai == true}" value="true">Hoạt động</option>
                                     <option th:selected="*{trangThai == false}" value="false">Ngừng hoạt động
                                     </option>
@@ -207,7 +207,7 @@
         </div>
     </div>
 </div>
-!--Footer-->
+<!--Footer-->
 <div th:replace="~{components/footer :: footer}"></div>
 <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/js/tabler.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
