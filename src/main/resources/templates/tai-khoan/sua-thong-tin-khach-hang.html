@@ -33,7 +33,7 @@
                   enctype="multipart/form-data" onsubmit="return validate(event);">
                 <div class="row">
                     <!-- Cột bên trái: Ảnh-->
-                    <div class="col-md-4 text-center" style="margin-top: 50px">
+                    <div class="col-md-4 text-center" style="margin-top: 10px">
                         <div>
                             <img id="uploadedImage" class="img-preview rounded-circle"
                                  th:src="@{/uploads/{imageName}(imageName=${khachHang.hinhAnh})}">
@@ -45,7 +45,7 @@
                     </div>
 
                     <!-- Cột bên phải: Thông tin -->
-                    <div class="col-md-8">
+                    <div class="col-md-8" style="margin-top: 20px">
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Tên khách hàng</label>
@@ -56,15 +56,20 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Ngày sinh</label>
-                                <input type="date" class="form-control" th:field="*{ngaySinh}"
-                                       id="inputNgSinh" th:errorclass="is-invalid">
-                                <p style="color: red; font-weight: initial;" id="errorNgSinh"></p>
+                                <label class="form-label">Số điện thoại</label>
+                                <input type="text" class="form-control" th:field="*{sdt}"
+                                       th:errorclass="is-invalid" id="inputSdt"
+                                       th:attr="data-original=${khachHang.sdt},
+                                                            data-id=${khachHang.id}"
+                                       placeholder="Nhập số điện thoại">
+                                <p style="color: red; font-weight: initial;" id="errorSdt"></p>
                             </div>
+
+
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-6 mb-3" style="margin-top: 20px">
                                 <label class="form-label">Giới tính</label>
                                 <div class="d-flex">
                                     <input class="form-check-input" type="radio" th:field="*{gioiTinh}"
@@ -74,7 +79,7 @@
                                            style="margin-right:5px" value="false"> Nữ
                                 </div>
                             </div>
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-6 mb-3" style="display: none;">
                                 <label class="form-label">Email</label>
                                 <input type="email" class="form-control" th:field="*{email}"
                                        id="inputEmail" th:errorclass="is-invalid"
@@ -86,24 +91,21 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Số điện thoại</label>
-                                <input type="text" class="form-control" th:field="*{sdt}"
-                                       th:errorclass="is-invalid" id="inputSdt"
-                                       th:attr="data-original=${khachHang.sdt},
-                                                            data-id=${khachHang.id}"
-                                       placeholder="Nhập số điện thoại">
-                                <p style="color: red; font-weight: initial;" id="errorSdt"></p>
+                            <div class="col-md-6 mb-3" style="display: none;">
+                                <label class="form-label">Ngày sinh</label>
+                                <input type="date" class="form-control" th:field="*{ngaySinh}"
+                                       id="inputNgSinh" th:errorclass="is-invalid">
+                                <p style="color: red; font-weight: initial;" id="errorNgSinh"></p>
                             </div>
 
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-6 mb-3" style="display: none;">
                                 <label class="form-label">Trạng thái</label>
                                 <select class="form-select" th:field="*{trangThai}" disabled>
                                     <option th:selected="*{trangThai == true}" value="true">Hoạt động</option>
-                                    <option th:selected="*{trangThai == false}" value="false">Ngừng hoạt động
-                                    </option>
+                                    <option th:selected="*{trangThai == false}" value="false">Ngừng hoạt động</option>
                                 </select>
                             </div>
+
                         </div>
                     </div>
                 </div>
