@@ -347,6 +347,7 @@ public class BanHangServiceImpl implements BanHangService {
                 .ngayTao(new Timestamp(System.currentTimeMillis()))
                 .ngayCapNhat(new Timestamp(System.currentTimeMillis()))
                 .trangThai(true)
+                .ngaySinh(java.sql.Date.valueOf("1999-01-01"))
                 .build();
 
         kh = this.khachHangRepository.save(kh);
