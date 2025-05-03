@@ -189,20 +189,17 @@ public class VoucherService {
         }
 
 
-        // Kiểm tra số lượng
-        if (voucher.getSoLuong() == null) {
-            errors.put("soLuong", "Số lượng không được để trống");
-        } else {
-            try {
-                Integer soLuong = voucher.getSoLuong();
-                if (soLuong <= 0) {
-                    errors.put("soLuong", "Số lượng phải lớn hơn 0");
-                } else if (soLuong > 100000) {
-                    errors.put("soLuong", "Số lượng không được vượt quá 1 trăm nghìn");
-                }
-            } catch (NumberFormatException e) {
-                errors.put("soLuong", "Số lượng phải là một số hợp lệ");
+        try {
+            Integer soLuong = voucher.getSoLuong(); // Hoặc parse từ String nếu cần
+            if (soLuong == null) {
+                errors.put("soLuong", "Số lượng không được để trống");
+            } else if (soLuong <= 0) {
+                errors.put("soLuong", "Số lượng phải lớn hơn 0");
+            } else if (soLuong > 1000) {
+                errors.put("soLuong", "Số lượng không được vượt quá 1000");
             }
+        } catch (NumberFormatException e) {
+            errors.put("soLuong", "Số lượng phải là một số hợp lệ");
         }
 
 // Kiểm tra giá trị giảm
@@ -246,7 +243,7 @@ public class VoucherService {
                 Float giamToiThieu = voucher.getGiaTriGiamToiThieu();
                 if (giamToiThieu < 0) {
                     errors.put("giaTriGiamToiThieu", "Đơn tối thiểu không được âm");
-                } else if (giamToiThieu > 1_000_000_000) {
+                } else if (giamToiThieu > 1000000000) {
                     errors.put("giaTriGiamToiThieu", "Đơn tối thiểu không được vượt quá 1 tỷ");
                 }
             } catch (NumberFormatException e) {
@@ -288,7 +285,7 @@ public class VoucherService {
         }
         else if ("Phần Trăm".equals(hinhThucGiam)) {
             // Validate x (Giá trị giảm phần trăm)
-            if (giaTriGiam == null || giaTriGiam < 0 || giaTriGiam > 100) {
+            if (giaTriGiam == null || giaTriGiam <= 0 || giaTriGiam > 100) {
                 errors.put("giaTriGiam", "Giá trị giảm phải từ 1 đến 100%");
             }
             // Validate y (Đơn tối thiểu)
