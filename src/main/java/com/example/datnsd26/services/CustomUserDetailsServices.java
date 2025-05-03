@@ -23,6 +23,7 @@ public class CustomUserDetailsServices implements UserDetailsService {
         return User.withUsername(taiKhoan.getEmail())
                 .password(taiKhoan.getMatKhau())  // Ensure this is the hashed password
                 .roles(taiKhoan.getVaiTro().name())  // Ensure correct role format
+                .disabled(!taiKhoan.getTrangThai())
                 .build();
 
 
