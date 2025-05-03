@@ -199,9 +199,7 @@
                                 </p>
                             </div>
                             <div th:if="${hoaDon.voucher == null}">
-                                <p><span class="fw-bold">Giảm giá: </span> <span
-                                        th:text="${#numbers.formatDecimal(hoaDon.giamGia, 0, 'COMMA', 0, 'POINT')}"></span>VNĐ
-                                </p>
+                                <p><span class="fw-bold">Giảm giá: </span>0 VNĐ</p>
                             </div>
                             <h3 class="fw-bold text-orange"><strong>Thành tiền:</strong>
                                 <span
