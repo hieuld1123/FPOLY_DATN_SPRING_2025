@@ -143,7 +143,7 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
     Page<SanPhamChiTiet> findByTenSanPham(@Param("keyword") String keyword, Pageable pageable);
 
 
-    Page<SanPhamChiTiet> findAllByTrangThaiTrue(Pageable pageable);
+    List<SanPhamChiTiet> findAllByTrangThaiTrueOrderByNgayTaoDesc();
 
 //    @Query("SELECT sp FROM SanPhamChiTiet sp " +
 //            "WHERE (:keyword IS NULL OR sp.sanPham.tenSanPham LIKE %:keyword% OR sp.maSanPhamChiTiet LIKE %:keyword%) " +

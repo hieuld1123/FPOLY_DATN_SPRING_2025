@@ -92,13 +92,6 @@ public class SanPhamChiTietImp implements SanPhamChiTietService {
         return sanPhamChiTietRepository.findBySanPhamTenSanPhamContainingIgnoreCase(keyword);
     }
 
-    public Page<SanPhamChiTiet> getProducts(int page) {
-        // Cấu hình số item mỗi trang
-        int pageSize = 10;
-        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("name").ascending());
 
-        // Lấy sản phẩm chưa có trong khuyến mãi hiện tại
-        return sanPhamChiTietRepository.findAll(pageable);
-    }
 
 }

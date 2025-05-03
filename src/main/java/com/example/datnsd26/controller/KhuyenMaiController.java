@@ -94,11 +94,9 @@ public class KhuyenMaiController {
 
     @GetMapping("/create")
     public String viewCreate(Model model,
-                             @RequestParam(defaultValue = "0") int page,
-                             @RequestParam(defaultValue = "10") int size,
                              @RequestParam(required = false) Boolean selectAll) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
-        Page<SanPhamChiTiet> sanPhamPage = sanPhamChiTietRepository.findAllByTrangThaiTrue(pageable);
+
+        List<SanPhamChiTiet> sanPhamPage = sanPhamChiTietRepository.findAllByTrangThaiTrueOrderByNgayTaoDesc();
 
         // Thêm tổng số sản phẩm vào model
         long totalProducts = sanPhamChiTietRepository.count();
@@ -191,16 +189,13 @@ public class KhuyenMaiController {
      */
     @GetMapping("/edit/{id}")
     public String viewEdit(@PathVariable Long id,
-                           @RequestParam(defaultValue = "0") int page,
-                           @RequestParam(defaultValue = "10") int size,
                            Model model) {
         try {
             KhuyenMai khuyenMai = khuyenMaiService.findById(id);
 
             // Tạo đối tượng Pageable để phân trang
-            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
-            Page<SanPhamChiTiet> sanPhamPage = khuyenMaiService.finAllPage(pageable);
-            List<SanPhamChiTiet> sanPhams = sanPhamPage.getContent();
+
+            List<SanPhamChiTiet> sanPhams = sanPhamChiTietRepository.findAllByTrangThaiTrueOrderByNgayTaoDesc();
 
             // Lấy danh sách sản phẩm đã có khuyến mãi
             Map<Integer, Float> sanPhamGiamGiaMap = khuyenMaiService.getGiaTriGiamMap(id);
@@ -208,9 +203,6 @@ public class KhuyenMaiController {
             model.addAttribute("khuyenMai", khuyenMai);
             model.addAttribute("sanPhams", sanPhams);
             model.addAttribute("sanPhamGiamGiaMap", sanPhamGiamGiaMap);
-            model.addAttribute("currentPage", page);
-            model.addAttribute("totalPages", sanPhamPage.getTotalPages());
-            model.addAttribute("size", size);
 
             return "khuyenmai/user/khuyenmai-edit";
         } catch (Exception e) {
@@ -314,12 +306,7 @@ public class KhuyenMaiController {
         return ResponseEntity.ok(danhSachSanPham);
     }
 
-    @GetMapping("/product-page")
-    public String getProductPage(@RequestParam int page, Model model) {
-        Page<SanPhamChiTiet> productPage = sanPhamChiTietImp.getProducts(page);
-        model.addAttribute("products", productPage.getContent());
-        return "admin/khuyen-mai/product-table :: product-table";
-    }
+
 
     //    @GetMapping("/product-search")
 //    public ResponseEntity<Page<SanPham>> searchProducts(

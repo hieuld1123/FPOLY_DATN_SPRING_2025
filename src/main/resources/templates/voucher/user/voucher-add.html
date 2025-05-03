@@ -79,6 +79,7 @@
         opacity: 0.8;
         pointer-events: none; /* chặn tương tác chuột */
     }
+
 </style>
 <body>
 <div class="admin-layout">
@@ -117,7 +118,7 @@
                 <div class="row mt-3">
                     <div class="col-md-6">
                         <label class="form-label">Số lượng</label>
-                        <input type="number" min="0" class="form-control" th:field="*{soLuong}">
+                        <input type="number" min="0" class="form-control" max="1000000" th:field="*{soLuong}">
                         <span class="text-danger" th:if="${errors != null and errors.containsKey('soLuong')}"
                               th:text="${errors.get('soLuong')}"></span>
                     </div>
@@ -133,21 +134,30 @@
                 <div class="row mt-3">
                     <div class="col-md-4">
                         <label class="form-label">Đơn tối thiểu</label>
-                        <input type="number" step="0.01" min="0" class="form-control" th:field="*{giaTriGiamToiThieu}">
+                        <div class="input-group">
+                            <input type="text" min="0" class="form-control currency-input" th:field="*{giaTriGiamToiThieu}">
+                            <span class="input-group-text">VNĐ</span>
+                        </div>
                         <span class="text-danger" th:if="${errors != null and errors.containsKey('giaTriGiamToiThieu')}"
                               th:text="${errors.get('giaTriGiamToiThieu')}"></span>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Giá trị giảm</label>
-                        <input type="number" step="0.01" min="0" class="form-control" th:field="*{giaTriGiam}">
+                        <div class="input-group">
+                            <input type="text" min="0" class="form-control" th:field="*{giaTriGiam}">
+                            <span class="input-group-text discount-unit">VNĐ</span>
+                        </div>
                         <span class="text-danger" th:if="${errors != null and errors.containsKey('giaTriGiam')}"
                               th:text="${errors.get('giaTriGiam')}"></span>
                     </div>
 
                     <div class="col-md-4" id="giaTriGiamToiDaDiv">
                         <label class="form-label">Giá trị giảm tối đa</label>
-                        <input type="number" id="giaTriGiamToiDaInput" step="0.01" min="0" class="form-control" th:field="*{giaTriGiamToiDa}">
-                        <span class="text-danger"  th:if="${errors != null and errors.containsKey('giaTriGiamToiDa')}"
+                        <div class="input-group">
+                            <input type="text" id="giaTriGiamToiDaInput" min="0" class="form-control currency-input" th:field="*{giaTriGiamToiDa}">
+                            <span class="input-group-text">VNĐ</span>
+                        </div>
+                        <span class="text-danger" th:if="${errors != null and errors.containsKey('giaTriGiamToiDa')}"
                               th:text="${errors.get('giaTriGiamToiDa')}"></span>
                     </div>
                 </div>
@@ -183,16 +193,123 @@
         const submitButton = document.getElementById('submitVoucherBtn');
         const hinhThucGiam = document.getElementById('hinhThucGiam');
         const giaTriGiamToiDaDiv = document.getElementById('giaTriGiamToiDaDiv');
+
+        const giaTriGiamInput = document.querySelector('input[name="giaTriGiam"]');
+        const giaTriGiamToiThieuInput = document.querySelector('input[name="giaTriGiamToiThieu"]');
         const giaTriGiamToiDaInput = document.getElementById('giaTriGiamToiDaInput');
 
-        function toggleGiaTriGiamToiDa() {
-            if (hinhThucGiam.value === 'Theo Giá Tiền') {
-                giaTriGiamToiDaDiv.style.display = 'none';
-                giaTriGiamToiDaInput.value = ''; // Xoá giá trị đã nhập
-            } else {
-                giaTriGiamToiDaDiv.style.display = 'block';
+
+        function formatSoTien(input) {
+            // Loại bỏ tất cả ký tự không phải số
+            let value = input.value.replace(/[^\d]/g, '');
+            if (value) {
+                // Giới hạn độ dài tối đa là 12 chữ số
+                value = value.slice(0, 12);
+                const soTien = parseInt(value);
+                if (!isNaN(soTien)) {
+                    input.value = soTien.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                }
             }
         }
+
+        [giaTriGiamToiThieuInput, giaTriGiamToiDaInput].forEach(input => {
+            input.addEventListener('input', function() {
+                formatSoTien(this);
+            });
+
+            // Thêm xử lý khi paste
+            input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const text = (e.originalEvent || e).clipboardData.getData('text/plain');
+                const cleanNumber = text.replace(/[^\d]/g, '').slice(0, 12);
+                if (cleanNumber) {
+                    this.value = parseInt(cleanNumber);
+                    formatSoTien(this);
+                }
+            });
+        });
+
+// Tương tự cho giaTriGiamInput khi là tiền
+        giaTriGiamInput.addEventListener('input', function() {
+            if (hinhThucGiam.value === 'Phần Trăm') {
+                formatPhanTram(this);
+            } else {
+                formatSoTien(this);
+            }
+        });
+
+        giaTriGiamInput.addEventListener('paste', function(e) {
+            if (hinhThucGiam.value !== 'Phần Trăm') {
+                e.preventDefault();
+                const text = (e.originalEvent || e).clipboardData.getData('text/plain');
+                const cleanNumber = text.replace(/[^\d]/g, '').slice(0, 12);
+                if (cleanNumber) {
+                    this.value = parseInt(cleanNumber);
+                    formatSoTien(this);
+                }
+            }
+        });
+
+        function formatPhanTram(input) {
+            let value = input.value.replace(/[^\d.]/g, '');
+            if (value) {
+                const phanTram = parseFloat(value);
+                if (!isNaN(phanTram)) {
+                    input.value = Math.min(100, phanTram);
+                }
+            }
+        }
+
+        function toggleGiaTriGiamToiDa() {
+            const discountUnit = document.querySelector('.discount-unit');
+            if (hinhThucGiam.value === 'Theo Giá Tiền') {
+                giaTriGiamToiDaDiv.style.display = 'none';
+                giaTriGiamToiDaInput.value = '';
+                discountUnit.textContent = 'VNĐ';
+                giaTriGiamInput.value = ''; // Reset giá trị khi đổi hình thức
+            } else {
+                giaTriGiamToiDaDiv.style.display = 'block';
+                discountUnit.textContent = '%';
+
+            }
+        }
+
+        toggleGiaTriGiamToiDa();
+        hinhThucGiam.addEventListener('change', toggleGiaTriGiamToiDa);
+
+
+        [giaTriGiamToiThieuInput, giaTriGiamToiDaInput].forEach(input => {
+            input.addEventListener('input', function() {
+                formatSoTien(this);
+            });
+        });
+
+        giaTriGiamInput.addEventListener('input', function() {
+            if (hinhThucGiam.value === 'Phần Trăm') {
+                formatPhanTram(this);
+            } else {
+                formatSoTien(this);
+            }
+        });
+
+
+        // Ngăn chặn nhập ký tự e, E, +, -
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('keydown', function(e) {
+                if (["e", "E", "+", "-"].includes(e.key)) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        // function toggleGiaTriGiamToiDa() {
+        //     if (hinhThucGiam.value === 'Theo Giá Tiền') {
+        //         giaTriGiamToiDaDiv.style.display = 'none';
+        //         giaTriGiamToiDaInput.value = ''; // Xoá giá trị đã nhập
+        //     } else {
+        //         giaTriGiamToiDaDiv.style.display = 'block';
+        //     }
+        // }
 
         toggleGiaTriGiamToiDa();
         hinhThucGiam.addEventListener('change', toggleGiaTriGiamToiDa);
@@ -200,11 +317,26 @@
         submitButton.addEventListener('click', function (e) {
             e.preventDefault();
 
-            // Kiểm tra form có hợp lệ không (validate HTML5 trước)
+            // Chuyển đổi định dạng số trước khi submit
+            [giaTriGiamToiThieuInput, giaTriGiamToiDaInput].forEach(input => {
+                let value = input.value.replace(/\./g, ''); // Loại bỏ dấu chấm phân cách
+                input.value = value;
+            });
+
+            let giaTriGiamValue = giaTriGiamInput.value;
+            if (hinhThucGiam.value === 'Phần Trăm') {
+                giaTriGiamValue = giaTriGiamValue.replace(/[^\d.]/g, '');
+                giaTriGiamInput.value = parseFloat(giaTriGiamValue) || 0;
+            } else {
+                giaTriGiamValue = giaTriGiamValue.replace(/\./g, '');
+                giaTriGiamInput.value = giaTriGiamValue;
+            }
+
             if (!form.checkValidity()) {
                 form.reportValidity();
                 return;
             }
+
 
             Swal.fire({
                 title: 'Bạn có muốn Lưu không?',
@@ -218,7 +350,25 @@
                 }
             });
         });
+
+        // document.querySelectorAll('input[type="number"]').forEach(input => {
+        //     input.addEventListener('keydown', function (e) {
+        //         if (["e", "E", "+", "-"].includes(e.key)) {
+        //             e.preventDefault();
+        //         }
+        //     });
+        //
+        //     input.addEventListener('input', function () {
+        //         // Nếu người dùng dán nội dung như "1e9"
+        //         if (/[eE+-]/.test(this.value)) {
+        //             this.value = ''; // hoặc bạn có thể show lỗi ngay tại đây
+        //         }
+        //     });
+        // });
+
     });
+
+
 </script>
 </body>
 </html>
