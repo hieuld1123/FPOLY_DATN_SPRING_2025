@@ -156,6 +156,10 @@ public class HoaDonServiceImp implements HoaDonService {
     @Transactional(rollbackOn = Exception.class)
     public void cancel(String code) {
         HoaDon hd = getHoaDonByCode(code);
+        Optional<LichSuHoaDon> byStatusCancel = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_CANCELED, hd.getId());
+        if(byStatusCancel.isPresent()) {
+            throw new InvalidDataException("Hóa đơn đã hủy trước đó");
+        }
         Optional<LichSuHoaDon> byStatusAndInvoice = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_CONFIRMED, hd.getId());
         if(hd.getVoucher() != null) {
             Voucher voucher = hd.getVoucher();
