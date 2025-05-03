@@ -12,7 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,13 +36,20 @@ public class VoucherService {
 
 
     public Page<Voucher> getAllVouchers(Pageable pageable) {
-        Page<Voucher> vouchers = voucherRepository.findAll(pageable);
-        vouchers.getContent().forEach(v -> {
+        Pageable sortedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "ngayTao")
+        );
+        Page<Voucher> page = voucherRepository.findAll(sortedPageable);
+
+        page.getContent().forEach(v -> {
             if (v.getTrangThai() == null) {
                 v.setTrangThai(0); // Mặc định là 0
             }
         });
-        return vouchers;
+
+        return page;
     }
 
     public Optional<Voucher> getVoucherById(Long id) {
@@ -174,65 +183,76 @@ public class VoucherService {
             }
         }
 
+        // Độ dài tên phải từ 3 đến 255 ký tự
+        if (voucher.getTenVoucher().length() < 3 || voucher.getTenVoucher().length() > 255) {
+            errors.put("tenVoucher", "Tên voucher phải từ 3 đến 255 ký tự");
+        }
 
+
+        // Kiểm tra số lượng
         if (voucher.getSoLuong() == null) {
             errors.put("soLuong", "Số lượng không được để trống");
         } else {
             try {
-                Integer soLuong = voucher.getSoLuong(); // Ép kiểu để đảm bảo là số nguyên
+                Integer soLuong = voucher.getSoLuong();
                 if (soLuong <= 0) {
-                    errors.put("soLuong", "số lượng phải lớn hơn 0");
+                    errors.put("soLuong", "Số lượng phải lớn hơn 0");
+                } else if (soLuong > 100000) {
+                    errors.put("soLuong", "Số lượng không được vượt quá 1 trăm nghìn");
                 }
             } catch (NumberFormatException e) {
                 errors.put("soLuong", "Số lượng phải là một số hợp lệ");
             }
         }
-        // Kiểm tra giá trị giảm
+
+// Kiểm tra giá trị giảm
         if (voucher.getGiaTriGiam() == null) {
             errors.put("giaTriGiam", "Giá trị giảm không được để trống");
         } else {
             try {
-                Float giatrigiam = voucher.getGiaTriGiam(); // Ép kiểu để đảm bảo là số nguyên
-                if (giatrigiam <= 0) {
-                    errors.put("giaTriGiam", "giá trị giảm phải lớn hơn 0");
+                Float giaTriGiam = voucher.getGiaTriGiam();
+                if (giaTriGiam <= 0) {
+                    errors.put("giaTriGiam", "Giá trị giảm phải lớn hơn 0");
+                } else if (giaTriGiam > 1_000_000_000) {
+                    errors.put("giaTriGiam", "Giá trị giảm không được vượt quá 1 tỷ");
                 }
             } catch (NumberFormatException e) {
-                errors.put("giaTriGiam", "giá trị giảm phải là một số hợp lệ");
+                errors.put("giaTriGiam", "Giá trị giảm phải là một số hợp lệ");
             }
         }
 
-        // Kiểm tra giá trị giảm tối đa
+// Kiểm tra giá trị giảm tối đa (chỉ khi giảm theo phần trăm)
         if ("Phần Trăm".equalsIgnoreCase(voucher.getHinhThucGiam())) {
             if (voucher.getGiaTriGiamToiDa() == null) {
                 errors.put("giaTriGiamToiDa", "Giá trị giảm tối đa không được để trống");
             } else {
                 try {
-                    Float giatrigiamtoida = voucher.getGiaTriGiamToiDa();
-                    if (giatrigiamtoida <= 0) {
+                    Float giamToiDa = voucher.getGiaTriGiamToiDa();
+                    if (giamToiDa <= 0) {
                         errors.put("giaTriGiamToiDa", "Giá trị giảm tối đa phải lớn hơn 0");
+                    } else if (giamToiDa > 1_000_000_000) {
+                        errors.put("giaTriGiamToiDa", "Giá trị giảm tối đa không được vượt quá 1 tỷ");
                     }
                 } catch (NumberFormatException e) {
                     errors.put("giaTriGiamToiDa", "Giá trị giảm tối đa phải là một số hợp lệ");
                 }
             }
         }
-
-        // Kiểm tra giá trị giảm tối thiểu
+// Kiểm tra giá trị giảm tối thiểu (đơn tối thiểu)
         if (voucher.getGiaTriGiamToiThieu() == null) {
             errors.put("giaTriGiamToiThieu", "Đơn tối thiểu không được để trống");
-        }else {
+        } else {
             try {
-                Float giatrigiamtoithieu = voucher.getGiaTriGiamToiThieu(); // Ép kiểu để đảm bảo là số nguyên
-                if (giatrigiamtoithieu <= 0) {
-                    errors.put("giaTriGiamToiThieu", "Đơn tối thiểu phải lớn hơn hoăc bằng 0");
+                Float giamToiThieu = voucher.getGiaTriGiamToiThieu();
+                if (giamToiThieu < 0) {
+                    errors.put("giaTriGiamToiThieu", "Đơn tối thiểu không được âm");
+                } else if (giamToiThieu > 1_000_000_000) {
+                    errors.put("giaTriGiamToiThieu", "Đơn tối thiểu không được vượt quá 1 tỷ");
                 }
             } catch (NumberFormatException e) {
                 errors.put("giaTriGiamToiThieu", "Đơn tối thiểu phải là một số hợp lệ");
             }
         }
-
-
-        // Kiểm tra ngày bắt đầu & ngày kết thúc
         if (ngayBatDau == null) {
             errors.put("ngayBatDau", "Vui Lòng chọn Ngày bắt đầu ");
         } else if (!isUpdate || !ngayBatDau.equals(voucherRepository.findById(voucher.getId()).get().getNgayBatDau())) {
@@ -240,18 +260,11 @@ public class VoucherService {
                 errors.put("ngayBatDau", "Ngày bắt đầu phải từ thời điểm hiện tại trở đi");
             }
         }
-//        if (ngayKetThuc.isBefore(now)) {
-//            errors.put("ngayKetThuc", "Ngày kết thúc phải sau ngày hiện tại");
-//        }
-
         if (ngayKetThuc == null) {
             errors.put("ngayKetThuc", "Vui lòng chon Ngày kết thúc ");
         } else if (ngayBatDau != null && ngayKetThuc.isBefore(ngayBatDau)) {
             errors.put("ngayKetThuc", "Ngày kết thúc phải sau ngày bắt đầu");
         }
-
-
-
         // Kiểm tra giá trị giảm trong khoảng cho phép
         Float giaTriGiam = voucher.getGiaTriGiam();
         Float donToiThieu = voucher.getGiaTriGiamToiThieu();
@@ -269,29 +282,19 @@ public class VoucherService {
                 }
             }
             // Validate y (Đơn tối thiểu)
-            if (donToiThieu == null || donToiThieu <= 0) {
+            if (donToiThieu == null || donToiThieu <= 0)  {
                 errors.put("giaTriGiamToiThieu", "Đơn tối thiểu phải lớn hơn hoặc bằng 0");
             }
-
-            // // Validate z (Giá trị giảm tối đa)
-            // if (giaTriGiamToiDa != null) {
-            //     if (giaTriGiamToiDa <= 0) {
-            //         errors.put("giaTriGiamToiDa", "Giá trị giảm tối đa phải lớn hơn 0");
-            //     }
-
-            // }
         }
         else if ("Phần Trăm".equals(hinhThucGiam)) {
             // Validate x (Giá trị giảm phần trăm)
             if (giaTriGiam == null || giaTriGiam < 0 || giaTriGiam > 100) {
                 errors.put("giaTriGiam", "Giá trị giảm phải từ 1 đến 100%");
             }
-
             // Validate y (Đơn tối thiểu)
             if (donToiThieu == null || donToiThieu <= 0) {
                 errors.put("giaTriGiamToiThieu", "Đơn tối thiểu phải lớn hơn hoặc bằng 0");
             }
-
             // Validate z (Giá trị giảm tối đa)
             if (giaTriGiamToiDa != null) {
                 if (giaTriGiamToiDa < 0) {
@@ -361,34 +364,6 @@ public class VoucherService {
         );
     }
 
-//    public Double applyVoucherToHoaDon(Voucher voucher, Double tongTienHoaDon) {
-//        if (!isVoucherValid(voucher, tongTienHoaDon)) {
-//            throw new IllegalStateException("Voucher không hợp lệ hoặc không thể áp dụng cho đơn hàng này");
-//        }
-//
-//        Float tienGiam = 0.0F;
-//        if ("Phần Trăm".equalsIgnoreCase(voucher.getHinhThucGiam())) {
-//            tienGiam = (float) ((tongTienHoaDon * voucher.getGiaTriGiam()) / 100);
-//            // Giới hạn số tiền giảm tối đa
-//            tienGiam = Math.min(tienGiam, voucher.getGiaTriGiamToiDa());
-//        } else {
-//            tienGiam = voucher.getGiaTriGiam();
-//        }
-//
-//        // Đảm bảo số tiền giảm không âm và không vượt quá tổng tiền
-//        return Math.min(Math.max(tienGiam, 0), tongTienHoaDon);
-//    }
-
-//    private boolean isVoucherValid(Voucher voucher, Double tongTienHoaDon) {
-//        LocalDateTime now = LocalDateTime.now();
-//
-//        return voucher != null
-//                && voucher.getTrangThai() == 0
-//                && voucher.getSoLuong() > 0
-//                && tongTienHoaDon >= voucher.getGiaTriGiamToiThieu()
-//                && now.isAfter(voucher.getNgayBatDau())
-//                && now.isBefore(voucher.getNgayKetThuc());
-//    }
 
     public void useVoucher(Long voucherId) {
         Voucher voucher = voucherRepository.findById(voucherId)

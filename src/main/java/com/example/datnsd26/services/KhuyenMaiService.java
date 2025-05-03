@@ -384,9 +384,7 @@ public class KhuyenMaiService {
         return giaTriGiamMap;
     }
 
-    public Page<SanPhamChiTiet> finAllPage(Pageable pageable) {
-        return sanPhamChiTietRepository.findAllByTrangThaiTrue(pageable);
-    }
+
 
     public void restoreKhuyenMai(Long id) {
         KhuyenMai khuyenMai = findById(id);
