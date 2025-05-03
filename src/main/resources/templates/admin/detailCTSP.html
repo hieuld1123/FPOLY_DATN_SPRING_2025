@@ -746,8 +746,8 @@
         } else if (soluong <= 0) {
             displayError("errorSoLuong", "Số lượng sản phẩm phải lớn hơn 0");
             isValid = false;
-        } else if (soluong > 2147483647) {
-            displayError("errorSoLuong", "Số lượng phải nhỏ hơn 2147483647");
+        } else if (soluong > 10000) {
+            displayError("errorSoLuong", "Số lượng không được vượt quá 10000");
             isValid = false;
         }
 

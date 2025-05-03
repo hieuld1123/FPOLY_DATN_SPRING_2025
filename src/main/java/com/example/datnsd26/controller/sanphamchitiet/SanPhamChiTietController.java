@@ -305,8 +305,6 @@ public class SanPhamChiTietController {
 
         SanPhamChiTiet spct = sanPhamChiTietRepository.findById(spctId).orElse(null);
 
-        System.out.println("Size list ảnh: " + anhFiles.size());
-
         if (anhFiles != null && !anhFiles.isEmpty()) {
             for (MultipartFile file : anhFiles) {
                 System.out.println("File name: " + file.getOriginalFilename());
