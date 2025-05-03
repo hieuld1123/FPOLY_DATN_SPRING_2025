@@ -113,6 +113,10 @@ public class HoaDonServiceImp implements HoaDonService {
     @Transactional(rollbackOn = Exception.class)
     public void confirmInvoice(String code) {
         HoaDon hd = getHoaDonByCode(code);
+        Optional<LichSuHoaDon> byStatusCancel = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_CANCELED, hd.getId());
+        if(byStatusCancel.isPresent()) {
+            throw new InvalidDataException("Hóa đơn đã hủy trước đó");
+        }
         if(hd.getHinhThucMuaHang().equals("Online")) {
             hd.getDanhSachSanPham().forEach(sp -> {
                 SanPhamChiTiet ct = this.sanPhamChiTietRepository.findById(sp.getSanPhamChiTiet().getId()).orElseThrow(() -> new EntityNotFound(String.format("Không tìm thấy sản phẩm %s", sp.getSanPhamChiTiet().getMaSanPhamChiTiet())));
@@ -146,6 +150,10 @@ public class HoaDonServiceImp implements HoaDonService {
     @Transactional(rollbackOn = Exception.class)
     public void confirmDelivery(String code) {
         HoaDon hd = getHoaDonByCode(code);
+        Optional<LichSuHoaDon> byStatusCancel = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_CANCELED, hd.getId());
+        if(byStatusCancel.isPresent()) {
+            throw new InvalidDataException("Hóa đơn đã hủy trước đó");
+        }
         hd.setTrangThai(STATUS_DELIVERED);
         hd.setNgayCapNhat(new Date());
         lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai(STATUS_DELIVERED).hoaDon(hd).build());
@@ -183,6 +191,10 @@ public class HoaDonServiceImp implements HoaDonService {
     @Transactional(rollbackOn = Exception.class)
     public void edit(String code) {
         HoaDon hd = getHoaDonByCode(code);
+        Optional<LichSuHoaDon> byStatusCancel = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_CANCELED, hd.getId());
+        if(byStatusCancel.isPresent()) {
+            throw new InvalidDataException("Hóa đơn đã hủy trước đó");
+        }
         hd.setTrangThai("Đang xử lý");
         hd.setPhiVanChuyen(0f);
         hd.setHinhThucMuaHang(null);
@@ -227,6 +239,10 @@ public class HoaDonServiceImp implements HoaDonService {
     @Override
     public void completed(String code) {
         HoaDon hd = getHoaDonByCode(code);
+        Optional<LichSuHoaDon> byStatusCancel = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_CANCELED, hd.getId());
+        if(byStatusCancel.isPresent()) {
+            throw new InvalidDataException("Hóa đơn đã hủy trước đó");
+        }
         hd.setTrangThai(STATUS_COMPLETED);
         hd.setNgayCapNhat(new Date());
         lichSuHoaDonRepository.save(LichSuHoaDon.builder().trangThai(STATUS_COMPLETED).hoaDon(hd).build());
@@ -236,6 +252,10 @@ public class HoaDonServiceImp implements HoaDonService {
     @Override
     public void createHistoryModify(String invoiceCode) {
         HoaDon hoaDon = this.getHoaDonByCode(invoiceCode);
+        Optional<LichSuHoaDon> byStatusCancel = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_CANCELED, hoaDon.getId());
+        if(byStatusCancel.isPresent()) {
+            throw new InvalidDataException("Hóa đơn đã hủy trước đó");
+        }
         Optional<LichSuHoaDon> history = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_EDIT, hoaDon.getId());
         if(history.isPresent()) {
             LichSuHoaDon lichSuHoaDon = history.get();
@@ -250,6 +270,10 @@ public class HoaDonServiceImp implements HoaDonService {
     @Override
     public void updateRecipient(String orderId, InvoiceRecipientInfoRequest request) {
         HoaDon hoaDon = getHoaDonByCode(orderId);
+        Optional<LichSuHoaDon> byStatusCancel = this.lichSuHoaDonRepository.findByStatusAndInvoice(STATUS_CANCELED, hoaDon.getId());
+        if(byStatusCancel.isPresent()) {
+            throw new InvalidDataException("Hóa đơn đã hủy trước đó");
+        }
         hoaDon.setTenNguoiNhan(request.getName());
         hoaDon.setSdtNguoiNhan(request.getPhone());
         hoaDon.setTinh(request.getProvince());
