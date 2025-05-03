@@ -339,6 +339,20 @@ public class CartController {
             }
         }
 
+        // --- BƯỚC KIỂM TRA GIÁ TRỊ ĐƠN HÀNG MỚI ---
+        if (tongTamTinh > 1000000000L) { // 1 tỷ đồng
+            model.addAttribute("isAuthenticated", isAuthenticated);
+            model.addAttribute("isCustomer", isCustomer);
+            model.addAttribute("errorMessage", "Đơn hàng có giá trị vượt quá ngưỡng cho phép giao dịch trực tuyến. Quý khách vui lòng liên hệ trực tiếp bộ phận Chăm sóc Khách hàng theo số hotline: 1900 6680 để được hỗ trợ và tư vấn chi tiết.");
+            model.addAttribute("cart", danhSachThanhToan); // hiển thị sản phẩm da chon
+            model.addAttribute("tongTamTinh", tongTamTinh);
+            model.addAttribute("phiShip", phiShip);
+            model.addAttribute("hoaDonBinhRequest", hoaDonBinhRequest);
+            model.addAttribute("vouchers", voucherRepository.findValidVouchers(LocalDateTime.now(), tongTamTinh)); // Load lại danh sách voucher hợp lệ
+            return "shop/checkout"; // Trở lại trang checkout với thông báo lỗi
+        }
+        // --- KẾT THÚC BƯỚC KIỂM TRA GIÁ TRỊ ĐƠN HÀNG MỚI ---
+
         // 6, Validate voucher được sửa dụng (tính giá được giảm, cập nhật số lượng voucher)
         Voucher voucher = null;
         float giamGia = 0f;
