@@ -97,7 +97,7 @@ public class HoaDonServiceImp implements HoaDonService {
                         .code(s.getSanPhamChiTiet().getMaSanPhamChiTiet())
                         .name(String.format("%s [%s - %s]", s.getSanPhamChiTiet().getSanPham().getTenSanPham(), s.getSanPhamChiTiet().getMauSac().getTenMauSac(), s.getSanPhamChiTiet().getKichCo().getTen()))
                         .quantity(s.getSoLuong())
-                        .unit_price(s.getSanPhamChiTiet().getGiaBanSauGiam())
+                        .unit_price(s.getGiaTienSauGiam())
                         .total_price(s.getSoLuong() * s.getGiaTienSauGiam())
                         .build()).toList())
                 .summary(InvoiceInformation.Summary.builder()
