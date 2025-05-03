@@ -66,9 +66,9 @@ const handlePayment = async () => {
         return;
     }
 
-    if (formData.totalMoneyApi > 2000000000) {
+    if (formData.totalMoneyApi > 1000000000) {
         Swal.fire({
-            title: "Giá trị hóa đơn lớn hơn 2 tỷ đồng, vui lòng tách đơn!",
+            title: "Giá trị hóa đơn lớn hơn 1 tỷ đồng, vui lòng tách đơn!",
             icon: "error"
         });
         return;
