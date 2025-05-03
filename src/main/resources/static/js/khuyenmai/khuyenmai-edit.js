@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     const giaGocElements = document.querySelectorAll(".giaGoc");
     const checkboxes = document.querySelectorAll(".chonSanPham");
     const selectAll = document.getElementById("selectAll");
-    // const searchForm = document.querySelector("form");
     const searchInput = document.getElementById('searchInput');
     const giaGocCells = document.querySelectorAll('.giaGoc');
     const mucGiamUnits = document.querySelectorAll('.mucGiamUnit');

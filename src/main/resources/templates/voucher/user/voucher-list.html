@@ -160,7 +160,7 @@
 
 
                                             <select name="trangThai" class="form-select mx-2">
-                                                <option value="">Chọn trạng thái</option>
+                                                <option value="">Tất cả</option>
                                                 <option value="0">Chưa diễn ra</option>
                                                 <option value="1">Đang diễn ra</option>
                                                 <option value="2">Đã kết thúc</option>
@@ -173,7 +173,7 @@
                                     </form>
                                     <div class="ms-3">
                                         <a th:href="@{/admin/vouchers/create}" class="btn btn-primary">
-                                            <i class="fas fa-plus"></i><span class="ms-2">Thêm Mới</span>
+                                            <i class="fas fa-plus"></i><span class="ms-2">Thêm mới</span>
                                         </a>
                                     </div>
                                 </div>
@@ -197,14 +197,14 @@
                                 <th>Mã Voucher</th>
                                 <th>Tên Voucher</th>
                                 <th>Đơn tối thiểu</th>
-                                <th>Giảm Giá</th>
-                                <th>Giá Giảm tối đa</th>
-                                <th>Hình Thức Giảm</th>
+                                <th>Giảm giá</th>
+                                <th>Giá giảm tối đa</th>
+                                <th>Hình thức giảm</th>
                                 <th>Số Lượng</th>
-                                <th>Ngày Bắt Đầu</th>
-                                <th>Ngày Kết Thúc</th>
-                                <th>Trạng Thái</th>
-                                <th>Hành Động</th>
+                                <th>Ngày bắt đầu</th>
+                                <th>Ngày kết thúc</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -251,11 +251,11 @@
                                            th:href="@{/admin/vouchers/edit/{id}(id=${voucher.id})}" title="Sửa">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a class="btn btn-sm btn-danger"
-                                           th:href="@{/admin/vouchers/delete/{id}(id=${voucher.id})}"
-                                           onclick="return confirm('Bạn có chắc muốn xóa?')" title="Xóa">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
+<!--                                        <a class="btn btn-sm btn-danger"-->
+<!--                                           th:href="@{/admin/vouchers/delete/{id}(id=${voucher.id})}"-->
+<!--                                           onclick="return confirm('Bạn có chắc muốn xóa?')" title="Xóa">-->
+<!--                                            <i class="fas fa-trash"></i>-->
+<!--                                        </a>-->
                                     </div>
                                 </td>
                             </tr>
