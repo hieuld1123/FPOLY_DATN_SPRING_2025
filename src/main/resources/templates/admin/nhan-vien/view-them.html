@@ -367,7 +367,7 @@
             document.getElementById("errorTen").innerText = "Tên nhân viên không được để trống!";
             isValid = false;
         } else if (!nameRegex.test(tenNhanVien)) {
-            document.getElementById("errorTen").innerText = "Tên nhân viên phải từ 2 đến 50 ký tự và không chứa ký tự đặc biệt!";
+            document.getElementById("errorTen").innerText = "Vui lòng nhập tên đầy đủ, không có 2 khoảng trắng liên tiếp, chỉ chứa chữ cái.";
             isValid = false;
         } else {
             document.getElementById("errorTen").innerText = ""; // Xóa thông báo lỗi nếu hợp lệ
