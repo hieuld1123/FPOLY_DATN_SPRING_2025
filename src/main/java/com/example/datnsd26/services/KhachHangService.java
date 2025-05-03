@@ -117,7 +117,7 @@ public class KhachHangService {
         // Cập nhật thông tin khách hàng
         khachHang.setHinhAnh(khachHangDto.getHinhAnh());
         khachHang.setTenKhachHang(khachHangDto.getTenKhachHang());
-        khachHang.setTrangThai(khachHangDto.getTrangThai());
+        khachHang.setTrangThai(khachHangDto.getTrangThai() != null ? khachHangDto.getTrangThai() : true);
         khachHang.setGioiTinh(khachHangDto.getGioiTinh());
         khachHang.setNgaySinh(khachHangDto.getNgaySinh());
         khachHang.setNgayCapNhat(new Timestamp(new Date().getTime()));
@@ -125,7 +125,7 @@ public class KhachHangService {
         // Cập nhật tài khoản
         TaiKhoan existingTaiKhoan = khachHang.getTaiKhoan();
         existingTaiKhoan.setSdt(khachHangDto.getSdt());
-        existingTaiKhoan.setEmail(khachHangDto.getEmail());
+        existingTaiKhoan.setEmail(khachHangDto.getEmail() != null ? khachHangDto.getEmail() : existingTaiKhoan.getEmail());
         if (khachHang.getTrangThai() == false) {
             existingTaiKhoan.setTrangThai(false);
         } else {

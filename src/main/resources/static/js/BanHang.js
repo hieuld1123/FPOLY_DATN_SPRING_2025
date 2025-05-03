@@ -11,6 +11,7 @@ const DEFAULT_FORM_DATA = {
     voucherId: null,
     vouchers: null,
     discountMoney: 0,
+    totalMoneyApi: 0
 };
 
 let formData = {...DEFAULT_FORM_DATA};
@@ -60,6 +61,14 @@ const handlePayment = async () => {
     if (formData.type === "Có giao hàng" && formData.customer === null) {
         Swal.fire({
             title: "Bạn hãy thêm thông tin khách hàng để sử dụng dịch vụ giao hàng.",
+            icon: "error"
+        });
+        return;
+    }
+
+    if (formData.totalMoneyApi > 1000000000) {
+        Swal.fire({
+            title: "Giá trị hóa đơn lớn hơn 1 tỷ đồng, vui lòng tách đơn!",
             icon: "error"
         });
         return;
@@ -212,6 +221,7 @@ const handleInvoiceChange = async (id) => {
     formData.invoiceId = id;
     formData.voucherId = null;
     formData.discountMoney = 0;
+    formData.totalMoneyApi = 0;
     calculateTotalWithDiscount();
     enableElement();
     $("#search-customer").prop("disabled", false);
@@ -231,6 +241,7 @@ const handleInvoiceChange = async (id) => {
         const total = parseFloat(invoice.tongTien) + parseFloat(ship);
 
         formData.customer = invoice.khachHang;
+        formData.totalMoneyApi = invoice.tongTien;
         $("#input-note").val(invoice.ghiChu);
         $("#count-product").html(invoice.listSanPham.length);
         $("#tongTien").html(`${invoice.tongTien.toLocaleString("vi-VN")} đ`);
@@ -486,8 +497,20 @@ const handleInvoiceChange = async (id) => {
             const $input = $(this);
             const maxValue = Number($input.attr("max"));
             let newQuantity = Number($input.val());
-            if (newQuantity < 1) newQuantity = 1;
-            if (newQuantity > maxValue) newQuantity = maxValue;
+            if (newQuantity < 1) {
+                Swal.fire({
+                    title: "Số lượng tối thiểu là 1!",
+                    icon: "error"
+                });
+                newQuantity = 1;
+            }
+            if (newQuantity > maxValue){
+                Swal.fire({
+                    title: "Số lượng tối đa là " + maxValue,
+                    icon: "error"
+                });
+                newQuantity = maxValue;
+            }
             $input.val(newQuantity);
             debounce(handleQuantityChange, 2000)(
                 $input.data("product-id"),
