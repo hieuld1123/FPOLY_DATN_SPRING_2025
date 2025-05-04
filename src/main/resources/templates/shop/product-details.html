@@ -62,8 +62,11 @@
                         <div class="col-6">
                             <p>
                                 Tình trạng:
-                                <span th:if="${spct.soLuong > 0}" class="text-success fw-bold">Còn hàng</span>
-                                <span th:if="${spct.soLuong == 0}" class="text-danger fw-bold">Hết hàng</span>
+                                <span th:if="${spct.trangThai == false}" class="text-danger fw-bold">Ngừng kinh doanh</span>
+                                <span th:if="${spct.trangThai == true}">
+                                    <span th:if="${spct.soLuong > 0}" class="text-success fw-bold">Còn hàng</span>
+                                    <span th:if="${spct.soLuong == 0}" class="text-danger fw-bold">Hết hàng</span>
+                                </span>
                             </p>
                         </div>
                     </div>
