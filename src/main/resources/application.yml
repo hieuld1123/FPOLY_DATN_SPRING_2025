@@ -26,3 +26,7 @@ cloudinary:
   cloud-name: ${CLOUDINARY_CLOUD_NAME:DUMMY_VALUE}
   api-secret: ${CLOUDINARY_API_SECRET:DUMMY_VALUE}
   api-key: ${CLOUDINARY_API_KEY:DUMMY_VALUE}
+server:
+  servlet:
+    session:
+      timeout: 2h

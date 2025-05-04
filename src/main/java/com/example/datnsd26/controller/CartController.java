@@ -67,6 +67,8 @@ public class CartController {
                             @RequestParam("quantity") int soLuongThem,
                             Authentication auth,
                             RedirectAttributes redirect) {
+        final long LIMIT_GIO_HANG = 100000000L; // 100 triệu
+
         try {
             // Lấy thông tin sản phẩm chi tiết
             SanPhamChiTiet spct = sanPhamChiTietRepository.findById(sanPhamChiTietId).orElse(null);
@@ -91,6 +93,27 @@ public class CartController {
                 redirect.addFlashAttribute("errorMessage",
                         "Bạn đã thêm tối đa số lượng còn lại của sản phẩm này vào giỏ. " +
                                 "Liên hệ 1900 6680 để được hỗ trợ đặt hàng với số lượng lớn hơn.");
+                return "redirect:/shop/product/details/" + spct.getId();
+            }
+
+            // --- VALIDATE GIÁ TRỊ SẢN PHẨM THÊM VÀO (KHÔNG dùng BigDecimal) ---
+            long giaTriSanPhamThem = (long) (spct.getGiaBanSauGiam() * soLuongThem);
+            if (giaTriSanPhamThem > LIMIT_GIO_HANG) {
+                redirect.addFlashAttribute("errorMessage",
+                        "Giá trị sản phẩm bạn muốn thêm (" + String.format("%,d", giaTriSanPhamThem) + " VND) vượt quá giới hạn 100 triệu đồng cho mỗi lần thêm. Vui lòng liên hệ 1900 6680 để được hỗ trợ.");
+                return "redirect:/shop/product/details/" + spct.getId();
+            }
+
+            // --- VALIDATE GIÁ TRỊ TOÀN BỘ GIỎ HÀNG (KHÔNG dùng BigDecimal) ---
+            float giaTriGioHangHienTaiFloat = gioHangService.tinhTongGiaTriGioHangFloat(gioHang); // Giả sử có hàm này trả về float
+            float giaTriSanPhamThemFloat = spct.getGiaBanSauGiam() * soLuongThem;
+
+            // Chuyển sang long để so sánh an toàn hơn
+            long tongGiaTriDuKien = (long) (giaTriGioHangHienTaiFloat + giaTriSanPhamThemFloat);
+
+            if (tongGiaTriDuKien > LIMIT_GIO_HANG) {
+                redirect.addFlashAttribute("errorMessage",
+                        "Giá trị giỏ hàng hiện tại cộng với sản phẩm bạn muốn thêm sẽ vượt quá giới hạn 100 triệu đồng. Vui lòng kiểm tra lại giỏ hàng hoặc liên hệ 1900 6680 để được hỗ trợ.");
                 return "redirect:/shop/product/details/" + spct.getId();
             }
 
@@ -340,7 +363,7 @@ public class CartController {
         }
 
         // --- BƯỚC KIỂM TRA GIÁ TRỊ ĐƠN HÀNG MỚI ---
-        if (tongTamTinh > 1000000000L) { // 1 tỷ đồng
+        if (tongTamTinh > 100000000L) { // 100tr đồng
             model.addAttribute("isAuthenticated", isAuthenticated);
             model.addAttribute("isCustomer", isCustomer);
             model.addAttribute("errorMessage", "Đơn hàng có giá trị vượt quá ngưỡng cho phép giao dịch trực tuyến. Quý khách vui lòng liên hệ trực tiếp bộ phận Chăm sóc Khách hàng theo số hotline: 1900 6680 để được hỗ trợ và tư vấn chi tiết.");
