@@ -259,16 +259,41 @@ FROM san_pham_chi_tiet
 WHERE id_san_pham = 13 AND id_mau_sac = 6;
 
 
-INSERT INTO tai_khoan (email, sdt, matKhau, vaiTro, trangThai, reset_token)
-VALUES ('admin@gmail.com', '0123456789', '$2a$10$c/0f56WsPLRCLd7L0REp5uzShMtGqLFC/qpc/iMISdEypxiy7fntW', 'ADMIN', 1, NULL);
-INSERT INTO tai_khoan (email, sdt, matKhau, vaiTro, trangThai, reset_token)
-VALUES ('employee@gmail.com', '0123456789', '$2a$10$c/0f56WsPLRCLd7L0REp5uzShMtGqLFC/qpc/iMISdEypxiy7fntW', 'EMPLOYEE', 1, NULL);
 
 select * from tai_khoan
-select * from nhan_vien
+select * from khach_hang
 
-    INSERT INTO nhan_vien (id_tai_khoan, ma_nhan_vien, ho_ten, dia_chi_cu_the, tinh_thanh_pho, quan_huyen, xa_phuong, gioi_tinh, hinh_anh, ngay_sinh, trang_thai, ngay_tao, ngay_cap_nhat)
-VALUES (1, 'NVADMIN01', N'Nguyễn Văn An', N'123 Đường ABC, Phường XYZ', N'Hà Nội', N'Ba Đình', N'Phúc Xá', 1, null, '1990-01-01', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
-INSERT INTO nhan_vien (id_tai_khoan, ma_nhan_vien, ho_ten, dia_chi_cu_the, tinh_thanh_pho, quan_huyen, xa_phuong, gioi_tinh, hinh_anh, ngay_sinh, trang_thai, ngay_tao, ngay_cap_nhat)
-VALUES (2, 'NV00002', N'Hoàng Thị Hà Lan', N'123 Đường Nguyễn Lan', N'Hà Nội', N'Hà Đông', N'Văn Quán', 2, null, '1990-01-01', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO tai_khoan (email, sdt, matKhau, vaiTro, trangThai, reset_token) VALUES
+('admin@gmail.com', '0988675432', '$2a$10$c/0f56WsPLRCLd7L0REp5uzShMtGqLFC/qpc/iMISdEypxiy7fntW', 'ADMIN', 1, NULL),
+('employee1@gmail.com', '0988097123', '$2a$10$c/0f56WsPLRCLd7L0REp5uzShMtGqLFC/qpc/iMISdEypxiy7fntW', 'EMPLOYEE', 1, NULL),
+('employee2@gmail.com', '0988005112', '$2a$10$c/0f56WsPLRCLd7L0REp5uzShMtGqLFC/qpc/iMISdEypxiy7fntW', 'EMPLOYEE', 1, NULL),
+('employee3@gmail.com', '0999678823', '$2a$10$c/0f56WsPLRCLd7L0REp5uzShMtGqLFC/qpc/iMISdEypxiy7fntW', 'EMPLOYEE', 1, NULL),
+('employee4@gmail.com', '0999111456', '$2a$10$c/0f56WsPLRCLd7L0REp5uzShMtGqLFC/qpc/iMISdEypxiy7fntW', 'EMPLOYEE', 1, NULL),
+('hoangquocbinh0411@gmail.com', '0912345678', '$2a$10$c/0f56WsPLRCLd7L0REp5uzShMtGqLFC/qpc/iMISdEypxiy7fntW', 'CUSTOMER', 1, NULL),
+('hieuldph30616@fpt.edu.vn', '0987654321', '$2a$10$c/0f56WsPLRCLd7L0REp5uzShMtGqLFC/qpc/iMISdEypxiy7fntW', 'CUSTOMER', 1, NULL),
+('khanhlinh241220000@gmail.com', '0988965124', '$2a$10$c/0f56WsPLRCLd7L0REp5uzShMtGqLFC/qpc/iMISdEypxiy7fntW', 'CUSTOMER', 1, NULL),
+('quannvph41619@fpt.edu.vn', '0988111506', '$2a$10$c/0f56WsPLRCLd7L0REp5uzShMtGqLFC/qpc/iMISdEypxiy7fntW', 'CUSTOMER', 1, NULL),
+('dangvank@gmail.com', '0988609453', '$2a$10$c/0f56WsPLRCLd7L0REp5uzShMtGqLFC/qpc/iMISdEypxiy7fntW', 'CUSTOMER', 1, NULL);
+
+INSERT INTO nhan_vien (id_tai_khoan, ma_nhan_vien, ho_ten, dia_chi_cu_the, tinh_thanh_pho, quan_huyen, xa_phuong, gioi_tinh, hinh_anh, ngay_sinh, trang_thai, ngay_tao, ngay_cap_nhat) VALUES
+(1, 'NVADMIN01', N'Nguyễn Văn An', N'123 Đường ABC, Phường XYZ', N'Hà Nội', N'Ba Đình', N'Phúc Xá', 1, 'default.jpg', '1990-01-01', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2, 'NV00002', N'Hoàng Thị Hà Lan', N'123 Đường Nguyễn Lan', N'Hà Nội', N'Hà Đông', N'Văn Quán', 2, 'default.jpg', '1990-01-01', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(3, 'NV00003', N'Nguyễn Thị Hồng', N'89 Nguyễn Trãi', N'Hà Nội', N'Thanh Xuân', N'Thanh Xuân Trung', 0, 'default.jpg', '1995-04-15', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(4, 'NV00004', N'Phạm Minh Tuấn', N'12 Lý Thường Kiệt', N'Đà Nẵng', N'Hải Châu', N'Nam Dương', 1, 'default.jpg', '1992-09-23', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(5, 'NV00005', N'Lê Quang Huy', N'33 Trần Phú', N'Hồ Chí Minh', N'Quận 5', N'Phường 2', 1, 'default.jpg', '1990-12-05', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO khach_hang(id_tai_khoan, ho_ten, ma_khach_hang, gioi_tinh, hinh_anh,ngay_sinh,trang_thai, ngay_tao, ngay_cap_nhat) VALUES
+(6, N'Nguyễn Văn Anh', 'KH001', 1, 'default.jpg', '1995-05-20',1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(7, N'Lê Thị Bình', 'KH002', 0, 'default.jpg', '1992-10-15',1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(8, N'Phạm Văn Hoàng', 'KH003', 1, 'default.jpg', '1990-03-12',1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(9, N'Trần Thị Cúc', 'KH004', 0, 'default.jpg', '1998-07-07',1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(10, N'Đặng Văn Khánh', 'KH005', 1, 'default.jpg', '1993-12-01',1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+
+INSERT INTO dia_chi (dia_chi_cu_the, tinh_thanh_pho, quan_huyen, xa_phuong, trang_thai, id_khach_hang) VALUES
+(N'123 Đường ABC', N'Hà Nội', N'Ba Đình', N'Phúc Xá', 1, 1),
+(N'456 Đường DEF', N'Hồ Chí Minh', N'Quận 1', N'Bến Nghé', 1, 2),
+(N'789 Đường GHI', N'Đà Nẵng', N'Hải Châu', N'Thạch Thang', 1, 3),
+(N'101 Đường JKL', N'Cần Thơ', N'Ninh Kiều', N'An Khánh', 1, 4),
+(N'202 Đường MNO', N'Hải Phòng', N'Lê Chân', N'An Dương', 1, 5);
