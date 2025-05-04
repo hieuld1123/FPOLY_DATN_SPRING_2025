@@ -53,13 +53,19 @@ public class VoucherController {
     }
 
     @PostMapping("/create")
-    public String createVoucher(@ModelAttribute Voucher voucher, Model model) {
+    public String createVoucher(@ModelAttribute Voucher voucher,
+                                RedirectAttributes redirectAttributes,
+                                Model model) {
         try {
             voucherService.createVoucher(voucher);
+            redirectAttributes.addFlashAttribute("toastMessage", "Thêm voucher thành công!");
+            redirectAttributes.addFlashAttribute("toastType", "success");
             return "redirect:/admin/vouchers";
         } catch (VoucherValidationException e) {
             model.addAttribute("voucher", voucher);
-            model.addAttribute("errors", e.getErrors()); // Gửi lỗi xuống giao diện
+            model.addAttribute("errors", e.getErrors());
+            redirectAttributes.addFlashAttribute("toastMessage", "Có lỗi xảy ra: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("toastType", "error");
             return "/voucher/user/voucher-add";
         }
     }
