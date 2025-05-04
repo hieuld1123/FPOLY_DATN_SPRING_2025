@@ -307,6 +307,7 @@ public class CartController {
             model.addAttribute("cart", new ArrayList<>()); // hiển thị sản phẩm da chon
             model.addAttribute("tongTamTinh", 0);
             model.addAttribute("khachHang", khachHang);
+            model.addAttribute("diaChiMacDinh", diaChiMacDinh);
             model.addAttribute("phiShip", 0);
             model.addAttribute("hoaDonBinhRequest", hoaDonBinhRequest);
             return "shop/checkout"; // quay lại trang giỏ hàng
@@ -352,6 +353,7 @@ public class CartController {
             model.addAttribute("cart", danhSachThanhToan); // hiển thị sản phẩm da chon
             model.addAttribute("tongTamTinh", tongTamTinh);
             model.addAttribute("khachHang", khachHang);
+            model.addAttribute("diaChiMacDinh", diaChiMacDinh);
             model.addAttribute("phiShip", phiShip);
             model.addAttribute("hoaDonBinhRequest", hoaDonBinhRequest);
             model.addAttribute("vouchers", voucherRepository.findValidVouchers(LocalDateTime.now(), tongTamTinh)); // Load lại danh sách voucher hợp lệ
@@ -365,6 +367,7 @@ public class CartController {
                 model.addAttribute("isAuthenticated", isAuthenticated);
                 model.addAttribute("isCustomer", isCustomer);
                 model.addAttribute("khachHang", khachHang); // CẦN ĐẢM BẢO dòng này tồn tại
+                model.addAttribute("diaChiMacDinh", diaChiMacDinh);
                 model.addAttribute("errorMessage", "Vui lòng điền đầy đủ thông tin");
                 model.addAttribute("cart", danhSachThanhToan); // hiển thị sản phẩm da chon
                 model.addAttribute("tongTamTinh", tongTamTinh);
@@ -380,6 +383,7 @@ public class CartController {
             model.addAttribute("isAuthenticated", isAuthenticated);
             model.addAttribute("isCustomer", isCustomer);
             model.addAttribute("khachHang", khachHang); // CẦN ĐẢM BẢO dòng này tồn tại
+            model.addAttribute("diaChiMacDinh", diaChiMacDinh);
             model.addAttribute("errorMessage", "Đơn hàng có giá trị vượt quá ngưỡng cho phép giao dịch trực tuyến. Quý khách vui lòng liên hệ trực tiếp bộ phận Chăm sóc Khách hàng theo số hotline: 1900 6680 để được hỗ trợ và tư vấn chi tiết.");
             model.addAttribute("cart", danhSachThanhToan); // hiển thị sản phẩm da chon
             model.addAttribute("tongTamTinh", tongTamTinh);
@@ -402,6 +406,7 @@ public class CartController {
                 model.addAttribute("isAuthenticated", isAuthenticated);
                 model.addAttribute("isCustomer", isCustomer);
                 model.addAttribute("khachHang", khachHang); // CẦN ĐẢM BẢO dòng này tồn tại
+                model.addAttribute("diaChiMacDinh", diaChiMacDinh);
                 model.addAttribute("errorMessage", "Voucher bạn chọn không hợp lệ hoặc đã hết lượt sử dụng.");
                 model.addAttribute("cart", danhSachThanhToan);
                 model.addAttribute("tongTamTinh", tongTamTinh);
@@ -504,6 +509,7 @@ public class CartController {
         model.addAttribute("phiShip", 0);
         model.addAttribute("hoaDonBinhRequest", new HoaDonBinhRequest());
         model.addAttribute("khachHang", khachHang);
+        model.addAttribute("diaChiMacDinh", diaChiMacDinh);
         return "shop/checkout";
     }
 
