@@ -79,7 +79,7 @@ public class SanPhamRestcontroller {
     }
 
 
-    @PutMapping("/san-pham/updateSanPham/{id}")
+    @PutMapping("/admin/api/updateSanPham/{id}")
     public ResponseEntity<String> updateSanPham(@PathVariable Integer id, @RequestBody SanPham updatedSanPham) {
         SanPham existingSanPham = sanPhamRepositoty.findById(id).orElse(null);
         if (existingSanPham == null || updatedSanPham == null) {
@@ -87,7 +87,7 @@ public class SanPhamRestcontroller {
         }
         existingSanPham.setTenSanPham(updatedSanPham.getTenSanPham());
         sanPhamRepositoty.save(existingSanPham);
-        return ResponseEntity.ok("redirect:/listsanpham");
+        return ResponseEntity.ok("redirect:/quan-ly/san-pham");
     }
 
 

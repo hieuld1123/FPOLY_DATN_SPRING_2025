@@ -616,8 +616,8 @@
         } else if (soluong <= 0) {
             soluongError.innerText = "Số lượng phải lớn hơn 0";
             return false; // Ngăn form được gửi đi
-        } else if (soluong > 2147483647) {
-            soluongError.innerText = "Số lượng phải nhỏ hơn 2147483647";
+        } else if (soluong > 10000) {
+            soluongError.innerText = "Số lượng không được vượt quá 10000";
             return false; // Ngăn form được gửi đi
         } else {
             soluongError.innerText = ""; // Xóa thông báo lỗi nếu có
@@ -635,9 +635,9 @@
             giatienError.innerText = "Giá tiền phải lớn hơn 0";
             return false;
         }
-        // Kiểm tra giá trị > 922337203685477
-        else if (giatienValue > 922337203685477) {
-            giatienError.innerText = "Giá tiền không được vượt quá 922.337.203.685.477 ₫";
+        // Kiểm tra giá trị > 100000000
+        else if (giatienValue > 100000000) {
+            giatienError.innerText = "Giá tiền không được vượt quá 100.000.000 ₫";
             return false;
         } else {
             giatienError.innerText = ""; // Xóa thông báo lỗi nếu có
