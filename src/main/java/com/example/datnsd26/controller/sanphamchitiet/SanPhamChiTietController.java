@@ -114,6 +114,7 @@ public class SanPhamChiTietController {
         List<SanPhamChiTiet> list;
         String trimmedKey = (info.getKey() != null) ? info.getKey().trim().replaceAll("\\s+", " ") : null;
         boolean isKeyEmpty = (trimmedKey == null || trimmedKey.isEmpty());
+        Boolean parsedTrangThai = info.getTrangThaiBoolean(); // Lấy giá trị trạng thái dưới dạng Boolean
         boolean isAllFiltersNull = (
                 isKeyEmpty &&
                         info.getIdChatLieu() == null &&
@@ -124,7 +125,7 @@ public class SanPhamChiTietController {
                         info.getGioiTinh() == null &&
                         info.getTrangThai() == null
         );
-        if (isAllFiltersNull || info.getTrangThai() == null) {
+        if (isAllFiltersNull) {
             list = sanPhamChiTietRepository.findAll();
         } else {
             list = sanPhamChiTietRepository.search(
@@ -136,7 +137,7 @@ public class SanPhamChiTietController {
                     info.getIdMauSac(),
                     info.getIdChatLieu(),
                     info.getGioiTinh(),
-                    info.getTrangThai()
+                    parsedTrangThai
             );
         }
         List<SanPham> listSanPham = sanPhamImp.findAll();

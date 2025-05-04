@@ -363,6 +363,7 @@ public class SanPhamController {
 
         String trimmedKey = (info.getKey() != null) ? info.getKey().trim().replaceAll("\\s+", " ") : null;
         boolean isKeyEmpty = (trimmedKey == null || trimmedKey.isEmpty());
+        Boolean parsedTrangThai = info.getTrangThaiBoolean(); // Lấy giá trị trạng thái dưới dạng Boolean
         boolean isAllFiltersNull = (
                 isKeyEmpty &&
                         info.getIdChatLieu() == null &&
@@ -386,7 +387,7 @@ public class SanPhamController {
                     info.getIdMauSac(),
                     info.getIdChatLieu(),
                     info.getGioiTinh(),
-                    info.getTrangThai()
+                    parsedTrangThai
             );
         }
 

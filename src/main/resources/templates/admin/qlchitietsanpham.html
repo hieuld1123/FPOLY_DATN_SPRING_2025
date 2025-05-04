@@ -276,7 +276,7 @@
                                         <option th:each="mausac : ${ms}"
                                                 th:value="${mausac.id}"
                                                 th:selected="${mausac.id == fillMauSac}"
-                                                th:text="${mausac.ten}"
+                                                th:text="${mausac.tenMauSac}"
                                                 th:data-color="${mausac.ten}"></option>
                                     </select>
                                 </div>
@@ -312,16 +312,13 @@
                                     <select id="" class="form-select" name="trangThai"
                                             style="width: 150px; height: 45px;"
                                             onchange="submitForm()">
-                                        <option value="" th:selected="${fillTrangThai == null}">Tất cả</option>
+                                        <option value=""
+                                                th:selected="${fillTrangThai == null}">Tất cả</option>
                                         <option value="true"
-                                                th:selected="${fillTrangThai != null && fillTrangThai == 'true'}">Đang
-                                            kinh
-                                            doanh
+                                                th:selected="${fillTrangThai != null && fillTrangThai == 'true'}">Đang kinh doanh
                                         </option>
                                         <option value="false"
-                                                th:selected="${fillTrangThai != null && fillTrangThai == 'false'}">Ngừng
-                                            kinh
-                                            doanh
+                                                th:selected="${fillTrangThai != null && fillTrangThai == 'false'}">Ngừng kinh doanh
                                         </option>
                                     </select>
                                 </div>
