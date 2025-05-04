@@ -273,9 +273,12 @@
 <script src="/js/checkout.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const form = document.getElementById("checkoutForm");
-        const submitButton = document.getElementById("btnSubmit");
-        const overlay = document.getElementById("loadingOverlay");
+        const checkoutForm = document.getElementById("checkoutForm");
+        const khachHangDiv = document.querySelector('div[th\\:if="${khachHang != null}"]');
+        const khachVangLaiDiv = document.querySelector('div[th\\:if="${khachHang == null}"]');
+        const maxInputLength = 100;
+        const maxPhoneLength = 12;
+        const maxGhiChuLength = 100; // Giới hạn cho trường ghi chú
 
         const voucherSelect = document.getElementById("voucherSelect");
         const tongTamTinhEl = document.querySelector(".cart-total-price");
@@ -316,39 +319,102 @@
         voucherSelect.addEventListener("change", calculate);
         calculate();
 
-        form.addEventListener("submit", function (event) {
-            event.preventDefault(); // Ngăn chặn submit form mặc định
+        checkoutForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            let hasClientError = false;
+            const errorMessages = [];
 
-            Swal.fire({
-                title: 'Xác nhận đặt hàng',
-                text: 'Bạn có chắc chắn muốn đặt các sản phẩm này?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Có, đặt hàng!',
-                cancelButtonText: 'Không, xem lại',
-                preConfirm: () => {
-                    // Hiển thị overlay NGAY TRƯỚC KHI SUBMIT
-                    overlay.classList.remove("d-none");
-                    submitButton.disabled = true;
-                    const buttons = form.querySelectorAll("button");
-                    buttons.forEach(btn => btn.disabled = true);
-                    return true; // Bắt buộc trả về true để đóng modal (nếu không có logic bất đồng bộ)
-                },
-                allowOutsideClick: false
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // SUBMIT FORM SAU KHI ĐÃ HIỂN THỊ OVERLAY TRONG preConfirm
-                    form.submit();
-                } else {
-                    // Ẩn overlay và kích hoạt lại nút nếu người dùng hủy
-                    overlay.classList.add("d-none");
-                    submitButton.disabled = false;
-                    const buttons = form.querySelectorAll("button");
-                    buttons.forEach(btn => btn.disabled = false);
+            if (khachVangLaiDiv) {
+                // Validation cho khách vãng lai
+                const tenNguoiNhanInput = document.querySelector('#checkoutForm input[name="tenNguoiNhan"]');
+                const sdtNguoiNhanInput = document.querySelector('#checkoutForm input[name="sdtNguoiNhan"]');
+                const emailInput = document.querySelector('#checkoutForm input[name="email"]');
+                const diaChiNguoiNhanInput = document.querySelector('#checkoutForm input[name="diaChiNguoiNhan"]');
+                const ghiChuInputs = document.querySelectorAll('#checkoutForm textarea[name="ghiChu"]'); // Lấy cả hai trường ghi chú
+
+                if (tenNguoiNhanInput && tenNguoiNhanInput.value.trim() === "") {
+                    hasClientError = true;
+                    errorMessages.push("Vui lòng nhập họ và tên.");
+                } else if (tenNguoiNhanInput && tenNguoiNhanInput.value.length > maxInputLength) {
+                    hasClientError = true;
+                    errorMessages.push(`Họ và tên không được vượt quá ${maxInputLength} ký tự.`);
                 }
-            });
+
+                if (sdtNguoiNhanInput && sdtNguoiNhanInput.value.trim() === "") {
+                    hasClientError = true;
+                    errorMessages.push("Vui lòng nhập số điện thoại.");
+                } else if (sdtNguoiNhanInput && sdtNguoiNhanInput.value.length > maxPhoneLength) {
+                    hasClientError = true;
+                    errorMessages.push(`Số điện thoại không được vượt quá ${maxPhoneLength} ký tự.`);
+                } else if (sdtNguoiNhanInput && !/^(0[2-9]|84[2-9])[0-9]{8}$/.test(sdtNguoiNhanInput.value)) {
+                    hasClientError = true;
+                    errorMessages.push("Số điện thoại không hợp lệ.");
+                }
+
+                if (emailInput && emailInput.value.trim() === "") {
+                    hasClientError = true;
+                    errorMessages.push("Vui lòng nhập email.");
+                } else if (emailInput && emailInput.value.length > maxInputLength) {
+                    hasClientError = true;
+                    errorMessages.push(`Email không được vượt quá ${maxInputLength} ký tự.`);
+                } else if (emailInput && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value)) {
+                    hasClientError = true;
+                    errorMessages.push("Email không hợp lệ.");
+                }
+
+                if (diaChiNguoiNhanInput && diaChiNguoiNhanInput.value.trim() === "") {
+                    hasClientError = true;
+                    errorMessages.push("Vui lòng nhập địa chỉ cụ thể.");
+                } else if (diaChiNguoiNhanInput && diaChiNguoiNhanInput.value.length > maxInputLength) {
+                    hasClientError = true;
+                    errorMessages.push(`Địa chỉ cụ thể không được vượt quá ${maxInputLength} ký tự.`);
+                }
+
+                ghiChuInputs.forEach(ghiChuInput => {
+                    if (ghiChuInput && ghiChuInput.value.length > maxGhiChuLength) {
+                        hasClientError = true;
+                        errorMessages.push(`Ghi chú không được vượt quá ${maxGhiChuLength} ký tự.`);
+                    }
+                });
+            } else if (khachHangDiv) {
+                // Validation cho khách hàng đã đăng nhập (chỉ validate ghi chú)
+                const ghiChuInputs = document.querySelectorAll('#checkoutForm textarea[name="ghiChu"]'); // Lấy cả hai trường ghi chú
+                ghiChuInputs.forEach(ghiChuInput => {
+                    if (ghiChuInput && ghiChuInput.value.length > maxGhiChuLength) {
+                        hasClientError = true;
+                        errorMessages.push(`Ghi chú không được vượt quá ${maxGhiChuLength} ký tự.`);
+                    }
+                });
+            }
+
+            if (hasClientError) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi nhập liệu',
+                    html: errorMessages.join("<br>"),
+                });
+            } else {
+                // Nếu không có lỗi ở client, hiển thị loading và submit form
+                const submitButton = document.getElementById("btnSubmit");
+                const overlay = document.getElementById("loadingOverlay");
+                overlay.classList.remove("d-none");
+                submitButton.disabled = true;
+                const buttons = checkoutForm.querySelectorAll("button");
+                buttons.forEach(btn => btn.disabled = true);
+                checkoutForm.submit();
+            }
+        });
+
+        // Giới hạn ký tự nhập cho trường ghi chú (áp dụng cho cả hai trường)
+        const ghiChuInputs = document.querySelectorAll('#checkoutForm textarea[name="ghiChu"]');
+        ghiChuInputs.forEach(ghiChuInput => {
+            if (ghiChuInput) {
+                ghiChuInput.addEventListener("input", function () {
+                    if (this.value.length > maxGhiChuLength) {
+                        this.value = this.value.slice(0, maxGhiChuLength);
+                    }
+                });
+            }
         });
     });
 </script>
