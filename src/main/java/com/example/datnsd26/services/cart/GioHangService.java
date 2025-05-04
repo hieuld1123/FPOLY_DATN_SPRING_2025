@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
 
@@ -153,6 +154,34 @@ public class GioHangService {
 
         NumberFormat numberFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
         return numberFormat.format(tongTien) + " VND";
+    }
+
+    public float tinhTongGiaTriGioHangFloat(GioHang gioHang) {
+        float tongTien = 0f;
+        if (gioHang != null && gioHang.getChiTietList() != null) {
+            for (GioHangChiTiet item : gioHang.getChiTietList()) {
+                tongTien += item.getSoLuong() * item.getSanPhamChiTiet().getGiaBanSauGiam();
+            }
+        }
+        return tongTien;
+    }
+
+    // Một phiên bản sử dụng BigDecimal để tính toán chính xác hơn (nên dùng nếu có thể)
+    public BigDecimal tinhTongGiaTriGioHangBigDecimal(GioHang gioHang) {
+        BigDecimal tongTien = BigDecimal.ZERO;
+        if (gioHang != null && gioHang.getChiTietList() != null) {
+            for (GioHangChiTiet item : gioHang.getChiTietList()) {
+                BigDecimal soLuong = BigDecimal.valueOf(item.getSoLuong());
+                BigDecimal gia = BigDecimal.valueOf(item.getSanPhamChiTiet().getGiaBanSauGiam());
+                tongTien = tongTien.add(soLuong.multiply(gia));
+            }
+        }
+        return tongTien;
+    }
+
+    public String formatCurrency(float amount) {
+        NumberFormat numberFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
+        return numberFormat.format(amount) + " VND";
     }
 
 

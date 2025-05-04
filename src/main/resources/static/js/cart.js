@@ -50,7 +50,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     // ✅ Cập nhật lại tổng tiền của các sản phẩm đã chọn
                     updateSelectedTotal();
                 } else {
-                    alert(data.message || 'Đã có lỗi xảy ra');
+                    Swal.fire({ // Sử dụng SweetAlert2 để hiển thị thông báo đẹp hơn
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: data.message || 'Đã có lỗi xảy ra!',
+                    });
                 }
             });
     }
