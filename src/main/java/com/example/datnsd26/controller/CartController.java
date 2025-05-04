@@ -146,6 +146,7 @@ public class CartController {
                                RedirectAttributes redirectAttributes,
                                HttpSession session) {
 
+        final long LIMIT_THANH_TOAN = 100000000L; // 100 triệu
         boolean isAuthenticated = auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken);
         boolean isCustomer = false;
 
@@ -170,6 +171,17 @@ public class CartController {
         }
 
         List<GioHangChiTiet> danhSachThanhToan = gioHangChiTietRepository.findAllById(selectedIds);
+        // --- VALIDATE TỔNG GIÁ TRỊ CÁC SẢN PHẨM ĐƯỢC CHỌN ---
+//        long tongGiaTriSelected = 0;
+//        for (GioHangChiTiet item : danhSachThanhToan) {
+//            tongGiaTriSelected += (long) item.getSoLuong() * item.getSanPhamChiTiet().getGiaBanSauGiam().longValue();
+//            if (tongGiaTriSelected > LIMIT_THANH_TOAN) {
+//                redirectAttributes.addFlashAttribute("errorMessage", "Tổng giá trị các sản phẩm bạn chọn vượt quá 100 triệu đồng. Vui lòng kiểm tra lại giỏ hàng.");
+//                return "redirect:/shop/cart";
+//            }
+//        }
+        // --- KẾT THÚC VALIDATE ---
+
         List<String> danhSachLoi = new ArrayList<>();
         List<GioHangChiTiet> danhSachHopLe = new ArrayList<>();
 
@@ -352,6 +364,7 @@ public class CartController {
             if (bindingResult.hasErrors()) {
                 model.addAttribute("isAuthenticated", isAuthenticated);
                 model.addAttribute("isCustomer", isCustomer);
+                model.addAttribute("khachHang", khachHang); // CẦN ĐẢM BẢO dòng này tồn tại
                 model.addAttribute("errorMessage", "Vui lòng điền đầy đủ thông tin");
                 model.addAttribute("cart", danhSachThanhToan); // hiển thị sản phẩm da chon
                 model.addAttribute("tongTamTinh", tongTamTinh);
@@ -366,6 +379,7 @@ public class CartController {
         if (tongTamTinh > 100000000L) { // 100tr đồng
             model.addAttribute("isAuthenticated", isAuthenticated);
             model.addAttribute("isCustomer", isCustomer);
+            model.addAttribute("khachHang", khachHang); // CẦN ĐẢM BẢO dòng này tồn tại
             model.addAttribute("errorMessage", "Đơn hàng có giá trị vượt quá ngưỡng cho phép giao dịch trực tuyến. Quý khách vui lòng liên hệ trực tiếp bộ phận Chăm sóc Khách hàng theo số hotline: 1900 6680 để được hỗ trợ và tư vấn chi tiết.");
             model.addAttribute("cart", danhSachThanhToan); // hiển thị sản phẩm da chon
             model.addAttribute("tongTamTinh", tongTamTinh);
@@ -387,6 +401,7 @@ public class CartController {
                     !voucher.getCongKhai() || tongTamTinh < voucher.getGiaTriGiamToiThieu()) {
                 model.addAttribute("isAuthenticated", isAuthenticated);
                 model.addAttribute("isCustomer", isCustomer);
+                model.addAttribute("khachHang", khachHang); // CẦN ĐẢM BẢO dòng này tồn tại
                 model.addAttribute("errorMessage", "Voucher bạn chọn không hợp lệ hoặc đã hết lượt sử dụng.");
                 model.addAttribute("cart", danhSachThanhToan);
                 model.addAttribute("tongTamTinh", tongTamTinh);
