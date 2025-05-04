@@ -85,7 +85,7 @@ public class ThuongHieuController {
         thuongHieu.setNgayTao(currentTime);
         thuongHieu.setNgayCapNhat(currentTime);
         thuongHieuImp.add(thuongHieu);
-        return "redirect:/viewaddSPGET";
+        return "redirect:/admin/viewaddSPGET";
     }
 
     @PostMapping("/addThuongHieuSua")

@@ -77,7 +77,7 @@ public class MauSacController {
         mauSac.setNgayTao(currentTime);
         mauSac.setNgayCapNhat(currentTime);
         mauSacImp.addMauSac(mauSac);
-        return "redirect:/viewaddSPGET";
+        return "redirect:/admin/viewaddSPGET";
     }
 
     @PostMapping("/addMauSacSua")
