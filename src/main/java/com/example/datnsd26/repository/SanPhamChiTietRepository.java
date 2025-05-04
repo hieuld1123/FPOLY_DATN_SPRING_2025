@@ -93,19 +93,10 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
     Integer findMaxIdSPCT();
 
     //dùng cho search các thuộc tính sản phẩm chi tiết
-    @Query("SELECT spct FROM SanPhamChiTiet spct WHERE (" +
-            "spct.sanPham.tenSanPham LIKE ?1 OR " +
-            "spct.maSanPhamChiTiet LIKE ?2) AND (?3 IS NULL OR " +
-            "spct.thuongHieu.id=?3) " +
-            "AND (?4 IS NULL OR " + " " +
-            "spct.deGiay.id=?4) AND (?5 IS NULL OR " +
-            "spct.kichCo.id=?5) AND (?6 IS NULL OR " +
-            "spct.mauSac.id=?6)" +
-            "AND (?7 IS NULL OR " +
-            "spct.chatLieu.id=?7) AND (?8 IS NULL OR " +
-            "spct.gioiTinh=?8) AND (?9 IS NULL OR " +
-            "spct.trangThai=?9)")
-    List<SanPhamChiTiet> search(String key, String maSPCT, Integer idthuonghieu, Integer iddegiay, Integer idkichco, Integer idmausac, Integer idchatlieu, Boolean gioitinh, Boolean trangthai);
+    @Query("SELECT spct FROM SanPhamChiTiet spct WHERE (spct.sanPham.tenSanPham LIKE ?1 OR spct.maSanPhamChiTiet LIKE ?2) AND (?3 IS NULL OR spct.thuongHieu.id=?3) " +
+            "AND (?4 IS NULL OR " + " spct.deGiay.id=?4) AND (?5 IS NULL OR spct.kichCo.id=?5) AND (?6 IS NULL OR spct.mauSac.id=?6)" +
+            "AND (?7 IS NULL OR spct.chatLieu.id=?7) AND (?8 IS NULL OR spct.gioiTinh=?8) AND (?9 IS NULL OR spct.sanPham.trangThai=?9)")
+    List<SanPhamChiTiet> search(String key, String maSPCT, Integer idThuongHieu, Integer idDeGiay, Integer idkichCo, Integer idMauSac, Integer idChatLieu, Boolean gioiTinh, Boolean trangThai);
 
 
     @Query("SELECT spct FROM SanPhamChiTiet spct WHERE spct.sanPham.id = :Id")
