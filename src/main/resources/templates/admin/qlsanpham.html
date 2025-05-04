@@ -208,10 +208,17 @@
                                         </div>
 
 
-                                        <select id="statusSelect" class="form-select mx-2" name="trangThai" style="width: 250px">
+                                        <select id="statusSelect" class="form-select mx-2" name="trangThai"
+                                                style="width: 250px">
                                             <option value="" th:selected="${fillTrangThai == null}">Tất cả</option>
-                                            <option value="true" th:selected="${fillTrangThai != null && fillTrangThai == 'true'}">Đang kinh doanh</option>
-                                            <option value="false" th:selected="${fillTrangThai != null && fillTrangThai == 'false'}">Ngừngkinh doanh</option>
+                                            <option value="true"
+                                                    th:selected="${fillTrangThai != null && fillTrangThai == 'true'}">
+                                                Đang kinh doanh
+                                            </option>
+                                            <option value="false"
+                                                    th:selected="${fillTrangThai != null && fillTrangThai == 'false'}">
+                                                Ngừngkinh doanh
+                                            </option>
                                         </select>
                                     </div>
                                 </form>
@@ -252,12 +259,11 @@
                         <tbody>
                         <tr th:each="sp, stt : ${list}">
                             <td th:text="${stt.index + 1}"></td>
-                            <th th:text="${sp[5]}"></th>
+                            <td th:text="${sp[5]}"></td>
                             <td>
                                             <span th:if="${#strings.length(sp[1]) > 30}"
                                                   th:text="${#strings.substring(sp[1], 0, 30)} + '...'"></span>
-                                <span th:unless="${#strings.length(sp[1]) > 30}"
-                                      th:text="${sp[1]}"></span>
+                                <span th:unless="${#strings.length(sp[1]) > 30}" th:text="${sp[1]}"></span>
                             </td>
 
                             <td>
@@ -268,7 +274,8 @@
                                       th:action="@{/admin/san-pham/updateTrangThai/{id}(id=${sp[0]})}"
                                       method="post"
                                       onsubmit="return confirmUpdateKichCo(this);">
-                                    <button id="statusBtn_[[${sp[0]}]]" style="border: none; display: inline-block; width: 150px; height: 35px; color: white; text-align: center; line-height: 35px; border-radius: 4px;"
+                                    <button id="statusBtn_[[${sp[0]}]]"
+                                            style="border: none; display: inline-block; width: 150px; height: 35px; color: white; text-align: center; line-height: 35px; border-radius: 4px;"
                                             th:classappend="${sp[4] == true ? 'bg-success' : 'bg-danger'}"
                                             th:text="${sp[4] == true ? 'Đang kinh doanh' : 'Ngừng kinh doanh'}">
 
@@ -319,7 +326,7 @@
                                 <div class="modal-footer">
                                     <!--                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>-->
                                     <div class="d-flex justify-content-end align-items-center mb-3">
-                                        <button data-bs-dismiss="modal" type="button"
+                                        <button data-bs-dismiss="modal" type="button" class="me-3"
                                                 style="background-color: black;color: white; padding: 5px 10px; width: 100px; height: 40px; border-radius: 10px; border-color: black; font-weight: bold;">
                                             Thoát
                                         </button>
@@ -513,10 +520,10 @@
                     if (result.isConfirmed) {
                         // Tạo đối tượng sản phẩm cập nhật
                         const updateSanPham = {
-                            tensanpham: ten // Sửa đổi tên trường cho phù hợp
+                            tenSanPham: ten // Sửa đổi tên trường cho phù hợp
                         };
 
-                        fetch(`/san-pham/updateSanPham/${id}`, {
+                        fetch(`/admin/api/updateSanPham/${id}`, {
                             method: 'PUT',
                             headers: {
                                 'Content-Type': 'application/json',

@@ -623,6 +623,7 @@ public class SanPhamController {
             for (SanPhamChiTiet sanPhamChiTiet : sanPhamChiTietList) {
                 if (sanPhamChiTiet.getId().equals(id)) {
                     sanPhamChiTiet.setGiaBan(giatien);
+                    sanPhamChiTiet.setGiaBanSauGiam(giatien);
                     sanPhamChiTiet.setSoLuong(soluong);
                 }
             }
