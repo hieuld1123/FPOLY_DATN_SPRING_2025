@@ -119,7 +119,7 @@
 
                                 <div class="col-md-6">
                                     <label class="form-label">Số lượng</label>
-                                    <input type="number" class="form-control" name="soLuong" th:value="${voucher.soLuong}" max="10000000" min="1">
+                                    <input type="number" class="form-control" name="soLuong" th:value="${voucher.soLuong}">
                                     <span class="text-danger" th:if="${errors != null and errors.containsKey('soLuong')}" th:text="${errors.get('soLuong')}"></span>
                                 </div>
                                 <div class="col-md-6">
@@ -137,7 +137,7 @@
                                 <div class="col-md-4">
                                     <label class="form-label">Đơn tối thiểu</label>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" name="giaTriGiamToiThieu" th:value="${voucher.giaTriGiamToiThieu}" min="0">
+                                        <input type="number" class="form-control" name="giaTriGiamToiThieu" th:value="${voucher.giaTriGiamToiThieu}" min="0">
                                         <span class="input-group-text">VNĐ</span>
                                     </div>
                                     <span class="text-danger" th:if="${errors != null and errors.containsKey('giaTriGiamToiThieu')}" th:text="${errors.get('giaTriGiamToiThieu')}"></span>
@@ -145,7 +145,7 @@
                                 <div class="col-md-4">
                                     <label class="form-label">Giá trị giảm</label>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" name="giaTriGiam" th:value="${voucher.giaTriGiam}" min="0">
+                                        <input type="number" class="form-control" name="giaTriGiam" th:value="${voucher.giaTriGiam}" min="0">
                                         <span class="input-group-text discount-unit">VNĐ</span>
                                     </div>
                                     <span class="text-danger" th:if="${errors != null and errors.containsKey('giaTriGiam')}" th:text="${errors.get('giaTriGiam')}"></span>
@@ -154,7 +154,7 @@
                                 <div class="col-md-4" id="giaTriGiamToiDaDiv">
                                     <label class="form-label">Giá trị giảm tối đa</label>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" name="giaTriGiamToiDa" id="giaTriGiamToiDa" th:value="${voucher.giaTriGiamToiDa}" min="0">
+                                        <input type="number" class="form-control" name="giaTriGiamToiDa" id="giaTriGiamToiDa" th:value="${voucher.giaTriGiamToiDa}" min="0">
                                         <span class="input-group-text">VNĐ</span>
                                     </div>
                                     <span class="text-danger" th:if="${errors != null and errors.containsKey('giaTriGiamToiDa')}" th:text="${errors.get('giaTriGiamToiDa')}"></span>
@@ -213,42 +213,42 @@
         const giaTriGiamToiDaInput = document.getElementById('giaTriGiamToiDa');
 
 
-        function formatSoTien(input) {
-            let value = input.value.replace(/[^\d]/g, '');
-            if (value) {
-                value = value.slice(0, 12);
-                const soTien = parseInt(value);
-                if (!isNaN(soTien)) {
-                    input.value = soTien.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-                }
-            }
-        }
+        // function formatSoTien(input) {
+        //     let value = input.value.replace(/[^\d]/g, '');
+        //     if (value) {
+        //         value = value.slice(0, 12);
+        //         const soTien = parseInt(value);
+        //         if (!isNaN(soTien)) {
+        //             input.value = soTien.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        //         }
+        //     }
+        // }
+        //
+        // function formatPhanTram(input) {
+        //     let value = input.value.replace(/[^\d.]/g, '');
+        //     if (value) {
+        //         const phanTram = parseFloat(value);
+        //         if (!isNaN(phanTram)) {
+        //             input.value = Math.min(100, phanTram);
+        //         }
+        //     }
+        // }
 
-        function formatPhanTram(input) {
-            let value = input.value.replace(/[^\d.]/g, '');
-            if (value) {
-                const phanTram = parseFloat(value);
-                if (!isNaN(phanTram)) {
-                    input.value = Math.min(100, phanTram);
-                }
-            }
-        }
-
-        [giaTriGiamToiThieuInput, giaTriGiamToiDaInput].forEach(input => {
-            input.addEventListener('input', function() {
-                formatSoTien(this);
-            });
-
-            input.addEventListener('paste', function(e) {
-                e.preventDefault();
-                const text = (e.originalEvent || e).clipboardData.getData('text/plain');
-                const cleanNumber = text.replace(/[^\d]/g, '').slice(0, 12);
-                if (cleanNumber) {
-                    this.value = parseInt(cleanNumber);
-                    formatSoTien(this);
-                }
-            });
-        });
+        // [giaTriGiamToiThieuInput, giaTriGiamToiDaInput].forEach(input => {
+        //     input.addEventListener('input', function() {
+        //         formatSoTien(this);
+        //     });
+        //
+        //     input.addEventListener('paste', function(e) {
+        //         e.preventDefault();
+        //         const text = (e.originalEvent || e).clipboardData.getData('text/plain');
+        //         const cleanNumber = text.replace(/[^\d]/g, '').slice(0, 12);
+        //         if (cleanNumber) {
+        //             this.value = parseInt(cleanNumber);
+        //             formatSoTien(this);
+        //         }
+        //     });
+        // });
 
         giaTriGiamInput.addEventListener('input', function() {
             if (hinhThucGiam.value === 'Phần Trăm') {
@@ -258,17 +258,17 @@
             }
         });
 
-        giaTriGiamInput.addEventListener('paste', function(e) {
-            if (hinhThucGiam.value !== 'Phần Trăm') {
-                e.preventDefault();
-                const text = (e.originalEvent || e).clipboardData.getData('text/plain');
-                const cleanNumber = text.replace(/[^\d]/g, '').slice(0, 12);
-                if (cleanNumber) {
-                    this.value = parseInt(cleanNumber);
-                    formatSoTien(this);
-                }
-            }
-        });
+        // giaTriGiamInput.addEventListener('paste', function(e) {
+        //     if (hinhThucGiam.value !== 'Phần Trăm') {
+        //         e.preventDefault();
+        //         const text = (e.originalEvent || e).clipboardData.getData('text/plain');
+        //         const cleanNumber = text.replace(/[^\d]/g, '').slice(0, 12);
+        //         if (cleanNumber) {
+        //             this.value = parseInt(cleanNumber);
+        //             formatSoTien(this);
+        //         }
+        //     }
+        // });
 
         // Existing code for toggleGiaTriGiamToiDa
         function toggleGiaTriGiamToiDa() {
@@ -288,21 +288,6 @@
 
         submitButton.addEventListener('click', function (e) {
             e.preventDefault();
-
-            // Chuyển đổi định dạng số trước khi submit
-            [giaTriGiamToiThieuInput, giaTriGiamToiDaInput].forEach(input => {
-                let value = input.value.replace(/\./g, ''); // Loại bỏ dấu chấm phân cách
-                input.value = value;
-            });
-
-            let giaTriGiamValue = giaTriGiamInput.value;
-            if (hinhThucGiam.value === 'Phần Trăm') {
-                giaTriGiamValue = giaTriGiamValue.replace(/[^\d.]/g, '');
-                giaTriGiamInput.value = parseFloat(giaTriGiamValue) || 0;
-            } else {
-                giaTriGiamValue = giaTriGiamValue.replace(/\./g, '');
-                giaTriGiamInput.value = giaTriGiamValue;
-            }
 
             // Kiểm tra form có hợp lệ không
             if (!form.checkValidity()) {
