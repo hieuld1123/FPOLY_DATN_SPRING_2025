@@ -81,7 +81,7 @@ public class ChatLieuController {
         chatLieu.setNgayTao(currentTime);
         chatLieu.setNgayCapNhat(currentTime);
         chatLieuService.add(chatLieu);
-        return "redirect:/viewaddSPGET";
+        return "redirect:/admin/viewaddSPGET";
     }
 
     @PostMapping("/addChatLieuSua")

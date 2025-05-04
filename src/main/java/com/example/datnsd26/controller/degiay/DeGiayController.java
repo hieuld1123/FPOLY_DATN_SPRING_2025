@@ -72,7 +72,7 @@ public class DeGiayController {
 
     @PostMapping("/addDeGiayModal")
     public String addDeGiayModal(@ModelAttribute("degiay") DeGiay deGiay) {
-        return processDeGiay(deGiay, "redirect:/viewaddSPGET");
+        return processDeGiay(deGiay, "redirect:/admin/viewaddSPGET");
     }
 
     @PostMapping("/addDeGiaySua")

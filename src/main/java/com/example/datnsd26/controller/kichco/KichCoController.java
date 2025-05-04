@@ -81,7 +81,7 @@ public class KichCoController {
         kichCo.setNgayTao(currentTime);
         kichCo.setNgayCapNhat(currentTime);
         kichCoImp.addKichCo(kichCo);
-        return "redirect:/viewaddSPGET";
+        return "redirect:/admin/viewaddSPGET";
     }
 
     @PostMapping("/addKichCoSua")
