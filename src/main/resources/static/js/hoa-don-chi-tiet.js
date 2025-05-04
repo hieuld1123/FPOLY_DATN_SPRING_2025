@@ -588,6 +588,11 @@ $(document).ready(function () {
             $("#recipientName")
                 .next(".error-message")
                 .text("Tên không được vượt quá 50 ký tự.");
+        } else if (!(/^(?!.*  )[A-Za-zÀ-ỹ]{1,}( [A-Za-zÀ-ỹ]{1,}){1,49}$/.test(recipientName))) {
+            $("#recipientName")
+                .siblings(".text-danger")
+                .text("Vui lòng nhập tên đầy đủ, không có 2 khoảng trắng liên tiếp, chỉ chứa chữ cái.");
+            isValid = false;
         }
 
         // Kiểm tra định dạng số điện thoại
@@ -597,11 +602,14 @@ $(document).ready(function () {
             $("#recipientPhone")
                 .next(".error-message")
                 .text("Số điện thoại không được để trống.");
-        } else if (!phoneRegex.test(recipientPhone)) {
-            isValid = false;
-            $("#recipientPhone")
-                .next(".error-message")
-                .text("Số điện thoại không hợp lệ. Vui lòng nhập 10-11 chữ số.");
+        } else {
+            const phonePattern = /^(0[3|5|7|8|9])+([0-9]{8})$/;
+            if (!phonePattern.test(recipientPhone)) {
+                $("#recipientPhone")
+                    .siblings(".text-danger")
+                    .text("Số điện thoại không hợp lệ!");
+                isValid = false;
+            }
         }
 
         // Kiểm tra Tỉnh/Thành phố
@@ -634,11 +642,16 @@ $(document).ready(function () {
             $("#specificAddress")
                 .next(".error-message")
                 .text("Địa chỉ cụ thể không được để trống.");
-        } else if (specificAddress.length > 100) {
-            isValid = false;
+        }else if (!(/^[0-9a-zA-ZÀ-ỹ\s.,-]+$/.test(specificAddress))) {
             $("#specificAddress")
-                .next(".error-message")
-                .text("Địa chỉ cụ thể không được vượt quá 100 ký tự.");
+                .siblings(".text-danger")
+                .text("Địa chỉ chứa ký tự không hợp lệ!");
+            isValid = false;
+        } else if (specificAddress.length > 255) {
+            $("#specificAddress")
+                .siblings(".text-danger")
+                .text("Địa chỉ cụ thể không được quá 255 ký tự!");
+            isValid = false;
         }
 
         // Kiểm tra Phí vận chuyển

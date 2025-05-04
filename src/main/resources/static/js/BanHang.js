@@ -66,9 +66,9 @@ const handlePayment = async () => {
         return;
     }
 
-    if (formData.totalMoneyApi > 1000000000) {
+    if (formData.totalMoneyApi > 100000000) {
         Swal.fire({
-            title: "Giá trị hóa đơn lớn hơn 1 tỷ đồng, vui lòng tách đơn!",
+            title: "Giá trị hóa đơn lớn hơn 100 triệu đồng, vui lòng tách đơn!",
             icon: "error"
         });
         return;
@@ -310,19 +310,17 @@ const handleInvoiceChange = async (id) => {
                 let isValid = true;
 
                 // Validate số điện thoại
+                const phonePattern = /^(0[3|5|7|8|9])+([0-9]{8})$/;
                 if (!newPhoneNumber) {
                     $("#new-phone-number")
                         .siblings(".text-danger")
                         .text("Số điện thoại không được để trống!");
                     isValid = false;
-                } else {
-                    const phonePattern = /^[0-9]{10,11}$/;
-                    if (!phonePattern.test(newPhoneNumber)) {
-                        $("#new-phone-number")
-                            .siblings(".text-danger")
-                            .text("Số điện thoại không hợp lệ! Vui lòng nhập 10-11 chữ số.");
-                        isValid = false;
-                    }
+                } else if (!phonePattern.test(newPhoneNumber)) {
+                    $("#new-phone-number")
+                        .siblings(".text-danger")
+                        .text("Số điện thoại không hợp lệ!");
+                    isValid = false;
                 }
 
                 if (!isValid) return;
@@ -504,7 +502,7 @@ const handleInvoiceChange = async (id) => {
                 });
                 newQuantity = 1;
             }
-            if (newQuantity > maxValue){
+            if (newQuantity > maxValue) {
                 Swal.fire({
                     title: "Số lượng tối đa là " + maxValue,
                     icon: "error"
@@ -951,10 +949,10 @@ $(document).ready(() => {
                 .siblings(".text-danger")
                 .text("Tên người nhận không được để trống!");
             isValid = false;
-        } else if (/[^a-zA-Z0-9\s\u00C0-\u017F]/.test(recipientName) || /[@#$%^&*()_]/.test(recipientName)) {
+        } else if (!(/^(?!.*  )[A-Za-zÀ-ỹ]{1,}( [A-Za-zÀ-ỹ]{1,}){1,49}$/.test(recipientName))) {
             $("#recipient_name")
                 .siblings(".text-danger")
-                .text("Tên người nhận không được chứa ký tự đặc biệt");
+                .text("Vui lòng nhập tên đầy đủ, không có 2 khoảng trắng liên tiếp, chỉ chứa chữ cái.");
             isValid = false;
         }
 
@@ -964,11 +962,11 @@ $(document).ready(() => {
                 .text("Số điện thoại không được để trống!");
             isValid = false;
         } else {
-            const phonePattern = /^[0-9]{10,11}$/;
+            const phonePattern = /^(0[3|5|7|8|9])+([0-9]{8})$/;
             if (!phonePattern.test(phoneNumber)) {
                 $("#phone_number")
                     .siblings(".text-danger")
-                    .text("Số điện thoại không hợp lệ! Vui lòng nhập 10-11 chữ số.");
+                    .text("Số điện thoại không hợp lệ!");
                 isValid = false;
             }
         }
@@ -999,6 +997,16 @@ $(document).ready(() => {
             $("#address-detail")
                 .siblings(".text-danger")
                 .text("Địa chỉ cụ thể không được để trống!");
+            isValid = false;
+        } else if (!(/^[0-9a-zA-ZÀ-ỹ\s.,-]+$/.test(addressDetail))) {
+            $("#address-detail")
+                .siblings(".text-danger")
+                .text("Địa chỉ chứa ký tự không hợp lệ!");
+            isValid = false;
+        } else if (addressDetail.length > 255) {
+            $("#address-detail")
+                .siblings(".text-danger")
+                .text("Địa chỉ cụ thể không được quá 255 ký tự!");
             isValid = false;
         }
 
@@ -1190,6 +1198,16 @@ $(document).ready(() => {
                 $("#modal-address-detail")
                     .siblings(".text-danger")
                     .text("Địa chỉ cụ thể không được để trống!");
+                isValid = false;
+            } else if (!(/^[0-9a-zA-ZÀ-ỹ\s.,-]+$/.test(addressDetail))) {
+                $("#modal-address-detail")
+                    .siblings(".text-danger")
+                    .text("Địa chỉ chứa ký tự không hợp lệ!");
+                isValid = false;
+            } else if (addressDetail.length > 255) {
+                $("#modal-address-detail")
+                    .siblings(".text-danger")
+                    .text("Địa chỉ cụ thể không được quá 255 ký tự!");
                 isValid = false;
             }
 
@@ -1399,6 +1417,11 @@ $(document).ready(() => {
                 .siblings(".text-danger")
                 .text("Tên người nhận không được để trống!");
             isValid = false;
+        } else if (!(/^(?!.*  )[A-Za-zÀ-ỹ]{1,}( [A-Za-zÀ-ỹ]{1,}){1,49}$/.test(recipientName))) {
+            $("#invoice_recipient_name")
+                .siblings(".text-danger")
+                .text("Vui lòng nhập tên đầy đủ, không có 2 khoảng trắng liên tiếp, chỉ chứa chữ cái.");
+            isValid = false;
         }
 
         if (!phoneNumber) {
@@ -1407,11 +1430,11 @@ $(document).ready(() => {
                 .text("Số điện thoại không được để trống!");
             isValid = false;
         } else {
-            const phonePattern = /^[0-9]{10,11}$/;
+            const phonePattern = /^(0[3|5|7|8|9])+([0-9]{8})$/;
             if (!phonePattern.test(phoneNumber)) {
                 $("#invoice_phone_number")
                     .siblings(".text-danger")
-                    .text("Số điện thoại không hợp lệ! Vui lòng nhập 10-11 chữ số.");
+                    .text("Số điện thoại không hợp lệ!");
                 isValid = false;
             }
         }
@@ -1442,6 +1465,16 @@ $(document).ready(() => {
             $("#invoice_address_detail")
                 .siblings(".text-danger")
                 .text("Địa chỉ cụ thể không được để trống!");
+            isValid = false;
+        } else if (!(/^[0-9a-zA-ZÀ-ỹ\s.,-]+$/.test(addressDetail))) {
+            $("#invoice_address_detail")
+                .siblings(".text-danger")
+                .text("Địa chỉ chứa ký tự không hợp lệ!");
+            isValid = false;
+        } else if (addressDetail.length > 255) {
+            $("#invoice_address_detail")
+                .siblings(".text-danger")
+                .text("Địa chỉ cụ thể không được quá 255 ký tự!");
             isValid = false;
         }
 
