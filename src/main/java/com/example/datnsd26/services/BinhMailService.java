@@ -94,7 +94,7 @@ public class BinhMailService {
 
         // Link tra cứu
         emailContent.append("<p>🔍 Để tra cứu đơn hàng của bạn, vui lòng truy cập: ")
-                .append("<a href='http://localhost:8080/order-tracking")
+                .append("<a href='http://localhost:8080/shop/order-tracking")
                 .append("' style='color:#3498db;'>TẠI ĐÂY</a>");
 
         emailContent.append("</div>");
